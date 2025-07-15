@@ -16,12 +16,15 @@ local.properties
 /target/
 *.log
 org.eclipse.*
+.classpath
+.project
+.settings/
 
 Servers/
 .settings/
 .project
 
-.project
+
 /target/
 
 # Maven
