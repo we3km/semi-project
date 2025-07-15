@@ -109,6 +109,6 @@ Servers/
 hs_err_pid*
 replay_pid*
 
-# End of https://www.toptal.com/developers/gitignore/api/eclipse,java
 ITDA/target/
 ITDA/src/test/resources/log4j.xml
+# End of https://www.toptal.com/developers/gitignore/api/eclipse,java
