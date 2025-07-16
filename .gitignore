@@ -17,12 +17,12 @@ local.properties
 *.log
 org.eclipse.*
 .classpath
-.project
+
 .settings/
 
 Servers/
 .settings/
-.project
+
 
 
 /target/
