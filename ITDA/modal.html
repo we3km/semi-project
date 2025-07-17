@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/mo.css">
+<div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>오픈 채팅방 개설</h2>
+    <form action="${contextPath}/openchat/create" method="post" enctype="multipart/form-data">
+        <!-- 이미지 업로드 영역 -->
+        <div class="image-upload-area">
+            <label class="image-label">이미지 업로드</label>
+            <div class="image-preview-box">
+                <img id="preview" class="image-preview" src="#" alt="이미지 미리보기" style="display:none;">
+                <button type="button" class="add-image-btn" id="addImageBtn">+</button>
+                <input type="file" id="chatImage" name="chatImage" accept="image/*" class="image-input" style="display:none;">
+            </div>
+        </div>
+        <!-- 제목, 세부사항, 태그, 최대인원 -->
+        <div class="form-row">
+    <label for="title">제목:</label>
+    <input type="text" id="title" name="title" required>
+</div>
+<div class="form-row">
+    <label for="tags">태그:</label>
+    <input type="text" id="tags" name="tags" placeholder="태그를 입력하세요">
+</div>
+<div class="form-row">
+    <label for="maxMembers">최대인원:</label>
+    <input type="number" id="maxMembers" name="maxMembers" min="1" value="2">
+</div>
+<label for="details" class="details-label">세부사항:</label>
+<textarea id="details" name="details" rows="6" maxlength="2000" class="details-textarea"></textarea>
+</div>
+<script>
+document.getElementById('addImageBtn').onclick = function() {
+    document.getElementById('chatImage').click();
+};
+document.getElementById('chatImage').onchange = function(e) {
+    const preview = document.getElementById('preview');
+    const file = e.target.files[0];
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        document.getElementById('addImageBtn').style.display = 'none';
+    } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+        document.getElementById('addImageBtn').style.display = 'block';
+    }
+};
+</script>

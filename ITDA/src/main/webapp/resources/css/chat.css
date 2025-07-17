@@ -1,0 +1,71 @@
+/* 채팅방 전체 영역 */
+.chat-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 채팅방 제목 */
+.chat-room-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 채팅 메시지 영역 */
+.chat-box {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #ffffff;
+  margin-bottom: 15px;
+}
+
+/* 메시지 한 줄 스타일 */
+.chat-box p {
+  margin: 8px 0;
+  padding: 6px 10px;
+  background-color: #e0e7ff;
+  border-radius: 6px;
+  max-width: 75%;
+  word-break: break-word;
+}
+
+/* 입력 영역 */
+.chat-input-area {
+  display: flex;
+  gap: 10px;
+}
+
+/* 닉네임 및 메시지 입력창 */
+.chat-input-area input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+/* 보내기 버튼 */
+.chat-input-area button {
+  padding: 10px 18px;
+  font-size: 16px;
+  background-color: #4a6cff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chat-input-area button:hover {
+  background-color: #364fc7;
+}
