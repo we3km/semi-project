@@ -9,6 +9,6 @@
 	</settings>
 	
 	<typeAliases>
-		<package name="com.kh.spring"/>
+		<package name="com.kh.itda"/>
 	</typeAliases>
 </configuration>

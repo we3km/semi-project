@@ -168,7 +168,8 @@
         <h2>대여 게시판</h2>
         <span class="location">서울특별시 강남구 📍</span>
       </div>
-      <button class="write-btn">거래 글 쓰기</button>
+      <!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
+      <button class="write-btn"><a href="write/rental">거래 글 쓰기</a></button>
     </div>
 
     <div class="grid">
