@@ -53,7 +53,7 @@ h1 {
 	margin-left: 10px;
 	padding: 8px 16px;
 	border: none;
-	border-radius: 6px;
+	border-radius: 20px;
 	font-size: 14px;
 	cursor: pointer;
 }
@@ -178,13 +178,21 @@ main {
 	font-size: 14px;
 	color: #6B63FF;
 }
+
+#board-category{
+	width: 100px;
+	background: #ADAAF8;
+	border-radius: 20px;
+	font-size: 14px;
+	cursor: pointer;
+}
 </style>
 
 </head>
 
 <body>
 	<div class="container">
-	<form:form modelAttribute="board" action="">
+	<form action="${contextPath}/board/insert/${boardCategory}">
 		<header>
 			<c:choose>
 				<c:when test="${boardCategory eq 'rental'}">
@@ -218,30 +226,12 @@ main {
 				<option value="share" ${boardCategory == 'share' ? 'selected' : ''}>나눔</option>
 			</select>
 
-			<script>
-     
-        $(function(){
-        	
-        	$("#board-category").on("change", function(){
-        		const selectedCategory = this.value;
-        		var contextPath = "${pageContext.request.contextPath}";
-        		window.location.href = contextPath + "/board/write/"+selectedCategory;
-        	
-
-        	})
-        })
-		</script>
-
-
-
-
-
 			<div class="region">
 				거래지역 &gt; <span class="region-name">서울특별시 강남구 📍</span>
 			</div>
 			<div class="buttons">
-				<button class="cancel">작성 취소</button>
-				<button class="submit">작성 완료</button>
+				<button id="cancel-btn" class="cancel">작성 취소</button>
+				<button id="submit-btn" type="submit">작성 완료</button>
 			</div>
 		</header>
 
@@ -269,7 +259,7 @@ main {
 
 
 		</main>
-		</form:form>
+		</form>
 
 		<c:choose>
 			<c:when test="${boardCategory eq 'rental'}">
@@ -288,5 +278,17 @@ main {
 	</div>
 
 
+			<script>
+        $(function(){
+        	
+        	$("#board-category").on("change", function(){
+        		const selectedCategory = this.value;
+        		var contextPath = "${pageContext.request.contextPath}";
+        		window.location.href = contextPath + "/board/write/"+selectedCategory;
+        	
+
+        	})
+        })
+		</script>
 </body>
 </html>

@@ -3,8 +3,12 @@ package com.kh.itda.board.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.kh.itda.board.model.vo.BoardCommon;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +43,23 @@ public class BoardController {
 		return "board/auctionBoard";
 	}
 	
-	// 거래 글쓰기 페이지 매핑
+	// 거래 글쓰기 페이지 이동 매핑
 	// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
 	@GetMapping("/write/{boardCategory}")
 	public String boardWrite(@PathVariable("boardCategory") String boardCategory, Model model) {
 		//model.addAttribute("boardCategory", boardCategory); // JSP로 전달
 		return "board/writeBoard";
+	}
+	
+	// 거래 글쓰기 페이지 이동 매핑
+	// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
+	@PostMapping("/write/{boardCategory}")
+	public String boardInsert(
+			@PathVariable("boardCategory") String boardCategory,
+			Model model,
+			@ModelAttribute BoardCommon board) {
+		//model.addAttribute("boardCategory", boardCategory); // JSP로 전달
+		return "board/detail"+boardCategory;
 	}
 	
 	@GetMapping("/detailRental")
