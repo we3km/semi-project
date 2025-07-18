@@ -1,0 +1,140 @@
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f9f9fb;
+  margin: 0;
+  padding: 0;
+}
+
+.center-wrapper {
+  max-width: 980px;
+  margin: auto;
+  padding: 20px;
+}
+
+.cs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 70px 0 20px 0;
+}
+
+.cs-service {
+  font-size: 56px;
+  font-weight: 900;
+  color: #4f46e5;
+}
+
+.notice-box {
+  background-color: #eef4ff;
+  border: 2px solid #93c5fd;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #1e3a8a;
+  margin: 20px 0;
+  line-height: 1.8;
+}
+
+.header-mq {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.my-question {
+  font-size: 28px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.inquiry-btn {
+  background-color: #ede9fe;
+  color: #5b21b6;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.inquiry-btn:hover {
+  background-color: #ddd6fe;
+  transform: translateY(-2px);
+}
+
+.inquiry-btn:active {
+  transform: scale(0.98);
+}
+
+.inquiry-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  background-color: #e0e7ff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.inquiry-table th,
+.inquiry-table td {
+  border: 1px solid #a5b4fc;
+  padding: 16px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 16px;
+}
+
+.inquiry-table th {
+  background-color: #c7d2fe;
+  font-weight: 700;
+  color: #1e1e1e;
+}
+
+.QNA {
+  margin: 40px 0 20px 0;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.faq-list {
+  padding-left: 0;
+}
+
+.qa-item {
+  margin-bottom: 15px;
+}
+
+.question {
+  font-size: 22px;
+  color: #dc2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.question:hover {
+  background-color: rgba(255, 57, 57, 0.05);
+  transform: translateY(-1px);
+}
+
+.question:active {
+  background-color: rgba(255, 57, 57, 0.1);
+  transform: scale(0.98);
+}
+
+.answer {
+  font-size: 18px;
+  color: #4338ca;
+  padding: 8px 20px;
+  line-height: 1.7;
+}
