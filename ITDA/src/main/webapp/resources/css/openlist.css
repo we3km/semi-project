@@ -69,6 +69,7 @@ body {
   color: #080808;
   text-align: left;
   align-self: flex-start; /* 왼쪽 정렬 */
+  margin-left: 100px ;
 }
 
 /* 상단 검색바 */

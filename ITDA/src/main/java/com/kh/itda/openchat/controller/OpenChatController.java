@@ -1,46 +1,83 @@
 package com.kh.itda.openchat.controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.itda.openchat.model.service.FileService;
+import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
+import com.kh.itda.user.model.vo.User;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/openchat")
+@Slf4j
+@SessionAttributes({"chatRoomID"})
 public class OpenChatController {
+	
+	@Autowired
+	private OpenChatService openChatService;
+	
+	@Autowired
+	private FileService fileService;
+	
+	@GetMapping("/openChatList")
+	public String selectOpenChatList(@RequestParam(defaultValue = "1") int page, Model model) {
+	    int pageSize = 8;
+	    int offset = (page - 1) * pageSize;
 
-    // 채팅방 목록 페이지
-    @GetMapping("/openChatList")
-    public String openChatList(Model model) {
-        List<OpenChatRoom> roomList = new ArrayList<>();
+	    List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList();
+	    int total = allList.size();
 
-        // DB 대신 임시 데이터
-        for (int i = 1; i <= 5; i++) {
-            OpenChatRoom room = new OpenChatRoom();
-            room.setRoomId(i);
-            room.setTitle("채팅방 " + i);
-            room.setTags("#스터디 #자유");
-            room.setCurrentMembers(i * 2);
-            room.setMaxMembers(10);
-            roomList.add(room);
-        }
+	    List<OpenChatRoom> pagedList = allList.stream()
+	        .skip(offset)
+	        .limit(pageSize)
+	        .collect(Collectors.toList());
 
-        model.addAttribute("roomList", roomList);
-        return "openchat/openChatList";
-    }
+	    int totalPage = (int) Math.ceil((double) total / pageSize);
 
-    // 채팅방 입장
-    @GetMapping("/room/{roomId}")
-    public String enterChatRoom(@PathVariable int roomId, Model model) {
-        // DB 대신 임시 데이터
-        OpenChatRoom room = new OpenChatRoom();
-        room.setRoomId(roomId);
-        room.setTitle("채팅방 " + roomId);
-        model.addAttribute("room", room);
-        return "openchat/openchat";
-    }
+	    model.addAttribute("openlist", pagedList);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPage", totalPage);
+
+	    return "openchat/openChatList";
+	}
+	
+	@PostMapping("/createOpenChat")
+	public String createChatList(
+			@ModelAttribute OpenChatRoom room,
+			RedirectAttributes ra,
+			HttpSession session
+			) {
+		User u = (User) session.getAttribute("loginUser");
+		room.setUserNum(u.getUserNum());
+		
+		int result = openChatService.createOpenChat(room);
+		
+		if(result == 0) {
+			throw new RuntimeException("채팅방 등록 실패");
+		}
+		
+		
+		ra.addFlashAttribute("alertMsg","채팅방 생성 성공");
+		return "redirect:/openchat/openChatList";
+	}
+	
+
 }
