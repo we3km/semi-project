@@ -1,4 +1,4 @@
-package com.kh.chat.controller;
+package com.kh.itda.chat.controller;
 
 public class ChatController {
 // 하이
