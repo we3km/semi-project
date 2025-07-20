@@ -192,7 +192,7 @@ main {
 
 <body>
 	<div class="container">
-	<form action="${contextPath}/board/insert/${boardCategory}">
+	<form:form modelAttribute="board" action="${pageContext.request.contextPath}/board/write/${boardCategory}" method="post">
 		<header>
 			<c:choose>
 				<c:when test="${boardCategory eq 'rental'}">
@@ -249,17 +249,17 @@ main {
 			</section>
 
 			<section class="info-input">
-				<input type="text" placeholder="상품명" class="title-input" />
+				<form:input path="boardCommon.productName" type="text" placeholder="상품명" cssClass="title-input" />
 				<div class="tag-input">
 					<input type="text" placeholder="태그 엔터키로 추가 가능" /> <span
 						class="tag">#DSLR ✕</span>
 				</div>
-				<textarea placeholder="상품 설명" class="description"></textarea>
+				<form:textarea path="boardCommon.productComment" placeholder="상품 설명" cssClass="description"/>
 			</section>
 
 
 		</main>
-		</form>
+		</form:form>
 
 		<c:choose>
 			<c:when test="${boardCategory eq 'rental'}">
