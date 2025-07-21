@@ -1,7 +1,5 @@
 package com.kh.itda.security.controller;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,16 +7,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.UserService;
-import com.kh.itda.user.model.vo.User;
-
 import lombok.extern.slf4j.Slf4j;
 
 //회원가입, 회원정보 수정, 로그인/로그아웃
@@ -33,35 +27,6 @@ public class SecurityController {
 		super();
 		this.passwordEncoder = passwordEncoder;
 		this.uService = uService;
-	}
-	
-	// 회원가입 페이지 이동
-	@GetMapping("/user/insert")
-	public String enroll(@ModelAttribute User user
-			) {
-		return "user/userEnrollForm";
-	}
-	
-	@PostMapping("/user/insert")
-	public String register(
-			@Validated @ModelAttribute User user,
-			BindingResult bindingResult,
-			RedirectAttributes ra) {
-		// 유효성 검사
-		if(bindingResult.hasErrors()) {
-			return "user/userEnrollForm";
-		}
-		// 회원가입 진행
-		String encryptedPassword = passwordEncoder.encode(user.getUserPwd());
-		user.setUserPwd(encryptedPassword);
-
-		int userNum = uService.insertUserAndGetUserNo(user); // USER_TB INSERT 후 userNum 반환
-		if(user.getImageUrl() != null && !user.getImageUrl().isBlank()) {
-			uService.insertProfile(userNum, user.getImageUrl());
-		}
-		// 회원가입 완료 후 로그인 페이지로 리다이렉트
-		ra.addFlashAttribute("alertMsg", "회원가입 완료!");
-		return "redirect:/user/login";
 	}
 	
 	@PostMapping("/user/update")
