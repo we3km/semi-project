@@ -4,11 +4,11 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
-	
+
 	<!-- Root Context: defines shared resources visible to all other web components -->
-	<!--  DB연결 설정  -->
+	<!-- DB연결 설정 -->
 	<context:property-placeholder
-	location="classpath:driver.properties" />
+		location="classpath:driver.properties" />
 	<!-- 1단계 DB연결 -->
 	<bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -37,5 +37,6 @@
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean>	
+	</bean>
+
 </beans>
