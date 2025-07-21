@@ -12,9 +12,9 @@
 			 - order : insert 전에 실행될지 후에 실행될지를 지정하는 속성
 			 - 같은 트랜잭션에서 현재 테이블의 PK값이 필요한 경우 사용
 		 -->
-<!-- 		<selectKey keyProperty="boardId" resultType="int" order="BEFORE" >
-			SELECT SEQ_BNO.NEXTVAL FROM DUAL		
-		</selectKey> -->
+ 		<selectKey keyProperty="boardId" resultType="int" order="BEFORE" >
+			SELECT BOARD_COMMON_SEQ.NEXTVAL FROM DUAL		
+		</selectKey>
 		
 		INSERT INTO BOARD_COMMON
 		(
@@ -30,7 +30,7 @@
 			TRANSACTION_STATUS
 		) VALUES 
 		(
-			1 ,
+			#{boardId} ,
 			#{userNum},
 			#{productName},
 			#{productComment} ,
@@ -44,17 +44,6 @@
 	</insert>
 	
 		<insert id="insertBoardRental" parameterType="BoardRental">
-		<!-- 
-			selectKey
-			 - INSERT 전/후에 실행되어 게시글 번호와 같은 자동증가값을 가져오는 구문
-			 - keyProperty : 결과값을 저장할 필드명
-			 - resultType : 반환되는 타입의 자료형
-			 - order : insert 전에 실행될지 후에 실행될지를 지정하는 속성
-			 - 같은 트랜잭션에서 현재 테이블의 PK값이 필요한 경우 사용
-		 -->
-<!-- 		<selectKey keyProperty="boardId" resultType="int" order="BEFORE" >
-			SELECT SEQ_BNO.NEXTVAL FROM DUAL		
-		</selectKey> -->
 		
 		INSERT INTO BOARD_RENTAL
 		(
@@ -65,12 +54,56 @@
 			RENTAL_END_DATE
 		) VALUES 
 		(
-			1 ,
+			#{boardId},
 			#{rentalFee},
 			#{deposit},
 			#{rentalStartDate} ,
-			#{rentalEndDate},	
+			#{rentalEndDate}
 		)
+	</insert>
+	
+	<insert id="insertPath" parameterType="FilePath">
+
+ 		<selectKey keyProperty="pathId" resultType="int" order="BEFORE" >
+			SELECT FILE_PATH_SEQ.NEXTVAL FROM DUAL		
+		</selectKey>
+		
+		INSERT INTO FILE_PATH
+		(
+			PATH_ID,
+			PATH
+		)
+		 VALUES 
+		(
+			#{pathId},
+			#{path}
+		)
+	
+	</insert>
+	
+	<insert id="insertImg" parameterType="File">
+
+ 		<selectKey keyProperty="fileId" resultType="int" order="BEFORE" >
+			SELECT FILE_SEQ.NEXTVAL FROM DUAL		
+		</selectKey>
+		
+		INSERT INTO "FILE"
+		(
+			FILE_ID,
+			PATH_NUM,
+			FILE_NAME,
+			REF_NO,
+			FILE_ASSORTMENT
+		)
+		 VALUES 
+		(
+			#{fileId},
+			#{pathNum},
+			#{fileName},
+			#{refNo},
+			#{fileAssortment}
+		)
+	
 	</insert>
 
 </mapper>

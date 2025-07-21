@@ -1,11 +1,21 @@
 package com.kh.itda.board.controller;
 
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +28,9 @@ import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.common.Utils;
+import com.kh.itda.common.model.vo.File;
+import com.kh.itda.common.model.vo.FilePath;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +43,17 @@ public class BoardController {
 	
 	@Autowired
 	private final BoardService boardService;
+	
+	private final ServletContext application;
+	private final ResourceLoader resourceLoader;
+
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    dateFormat.setLenient(false);
+	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	}
 
 	// 대여게시판 매핑
 	@GetMapping("/rental")
@@ -91,18 +115,38 @@ public class BoardController {
 			 *    
 			 * 3. 게시글 등록 결과에 따른 페이지 지정
 			 * */
+			List<File> imgList = new ArrayList<>();
+			List<FilePath> pathList = new ArrayList<>();
+			System.out.println("이미지:"+upfiles);
+			for(MultipartFile upfile : upfiles) {
+				if(upfile.isEmpty()) {
+					continue;// 업로드한 첨부파일이 존재한다면 저장 진행
+				}
+				System.out.println(upfile);
+				String imgPath = Utils.saveFile(upfile, application, boardCategory); 
+				FilePath fp = new FilePath();
+				File f = new File();
+				
+				fp.setPath(imgPath);
+				f.setFileName(upfile.getOriginalFilename());
+				pathList.add(fp);
+				imgList.add(f);
+			}
+			
+		
+		
 			model.addAttribute("board", board);
 			BoardCommon boardCommon = board.getBoardCommon();
 			BoardRental boardRental = board.getBoardRental();
 			// User loginUser = (User) auth.getPrincipal();
 			
 			boardCommon.setUserNum(1); // 테스트용 임의 지정
-			boardCommon.setTransactionAddress("서욽특별시 강남구");// 테스트용 임의 지정
+			boardCommon.setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
 			boardCommon.setTransactionCategory(boardCategory);
 			boardCommon.setProductCategory("전자기기"); // 테스트용 임의 지정
 			System.out.println(boardRental);
 			
-			int result = boardService.insertBoard(boardCommon, boardRental);
+			int result = boardService.insertBoard(boardCommon, boardRental, pathList, imgList);
 			if(result == 0) {
 				throw new RuntimeException("게시글 작성 실패");
 				

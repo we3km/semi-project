@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <!DOCTYPE html>
 <html>
@@ -179,12 +179,16 @@ main {
 	color: #6B63FF;
 }
 
-#board-category{
+#board-category {
 	width: 100px;
 	background: #ADAAF8;
 	border-radius: 20px;
 	font-size: 14px;
 	cursor: pointer;
+}
+
+img {
+	width: 100px;
 }
 </style>
 
@@ -192,103 +196,146 @@ main {
 
 <body>
 	<div class="container">
-	<form:form modelAttribute="board" action="${pageContext.request.contextPath}/board/write/${boardCategory}" method="post">
-		<header>
+		<form:form modelAttribute="board"
+			action="${pageContext.request.contextPath}/board/write/${boardCategory}"
+			method="post" enctype="multipart/form-data">
+			<header>
+				<c:choose>
+					<c:when test="${boardCategory eq 'rental'}">
+						<h1>
+							<span class="highlight">대여</span> 글쓰기
+						</h1>
+					</c:when>
+					<c:when test="${boardCategory eq 'auction'}">
+						<h1>
+							<span class="highlight">경매</span> 글쓰기
+						</h1>
+					</c:when>
+					<c:when test="${boardCategory eq 'exchange'}">
+						<h1>
+							<span class="highlight">교환</span> 글쓰기
+						</h1>
+					</c:when>
+					<c:when test="${boardCategory eq 'share'}">
+						<h1>
+							<span class="highlight">나눔</span> 글쓰기
+						</h1>
+					</c:when>
+				</c:choose>
+				<select id="board-category" name="board-category">
+					<option value="rental"
+						${boardCategory == 'rental' ? 'selected' : ''}>대여</option>
+					<option value="auction"
+						${boardCategory == 'auction' ? 'selected' : ''}>경매</option>
+					<option value="exchange"
+						${boardCategory == 'exchange' ? 'selected' : ''}>교환</option>
+					<option value="share" ${boardCategory == 'share' ? 'selected' : ''}>나눔</option>
+				</select>
+
+				<div class="region">
+					거래지역 &gt; <span class="region-name">서울특별시 강남구 📍</span>
+				</div>
+				<div class="buttons">
+					<button id="cancel-btn" class="cancel">작성 취소</button>
+					<button id="submit-btn" type="submit">작성 완료</button>
+				</div>
+			</header>
+
+			<main>
+				<section class="image-upload">
+					<p>상품 이미지(2/10)</p>
+					<div class="main-image">
+						<img class="preview">
+					</div>
+
+					<input type="file" id="upfile" class="form-control" name="upfile"
+						multiple accept="image/*">
+
+				</section>
+
+				<section class="info-input">
+					<form:input path="boardCommon.productName" type="text"
+						placeholder="상품명" cssClass="title-input" />
+
+
+					<div class="tag-input">
+						<input type="text" id="tagInput" placeholder="태그 입력 후 Enter" />
+
+						
+						
+						<span class="tag">#DSLR ✕</span>
+					</div>
+					<script>
+
+					</script>
+
+
+					<form:textarea path="boardCommon.productComment"
+						placeholder="상품 설명" cssClass="description" />
+				</section>
+
+
+			</main>
+
 			<c:choose>
 				<c:when test="${boardCategory eq 'rental'}">
-					<h1>
-						<span class="highlight">대여</span> 글쓰기
-					</h1>
+					<section class="price-date-category">
+						<div class="price-area">
+							<label>대여 가격</label>
+							<form:input path="boardRental.rentalFee" type="text" />
+							원 <label>보증금</label>
+							<form:input path="boardRental.deposit" type="text" />
+							원
+						</div>
+
+						<div class="date-area">
+							<label>대여 기간</label>
+							<div class="dates">
+								<form:input path="boardRental.rentalStartDate" type="date" />
+								부터
+								<form:input path="boardRental.rentalEndDate" type="date" />
+								까지
+							</div>
+						</div>
+
+						<div class="category-area">
+							<label>상품 카테고리</label>
+							<div class="category-list">
+								<span class="main-category">전자기기</span> &gt; <span
+									class="sub-category">사진</span> &gt; <span
+									class="detail-category">카메라</span>
+							</div>
+						</div>
+					</section>
 				</c:when>
 				<c:when test="${boardCategory eq 'auction'}">
-					<h1>
-						<span class="highlight">경매</span> 글쓰기
-					</h1>
+					<jsp:include page="/WEB-INF/views/board/writeAuction.jsp"></jsp:include>
 				</c:when>
 				<c:when test="${boardCategory eq 'exchange'}">
-					<h1>
-						<span class="highlight">교환</span> 글쓰기
-					</h1>
+					<jsp:include page="/WEB-INF/views/board/writeExchange.jsp"></jsp:include>
 				</c:when>
 				<c:when test="${boardCategory eq 'share'}">
-					<h1>
-						<span class="highlight">나눔</span> 글쓰기
-					</h1>
+					<jsp:include page="/WEB-INF/views/board/writeShare.jsp"></jsp:include>
 				</c:when>
 			</c:choose>
-			<select id="board-category" name="board-category">
-				<option value="rental"
-					${boardCategory == 'rental' ? 'selected' : ''}>대여</option>
-				<option value="auction"
-					${boardCategory == 'auction' ? 'selected' : ''}>경매</option>
-				<option value="exchange"
-					${boardCategory == 'exchange' ? 'selected' : ''}>교환</option>
-				<option value="share" ${boardCategory == 'share' ? 'selected' : ''}>나눔</option>
-			</select>
 
-			<div class="region">
-				거래지역 &gt; <span class="region-name">서울특별시 강남구 📍</span>
-			</div>
-			<div class="buttons">
-				<button id="cancel-btn" class="cancel">작성 취소</button>
-				<button id="submit-btn" type="submit">작성 완료</button>
-			</div>
-		</header>
-
-		<main>
-			<section class="image-upload">
-				<p>상품 이미지(2/10)</p>
-				<div class="main-image">
-					<img src="camera.png" alt="카메라">
-				</div>
-				<div class="thumbnail-list">
-					<img src="camera.png" alt="썸네일1"> <img src="camera.png"
-						alt="썸네일2">
-					<div class="add-thumbnail">+</div>
-				</div>
-			</section>
-
-			<section class="info-input">
-				<form:input path="boardCommon.productName" type="text" placeholder="상품명" cssClass="title-input" />
-				<div class="tag-input">
-					<input type="text" placeholder="태그 엔터키로 추가 가능" /> <span
-						class="tag">#DSLR ✕</span>
-				</div>
-				<form:textarea path="boardCommon.productComment" placeholder="상품 설명" cssClass="description"/>
-			</section>
-
-
-		</main>
 		</form:form>
-
-		<c:choose>
-			<c:when test="${boardCategory eq 'rental'}">
-				<jsp:include page="/WEB-INF/views/board/writeRental.jsp"></jsp:include>
-			</c:when>
-			<c:when test="${boardCategory eq 'auction'}">
-				<jsp:include page="/WEB-INF/views/board/writeAuction.jsp"></jsp:include>
-			</c:when>
-			<c:when test="${boardCategory eq 'exchange'}">
-				<jsp:include page="/WEB-INF/views/board/writeExchange.jsp"></jsp:include>
-			</c:when>
-			<c:when test="${boardCategory eq 'share'}">
-				<jsp:include page="/WEB-INF/views/board/writeShare.jsp"></jsp:include>
-			</c:when>
-		</c:choose>
 	</div>
 
 
-			<script>
-        $(function(){
-        	
-        	$("#board-category").on("change", function(){
-        		const selectedCategory = this.value;
-        		var contextPath = "${pageContext.request.contextPath}";
-        		window.location.href = contextPath + "/board/write/"+selectedCategory;
-        	
+	<script>
+		$(function() {
 
-        	})
-        })
-		</script>
+			$("#board-category").on(
+					"change",
+					function() {
+						const selectedCategory = this.value;
+						var contextPath = "${pageContext.request.contextPath}";
+						window.location.href = contextPath + "/board/write/"
+								+ selectedCategory;
+
+					})
+		})
+	</script>
 </body>
 </html>

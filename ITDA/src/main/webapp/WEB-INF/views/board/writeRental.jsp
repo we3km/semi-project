@@ -9,7 +9,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form:form modelAttribute="board" action="${pageContext.request.contextPath}/board/write/${boardCategory}"  method="post">
+	
 	<section class="price-date-category">
 		<div class="price-area">
 			<label>대여 가격</label> <form:input path="boardRental.rentalFee" type="text"/> 원 
@@ -34,6 +34,6 @@
 			</div>
 		</div>
 	</section>
-	</form:form>
+	
 </body>
 </html>

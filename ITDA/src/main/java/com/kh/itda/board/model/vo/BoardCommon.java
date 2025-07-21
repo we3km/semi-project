@@ -1,6 +1,7 @@
 package com.kh.itda.board.model.vo;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,6 @@ public class BoardCommon {
 	private int views;
 	private char transactionStatus;
 	
+	
+	private List<String> tagList; // db는 따로
 }
