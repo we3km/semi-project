@@ -260,13 +260,45 @@ img {
 
 					<div class="tag-input">
 						<input type="text" id="tagInput" placeholder="태그 입력 후 Enter" />
+						    <div id="addTag">추가</div>
+						    
+						    <div id="tagContainer">
+						    	<span class="tag">#DSLR ✕</span>
+						    </div>
 
-						
-						
-						<span class="tag">#DSLR ✕</span>
+    						<!-- 태그 리스트를 저장할 hidden input (여러 개 생성됨) -->
+    						<input type="hidden" name="tags" id="tagsHiddenInput" />
 					</div>
 					<script>
+					const tagInput = document.getElementById("tagInput");
+					const addTag = document.getElementBy("addTag");
+				    const tagContainer = document.getElementById("tagContainer");
+				    const hiddenTags = document.getElementById("tagsHiddenInput");
+				    
+				    const tags = [];
 
+				    addTagBtn.addEventListener("click", () => {
+				           
+				            const tag = tagInput.value.trim();
+				            if (tag) {
+				                // 태그 UI 추가
+				                const span = document.createElement("span");
+				                span.className = "tag";
+				                span.innerText = "#" + tag;
+				                tagContainer.appendChild(span);
+
+				                // hidden input 추가sde34
+				                const hidden = document.createElement("input");
+				                hidden.type = "hidden";
+				                hidden.name = "tagList"; // Board.java의 List<String> 필드명과 일치
+				                hidden.value = tag;
+				                hiddenTags.appendChild(hidden);
+
+				                // 입력창 초기화
+				                tagInput.value = "";
+				            }
+				        
+				    });
 					</script>
 
 
