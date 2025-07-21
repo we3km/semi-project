@@ -4,36 +4,142 @@
 
 <mapper namespace="openchat">
 
-    <!-- 오픈 채팅방 목록 조회 -->
-    <select id="selectOpenChatRoomList" resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
-        SELECT
-            r.CHATROOM_ID AS chatRoomID,
-            r.OPEN_CHAT_ROOM_NAME AS chatName,
-            COUNT(DISTINCT m.USER_NUM) AS chatCount,
-            r.MAX_CHATROOM_COUNT AS maxchatCount,
-            r.DESCRIPTION AS description,
-            LISTAGG(t.TAG_CONTENT, ',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent
-        FROM
-            OPEN_CHAT r
-        LEFT JOIN
-            CHAT_PARTICIPANT m ON r.CHATROOM_ID = m.CHATROOM_ID
-        LEFT JOIN
-            OPENCHATROOM_TAG ot ON r.CHATROOM_ID = ot.CHATROOM_ID
-        LEFT JOIN
-            TAG t ON ot.TAG_ID = t.TAG_ID
-        GROUP BY
-            r.CHATROOM_ID, r.OPEN_CHAT_ROOM_NAME, r.MAX_CHATROOM_COUNT, r.DESCRIPTION
-        ORDER BY
-            r.CHATROOM_ID
-    </select>
-	
-   
-   <insert id="createOpenChat">
-   	INSERT INTO OPEN_CHAT VALUES
-   	(OPEN_CHAT_SEQ.NEXTVAL, #{})
-   	
-   </insert>
-   
-   
+	<!-- 오픈 채팅방 목록 조회 -->
+	<select id="selectOpenChatRoomList"
+		resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+		SELECT
+		r.CHATROOM_ID AS chatRoomID,
+		r.OPEN_CHAT_ROOM_NAME AS
+		chatName,
+		COUNT(DISTINCT m.USER_NUM) AS chatCount,
+		r.MAX_CHATROOM_COUNT
+		AS maxchatCount,
+		r.DESCRIPTION AS description,
+		LISTAGG(t.TAG_CONTENT,
+		',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent
+		FROM
+		OPEN_CHAT
+		r
+		LEFT JOIN CHAT_PARTICIPANT m ON r.CHATROOM_ID = m.CHATROOM_ID
+		LEFT
+		JOIN OPENCHATROOM_TAG ot ON r.CHATROOM_ID = ot.CHATROOM_ID
+		LEFT JOIN
+		TAG t ON ot.TAG_ID = t.TAG_ID
+		GROUP BY
+		r.CHATROOM_ID,
+		r.OPEN_CHAT_ROOM_NAME, r.MAX_CHATROOM_COUNT, r.DESCRIPTION
+		ORDER BY
+		r.CHATROOM_ID
+	</select>
+
+	<!-- CHAT_ROOM 테이블 INSERT -->
+	<insert id="insertChatRoom"
+		parameterType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+		<selectKey keyProperty="chatRoomID" resultType="int"
+			order="BEFORE">
+			SELECT CHAT_ROOM_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO CHAT_ROOM (
+		CHATROOM_ID,
+		USER_NUM,
+		REF_NUM
+		) VALUES (
+		#{chatRoomID},
+		#{userNum},
+		5
+		)
+	</insert>
+
+	<!-- OPEN_CHAT 테이블 INSERT -->
+	<insert id="insertOpenChat"
+		parameterType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+		INSERT INTO OPEN_CHAT (
+		CHATROOM_ID,
+		OPEN_CHAT_ROOM_NAME,
+		OPEN_CHAT_COUNT,
+		MAX_CHATROOM_COUNT,
+		DESCRIPTION
+		) VALUES (
+		#{chatRoomID},
+		#{chatName},
+		0,
+		#{maxchatCount},
+		#{description}
+		)
+	</insert>
+
+	<!-- FILE_PATH 테이블 INSERT -->
+	<insert id="insertFilePath" parameterType="map">
+		<selectKey keyProperty="pathId" resultType="int"
+			order="BEFORE">
+			SELECT FILE_PATH_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO FILE_PATH (
+		PATH_ID,
+		PATH
+		) VALUES (
+		#{pathId},
+		#{path}
+		)
+	</insert>
+
+	<!-- FILE 테이블 INSERT -->
+	<insert id="insertFile"
+		parameterType="com.kh.itda.openchat.model.vo.openchatImg">
+		<selectKey keyProperty="fileId" resultType="int"
+			order="BEFORE">
+			SELECT FILE_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO "FILE" (
+		FILE_ID,
+		PATH_NUM,
+		FILE_NAME,
+		REF_NO,
+		FILE_ASSORTMENT
+		) VALUES (
+		#{fileId},
+		#{pathNum},
+		#{fileName},
+		#{refNo},
+		6
+		)
+	</insert>
+
+	<!-- TAG 존재 여부 확인 -->
+	<select id="selectTagIdByContent" parameterType="string"
+		resultType="int">
+		SELECT TAG_ID
+		FROM TAG
+		WHERE TAG_CONTENT = #{tagContent}
+	</select>
+
+	<!-- TAG 새로 삽입 -->
+	<insert id="insertTag" parameterType="map">
+		<selectKey keyProperty="tagId" resultType="int"
+			order="BEFORE">
+			SELECT TAG_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		MERGE INTO TAG t
+		USING (
+		SELECT #{tagContent} AS TAG_CONTENT, #{tagId} AS TAG_ID FROM dual
+		) src
+		ON (t.TAG_CONTENT = src.TAG_CONTENT)
+		WHEN NOT MATCHED THEN
+		INSERT (TAG_ID, TAG_CONTENT)
+		VALUES (src.TAG_ID, src.TAG_CONTENT)
+	</insert>
+
+
+	<!-- OPENCHATROOM_TAG 연결 삽입 -->
+	<insert id="insertOpenChatRoomTag" parameterType="map">
+		INSERT INTO
+		OPENCHATROOM_TAG (
+		CHATROOM_ID,
+		TAG_ID
+		) VALUES (
+		#{chatRoomID},
+		#{tagId}
+		)
+	</insert>
 
 </mapper>

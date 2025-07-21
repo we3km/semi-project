@@ -14,13 +14,12 @@
 	<div class="container">
 		<header class="header"></header>
 		<div class="layout">
-			<!-- 우측 메인 -->
 			<main class="main-content">
 				<h1 class="main-title">오픈 채팅방 리스트</h1>
 
 				<div class="top-bar">
 					<input type="text" class="search-bar" placeholder="채팅방 검색" />
-					<button class="create-chat-btn">채팅방 개설</button>
+					<button type="button" class="create-chat-btn">채팅방 개설</button>
 				</div>
 
 				<div class="chat-list-box">
@@ -31,25 +30,18 @@
 						<c:otherwise>
 							<c:forEach var="chatRoom" items="${openlist}">
 								<div class="chat-room">
-									<img src="${contextPath}/resources/images/animal1.jpg"
-										alt="채팅방 이미지" class="chat-img" />
 									<div class="chat-title">${chatRoom.chatName}</div>
 									<div class="chat-tags">
 										<c:if test="${not empty chatRoom.tagContent}">
-											<c:forEach var="tag"
-												items="${fn:split(chatRoom.tagContent, ',')}"
-												varStatus="status">
+											<c:forEach var="tag" items="${fn:split(chatRoom.tagContent, ',')}" varStatus="status">
 												<c:if test="${status.index lt 3}">
 													${tag}&nbsp;
 												</c:if>
 											</c:forEach>
 										</c:if>
 									</div>
-									<div class="chat-members">참여인원: ${chatRoom.chatCount} /
-										${chatRoom.maxchatCount}</div>
-									<form
-										action="${contextPath}/openchat/room/${chatRoom.chatRoomID}"
-										method="get">
+									<div class="chat-members">참여인원: ${chatRoom.chatCount} / ${chatRoom.maxchatCount}</div>
+									<form action="${contextPath}/openchat/room/${chatRoom.chatRoomID}" method="get">
 										<button type="submit" class="join-btn">참여하기</button>
 									</form>
 								</div>
@@ -68,51 +60,47 @@
 				</div>
 			</main>
 		</div>
-
 		<footer class="footer"></footer>
 	</div>
 
-	<!-- 모달 배경 -->
+	<!-- 모달 -->
 	<div id="modal" class="modal" style="display: none;">
 		<div class="modal-content">
 			<span class="close-btn">&times;</span>
 			<h2>오픈 채팅방 개설</h2>
-			<form action="${contextPath}/openchat/createOpenChat" method="post"
-				enctype="multipart/form-data">
-				<!-- 이미지 업로드 영역 -->
+			<form  action="${contextPath}/openchat/createOpenChat" method="post" enctype="multipart/form-data" onsubmit="return validateForm(this)">
+				<!-- 이미지 업로드 -->
 				<div class="image-upload-area">
 					<label class="image-label">이미지 업로드</label>
 					<div class="image-preview-box">
-						<img id="preview" class="image-preview" src="#" alt="이미지 미리보기"
-							style="display: none;" />
+						<div id="previewContainer" style="display: flex;"></div>
 						<button type="button" class="add-image-btn" id="addImageBtn">+</button>
-						<input type="file" id="imageFile" name="imageFile"
-							accept="image/*" class="image-input" style="display: none;" />
+						<input type="file" id="imageFile" name="openImage" multiple accept="image/*"
+							style="opacity: 0; position: absolute; left: -9999px;" />
 					</div>
 				</div>
 
-				<!-- 채팅방 제목 -->
+				<!-- 제목 -->
 				<div class="form-row">
-					<label for="chatName">제목:</label> <input type="text" id="chatName"
-						name="chatName" required />
+					<label for="chatName">제목:</label>
+					<input type="text" id="chatName" name="chatName" required />
 				</div>
 
 				<!-- 태그 -->
 				<div class="form-row">
-					<label for="tags">태그:</label> <input type="text" id="tags"
-						name="tags" placeholder="#음악 #운동 처럼 공백으로 구분하여 입력" />
+					<label for="tagContent">태그:</label>
+					<input type="text" id="tagContent" name="tagContent" placeholder="#음악 #운동 처럼 공백으로 구분하여 입력" />
 				</div>
 
-				<!-- 최대인원 -->
+				<!-- 최대 인원 -->
 				<div class="form-row">
-					<label for="maxchatCount">최대인원:</label> <input type="number"
-						id="maxchatCount" name="maxchatCount" min="1" value="2" />
+					<label for="maxchatCount">최대인원:</label>
+					<input type="number" id="maxchatCount" name="maxchatCount" min="1" value="2" />
 				</div>
 
 				<!-- 세부사항 -->
 				<label for="description" class="details-label">세부사항:</label>
-				<textarea id="description" name="description" rows="6"
-					maxlength="2000" class="details-textarea"></textarea>
+				<textarea id="description" name="description" rows="6" maxlength="2000" class="details-textarea"></textarea>
 
 				<div style="margin-top: 10px; text-align: right;">
 					<button type="submit" class="submit-btn">개설하기</button>
@@ -121,42 +109,57 @@
 		</div>
 	</div>
 
-	<script>
-		// 이미지 미리보기
-		document.getElementById('addImageBtn').onclick = function() {
-			document.getElementById('imageFile').click();
-		};
-		document.getElementById('imageFile').onchange = function(e) {
-			const preview = document.getElementById('preview');
-			const file = e.target.files[0];
-			if (file) {
-				preview.src = URL.createObjectURL(file);
-				preview.style.display = 'block';
-				document.getElementById('addImageBtn').style.display = 'none';
-			} else {
-				preview.src = '#';
-				preview.style.display = 'none';
-				document.getElementById('addImageBtn').style.display = 'block';
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const addImageBtn = document.getElementById('addImageBtn');
+	const imageFileInput = document.getElementById('imageFile');
+	const previewContainer = document.getElementById('previewContainer');
+
+	addImageBtn.onclick = function () {
+		imageFileInput.click();
+	};
+
+	imageFileInput.onchange = function (e) {
+		const files = e.target.files;
+		previewContainer.innerHTML = '';
+		if (files.length > 0) {
+			for (let i = 0; i < files.length; i++) {
+				const img = document.createElement('img');
+				img.src = URL.createObjectURL(files[i]);
+				img.style.width = '100px';
+				img.style.marginRight = '5px';
+				img.style.borderRadius = '8px';
+				previewContainer.appendChild(img);
 			}
-		};
+		}
+	};
 
-		// 모달 열기
-		document.querySelector(".create-chat-btn").onclick = function() {
-			document.getElementById("modal").style.display = "block";
-		};
+	document.querySelector(".create-chat-btn").onclick = function () {
+		document.getElementById("modal").style.display = "block";
+	};
 
-		// 모달 닫기
-		document.querySelector(".close-btn").onclick = function() {
-			document.getElementById("modal").style.display = "none";
-		};
+	document.querySelector(".close-btn").onclick = function () {
+		document.getElementById("modal").style.display = "none";
+	};
 
-		// 모달 외부 클릭 시 닫기
-		window.onclick = function(event) {
-			const modal = document.getElementById("modal");
-			if (event.target == modal) {
-				modal.style.display = "none";
-			}
-		};
-	</script>
+	window.onclick = function (event) {
+		const modal = document.getElementById("modal");
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	};
+});
+
+function validateForm(form) {
+	console.log("=== [FORM 제출 값 확인] ===");
+	console.log("chatName:", form.chatName.value);
+	console.log("tagContent:", form.tagContent.value);
+	console.log("description:", form.description.value);
+	console.log("maxchatCount:", form.maxchatCount.value);
+	console.log("파일 선택 수:", form.openImage.files.length);
+	console.log("=========================");
+	return true;
+}
+</script>
 </body>
 </html>

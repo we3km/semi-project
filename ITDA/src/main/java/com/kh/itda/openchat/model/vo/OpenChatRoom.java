@@ -1,7 +1,6 @@
 package com.kh.itda.openchat.model.vo;
 
 
-import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +16,8 @@ public class OpenChatRoom {
 	private String tagContent;
 	private int userNum;
 	
-
+	private int fileId;
+	private int pathNum;
+	
 }
     
