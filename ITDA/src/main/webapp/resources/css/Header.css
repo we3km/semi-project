@@ -8,6 +8,8 @@
         body {
             font-family: 'SUIT', sans-serif;
             background: linear-gradient(135deg, #EEF1FF, #F4F6FF);
+            position : styicky;
+            top:0;
         }
 
         .container {

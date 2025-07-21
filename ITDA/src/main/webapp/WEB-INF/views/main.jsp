@@ -111,8 +111,100 @@
 		</div>
 	</div>
 	
-	<%-- mainPage JavaScript 파일 불러오기--%>
-	<script src="${pageContext.request.contextPath}/resources/js/mainPage.js"></script>
+	<script>
+  $(document).ready(function () {
+    // 드롭다운 클릭 열기
+    $('.dropbtn_click').on('click', function (e) {
+      e.stopPropagation();
+      const dropdown = $(this).closest('.dropdown');
+      $('.dropdown-content').not(dropdown.find('.dropdown-content')).removeClass('show');
+      dropdown.find('.dropdown-content').toggleClass('show');
+    });
+
+    // 항목 클릭 시 텍스트 설정
+    $('.dropdown .category').on('click', function () {
+      const value = $(this).text();
+      const dropdown = $(this).closest('.dropdown');
+      dropdown.find('.dropbtn_content').text(value).css('color', '#252525');
+      dropdown.find('.dropdown-content').removeClass('show');
+    });
+
+    // 외부 클릭 시 닫기
+    $(window).on('click', function () {
+      $('.dropdown-content').removeClass('show');
+    });
+
+    // 아이콘 클릭
+    $('.search img').click(function () {
+      alert('검색 아이콘 클릭!');
+    });
+
+    // 로그인 클릭 핸들러
+    function loginClickHandler() {
+      alert('로그인창');
+      $('#login-btn').text('로그아웃');
+      $('#signup-btn').text('마이페이지');
+
+      $('#login-btn').off('click').on('click', logoutClickHandler);
+      $('#signup-btn').off('click').on('click', function () {
+        alert('마이페이지');
+      });
+    }
+
+    // 로그아웃 클릭 핸들러
+    function logoutClickHandler() {
+      alert('로그아웃');
+      $('#login-btn').text('로그인');
+      $('#signup-btn').text('회원가입');
+
+      $('#login-btn').off('click').on('click', loginClickHandler);
+      $('#signup-btn').off('click').on('click', function () {
+        alert('회원가입');
+      });
+    }
+
+    $('#login-btn').on('click', loginClickHandler);
+    $('#signup-btn').on('click', function () {
+      alert('회원가입');
+    });
+
+    // 검색 버튼 클릭 이벤트
+    $('#search-btn').on('click', function () {
+      const dealType = $('#deal-type-dropdown .dropbtn_content').text().trim();
+      const productType = $('#product-type-dropdown .dropbtn_content').text().trim();
+      const searchText = $('#search-input').val().trim();
+
+      alert(`거래유형: ${dealType}\n상품유형: ${productType}\n검색어: ${searchText}`);
+    });
+
+    const contextPath = '<%=request.getContextPath()%>';
+
+    $('.card').click(function () {
+      const title = $(this).find('.card-title').text().trim();
+
+      switch(title) {
+        case '대여':
+          window.location.href = contextPath + '/rent/list';
+          break;
+        case '교환':
+          window.location.href = contextPath + '/exchange/list';
+          break;
+        case '나눔':
+          window.location.href = contextPath + '/share/list';
+          break;
+        case '경매':
+          window.location.href = contextPath + '/auction/lsit';
+          break;
+        case '커뮤니티':
+          window.location.href = contextPath + '/community/list';
+          break;
+        default:
+          alert('해당 페이지가 없습니다.');
+      }
+    });
+  });
+</script>
+
 	
 
 </body>

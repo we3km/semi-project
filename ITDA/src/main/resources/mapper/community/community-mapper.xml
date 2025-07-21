@@ -1,8 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
- 
+
 <mapper namespace="community">
+	<!-- 커뮤니티 타입 목록 -->
+	<select id="getCommunityTypeMap" resultType="CommunityType">
+		SELECT
+		TAG_ID AS
+		communityCd,
+		TAG_CONTENT AS communityName
+		FROM TAG
+	</select>
+
+	<!-- 게시글 수 조회 -->
+	<select id="selectListCount" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM BOARD_COMMUNITY C
+		LEFT JOIN USER_TB U ON C.USER_NUM
+		= U.USER_NUM
+		<where>
+			<if test="communityCode != null">
+				AND C.COMMUNITY_CD = #{communityCode}
+			</if>
+			<if test="keyword != null and keyword != '' ">
+				AND
+				<choose>
+					<when test="condition.equals('title')">
+						C.TITLE LIKE '%' || #{keyword} || '%'
+					</when>
+					<when test="condition.equals('writer')">
+						U.NICK_NAME LIKE '%' || #{keyword} || '%'
+					</when>
+					<when test="condition.equals('content')">
+						C.CONTENT LIKE '%' || #{keyword} || '%'
+					</when>
+					<when test="condition.equals('titleAndContent')">
+						(C.TITLE LIKE '%' || #{keyword} || '%' OR C.CONTENT
+						LIKE '%' || #{keyword}
+						|| '%' )
+					</when>
+				</choose>
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 게시글 목록 조회 -->
+	<!-- 게시글 목록 조회 -->
+	<select id="selectList" parameterType="map" resultType="community">
+	SELECT
+		C.COMMUNITY_BOARD_ID,
+		C.TITLE,
+		M.NICK_NAME AS BOARD_WRITER,
+		C.WRITE_DATE,
+		C.VIEWS,
+		(
+			SELECT COUNT(*)
+			FROM REACTION R
+			WHERE R.COMMUNITY_CD = C.COMMUNITY_CD
+			AND R.REACTION_TYPE = 'LIKE'
+		) AS LIKE_COUNT
+	FROM BOARD_COMMUNITY C
+	LEFT JOIN USER_TB M ON C.USER_NUM = M.USER_NUM
+	<where>
+		<if test="keyword != null and keyword != '' ">
+			<choose>
+				<when test="condition == 'title'">
+					C.TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="condition == 'writer'">
+					M.NICK_NAME LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="condition == 'content'">
+					C.CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="condition == 'titleAndContent'">
+					(C.TITLE LIKE '%' || #{keyword} || '%' OR
+					C.CONTENT LIKE '%' || #{keyword} || '%')
+				</when>
+			</choose>
+		</if>
+	</where>
+	ORDER BY C.COMMUNITY_BOARD_ID DESC
+	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+
 
 
 </mapper>

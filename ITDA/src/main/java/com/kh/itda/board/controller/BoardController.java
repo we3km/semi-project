@@ -1,4 +1,4 @@
-package com.kh.board.controller;
+package com.kh.itda.board.controller;
 
 public class BoardController {
 // 하이

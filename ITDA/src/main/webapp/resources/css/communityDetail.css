@@ -1,0 +1,343 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            padding: 30px;
+            font-family: 'SUIT', sans-serif;
+            background: linear-gradient(135deg, #eef1ff, #f4f6ff);
+            color: #333;
+        }
+
+        .container {
+            min-height: 90%;
+            min-width: 80%;
+            max-width: 1800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            display: block;
+        }
+
+        .category {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        .top-row {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .top-row .category {
+            color: #666;
+        }
+
+        .top-row .separator {
+            margin: 0 8px;
+            color: #bbb;
+        }
+
+        .top-row .post-title {
+            color: #222;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .meta-row .right span {
+            margin-left: 15px;
+        }
+
+        .meta-row .right .red #commentCount {
+            color: red;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 12px 0 20px;
+        }
+
+        .post-content {
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            margin-bottom: 30px;
+            width: 90%;
+
+        }
+
+        .post-actions {
+            text-align: right;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .post-actions button {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 13px;
+            margin-left: 10px;
+            position: relative;
+        }
+
+        .post-actions button:hover {
+            color: #333;
+        }
+
+        .share-popup {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            z-index: 100;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        .share-popup input {
+            width: calc(100% - 50px);
+            padding: 5px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .share-popup button {
+            padding: 5px 8px;
+            font-size: 13px;
+            margin-left: 5px;
+            background: #6a3ae4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+
+        .vote-buttons {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .vote-buttons button {
+            font-size: 16px;
+            background: none;
+            border: none;
+            margin: 0px 20px;
+            cursor: pointer;
+            color: #444;
+        }
+
+        .vote-buttons span {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
+        /* 기존 스타일 유지하면서 댓글 입력창 스타일 및 댓글 리스트 스타일 추가 */
+        .comment-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comment-input input {
+            flex: 1;
+            height: 30px;
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+        }
+
+        .comment-input button {
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .comment-list-header {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .comment-list-header .total-comments {
+            color: #6a3ae4;
+            margin-right: 15px;
+        }
+
+        .comment-list-header .tabs {
+            color: #444;
+            font-weight: 400;
+            gap: 10px;
+            display: flex;
+        }
+
+        .comment-list-header .tabs div {
+            cursor: pointer;
+            color: #888;
+        }
+
+        .comment-list-header .tabs div.active {
+            color: #222;
+            font-weight: 600;
+        }
+
+        .comment {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .comment.reply {
+            margin-left: 40px;
+            border-left: 2px solid #f0f0f0;
+            padding-left: 12px;
+        }
+
+        .comment .profile-icon {
+            width: 28px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .comment .content {
+            flex: 1;
+        }
+
+        .comment .author {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .comment .text {
+            font-size: 14px;
+            color: #222;
+            margin-bottom: 6px;
+            white-space: pre-wrap;
+        }
+
+        .comment .actions {
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .comment .actions span {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .comment .actions .reply-toggle {
+            color: #6a3ae4;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .comment .options-btn {
+            position: absolute;
+            right: 0;
+            top: 12px;
+            font-size: 18px;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .reply-box {
+            margin-top: 8px;
+            display: none;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .reply-box input {
+            flex: 1;
+            height: 28px;
+            padding: 6px 12px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+        }
+
+        .reply-box button {
+            background: none;
+            border: none;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .options-popup {
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            width: 120px;
+            display: none;
+            /* 기본 숨김 */
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        .options-popup div {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .options-popup div:hover {
+            background-color: #f0f0f0;
+        }
