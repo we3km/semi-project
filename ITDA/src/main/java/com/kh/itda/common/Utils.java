@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class Utils {
 
+
     /**
      * 오픈채팅 이미지 저장
      * @param upfile 업로드된 MultipartFile
@@ -78,3 +79,4 @@ public class Utils {
         return content.replaceAll("<br>", "\n");
     }
 }
+
