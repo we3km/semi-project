@@ -256,10 +256,31 @@ h2 {
   padding: 4px;
 }
 
+.image-preview-box {
+    position: relative;
+    width: 300px;
+    height: 160px;
+    background: #f3f3f3;
+    border: 1.5px solid #ADAAF8;
+    border-radius: 12px;
+    display: flex; /* ← 이 줄이 문제였음 */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
 
 
 .image-preview-box:focus-within {
   box-shadow: 0 0 0 2px #5A54FF33;
+}
+
+.image-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* or use contain depending on use case */
+  border-radius: 12px;
 }
 
 
