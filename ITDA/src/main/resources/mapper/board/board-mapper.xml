@@ -60,6 +60,8 @@
 			#{rentalStartDate} ,
 			#{rentalEndDate}
 		)
+		
+		
 	</insert>
 	
 	<insert id="insertPath" parameterType="FilePath">
@@ -102,6 +104,42 @@
 			#{fileName},
 			#{refNo},
 			#{fileAssortment}
+		)
+	
+	</insert>
+	
+	<insert id="insertTag" parameterType="Tag">
+
+ 		<selectKey keyProperty="tagId" resultType="int" order="BEFORE" >
+			SELECT TAG_SEQ.NEXTVAL FROM DUAL		
+		</selectKey>
+		
+		INSERT INTO TAG
+		(
+			TAG_ID,
+			TAG_CONTENT
+		)
+		 VALUES 
+		(
+			#{tagId},
+			#{tagContent}
+		)
+	
+	</insert>
+	
+	<insert id="insertBoardTag" parameterType="BoardTag">
+		
+		INSERT INTO BOARD_TAG
+		(
+			TAG_ID,
+			BOARD_ID,
+			BOARD_CATEGORY
+		)
+		 VALUES 
+		(
+			#{tagId},
+			#{boardId},
+			#{boardCategory}
 		)
 	
 	</insert>

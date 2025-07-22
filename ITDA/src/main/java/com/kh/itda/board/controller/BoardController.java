@@ -139,12 +139,12 @@ public class BoardController {
 			BoardCommon boardCommon = board.getBoardCommon();
 			BoardRental boardRental = board.getBoardRental();
 			// User loginUser = (User) auth.getPrincipal();
-			
 			boardCommon.setUserNum(1); // 테스트용 임의 지정
 			boardCommon.setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
 			boardCommon.setTransactionCategory(boardCategory);
 			boardCommon.setProductCategory("전자기기"); // 테스트용 임의 지정
 			System.out.println(boardRental);
+			System.out.println("태그:"+boardCommon.getTagList());
 			
 			int result = boardService.insertBoard(boardCommon, boardRental, pathList, imgList);
 			if(result == 0) {

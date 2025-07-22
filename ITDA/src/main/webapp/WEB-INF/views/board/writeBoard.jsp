@@ -259,27 +259,34 @@ img {
 
 
 					<div class="tag-input">
-						<input type="text" id="tagInput" placeholder="태그 입력 후 Enter" />
+						<input type="text" id="tagInput" placeholder="태그 입력 후 추가를 누르세요." />
 						    <div id="addTag">추가</div>
 						    
 						    <div id="tagContainer">
-						    	<span class="tag">#DSLR ✕</span>
+						
 						    </div>
 
     						<!-- 태그 리스트를 저장할 hidden input (여러 개 생성됨) -->
-    						<input type="hidden" name="tags" id="tagsHiddenInput" />
+    						<div id="tagsHiddenInput"></div> 
 					</div>
 					<script>
 					const tagInput = document.getElementById("tagInput");
-					const addTag = document.getElementBy("addTag");
+					const addTag = document.getElementById("addTag");
 				    const tagContainer = document.getElementById("tagContainer");
 				    const hiddenTags = document.getElementById("tagsHiddenInput");
 				    
-				    const tags = [];
+				    const tags = new Set(); // 중복 방지를 위한 Set
 
-				    addTagBtn.addEventListener("click", () => {
+				    addTag.addEventListener("click", () => {
 				           
 				            const tag = tagInput.value.trim();
+				            if (tag === "") return;
+				            if (tags.has(tag)) {
+				                alert("이미 추가된 태그입니다.");
+				                tagInput.value = "";
+				                return;
+				            }
+				            tags.add(tag);
 				            if (tag) {
 				                // 태그 UI 추가
 				                const span = document.createElement("span");
@@ -290,8 +297,9 @@ img {
 				                // hidden input 추가sde34
 				                const hidden = document.createElement("input");
 				                hidden.type = "hidden";
-				                hidden.name = "tagList"; // Board.java의 List<String> 필드명과 일치
+				                hidden.name = "boardCommon.tagList"; 
 				                hidden.value = tag;
+				               
 				                hiddenTags.appendChild(hidden);
 
 				                // 입력창 초기화
@@ -299,6 +307,7 @@ img {
 				            }
 				        
 				    });
+				    
 					</script>
 
 

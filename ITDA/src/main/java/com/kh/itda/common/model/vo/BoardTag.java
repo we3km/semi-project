@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class Tag {
+public class BoardTag {
 	private int tagId;
-	private String tagContent;
+	private int boardId;
+	private String boardCategory;
 }
