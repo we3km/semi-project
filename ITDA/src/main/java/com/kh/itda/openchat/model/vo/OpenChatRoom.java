@@ -19,5 +19,7 @@ public class OpenChatRoom {
 	private int fileId;
 	private int pathNum;
 	
+	private String filePath; 
+	private String fileName;  
 }
     

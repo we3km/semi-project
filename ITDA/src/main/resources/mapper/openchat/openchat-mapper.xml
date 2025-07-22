@@ -8,29 +8,44 @@
 	<select id="selectOpenChatRoomList"
 		resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
 		SELECT
-		r.CHATROOM_ID AS chatRoomID,
-		r.OPEN_CHAT_ROOM_NAME AS
-		chatName,
-		COUNT(DISTINCT m.USER_NUM) AS chatCount,
-		r.MAX_CHATROOM_COUNT
-		AS maxchatCount,
-		r.DESCRIPTION AS description,
-		LISTAGG(t.TAG_CONTENT,
-		',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent
-		FROM
-		OPEN_CHAT
-		r
-		LEFT JOIN CHAT_PARTICIPANT m ON r.CHATROOM_ID = m.CHATROOM_ID
-		LEFT
-		JOIN OPENCHATROOM_TAG ot ON r.CHATROOM_ID = ot.CHATROOM_ID
-		LEFT JOIN
-		TAG t ON ot.TAG_ID = t.TAG_ID
+			r.CHATROOM_ID AS chatRoomID,
+			r.OPEN_CHAT_ROOM_NAME AS chatName,
+			COUNT(DISTINCT m.USER_NUM) AS chatCount,
+			r.MAX_CHATROOM_COUNT AS maxchatCount,
+			r.DESCRIPTION AS description,
+			LISTAGG(t.TAG_CONTENT, ',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent,
+
+			f.FILE_ID AS fileId,
+			f.PATH_NUM AS pathNum,
+			p.PATH AS filePath,
+			f.FILE_NAME AS fileName
+
+		FROM OPEN_CHAT r
+			LEFT JOIN CHAT_PARTICIPANT m ON r.CHATROOM_ID = m.CHATROOM_ID
+			LEFT JOIN OPENCHATROOM_TAG ot ON r.CHATROOM_ID = ot.CHATROOM_ID
+			LEFT JOIN TAG t ON ot.TAG_ID = t.TAG_ID
+
+		LEFT JOIN "FILE" f ON f.REF_NO = r.CHATROOM_ID AND f.FILE_ASSORTMENT = 6
+		AND f.FILE_ID = (
+		SELECT MIN(FILE_ID)
+		FROM "FILE"
+		WHERE REF_NO = r.CHATROOM_ID AND FILE_ASSORTMENT = 6
+		)
+		LEFT JOIN FILE_PATH p ON f.PATH_NUM = p.PATH_ID
+
 		GROUP BY
-		r.CHATROOM_ID,
-		r.OPEN_CHAT_ROOM_NAME, r.MAX_CHATROOM_COUNT, r.DESCRIPTION
-		ORDER BY
-		r.CHATROOM_ID
+			r.CHATROOM_ID,
+			r.OPEN_CHAT_ROOM_NAME,
+			r.MAX_CHATROOM_COUNT,
+			r.DESCRIPTION,
+			f.FILE_ID,
+			f.PATH_NUM,
+			p.PATH,
+			f.FILE_NAME
+
+		ORDER BY r.CHATROOM_ID
 	</select>
+
 
 	<!-- CHAT_ROOM 테이블 INSERT -->
 	<insert id="insertChatRoom"
@@ -121,12 +136,15 @@
 		</selectKey>
 		MERGE INTO TAG t
 		USING (
-		SELECT #{tagContent} AS TAG_CONTENT, #{tagId} AS TAG_ID FROM dual
+		SELECT #{tagContent} AS TAG_CONTENT, #{tagId}
+		AS TAG_ID FROM dual
 		) src
 		ON (t.TAG_CONTENT = src.TAG_CONTENT)
-		WHEN NOT MATCHED THEN
+		WHEN NOT
+		MATCHED THEN
 		INSERT (TAG_ID, TAG_CONTENT)
-		VALUES (src.TAG_ID, src.TAG_CONTENT)
+		VALUES (src.TAG_ID,
+		src.TAG_CONTENT)
 	</insert>
 
 

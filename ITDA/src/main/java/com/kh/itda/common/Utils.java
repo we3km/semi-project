@@ -17,34 +17,37 @@ public class Utils {
      * @param application ServletContext (getRealPath용)
      * @return 저장된 웹 경로 (예: /resources/images/openchatimg/2024072112123456789.jpg)
      */
-	public static String saveOpenChatFile(MultipartFile upfile, ServletContext application, String chatRoomID) {
-	    // 프로젝트 루트 경로 기준으로 webapp 안에 저장
-		String webPath = "/resources/images/openchat/"+chatRoomID+"/";
-		
-		String serverFolderPath = application.getRealPath(webPath);
-		
-		File dir = new File(serverFolderPath);
-		if(!dir.exists()) {
-			dir.mkdir();
-		}
-		// 랜덤한 파일명 생성
-				String originName = upfile.getOriginalFilename();//파일의 원본명
-				String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-				int random = (int)(Math.random()*90000 + 10000); //5자리 fosejsrkqt
-				String ext = originName.substring(originName.lastIndexOf("."));
-				String changeName = currentTime + random+ext;
-				// 서버에 파일을 업로드
-				
-				try {
-					upfile.transferTo(new File(serverFolderPath+changeName));
-				} catch (IllegalStateException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				// 파일명 반환
-				return webPath+changeName;
+	public static String saveOpenChatFile(MultipartFile upfile, ServletContext application, String refNum) {
+	    // 저장할 웹 경로 설정
+	    String webPath = "/resources/images/chat/" + refNum + "/";
 
+	    // 실제 서버 저장 경로 확보
+	    String serverFolderPath = application.getRealPath(webPath);
+	    System.out.println("서버 실행 루트 경로: " + application.getRealPath("/"));
+	    System.out.println("서버 저장 경로: " + serverFolderPath);
+
+	    // 디렉토리가 없으면 생성
+	    File dir = new File(serverFolderPath);
+	    if (!dir.exists()) {
+	        dir.mkdirs(); // mkdir → mkdirs()로 변경 (상위 경로도 없을 수 있으므로)
+	    }
+
+	    // 랜덤한 파일명 생성
+	    String originName = upfile.getOriginalFilename(); // 원본 파일명
+	    String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	    int random = (int) (Math.random() * 90000 + 10000); // 5자리 랜덤 숫자
+	    String ext = originName.substring(originName.lastIndexOf("."));
+	    String changeName = currentTime + random + ext;
+
+	    // 서버에 파일 저장
+	    try {
+	        upfile.transferTo(new File(serverFolderPath + changeName));
+	    } catch (IllegalStateException | IOException e) {
+	        e.printStackTrace();
+	    }
+
+	    // 웹 경로 반환
+	    return changeName;
 	}
     /**
      * XSS 공격 방지 처리
