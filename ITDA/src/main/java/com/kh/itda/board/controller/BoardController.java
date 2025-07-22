@@ -28,6 +28,7 @@ import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -88,6 +89,11 @@ public class BoardController {
 		board.setBoardCommon(new BoardCommon());
 		board.setBoardRental(new BoardRental());
 		
+		List<ProductCategory> list = boardService.selectCategoryList();
+		
+		model.addAttribute("list",list);
+		System.out.println(list);
+		
 		
 		model.addAttribute("board", board);
 		return "board/writeBoard";
@@ -133,8 +139,6 @@ public class BoardController {
 				pathList.add(fp);
 				imgList.add(f);
 			}
-			
-		
 		
 			model.addAttribute("board", board);
 			BoardCommon boardCommon = board.getBoardCommon();

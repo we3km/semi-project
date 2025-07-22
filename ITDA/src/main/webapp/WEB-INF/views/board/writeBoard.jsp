@@ -341,10 +341,14 @@ img {
 
 						<div class="category-area">
 							<label>상품 카테고리</label>
-							<div class="category-list">
-								<span class="main-category">전자기기</span> &gt; <span
-									class="sub-category">사진</span> &gt; <span
-									class="detail-category">카메라</span>
+							<div class="category-list-large">
+								<c:forEach items="${list}" var="productCategory">
+									<c:choose>
+									 <c:when test="${productCategory.parentNum eq null } ">
+										<div>${productCategory.categoryName }</div>
+									</c:when>
+									</c:choose>
+								</c:forEach>
 							</div>
 						</div>
 					</section>

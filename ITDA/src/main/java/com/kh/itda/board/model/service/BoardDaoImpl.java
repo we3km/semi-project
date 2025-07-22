@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardRental;
+import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -79,6 +80,13 @@ public class BoardDaoImpl implements BoardDao {
 			result = 1;
 		}
 		return result;
+	}
+
+	@Override
+	public List<ProductCategory> selectCategoryList() {
+		List<ProductCategory> list = session.selectList("board.selectCategoryList");
+
+		return list;
 	}
 
 	

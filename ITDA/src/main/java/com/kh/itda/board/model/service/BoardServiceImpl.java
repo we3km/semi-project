@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardRental;
+import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -33,6 +34,12 @@ public class BoardServiceImpl implements BoardService{
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public List<ProductCategory> selectCategoryList() {
+		List<ProductCategory> list = boardDao.selectCategoryList();
+		return list;
 	}
 
 }

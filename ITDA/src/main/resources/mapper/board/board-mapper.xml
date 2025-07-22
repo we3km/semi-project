@@ -144,4 +144,14 @@
 	
 	</insert>
 
+
+	<select id="selectCategoryList" resultType="productCategory">
+		SELECT 
+			PRODUCT_CATEGORY_NUM,
+			CATEGORY_NAME,
+			CATEGORY_TIER,
+			PARENT_NUM
+		FROM PRODUCT_CATEGORY
+
+	</select>
 </mapper>
