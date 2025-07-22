@@ -123,6 +123,7 @@ public class BoardController {
 					continue;// 업로드한 첨부파일이 존재한다면 저장 진행
 				}
 				System.out.println(upfile);
+				
 				String imgPath = Utils.saveFile(upfile, application, boardCategory); 
 				FilePath fp = new FilePath();
 				File f = new File();
