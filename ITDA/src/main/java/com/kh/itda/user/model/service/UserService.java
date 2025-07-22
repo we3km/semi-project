@@ -1,5 +1,7 @@
 package com.kh.itda.user.model.service;
 
+import java.util.Optional;
+
 import com.kh.itda.user.model.vo.User;
 
 public interface UserService {
@@ -8,11 +10,13 @@ public interface UserService {
 
 	int updateUser(User user);
 
-	User loginUser(User user);
-
-	int insertUserAndGetUserNo(User user);
-
 	void insertProfile(int userNum, String imageUrl);
+
+	Optional<String> findIdByNameAndEmail(String name, String email);
+
+	Optional<String> findPwdByIdAndEmail(String id, String email);
+
+	User loginUser(User user);
 
 	
 }

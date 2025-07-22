@@ -52,11 +52,6 @@ public class UserController {
 		return mv;
 	}
 	
-	@GetMapping("/user/login")
-	public String loginUser() {
-		return "user/login";
-	}
-	
 	@GetMapping("/user/myPage")
 	public String myPage() {
 		return "user/myPage";
