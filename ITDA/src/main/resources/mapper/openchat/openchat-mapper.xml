@@ -159,34 +159,5 @@
 		#{tagId}
 		)
 	</insert>
-	
-	<insert id="insertParticipant" parameterType="map">
-    MERGE INTO CHAT_PARTICIPANT cp
-    USING (SELECT #{chatRoomID} CHATROOM_ID,
-                  #{userNum}    USER_NUM
-           FROM dual) src
-    ON (cp.CHATROOM_ID = src.CHATROOM_ID
-        AND cp.USER_NUM = src.USER_NUM)
-    WHEN NOT MATCHED THEN
-      INSERT (CHATROOM_ID, USER_NUM)
-      VALUES (src.CHATROOM_ID, src.USER_NUM)
-</insert>
-	<insert id="insertLocation" parameterType="com.kh.itda.openchat.model.vo.Location"
-        useGeneratedKeys="true" keyProperty="locationId" keyColumn="LOCATION_ID">
-    INSERT INTO LOCATION (LOCATION_ID, LAT, LNG, SIDO, SIGUNGU, EMD)
-    VALUES (LOCATION_ID_SEQ.NEXTVAL, #{lat}, #{lng}, #{sido}, #{sigungu}, #{emd})
-</insert>
 
-<insert id="insertLocationLink">
-    INSERT INTO LOCATION_LINK (LOCATION_ID, TARGET_TYPE, TARGET_ID)
-    VALUES (#{locationId}, 'OPENCHAT', #{chatRoomId})
-</insert>
-
-<select id="findLocationIdByRegion" resultType="long">
-    SELECT LOCATION_ID
-    FROM LOCATION
-    WHERE SIDO = #{sido}
-      AND SIGUNGU = #{sigungu}
-      AND EMD = #{emd}
-</select>
 </mapper>

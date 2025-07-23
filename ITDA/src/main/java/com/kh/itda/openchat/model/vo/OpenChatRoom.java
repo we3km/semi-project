@@ -20,10 +20,6 @@ public class OpenChatRoom {
 	private int pathNum;
 	
 	private String filePath; 
-	private String fileName;
-	
-	private String address;       
-    private Double latitude;      
-    private Double longitude; 
+	private String fileName;  
 }
     
