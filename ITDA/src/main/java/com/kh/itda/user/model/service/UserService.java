@@ -18,5 +18,7 @@ public interface UserService {
 
 	User loginUser(User user);
 
+	int idCheck(String userId);
+
 	
 }

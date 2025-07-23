@@ -35,7 +35,7 @@
             <input type="checkbox" id="login-keep" name="remember-me"> 로그인 상태 유지<br>
             <input type="submit" id="login-try" value="IT다 로그인"><br>
         </form>
-        <a href="${pageContext.request.contextPath}/signup/terms">회원가입</a>
+        <a href="${pageContext.request.contextPath}/user/signup/terms">회원가입</a>
         <a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a>
         <a href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
         <br><br>

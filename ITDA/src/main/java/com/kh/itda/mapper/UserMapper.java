@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.kh.itda.user.model.vo.User;
+
 @Mapper
 public interface UserMapper {
 
@@ -12,4 +14,8 @@ public interface UserMapper {
 
     Optional<String> findPwdByIdAndEmail(@Param("id") String id, @Param("email") String email);
 
+    int selectNextUserNo();
+    int insertUser(User user);
+    int insertProfile(User user);
+    int insertAuthority(@Param("userNum") int userNum);
 }

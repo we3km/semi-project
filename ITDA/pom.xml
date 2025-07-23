@@ -208,11 +208,13 @@
 			<version>2.11.0</version>
 		</dependency>
 		<!-- Aop 의존성 -->
+		<!-- 아래 주석은 37행 부분과 중복된 코드
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>${org.aspectj-version}</version>
 		</dependency>
+		 -->
 		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
 		<dependency>
 			<groupId>org.aspectj</groupId>

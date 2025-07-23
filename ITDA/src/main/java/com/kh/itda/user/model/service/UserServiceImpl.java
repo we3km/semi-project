@@ -4,21 +4,38 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.itda.mapper.UserMapper;
 import com.kh.itda.user.model.dao.UserDao;
 import com.kh.itda.user.model.vo.User;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private UserDao userDao;
 	
+	private final UserMapper userMapper;
+	
 	@Override
 	public User loginUser(User user) { // 로그인 확인
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
+	
+	@Transactional
+    public void register(User user) {
+        int userNum = userMapper.selectNextUserNo();  // 시퀀스 호출
+        user.setUserNum(userNum);                     // VO에 세팅
+
+        userMapper.insertUser(user);			// USER_TB
+        userMapper.insertProfile(user);			// PROFILE
+        userMapper.insertAuthority(userNum);	// AUTHORITY
+    }
 
 	@Override
 	public int insertUser(User user) { // 회원가입 정보 추가
@@ -35,7 +52,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public void insertProfile(int userNum, String imageUrl) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -49,6 +66,12 @@ public class UserServiceImpl implements UserService{
 	public Optional<String> findPwdByIdAndEmail(String id, String email) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int idCheck(String userId) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

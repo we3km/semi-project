@@ -11,23 +11,23 @@
         }
         .top{
             background-color: #ecebff;
-            width: 600px;
+            width: 800px;
             height: 120px;
             margin: auto;
             padding: 10px;
         }
         .middle{
             background-color: #ecebff;
-            width: 600px;
-            height: 930px;
+            width: 800px;
+            height: 1080px;
             margin: auto;
             display: grid;
-            grid-template-columns: 140px 460px;
+            grid-template-columns: 140px 660px;
         }
         .left{
             font-size: 20px;
             text-align: center;
-            line-height: 26.2px;
+            line-height: 32px;
         }
         .right{
             font-size: 12px;
@@ -103,7 +103,7 @@
     </style>
 </head>
 <body>
-    <form action="${pageContext.request.contextPath}/signup/enroll" method="post" enctype="multipart/form-data">
+    <form action="${pageContext.request.contextPath}/user/signup/enroll" method="post" enctype="multipart/form-data">
         <div class="top">
             <h1>회원정보 입력</h1>
             <hr>
@@ -119,52 +119,53 @@
                 생년월일<br><br>
                 주소<br><br>
                 프로필<br>
-                이미지<br><br><br><br><br><br><br><br><br><br><br><br>
+                이미지<br><br><br><br><br><br><br><br><br><br>
                 회원정보<br>
                 유효기간
             </div>
             <div class="right">
-                <input type="text" id="id" name="username" required>
+                <input type="text" id="id" name="user.userId" required>
                 &nbsp;&nbsp;&nbsp;
-                <input type="button" id="id-check" value="중복확인" onclick="checkId()"><br>
+                <input type="button" id="id-check" value="중복확인">
+                <span id="id-status"></span><br>
                 영문 또는 숫자로 4자~12자로 입력해 주세요<br><br>
 
-                <input type="text" id="nick-name" name="nickname" required><br>
+                <input type="text" id="nick-name" name="user.nickName" required><br>
                 한글기준 2자~8자, 영문기준 4자~16자로 입력해주세요.<br><br>
 
-                <input type="password" id="pwd" name="password" required><br>
+                <input type="password" id="pwd" name="user.userPwd" required><br>
                 영문,숫자 혼합하여 8자~15자로 입력해주세요<br><br>
 
-                <input type="password" id="pwd-check" name="passwordConfirm" required><br>
+                <input type="password" id="pwd-check" name="userPwdCheck" required><br>
                 영문,숫자 혼합하여 8자~15자로 입력해주세요<br><br>
 
-                <input type="email" id="email" name="email" required><br>
+                <input type="email" id="email" name="user.email" required><br>
                 &nbsp;<br><br>
 
-                <input type="text" id="phone" name="phone" required><br>
+                <input type="text" id="phone" name="user.phone" required><br>
                 010-1234-5678 형식으로 입력해주세요.<br><br>
 
-                <input type="date" id="birth" name="birth" required><br>
+                <input type="date" id="birth" name="user.birth" required><br>
                 &nbsp;<br>
 
                 <div class="address"><br>
-                    <input type="text" class="input" id="zipcode" name="zipcode" required />&nbsp;&nbsp;&nbsp;
-                    <button type="button" class="zip-btn" onclick="execDaumPostcode()">우편번호 검색</button>
+                    <input type="text" class="input" id="zipcode" name="user.address" required />&nbsp;&nbsp;&nbsp;
+                    <input type="button" class="zip-btn" value="우편번호 검색" onclick="execDaumPostcode()">
                 </div><br>
                 &nbsp;
 
-                <div class="image-upload-box" onclick="document.getElementById('imageFile').click();">
-                    <img id="preview" src="${pageContext.request.contextPath}/images/default.png" alt="프로필 이미지 미리보기" />
-                </div>
-                <input type="file" id="imageFile" name="profileImage" accept="image/*" style="display: none;" onchange="uploadImage()" /><br>
-                &nbsp;
+				<div class="image-upload-box" onclick="document.getElementById('imageFile').click();">
+				    <img id="preview" src="" style="display: none;" alt="프로필 이미지 미리보기" />
+				</div>
+				<input type="file" id="imageFile" name="profileImage" accept="image/*" style="display: none;" onchange="previewImage(event)" required/>
+				<br><br>
 
                 <div class="exp-date">
                     회원정보 유효기간을 선택해주세요<br>
-                    <input type="checkbox" id="1" name="validPeriod" value="1년"> 1년 
-                    <input type="checkbox" id="2" name="validPeriod" value="2년"> 2년 
-                    <input type="checkbox" id="3" name="validPeriod" value="3년"> 3년 
-                    <input type="checkbox" id="end" name="validPeriod" value="회원탈퇴시까지"> 회원탈퇴 시 까지
+                    <input type="radio" id="1" name="user.validPeriod" value="1년"> 1년 
+                    <input type="radio" id="2" name="user.validPeriod" value="2년"> 2년 
+                    <input type="radio" id="3" name="user.validPeriod" value="3년"> 3년 
+                    <input type="radio" id="end" name="user.validPeriod" value="회원탈퇴시까지"> 회원탈퇴 시 까지
                     <br><br>
                     선택하신 기간 동안 사이트 로그인 기록이 없을 경우,
                     회원정보가 분리 보관되어 로그인이 필요한 IT다 서비스를 이용하실 수 없으니 감안하여 필요한 기간으로 선택해 주세요.
@@ -178,46 +179,52 @@
     </form>
 
     <script>
-        function checkId(){
+    	const contextPath = "${pageContext.request.contextPath}";
+    	
+    	document.getElementById('id-check').addEventListener('click', function() {
             const id = document.getElementById('id').value.trim();
-            if(id.length < 4 || id.length > 12){
+            if (!id) {
+                alert('아이디를 입력해주세요.');
+                return;
+            }
+            else if(id.length < 4 || id.length > 12){
                 alert('아이디는 4자 이상 12자 이하로 입력해주세요.');
                 return;
             }
             // AJAX로 서버에 아이디 중복 체크 요청 가능
-            alert('아이디 중복 체크 요청 (예시)');
+            fetch(contextPath +"/user/signup/enroll/checkId?userId=" + encodeURIComponent(id))
+            .then(res => res.text())
+            .then(data => {
+			    const status = document.getElementById('id-status');
+			    if (data === "0") { // "0"이면 사용 가능
+			        status.textContent = '사용 가능한 아이디입니다.';
+			        status.style.color = 'green';
+			    } else {
+			        status.textContent = '이미 사용 중인 아이디입니다.';
+			        status.style.color = 'red';
+			    }
+			})
+            .catch(err => alert('오류 발생: ' + err));
+        });
+    	
+    	function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('preview');
+            if (!file) {
+                preview.style.display = 'none';
+                preview.src = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
         }
-
-        function uploadImage() {
-            const fileInput = document.getElementById("imageFile");
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append("file", file);
-
-            fetch("${pageContext.request.contextPath}/profile/upload-image", {
-                method: "POST",
-                body: formData
-            })
-            .then(res => res.text())  // 서버에서 이미지 URL을 응답한다고 가정
-            .then(url => {
-                document.getElementById("preview").src = url;
-                saveImageUrlToServer(url);
-            })
-            .catch(err => alert("업로드 실패: " + err));
-        }
-
-        function saveImageUrlToServer(imageUrl) {
-            fetch("${pageContext.request.contextPath}/profile/save-url", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ imageUrl })
-            });
-        }
-
+		
         function execDaumPostcode() {
             new daum.Postcode({
                 oncomplete: function(data) {

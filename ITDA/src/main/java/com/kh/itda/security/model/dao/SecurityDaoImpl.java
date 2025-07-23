@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class SecurityDaoImpl implements SecurityDao{@Override
+public class SecurityDaoImpl implements SecurityDao{
+	@Override
 	public UserDetails loadUserByUsername(String userId) {
 		
 		return null;

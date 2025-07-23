@@ -48,7 +48,7 @@
 			#{birth},
 			#{address},
 			DEFAULT,
-			DEFAULT,
+			#{validPeriod},
 			DEFAULT
 		)
 	</insert>
@@ -56,12 +56,12 @@
 	<!-- 프로필 추가 -->
 	<insert id="insertProfile" parameterType="com.kh.itda.user.model.vo.User">
 		INSERT INTO PROFILE (USER_NO, IMAGE_URL)
-		VALUES (#{userNo}, #{imageUrl})
+		VALUES (SEQ_UNO.NEXTVAL, #{imageUrl})
 	</insert>
 	
 	<!-- 권한 부연 -->
 	<insert id="insertAuthority">
-		INSERT INTO AUTHORITIY (USER_NUM, AUTHORITY) VALUES (#{userNum}, 'ROLE_USER')
+		INSERT INTO AUTHORITIY (USER_NUM, AUTHORITY) VALUES (SEQ_UNO.NEXTVAL, 'ROLE_USER')
 	</insert>
 	
 	<!-- 회원정보 수정 -->
@@ -86,7 +86,6 @@
 				<if test="userPwd != null and userPwd != ''">
 					USER_PWD = #{userPwd},
 				</if>
-            CREATE_DATE = SYSDATE
 			</set>
 		WHERE USER_ID = #{userId}
 	</update>
