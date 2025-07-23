@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.itda.openchat.model.vo.Location;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
 import com.kh.itda.openchat.model.vo.openchatImg;
 

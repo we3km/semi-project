@@ -142,6 +142,12 @@
 										style="opacity: 0; position: absolute; left: -9999px;" />
 								</div>
 							</div>
+							<div class="form-row">
+								<label for="address">위치:</label> <input type="text" id="address"
+									name="address" readonly placeholder="위치 불러오는 중..." />
+							</div>
+							<input type="hidden" id="latitude" name="latitude" /> <input
+								type="hidden" id="longitude" name="longitude" />
 
 							<div class="form-row">
 								<label for="chatName">제목:</label> <input type="text"
@@ -235,6 +241,37 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("modal").classList.add("hidden");
     document.getElementById("modal").style.display = "none";
   };
+  if (navigator.geolocation) {
+	  navigator.geolocation.getCurrentPosition(
+	    function (position) {
+	      const lat = position.coords.latitude;
+	      const lng = position.coords.longitude;
+
+	      document.getElementById("latitude").value = lat;
+	      document.getElementById("longitude").value = lng;
+
+	      // 카카오 reverse geocoding 요청
+	      fetch(`${contextPath}/kakao/reverse?lat=${lat}&lng=${lng}`)
+	        .then(res => res.json())
+	        .then(data => {
+	          if (data.address) {
+	            document.getElementById("address").value = data.address;
+	          } else {
+	            document.getElementById("address").value = "주소 확인 불가";
+	          }
+	        })
+	        .catch(() => {
+	          document.getElementById("address").value = "주소 불러오기 실패";
+	        });
+	    },
+	    function (error) {
+	      console.error("위치 접근 실패:", error.message);
+	      document.getElementById("address").value = "위치 접근 거부됨";
+	    }
+	  );
+	} else {
+	  document.getElementById("address").value = "브라우저 위치 지원 안함";
+	}
 
   // 이미지 미리보기
   const addImageBtn = document.getElementById('addImageBtn');
@@ -257,16 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 });
 
-// 유효성 검사
-function validateForm(form) {
-  console.log("폼 제출 값 확인");
-  console.log("chatName:", form.chatName.value);
-  console.log("tagContent:", form.tagContent.value);
-  console.log("description:", form.description.value);
-  console.log("maxchatCount:", form.maxchatCount.value);
-  console.log("파일 수:", form.openImage.files.length);
-  return true;
-}
 </script>
 </body>
 </html>
