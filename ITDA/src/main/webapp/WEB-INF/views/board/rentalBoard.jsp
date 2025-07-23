@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
 
@@ -169,60 +172,23 @@
         <span class="location">서울특별시 강남구 📍</span>
       </div>
       <!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
-      <button class="write-btn"><a href="write/rental">거래 글 쓰기</a></button>
+      <button class="write-btn"><a href="${pageContext.request.contextPath}/board/write/rental">거래 글 쓰기</a></button>
     </div>
 
     <div class="grid">
       <!-- 카드 반복 -->
-      <div class="card">
-        <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
-      </div>
-
-      <!-- 동일한 카드 복사 -->
-      <div class="card">
-        <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
-      </div>
+     <c:forEach var="board" items="${list }">
 
       <div class="card">
         <div class="heart">♡</div>
         <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
+        <p>${board.boardCommon.productName }</p>
+        <p class="price">${board.boardRental.rentalFee }</p>
+        <p><fmt:formatDate value="${board.boardRental.rentalStartDate }" pattern="yyyy/MM/dd"/></p>~<p><fmt:formatDate value="${board.boardRental.rentalEndDate }" pattern="yyyy/MM/dd"/></p>
       </div>
+      </c:forEach>
 
-      <div class="card">
-        <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
-      </div>
-
-      <div class="card">
-        <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
-      </div>
-
-      <div class="card">
-        <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
-        <p>DSLR 대여해드립니다</p>
-        <p class="price">보증금 : 40,000원</p>
-        <p>2025/07/05~2025/08/06</p>
-      </div>
-    </div>
+     
   </div>
 
 

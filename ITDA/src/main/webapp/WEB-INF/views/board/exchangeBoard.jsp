@@ -166,7 +166,7 @@ input[type="date"] {
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
 			<button class="write-btn">
-				<a href="write/exchange">거래 글 쓰기</a>
+				<a href="${pageContext.request.contextPath}/board/write/exchange">거래 글 쓰기</a>
 			</button>
 		</div>
 

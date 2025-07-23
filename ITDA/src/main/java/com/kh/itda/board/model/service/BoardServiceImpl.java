@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardCommon;
+import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRental;
+import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
@@ -20,19 +24,75 @@ public class BoardServiceImpl implements BoardService{
 	@Autowired
 	private final BoardDao boardDao;
 	@Override
-	public int insertBoard(BoardCommon boardCommon, BoardRental boardRental, List<FilePath> pathList, List<File> imgList) {
-		boardCommon.setProductComment(Utils.XSSHandling(boardCommon.getProductComment()));
-		boardCommon.setProductComment(Utils.newLineHandling(boardCommon.getProductComment()));
-		boardCommon.setProductName(Utils.XSSHandling(boardCommon.getProductName()));
+	public int insertBoardRental(BoardRentalWrapper board, List<FilePath> pathList, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
 		
 		// 게시글 정보 등록
 		int result = 0;
 		// 이미지가 비어있는지 확인
-		if(!imgList.isEmpty() && !pathList.isEmpty()) {
-			result = boardDao.insertBoard(boardCommon, boardRental, pathList, imgList);
-			
-		}
+//		if(!imgList.isEmpty() /*&&!pathList.isEmpty()*/) {
+//			
+//		}
+					
+			result = boardDao.insertBoardRental(board, pathList, imgList);
+
+		return result;
+	}
+	
+
+	@Override
+	public int insertBoardShare(BoardShareWrapper board, List<FilePath> pathList, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
 		
+		// 게시글 정보 등록
+		int result = 0;
+		// 이미지가 비어있는지 확인
+//		if(!imgList.isEmpty() /*&&!pathList.isEmpty()*/) {
+//			
+//		}
+					
+			result = boardDao.insertBoardShare(board, pathList, imgList);
+
+		return result;
+	}
+
+	@Override
+	public int insertBoardExchange(BoardExchangeWrapper board, List<FilePath> pathList, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
+		
+		// 게시글 정보 등록
+		int result = 0;
+		// 이미지가 비어있는지 확인
+//		if(!imgList.isEmpty() /*&&!pathList.isEmpty()*/) {
+//			
+//		}
+					
+			result = boardDao.insertBoardExchange(board, pathList, imgList);
+
+		return result;
+	}
+
+	@Override
+	public int insertBoardAuction(BoardAuctionWrapper board, List<FilePath> pathList, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
+		
+		// 게시글 정보 등록
+		int result = 0;
+		// 이미지가 비어있는지 확인
+//		if(!imgList.isEmpty() /*&&!pathList.isEmpty()*/) {
+//			
+//		}
+					
+			result = boardDao.insertBoardAuction(board, pathList, imgList);
+
 		return result;
 	}
 	
@@ -41,5 +101,17 @@ public class BoardServiceImpl implements BoardService{
 		List<ProductCategory> list = boardDao.selectCategoryList();
 		return list;
 	}
+
+	@Override
+	public List<ProductCategory> getCategoriesByParentNum(int parentNum) {
+		return boardDao.getCategoriesByParentNum(parentNum);
+	}
+
+
+	@Override
+	public List<BoardRentalWrapper> selectBoardRentalList() {
+		return boardDao.selectBoardRentalList();
+	}
+
 
 }

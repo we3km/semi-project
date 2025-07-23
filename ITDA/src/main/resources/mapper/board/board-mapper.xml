@@ -24,10 +24,12 @@
 			PRODUCT_COMMENT,
 			TRANSACTION_ADDRESS,
 			TRANSACTION_CATEGORY,
-			PRODUCT_CATEGORY,
+			PRODUCT_CATEGORY_L,
 			CREATE_DATE,
 			VIEWS,
-			TRANSACTION_STATUS
+			TRANSACTION_STATUS,
+			PRODUCT_CATEGORY_M,
+			PRODUCT_CATEGORY_S
 		) VALUES 
 		(
 			#{boardId} ,
@@ -36,10 +38,12 @@
 			#{productComment} ,
 			#{transactionAddress},
 			#{transactionCategory},
-			#{productCategory},
+			#{productCategoryL},
 			DEFAULT,
 			DEFAULT,
-			DEFAULT		
+			DEFAULT,
+			#{productCategoryM},
+			#{productCategoryS}	
 		)
 	</insert>
 	
@@ -154,4 +158,67 @@
 		FROM PRODUCT_CATEGORY
 
 	</select>
+	
+	<select id="getCategoriesByParentNum" parameterType="int" resultType="productCategory">
+		SELECT 
+			PRODUCT_CATEGORY_NUM,
+			CATEGORY_NAME,
+			CATEGORY_TIER,
+			PARENT_NUM
+		FROM PRODUCT_CATEGORY
+		WHERE PARENT_NUM = #{parentNum}
+
+	</select>
+	
+	<select id="selectBoardRentalList" resultMap="boardRentalResultMap">
+		SELECT 
+			BC.BOARD_ID,
+			BC.USER_NUM,
+			BC.PRODUCT_NAME,
+			BC.PRODUCT_COMMENT,
+			BC.TRANSACTION_ADDRESS,
+			BC.TRANSACTION_CATEGORY,
+			BC.CREATE_DATE,
+			BC.VIEWS,
+			BC.TRANSACTION_STATUS,
+			BC.PRODUCT_CATEGORY_L,
+			BC.PRODUCT_CATEGORY_M,
+			BC.PRODUCT_CATEGORY_S,
+			BR.RENTAL_FEE,
+			BR.DEPOSIT,
+			BR.RENTAL_START_DATE,
+			BR.RENTAL_END_DATE
+			
+		FROM BOARD_COMMON BC
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+
+	</select>
+	
+	<resultMap id="boardRentalResultMap" type="BoardRentalWrapper">
+	  	<association property="boardCommon" javaType="BoardCommon">
+	  		<id property="boardId" column="BOARD_ID"/>
+	        <result property="userNum" column="USER_NUM"/>
+	        <result property="productName" column="PRODUCT_NAME"/>
+	        <result property="productComment" column="PRODUCT_COMMENT"/>
+	        <result property="transactionAddress" column="TRANSACTION_ADDRESS"/>
+	        <result property="transactionCategory" column="TRANSACTION_CATEGORY"/>
+	        <result property="createDate" column="CREATE_DATE"/>
+	        <result property="views" column="VIEWS"/>
+	        <result property="transactionStatus" column="TRANSACTION_STATUS"/>
+	        <result property="productCategoryL" column="PRODUCT_CATEGORY_L"/>
+	        <result property="productCategoryM" column="PRODUCT_CATEGORY_M"/>
+	        <result property="productCategoryS" column="PRODUCT_CATEGORY_S"/>
+	        <!-- BOARD_RENTAL 컬럼들 추가 -->
+	    </association>
+	    <!-- BOARD_COMMON 컬럼들 추가 -->
+	
+	    <association property="boardRental" javaType="BoardRental">
+	    	<id property="boardId" column="BOARD_ID"/>
+	        <result property="rentalFee" column="RENTAL_FEE"/>
+	        <result property="deposit" column="DEPOSIT"/>
+	        <result property="rentalStartDate" column="RENTAL_START_DATE"/>
+	        <result property="rentalEndDate" column="RENTAL_END_DATE"/>
+	        <!-- BOARD_RENTAL 컬럼들 추가 -->
+	    </association>
+	</resultMap>
 </mapper>

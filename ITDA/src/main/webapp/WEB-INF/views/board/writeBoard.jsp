@@ -260,14 +260,12 @@ img {
 
 					<div class="tag-input">
 						<input type="text" id="tagInput" placeholder="태그 입력 후 추가를 누르세요." />
-						    <div id="addTag">추가</div>
-						    
-						    <div id="tagContainer">
-						
-						    </div>
+						<div id="addTag">추가</div>
 
-    						<!-- 태그 리스트를 저장할 hidden input (여러 개 생성됨) -->
-    						<div id="tagsHiddenInput"></div> 
+						<div id="tagContainer"></div>
+
+						<!-- 태그 리스트를 저장할 hidden input (여러 개 생성됨) -->
+						<div id="tagsHiddenInput"></div>
 					</div>
 					<script>
 					const tagInput = document.getElementById("tagInput");
@@ -343,14 +341,102 @@ img {
 							<label>상품 카테고리</label>
 							<div class="category-list-large">
 								<c:forEach items="${list}" var="productCategory">
-									<c:choose>
-									 <c:when test="${productCategory.parentNum eq null } ">
-										<div>${productCategory.categoryName }</div>
-									</c:when>
-									</c:choose>
+									<c:if test="${productCategory.parentNum == 0 }">
+										<div class="category-large"
+											data-id="${productCategory.productCategoryNum}">
+											${productCategory.categoryName }</div>
+									</c:if>
 								</c:forEach>
+								<input type="hidden" id="categoryLargeHiddenInput" name="boardCommon.productCategoryL" />
 							</div>
+							<div id="category-list-middle">
+							</div>
+								<input type="hidden" id="categoryMiddleHiddenInput" name="boardCommon.productCategoryM" />
+							<div id="category-list-small">
+							</div>
+								<input type="hidden" id="categorySmallHiddenInput" name="boardCommon.productCategoryS" />
 						</div>
+						<script>
+							  // 대분류 클릭 이벤트
+							  document.querySelectorAll('.category-large').forEach(item => {
+							    item.addEventListener('click', () => {
+							      const parentId = item.dataset.id;
+							      
+							 
+					              
+							      fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+							        .then(response => response.json())
+							        .then(data => {
+							          const middleContainer = document.getElementById("category-list-middle");
+							          middleContainer.innerHTML = ""; // 기존 중분류 초기화
+							          const smallContainer = document.getElementById("category-list-small");
+							          smallContainer.innerHTML = ""; // 기존 소분류 초기화
+							          data.forEach(sub => {
+							            const div = document.createElement("div");
+							            div.textContent = sub.categoryName;
+							            div.classList.add("category-middle");
+							            div.setAttribute("data-id", sub.productCategoryNum);
+							            middleContainer.appendChild(div);
+							          });
+							        })
+							        .catch(err => {
+							          console.error("중분류 불러오기 실패:", err);
+							        });
+							    });
+							  });
+							  document.addEventListener("click", function(e) {
+									if (e.target.classList.contains("category-large")) {
+										const categoryName = e.target.textContent.trim();
+										document.getElementById("categoryLargeHiddenInput").value = categoryName;
+										console.log("선택된 대분류: "+categoryName);
+									}
+								});
+
+							
+							  document.getElementById("category-list-middle").addEventListener("click", (e) => {
+							    const clicked = e.target;
+							
+							    if (clicked.classList.contains("category-middle")) {
+							      const parentId = clicked.dataset.id;
+							      const middleName = clicked.textContent.trim();
+							      console.log(middleName);
+							   
+							      document.getElementById("categoryMiddleHiddenInput").value = middleName;
+							      console.log("선택된 중분류: " + middleName);
+							      
+							      
+							      fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+							        .then(response => response.json())
+							        .then(data => {
+							          const smallContainer = document.getElementById("category-list-small");
+							          smallContainer.innerHTML = ""; // 기존 소분류 초기화
+							
+							          data.forEach(sub => {
+							            const div = document.createElement("div");
+							            div.textContent = sub.categoryName;
+							            div.classList.add("category-small");
+							            smallContainer.appendChild(div);
+							          });
+							        })
+							        .catch(err => {
+							          console.error("소분류 불러오기 실패:", err);
+							        });
+							    }
+							  });
+							  
+							  document.getElementById("category-list-small").addEventListener("click", (e) => {
+								  const clicked = e.target;
+
+								  if (clicked.classList.contains("category-small")) {
+								    const smallName = clicked.textContent.trim();
+
+								  
+								    document.getElementById("categorySmallHiddenInput").value = smallName;
+								    console.log("선택된 소분류: " + smallName);
+								  }
+							  });
+							  
+						</script>
 					</section>
 				</c:when>
 				<c:when test="${boardCategory eq 'auction'}">
@@ -367,6 +453,7 @@ img {
 		</form:form>
 	</div>
 
+						
 
 	<script>
 		$(function() {

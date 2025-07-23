@@ -15,10 +15,12 @@ public class BoardCommon {
 	private String productComment;
 	private String transactionAddress;
 	private String transactionCategory;
-	private String productCategory;
 	private Date createDate;
 	private int views;
 	private char transactionStatus;
+	private String productCategoryL;
+	private String productCategoryM;
+	private String productCategoryS;
 	
 	
 	private List<String> tagList; // db는 따로
