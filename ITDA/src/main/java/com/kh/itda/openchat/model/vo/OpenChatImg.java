@@ -5,11 +5,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class openchatImg {
+public class OpenChatImg {
 	private int fileId;
-	private int pathNum;
+	private int categoryId;
 	private String fileName;
 	private int refNo;
-	private int fileAssortment;
-	
 }

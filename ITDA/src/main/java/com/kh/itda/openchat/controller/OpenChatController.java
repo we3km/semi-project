@@ -26,7 +26,7 @@ import com.kh.itda.common.Utils;
 import com.kh.itda.openchat.model.service.FileService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.openchat.model.vo.openchatImg;
+import com.kh.itda.openchat.model.vo.OpenChatImg;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +98,7 @@ public class OpenChatController {
 	    ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
 	    return "redirect:/openchat/openChatList";
 	}
+	
 }
 
 

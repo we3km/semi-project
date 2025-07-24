@@ -8,7 +8,9 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<!--  DB연결 설정  -->
 	<context:property-placeholder
-	location="classpath:driver.properties" />
+    location="classpath:driver.properties,classpath:kakaoapi.properties"
+    ignore-unresolvable="true"
+    file-encoding="UTF-8" />
 	<!-- 1단계 DB연결 -->
 	<bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

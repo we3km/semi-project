@@ -12,14 +12,13 @@ public class OpenChatRoom {
 	private String chatName;
 	private int chatCount;
 	private int maxchatCount;
-	private String description;
+	private String explanation;
 	private String tagContent;
 	private int userNum;
 	
 	private int fileId;
-	private int pathNum;
 	
-	private String filePath; 
 	private String fileName;  
+	
 }
     
