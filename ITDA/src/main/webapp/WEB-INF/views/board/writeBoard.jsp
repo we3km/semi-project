@@ -244,13 +244,45 @@ img {
 			<main>
 				<section class="image-upload">
 					<p>상품 이미지(2/10)</p>
-					<div class="main-image">
-						<img class="preview">
+					<div id="fileInputs">
+						<input type="file" id="upfile" class="inputImage" name="upfile[]" accept="images/*">
+					
 					</div>
+					<div id="previewContainer">
+						
+					</div>
+					
 
-					<input type="file" id="upfile" class="form-control" name="upfile"
-						multiple accept="image/*">
+<script>
+  const selectedFiles = []; // 이미지 파일들을 저장할 배열
+  const inputImage = document.querySelectorAll('.inputImage');
+  const fileInputsContainer = document.getElementById('fileInputs');
+  inputImage.forEach(function(value, index){
+	  value.addEventListener('change', function(){
+	    if(this.files[0] != undefined){
+	    	const reader = new FileReader();
+	    	reader.readAsDataURL(this.files[0]);
+	    	reader.onload = function(e) {
+	    		const img = document.createElement('img');
+	            img.setAttribute("src", e.target.result);
+	            img.style.width = '100px';
+	            img.style.height = '100px';
+	            img.style.objectFit = 'cover';
+	            img.style.margin = '5px';
+	            document.getElementById('previewContainer').appendChild(img);
+			}
+	    	reader.readAsDataURL(file);
+	    
 
+	        // input 초기화해서 다음에 같은 파일도 다시 선택 가능하도록
+	        event.target.value = '';
+	    }
+		  
+	  })
+	  
+  })
+
+</script>
 				</section>
 
 				<section class="info-input">

@@ -179,7 +179,7 @@
       <!-- 카드 반복 -->
      <c:forEach var="board" items="${list }">
 
-      <div class="card">
+      <div class="card" onclick="moveDetail(${board.boardCommon.boardId});">
         <div class="heart">♡</div>
         <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
         <p>${board.boardCommon.productName }</p>
@@ -187,7 +187,11 @@
         <p><fmt:formatDate value="${board.boardRental.rentalStartDate }" pattern="yyyy/MM/dd"/></p>~<p><fmt:formatDate value="${board.boardRental.rentalEndDate }" pattern="yyyy/MM/dd"/></p>
       </div>
       </c:forEach>
-
+	  <script>
+	  	function moveDetail(bid){
+	  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+	  	}
+	  </script>
      
   </div>
 

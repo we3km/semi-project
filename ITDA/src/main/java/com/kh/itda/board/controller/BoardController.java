@@ -3,17 +3,24 @@ package com.kh.itda.board.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,6 +42,7 @@ import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.BoardSharing;
+import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
@@ -93,6 +101,8 @@ public class BoardController {
 		return "board/auctionBoard";
 	}
 	
+	// 글쓰기들은 로그인된 사용자만 가능하도록 시큐리티 적용 해야함
+	// 글쓰기 버튼 자체를 로그인을 해야지만 보이게 하면 될듯
 	// 거래 글쓰기 페이지 이동 매핑
 	// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
 	@GetMapping("/write/{boardCategory}")
@@ -171,7 +181,7 @@ public class BoardController {
 			//boardCategory = "rental";
 		
 			List<File> imgList = new ArrayList<>();
-			List<FilePath> pathList = new ArrayList<>();
+		
 			System.out.println("이미지:"+upfiles);
 			for(MultipartFile upfile : upfiles) {
 				if(upfile.isEmpty()) {
@@ -179,13 +189,11 @@ public class BoardController {
 				}
 				System.out.println(upfile);
 				
-				String imgPath = Utils.saveFile(upfile, application, "rental"); 
-				FilePath fp = new FilePath();
+				String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/rental"); 
 				File f = new File();
 				
-				fp.setPath(imgPath);
-				f.setFileName(upfile.getOriginalFilename());
-				pathList.add(fp);
+				f.setFileName(imgPath);
+
 				imgList.add(f);
 			}
 		
@@ -205,8 +213,8 @@ public class BoardController {
 			board.getBoardCommon().setTransactionCategory("rental");
 			
 			//System.out.println("태그:"+boardCommon.getTagList());
-			
-			int result = boardService.insertBoardRental(board, pathList, imgList);
+			System.out.println(imgList);
+			int result = boardService.insertBoardRental(board, imgList);
 			if(result == 0) {
 				throw new RuntimeException("게시글 작성 실패");
 				
@@ -249,7 +257,7 @@ public class BoardController {
 					}
 					System.out.println(upfile);
 					
-					String imgPath = Utils.saveFile(upfile, application, "share"); 
+					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/share"); 
 					FilePath fp = new FilePath();
 					File f = new File();
 					
@@ -291,7 +299,7 @@ public class BoardController {
 		// 경매 글쓰기 페이지 이동 매핑
 		// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
 		@PostMapping("/write/auction")
-		public String boardActionInsert(
+		public String boardAuctionInsert(
 				@ModelAttribute BoardAuctionWrapper board,
 				//@PathVariable("boardCategory") String boardCategory,
 				Model model,
@@ -320,7 +328,7 @@ public class BoardController {
 					}
 					System.out.println(upfile);
 					
-					String imgPath = Utils.saveFile(upfile, application, "auction"); 
+					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/auction"); 
 					FilePath fp = new FilePath();
 					File f = new File();
 					
@@ -390,7 +398,7 @@ public class BoardController {
 					}
 					System.out.println(upfile);
 					
-					String imgPath = Utils.saveFile(upfile, application, "exchange"); 
+					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/exchange"); 
 					FilePath fp = new FilePath();
 					File f = new File();
 					
@@ -427,9 +435,115 @@ public class BoardController {
 				return "redirect:/board/"+"exchange";
 		}
 	
-	@GetMapping("/detailRental")
-	public String boardDetail() {
+	// 대여 게시글 상세보기
+	@GetMapping("/detail/rental/{boardId}")
+	public String boardDetailRental(
+			@PathVariable("boardId") int boardId,
+			Authentication auth ,
+			Model model	,
+			@CookieValue(value="readBoardNo", required = false) String readBoardNoCookie,
+			HttpServletRequest req,
+			HttpServletResponse res
+			) {
+		// 대여 게시글 정보 추출
+		BoardRentalWrapper board = boardService.selectBoardRental(boardId);	
+		model.addAttribute("board", board);
+		if(board == null) {
+			throw new RuntimeException("게시글이 존재하지 않습니다.");
+		}	
+		int writerUserNum = board.getBoardCommon().getUserNum();
+		
+		// 조회수 증가
+		//int userNo = ((Member) auth.getPrincipal()).getUserNo();
+		int userNo = 1;
+		//if(userNo != board.getBoardCommon().getUserNum()) { <- 로그인/시큐리티 적용 후 추가
+			boolean increase = false; // 조회수 증가를 위한 체크변수
+			
+			// readBoardNo라는 이름의 쿠키가 있는지 조사.
+			if(readBoardNoCookie == null) {
+				// 첫 조회
+				increase = true;
+				readBoardNoCookie = boardId +"";
+			}else {
+				// 쿠키가 있는 경우
+				List<String> list = Arrays.asList(readBoardNoCookie.split("/"));
+				// 기존 쿠키값들 중 게시글번호와 일치하는 값이 하나도 없는 경우
+				if(list.indexOf(boardId+"") == -1) {
+					increase = true;
+					readBoardNoCookie += "/"+boardId;
+				}
+			}
+			
+			if(increase) {
+				int result = boardService.increaseViews(boardId);
+				if(result > 0) {
+					board.getBoardCommon().setViews(board.getBoardCommon().getViews() + 1);
+					
+					// 새 쿠키 생성하여 클라이언트에게 전달
+					Cookie newCookie = new Cookie("readBoardNo",readBoardNoCookie);
+					newCookie.setPath(req.getContextPath());
+					newCookie.setMaxAge(1 * 60 * 60); // 1시간
+					res.addCookie(newCookie);
+				}				
+			}			
+		//}
+		
+		
+		// 선택한 대여 게시물의 게시자 닉네임 추출
+		String writer = boardService.selectWriterNickname(writerUserNum);
+		model.addAttribute("writer", writer);
+		System.out.println(writerUserNum);
+		// 선택한 대여 게시물의 게시자 매너점수 추출
+		int mannerScore = boardService.selectMannerScore(writerUserNum);
+		model.addAttribute("mannerScore", mannerScore);
+		// 선택한 대여 게시물의 태그 추출
+		List<String> tags = boardService.selectTags(boardId);
+		model.addAttribute("tags", tags);
+		
+		// 선택한 대여 게시물의 찜 수 추출
+		Dibs dibs = new Dibs();
+		dibs.setBoardId(boardId);
+	    dibs.setBoardCategory("rental");
+		int dibsCount = boardService.countDibs(dibs);
+		model.addAttribute("dibsCount", dibsCount);
+		
 		return "board/detailRental";          
 	}
-	            
+	
+	
+	// 로그인한 사용자만 가능하게 시큐리티 적용 예정
+	@PostMapping("/addDibs")
+	@ResponseBody
+	public ResponseEntity<?> toggleDibs(
+			@RequestParam("userId") int userNum,
+	        @RequestParam("boardId") int boardId,
+	        @RequestParam("boardCategory") String boardCategory
+	                                    
+			) {
+	    Dibs dibs = new Dibs();
+	    dibs.setBoardId(boardId);
+	    dibs.setLikesUserId(userNum);
+	    dibs.setBoardCategory(boardCategory);
+		System.out.println(boardId);
+		boolean exists = boardService.isLiked(dibs);
+		
+	    if (exists) {
+	    	boardService.removeLike(dibs);
+	        return ResponseEntity.ok("unliked");
+	    } else {
+	    	boardService.addLike(dibs);
+	        return ResponseEntity.ok("liked");
+	    }
+	}
+	
+	@GetMapping("/dibsCount")
+	@ResponseBody
+	public int getLikeCount(@RequestParam("boardId") int boardId) {
+		Dibs dibs = new Dibs();
+		dibs.setBoardId(boardId);
+	    dibs.setBoardCategory("rental");
+		
+	    return boardService.countDibs(dibs);
+	}
+	
 }

@@ -6,13 +6,14 @@ import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
+import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
 
 public interface BoardService {
 
-	int insertBoardRental(BoardRentalWrapper board, List<FilePath> pathList, List<File> imgList);
+	int insertBoardRental(BoardRentalWrapper board, List<File> imgList);
 	int insertBoardShare(BoardShareWrapper board, List<FilePath> pathList, List<File> imgList);
 	int insertBoardExchange(BoardExchangeWrapper board, List<FilePath> pathList, List<File> imgList);
 	int insertBoardAuction(BoardAuctionWrapper board, List<FilePath> pathList, List<File> imgList);
@@ -21,5 +22,16 @@ public interface BoardService {
 
 	List<ProductCategory> getCategoriesByParentNum(int parentNum);
 	List<BoardRentalWrapper> selectBoardRentalList();
+	BoardRentalWrapper selectBoardRental(int boardId);
+	String selectWriterNickname(int userNum);
+	List<String> selectTags(int boardId);
+	int increaseViews(int boardId);
+
+	
+	boolean isLiked(Dibs dibs);
+	void removeLike(Dibs dibs);
+	void addLike(Dibs dibs);
+	int countDibs(Dibs dibs);
+	int selectMannerScore(int writerUserNum);
 
 }

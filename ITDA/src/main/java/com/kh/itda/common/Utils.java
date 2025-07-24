@@ -11,38 +11,64 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class Utils {
 	
-	// 파일저장함수
-	// 파일을 저장하면서, 파일명을 수정하고 수정된 파일명을 반환
-	public static String saveFile(MultipartFile upfile, ServletContext application, String boardCode) {
-		// 첨부파일을 저장할 저장경로 획득
-		String webPath = "/resources/images/board/"+boardCode+"/";
-		// getRealPath(경로)
-		//  - 실제 서버의 파일 시스템 경로를 절대경로로 반환하는 메서드
-		// ex) C:/springWorkspace/spring-project/....
-		String serverFolderPath = application.getRealPath(webPath);
-		System.out.println(serverFolderPath);
-		// 저장경로가 존재하지 않는나면 생성
-		File dir = new File(serverFolderPath);
-		if(!dir.exists()) {
-			dir.mkdirs();
-		}
-		// 랜덤한 파일명 생성
-		String originName = upfile.getOriginalFilename(); // 파일의 원본명
-		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-		int random = (int)(Math.random() * 90000 + 10000); // 5자리 랜덤값
-		String ext = originName.substring(originName.lastIndexOf(".")); 
-		String changeName = currentTime + random+ext;
-		// 서버에 파일을 업로드
-		try {
-			upfile.transferTo(new File(serverFolderPath+changeName));
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// 파일명 반환
-		return webPath+changeName;
-	}
+    // 폴더 없으면 생성 (categoryName 폴더명)
+    public static boolean createFolderIfNotExists(ServletContext application, String categoryName) {
+        String webPath = "/resources/images/" + categoryName + "/";
+        String serverFolderPath = application.getRealPath(webPath);
+
+        if (serverFolderPath == null) {
+            throw new IllegalStateException("서버 절대 경로를 찾을 수 없습니다.");
+        }
+
+        File folder = new File(serverFolderPath);
+        if (!folder.exists()) {
+            return folder.mkdirs();
+        }
+
+        return true;
+    }
+
+    public static String saveFileToCategoryFolder(MultipartFile upfile, ServletContext application, String categoryName) {
+        if (upfile == null || upfile.isEmpty()) {
+            return null;
+        }
+
+        // 폴더 생성
+        if (!createFolderIfNotExists(application, categoryName)) {
+            throw new IllegalStateException("파일 저장 폴더 생성 실패");
+        }
+
+        String webPath = "/resources/images/" + categoryName + "/";
+        String serverFolderPath = application.getRealPath(webPath);
+
+        if (serverFolderPath == null) {
+            throw new IllegalStateException("서버 절대 경로를 찾을 수 없습니다.");
+        }
+
+        String originName = upfile.getOriginalFilename();
+        if (originName == null) originName = "unknown";
+
+        String ext = "";
+        int dotIndex = originName.lastIndexOf(".");
+        if (dotIndex != -1) {
+            ext = originName.substring(dotIndex);
+        }
+
+        String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        int randomNum = (int)(Math.random() * 90000 + 10000);
+        String changedName = currentTime + randomNum + ext;
+
+        java.io.File dest = new java.io.File(serverFolderPath, changedName);
+        System.out.println(serverFolderPath+changedName);
+        try {
+            upfile.transferTo(dest);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return changedName;
+    }
 	
 	/*
 	 *  XSS(크로스 사이트 스크립트)공격을 방지하기 위한 메서드

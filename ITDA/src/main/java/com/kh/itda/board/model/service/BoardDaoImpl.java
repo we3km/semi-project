@@ -11,6 +11,7 @@ import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
+import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
@@ -27,7 +28,7 @@ public class BoardDaoImpl implements BoardDao {
 	private final SqlSessionTemplate session;
 
 	@Override
-	public int insertBoardRental(BoardRentalWrapper board, List<FilePath> pathList, List<File> imgList) {
+	public int insertBoardRental(BoardRentalWrapper board, List<File> imgList) {
 		int result = 0;
 		
 		BoardCommon boardCommon = board.getBoardCommon();
@@ -62,30 +63,28 @@ public class BoardDaoImpl implements BoardDao {
 		
 		
 		
-//		if(!pathList.isEmpty()) {
-//			for(int i = 0; i < imgList.size();i++) {
-//				FilePath fp = pathList.get(i);
-//				File f = imgList.get(i);
-//				session.insert("board.insertPath", fp);
-//				f.setPathNum(fp.getPathId());
-//				f.setRefNo(boardId);
-//				switch(boardCommon.getTransactionCategory()) {
-//				case "rental":
-//					f.setFileAssortment(1);
-//					break;
-//				case "exchange":
-//					f.setFileAssortment(2);
-//					break;
-//				case "auction":
-//					f.setFileAssortment(3);
-//					break;
-//				case "share":
-//					f.setFileAssortment(4);
-//					break;
-//				}
-//				session.insert("board.insertImg", f);
-//			}
-//		}
+		if(!imgList.isEmpty()) {
+			for(int i = 0; i < imgList.size();i++) {
+				File f = imgList.get(i);
+				
+				f.setRefNo(boardId);
+				switch(boardCommon.getTransactionCategory()) {
+				case "rental":
+					f.setCategoryId(6);
+					break;
+				case "share":
+					f.setCategoryId(7);
+					break;
+				case "auction":
+					f.setCategoryId(8);
+					break;
+				case "exchange":
+					f.setCategoryId(9);
+					break;
+				}
+				session.insert("board.insertImg", f);
+			}
+		}
 		
 		
 		if(commonResult > 0 && rentalResult > 0) {
@@ -134,10 +133,65 @@ public class BoardDaoImpl implements BoardDao {
 	@Override
 	public List<BoardRentalWrapper> selectBoardRentalList() {
 		List<BoardRentalWrapper> boardRentalList = session.selectList("board.selectBoardRentalList");
-		System.out.println(boardRentalList);
+		//System.out.println(boardRentalList);
 
 		return boardRentalList;
 	}
+
+	@Override
+	public BoardRentalWrapper selectBoardRental(int boardId) {
+		BoardRentalWrapper board = session.selectOne("board.selectBoardRental", boardId);
+		System.out.println(board);
+
+		return board;
+	}
+
+	@Override
+	public String selectWriterNickname(int userNum) {
+		String writer = session.selectOne("board.selectWriterNickname", userNum);
+		return writer;
+	}
+
+	@Override
+	public List<String> selectTags(int boardId) {
+		// TODO Auto-generated method stub
+		return session.selectList("board.selectTags", boardId);
+	}
+
+	@Override
+	public int increaseViews(int boardId) {
+		return session.update("board.increaseViews", boardId);
+	}
+
+
+
+	@Override
+	public int isLiked(Dibs dibs) {
+		return session.selectOne("board.isLiked", dibs);
+	}
+
+
+	@Override
+	public void deleteLike(Dibs dibs) {
+		session.selectOne("board.deleteLike", dibs);
+		
+	}
+
+	@Override
+	public void insertLike(Dibs dibs) {
+		session.selectOne("board.insertLike", dibs);
+	}
+
+	@Override
+	public int countDibs(Dibs dibs) {
+		return session.selectOne("board.countDibs", dibs);
+	}
+
+	@Override
+	public int selectMannerScore(int writerUserNum) {
+		return session.selectOne("board.selectMannerScore", writerUserNum);
+	}
+
 
 
 
