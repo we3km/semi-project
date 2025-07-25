@@ -7,7 +7,7 @@
     <style>
         .top, .middle, .bottom {
             background-color: #d9d9d9;
-            width: 400px;
+            width: 480px;
             margin: auto;
             padding: 10px;
         }
@@ -33,7 +33,7 @@
             height: 30px;
             margin-left: 5px;
         }
-        #name, #email, #auth-code {
+        #nickName, #email, #auth-code {
             width: 340px;
             height: 30px;
             margin-bottom: 20px;
@@ -64,12 +64,12 @@
         아래 정보를 입력하시면 아이디를 메일로 발송해 드립니다.<br>
     </div>
     <div class="middle">
-        <form action="${pageContext.request.contextPath}/user/findId" method="post">
-            이름 <input type="text" id="name" name="name"><br>
-            이메일 <input type="email" id="email" name="email">
-            <button type="button" class="send" id="send-auth-btn">전송</button><br>
+        <form>
+            닉네임&nbsp;<input type="text" id="nickName" name="nickName"><br>
+            이메일&nbsp;<input type="email" id="email" name="email">
+            <button type="button" id="send-auth-btn" class="send">전송</button><br>
             인증번호 <input type="text" id="auth-code" name="auth-code" disabled><br><br>
-            <input type="submit" class="check" value="확인" disabled id="submit-btn">
+            <input type="button" id="submit-btn" class="check" value="확인" disabled onclick="checkAuthCode(event)">
         </form>
     </div>
     <div class="bottom">
@@ -77,30 +77,32 @@
     </div>
     
     <script>
-    let serverCode = null;
-    
     const sendBtn = document.getElementById('send-auth-btn');
     const authCodeInput = document.getElementById('auth-code');
+    const submitBtn = document.getElementById('submit-btn');
 
     sendBtn.addEventListener('click', function() {
-        const name = document.getElementById('name').value.trim();
+        const nickName = document.getElementById('nickName').value.trim();
         const email = document.getElementById('email').value.trim();
 
-        if(!name || !email) {
-            alert('이름과 이메일을 모두 입력해주세요.');
+        if(!nickName || !email) {
+            alert('닉네임과 이메일을 모두 입력해주세요.');
             return;
         }
 
-        fetch('${pageContext.request.contextPath}/user/sendAuthCode', {
+        // 인증번호 전송
+        fetch('${pageContext.request.contextPath}/user/sendVerification', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({name, email})
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ nickName: nickName, email: email })
         })
         .then(res => res.json())
         .then(data => {
-            if(data.success) {
+            if(data.success === true) {
                 alert('인증번호가 이메일로 발송되었습니다.');
-                serverCode = data.code;
+                authCodeInput.disabled = false;
+                submitBtn.disabled = false;
+                authCodeInput.focus();
             } else {
                 alert('인증번호 발송에 실패했습니다: ' + data.message);
             }
@@ -108,7 +110,9 @@
         .catch(err => alert('오류가 발생했습니다: ' + err));
     });
 
-    function checkAuthCode() {
+    function checkAuthCode(event) {
+    	event.preventDefault();
+    	
     	const inputCode = authCodeInput.value.trim();
 
         if (!inputCode) {
@@ -116,11 +120,25 @@
             return;
         }
 
-        if (inputCode === serverCode) {
-            alert("인증에 성공했습니다.");
-        } else {
-            alert("인증번호가 일치하지 않습니다.");
-        }
+        fetch('${pageContext.request.contextPath}/user/findId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ 
+            	nickName: nickName,
+                email: email,
+                authCode: authCodeInput.value.trim()
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success === true) {
+                alert("인증에 성공했습니다. 아이디가 이메일로 전송되었습니다.");
+                window.location.href = '${pageContext.request.contextPath}/user/login';
+            } else {
+                alert("인증번호가 일치하지 않습니다.");
+            }
+        })
+        .catch(err => alert("서버 오류: " + err));
     }
 	</script>
 </body>

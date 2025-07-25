@@ -9,11 +9,16 @@
 		WHERE USER_ID = #{userId}
 	</select>
 	
-	<resultMap type="com.kh.itda.security.model.vo.UserExt" id="userResultMap">
+	<!-- 아이디 중복 체크 -->
+	<select id="idCheck" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
+	</select>
+	
+	<resultMap type="userExt" id="userResultMap">
 		<id column="USER_NUM" property="userNum" />
 		<result column="USER_ID" property="userId" />
 		<result column="USER_PWD" property="userPwd" />
-		<result column="NICKNAME" property="nickName" />
+		<result column="NICK_NAME" property="nickName" />
 		<result column="EMAIL" property="email" />
 		<result column="PHONE" property="phone" />
 		<result column="BIRTH" property="birth" />
@@ -21,37 +26,11 @@
 		<result column="CREATE_DATE" property="createDate" />
 		<result column="IMAGE_URL" property="imageUrl" />
 		<collection property="authorities" 
-		javaType="arraylist"
-		ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
-		column="USER_ID"
-		select="selectAuthorities"
+			javaType="arraylist"
+			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
+			column="USER_ID"
+			select="selectAuthorities"
 		/>
 	</resultMap>
 	
 </mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

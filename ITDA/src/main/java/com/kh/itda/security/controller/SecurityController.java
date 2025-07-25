@@ -1,5 +1,7 @@
 package com.kh.itda.security.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -11,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,22 +28,20 @@ import com.kh.itda.user.model.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
-//회원정보 수정, 로그인/로그아웃
+//회원정보 수정, 로그인/로그아웃(페이지 이동), 이메일(인증번호 등)
 @Controller
 @Slf4j
 public class SecurityController {
 
-	private BCryptPasswordEncoder passwordEncoder;
-	private UserService uService;
-	private final UserService userService;
+	private final BCryptPasswordEncoder passwordEncoder;
+	private final UserService uService;
     private final EmailService emailService;
     private final HttpSession session;
 	
-	public SecurityController(BCryptPasswordEncoder passwordEncoder, UserService uService, UserService userService, HttpSession session, EmailService emailService) {
+	public SecurityController(BCryptPasswordEncoder passwordEncoder, UserService uService, HttpSession session, EmailService emailService) {
 		super();
 		this.passwordEncoder = passwordEncoder;
 		this.uService = uService;
-		this.userService = userService;
 		this.emailService = emailService;
 		this.session = session;
 	}
@@ -65,76 +64,128 @@ public class SecurityController {
 	    return "user/findPwd";
 	}
 	
-	//인증번호 전송
+	// 회원가입 폼 인증번호 전송
     @PostMapping("/user/sendVerification")
     @ResponseBody
-    public ResponseEntity<String> sendVerification(@RequestParam String email) {
+    public ResponseEntity<?> sendVerification(@RequestParam String email) {
         String code = emailService.generateVerificationCode();
-        emailService.sendEmail(email, "인증번호 발송", "인증번호는 " + code + "입니다.");
-        session.setAttribute("authCode", code);
-        return ResponseEntity.ok("전송 완료");
+        boolean mailSent = emailService.sendEmail(email, "인증번호 발송", "인증번호는 " + code + "입니다.");
+        
+        if(mailSent) {
+        	session.setAttribute("authCode", code);
+        	return ResponseEntity.ok(Map.of("success", true, "message", "인증번호가 발송되었습니다."));        	
+        } else {
+        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "이메일 발송 실패"));
+        }
     }
 
-    //인증번호 확인
+    // 회원가입 폼 인증번호 확인
     @PostMapping("/user/checkVerification")
     @ResponseBody
-    public ResponseEntity<String> checkVerification(@RequestParam String code) {
+    public ResponseEntity<?> checkVerification(@RequestParam String code) {
         String stored = (String) session.getAttribute("authCode");
         if (stored != null && stored.equals(code)) {
             session.setAttribute("verified", true);
-            return ResponseEntity.ok("success");
+            return ResponseEntity.ok(Map.of("result", "인증 성공"));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("result", "fail", "message", "인증 실패, 일치하지 않습니다."));
         }
     }
 
     //아이디 찾기
     @PostMapping("/user/findId")
-    public String findIdProcess(@RequestParam String name,
-                                @RequestParam String email,
-                                Model model) {
+    @ResponseBody
+    public Map<String, Object> findIdProcess(
+    			@RequestParam("nickName") String nickName,
+                @RequestParam("email") String email,
+                HttpSession session) {
+    	Map<String, Object> response = new HashMap<>();
+    	
         Boolean verified = (Boolean) session.getAttribute("verified");
+        
+        // 이메일 인증 여부 확인
         if (verified == null || !verified) {
-            model.addAttribute("error", "이메일 인증을 먼저 완료해주세요.");
-            return "user/findId";
+        	response.put("success", false);
+        	response.put("message", "이메일 인증을 먼저 완료해주세요.");
+            return response;
         }
 
-        Optional<String> userId = userService.findIdByNameAndEmail(name, email);
+        Optional<String> userId = uService.findIdByNameAndEmail(nickName, email);
         if (userId.isPresent()) {
-            emailService.sendEmail(email, "아이디 찾기", "회원님의 아이디는: " + userId.get());
-            model.addAttribute("msg", "이메일로 아이디를 전송했습니다.");
+        	boolean mailSent = emailService.sendEmail(email, "아이디 찾기", "회원님의 아이디는: " + userId.get());
+        	if(mailSent) {
+        		response.put("success", true);
+                response.put("message", "이메일로 아이디를 전송했습니다.");
+                session.removeAttribute("verified");
+                session.removeAttribute("authCode");
+        	} else {
+        		response.put("success", false);
+                response.put("message", "이메일 전송에 실패했습니다.");
+        	}
         } else {
-            model.addAttribute("error", "일치하는 회원이 없습니다.");
+        	response.put("success", false);
+            response.put("message", "일치하는 회원이 없습니다.");
         }
-
-        session.removeAttribute("verified");
-        return "user/findId";
+        return response;
     }
 
     //비밀번호 찾기
     @PostMapping("/user/findPwd")
+    @ResponseBody
     public String findPwdProcess(@RequestParam String id,
                                  @RequestParam String email,
-                                 Model model) {
+                                 HttpSession session) {
+    	Map<String, Object> response = new HashMap<>();
+    	
         Boolean verified = (Boolean) session.getAttribute("verified");
+        
+        // 이메일 인증 여부 확인
         if (verified == null || !verified) {
-            model.addAttribute("error", "이메일 인증을 먼저 완료해주세요.");
-            return "user/findPwd";
+        	response.put("success", false);
+        	response.put("message", "이메일 인증을 먼저 완료해주세요.");
+            return "response";
         }
 
-        Optional<String> userPwd = userService.findPwdByIdAndEmail(id, email);
+        Optional<String> userPwd = uService.findPwdByIdAndEmail(id, email);
         if (userPwd.isPresent()) {
-            emailService.sendEmail(email, "비밀번호 찾기", "회원님의 비밀번호는: " + userPwd.get());
-            model.addAttribute("msg", "이메일로 비밀번호를 전송했습니다.");
+        	// 임시 비밀번호 생성
+        	String tempPwd = generateTempPassword();
+        	
+        	// 비밀번호 암호화 및 DB저장
+        	String encodedPwd = passwordEncoder.encode(tempPwd);
+        	uService.updatePassword(id, encodedPwd);
+        	
+        	// 임시 비밀번호 전송
+        	emailService.sendEmail(email, "임시 비밀번호 발급", "회원님의 임시 비밀번호는: " + tempPwd);
+            response.put("success", true);
+            response.put("message", "이메일로 임시 비밀번호를 전송했습니다.");
         } else {
-            model.addAttribute("error", "일치하는 회원이 없습니다.");
+        	response.put("success", false);
+            response.put("message", "일치하는 회원이 없습니다.");
         }
 
         session.removeAttribute("verified");
         return "user/findPwd";
     }
 	
-    //회원정보 업데이트
+    private String generateTempPassword() {
+    	char[] charSet = new char[] {
+    		'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h',
+    		'i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+
+        String tempPwd = "";
+
+        // 문자 배열 길이의 값을 랜덤으로 10개를 뽑아 구문을 작성함
+        int index = 0;
+        for (int i = 0; i < 10; i++) {
+            index = (int) (charSet.length * Math.random());
+            tempPwd += charSet[index];
+        }
+        return tempPwd;
+	}
+
+	//회원정보 업데이트
 	@PostMapping("/user/update")
 	public String update(
 			@Validated @ModelAttribute UserExt loginUser,

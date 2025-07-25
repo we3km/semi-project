@@ -6,13 +6,9 @@ import com.kh.itda.user.model.vo.User;
 
 public interface UserService {
 
-	int insertUser(User user);
+	void register(User user);
 
-	int updateUser(User user);
-
-	void insertProfile(int userNum, String imageUrl);
-
-	Optional<String> findIdByNameAndEmail(String name, String email);
+	Optional<String> findIdByNameAndEmail(String nickName, String email);
 
 	Optional<String> findPwdByIdAndEmail(String id, String email);
 
@@ -20,5 +16,10 @@ public interface UserService {
 
 	int idCheck(String userId);
 
-	
+	int updateUser(User user);
+
+	void updatePassword(String id, String encodedPwd);
+
+	boolean emailExists(String email);
+
 }

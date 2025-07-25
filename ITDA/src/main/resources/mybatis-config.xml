@@ -8,7 +8,14 @@
 		<setting name="jdbcTypeForNull" value="NULL"/>
 	</settings>
 	
+	<!-- com.kh.itda 하위의 모든 클래스에 별칭 지정 -->
 	<typeAliases>
-		<package name="com.kh.spring"/>
+		<package name="com.kh.itda"/>
 	</typeAliases>
+	
+	<!-- com.kh.itda.mapper의 하위의 모든 매퍼를 인식 -->
+	<mappers>
+        <package name="com.kh.itda.mapper"/>
+    </mappers>
+    
 </configuration>

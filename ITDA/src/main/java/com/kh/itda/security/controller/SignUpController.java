@@ -3,6 +3,7 @@ package com.kh.itda.security.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -35,11 +36,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/user/signup")
 @RequiredArgsConstructor
 @Slf4j
-public class SignUpController {
+public class SignUpController { //회원가입
 
     private final UserService uService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private static final String DEFAULT_IMAGE_URL = "/resources/profile/default.png";
 
     // 1단계: 이용약관
     @GetMapping("/terms")
@@ -73,37 +75,61 @@ public class SignUpController {
     // 이메일로 인증번호 발송
     @PostMapping("/emailAuth/sendAuthCode")
     @ResponseBody
-    public String sendAuthCode(
+    public Map<String, Object> sendAuthCode(
     		@RequestParam("email") String email, 
     		HttpSession session) {
         String code = generateAuthCode();
         session.setAttribute("authCode", code);
         session.setAttribute("email", email);
-
+        
         boolean result = emailService.sendEmail(email, "이메일 인증번호", "인증번호: " + code);
-        return result ? "success" : "fail";
+        
+        Map<String, Object> response = new HashMap<>();
+        if (result) {
+            response.put("result", "success");
+        } else {
+            response.put("result", "fail");
+        }
+        return response;
+    }
+    
+    @GetMapping("/emailAuth/checkEmail")
+    @ResponseBody
+    public Map<String, Object> checkEmailDuplication(@RequestParam("email") String email) {
+        Map<String, Object> response = new HashMap<>();
+        boolean exists = uService.emailExists(email);
+
+        if (exists) {
+            response.put("result", "exists");
+        } else {
+            response.put("result", "not_exists");
+        }
+        return response;
     }
 
     // 인증번호 확인
     @PostMapping("/emailAuth/verifyCode")
     @ResponseBody
-    public String verifyCode(
+    public Map<String, Object> verifyCode(
     		@RequestParam("code") String code,
     		@RequestParam("email") String email,
     		HttpSession session) {
+    	Map<String, Object> response = new HashMap<>();
         String sessionCode = (String) session.getAttribute("authCode");
         String sessionEmail = (String) session.getAttribute("email");
+        
         if (sessionCode != null && sessionCode.equals(code)
         		 && sessionEmail != null  && sessionEmail.equals(email)) {
             session.setAttribute("emailVerified", true);
-            return "success";
+            response.put("result", "success");
         } else {
-            return "fail";
+        	response.put("result", "fail");
         }
+        return response;
     }
     
     //이메일 인증 성공
-    @PostMapping("/signup/verifyEmailSuccess")
+    @PostMapping("/emailAuth/verifyEmailSuccess")
     @ResponseBody
     public ResponseEntity<?> setEmailVerified(@RequestBody Map<String, String> payload, HttpSession session) {
         String email = payload.get("email");
@@ -130,7 +156,16 @@ public class SignUpController {
         if (session.getAttribute("emailVerified") == null) {
             return "redirect:/user/signup/emailAuth";
         }
-        model.addAttribute("user", new User());
+        
+        User user = new User();
+        
+        // 이메일 세션에서 가져와 사용자 객체에 주입
+        String verifiedEmail = (String) session.getAttribute("verifiedEmail");
+        if (verifiedEmail != null) {
+        	user.setEmail(verifiedEmail);
+        }
+        
+        model.addAttribute("user", user);
         return "user/signup/enroll";
     }
     
@@ -139,20 +174,29 @@ public class SignUpController {
             @Validated @ModelAttribute("user") User user,
             BindingResult bindingResult,
             @RequestParam("userPwdCheck") String userPwdCheck,
-            @RequestParam("profileImage") MultipartFile profileImage,
+            @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
             HttpSession session,
             RedirectAttributes ra) {
 
-    	//디버그용 2줄 코드
+    	//바인딩 체크
+    	if (bindingResult.hasErrors()) {
+    		if (session.getAttribute("verifiedEmail") != null) {
+    	        user.setEmail((String) session.getAttribute("verifiedEmail"));
+    	    }
+    	    return "user/signup/enroll";
+    	}
+    	
+    	//디버그용 5줄 코드
     	System.out.println("multipart content type: " + profileImage.getContentType());
         System.out.println("file size: " + profileImage.getSize());
+        System.out.println("termsAccepted: " + session.getAttribute("termsAccepted"));
+        System.out.println("emailVerified: " + session.getAttribute("emailVerified"));
+        System.out.println("verifiedEmail: " + session.getAttribute("verifiedEmail"));
         
-        if (bindingResult.hasErrors()) {
-            return "user/signup/enroll";
-        }
-
+        log.info("회원가입 처리 시작");
+        
         // 비밀번호 일치 확인
-        if (!userPwdCheck.equals(user.getUserPwd())) {
+        if (user.getUserPwd() == null || !userPwdCheck.equals(user.getUserPwd())) {
         	ra.addFlashAttribute("alertMsg", "비밀번호가 일치하지 않습니다.");
         	return "redirect:/user/signup/enroll";
         }
@@ -161,8 +205,10 @@ public class SignUpController {
         String encryptedPassword = passwordEncoder.encode(user.getUserPwd());
         user.setUserPwd(encryptedPassword);
 
+        log.info("프로필 이미지 업로드 시작");
+        
         // 프로필 이미지 저장
-        if (!profileImage.isEmpty()) {
+        if (profileImage != null && !profileImage.isEmpty()) {
             try {
                 // 실제 저장 경로
                 String saveDirectory = session.getServletContext().getRealPath("/resources/profile/");
@@ -178,23 +224,33 @@ public class SignUpController {
                 profileImage.transferTo(destFile);
 
                 // 이미지 파일 URL 설정 (브라우저에서 접근 가능 경로)
-                String imageUrl = "/resources/profile/" + newFilename;
-                user.setImageUrl(imageUrl);
+                user.setImageUrl("/resources/profile/" + newFilename);
 
             } catch (IOException e) {
                 e.printStackTrace();
+                user.setImageUrl(DEFAULT_IMAGE_URL);
             }
+        } else {
+        	user.setImageUrl(DEFAULT_IMAGE_URL);
         }
-
+        
+        log.info("유저 DB 저장 시작");
+        
         // DB 저장
-        int userNum = uService.insertUser(user);
-
-        if (user.getImageUrl() != null && !user.getImageUrl().isBlank()) {
-            uService.insertProfile(userNum, user.getImageUrl());
+        int userNum = 0;
+        try {
+        	uService.register(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ra.addFlashAttribute("alertMsg", "회원가입 중 오류가 발생했습니다.");
+            return "user/signup/enroll";
         }
+        // 반환값이 0인지 아닌지 검사
+        System.out.println("userNum: " + userNum);
 
+        log.info("회원가입 처리 완료, 리다이렉트");
+        
         ra.addFlashAttribute("alertMsg", "회원가입 완료!");
-        // session.invalidate();
         return "redirect:/user/login";
     }
     

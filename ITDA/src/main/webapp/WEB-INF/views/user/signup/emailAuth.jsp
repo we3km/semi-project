@@ -111,27 +111,34 @@
                 return;
             }
 			
-            //인증번호 전송
-            fetch('${pageContext.request.contextPath}/user/signup/emailAuth/sendAuthCode', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                	email: email
-                })
-            })
-            .then(res => res.text())
-            .then(data => {
-                if (data === 'success') {
-                    alert("인증번호가 전송되었습니다.");
-                } else {
-                    alert("인증번호 발송에 실패했습니다.");
-                }
-            })
-            .catch(err => {
-                alert("오류가 발생했습니다: " + err);
-            });
+            //이메일 중복 여부 확인
+            fetch('${pageContext.request.contextPath}/user/signup/emailAuth/checkEmail?email='
+            		+encodeURIComponent(email))
+            		.then(res => res.json())
+            		.then(data => {
+            			if(data.result === "exists"){
+            				alert("이미 가입된 이메일입니다.");
+            				return;
+            			}	
+            
+            			//인증번호 전송
+            			return fetch('${pageContext.request.contextPath}/user/signup/emailAuth/sendAuthCode', {
+                			method: 'POST',
+			                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			                body: new URLSearchParams({email: email})
+			            });
+            		})
+			        .then(res => res.json())
+			        .then(data => {
+			            if (data.result === 'success') {
+			                alert("인증번호가 전송되었습니다.");
+			            } else {
+			                alert("인증번호 발송에 실패했습니다.");
+			            }
+			        })
+			        .catch(err => {
+			            alert("오류가 발생했습니다: " + err);
+			        });
         });
     	
     	//인증번호 일치 검사(서버에서 검증하도록 위임)
@@ -155,9 +162,9 @@
     				email: email
     			})
     		})
-    		.then(res => res.text())
+    		.then(res => res.json())
     		.then(data => {
-    			if (data === 'success') {
+    			if (data.result === 'success') {
     				alert("인증에 성공했습니다.");
     				emailVerified = true;
 

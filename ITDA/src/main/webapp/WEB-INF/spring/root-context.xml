@@ -39,7 +39,5 @@
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean>	
-	<!-- 패키지 내 @Mapper 인터페이스 자동 등록 -->
-	<mybatis-spring:scan base-package="com.kh.itda.mapper"/>
+	</bean>
 </beans>

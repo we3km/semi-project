@@ -23,6 +23,7 @@ public class UserExt extends User implements UserDetails{
 		return authorities;
 	}
 
+	// 스프링 시큐리티에서 비밃번호, 아이디를 가져올때 사용할 메서드
 	@Override
 	public String getPassword() {
 		return getUserPwd();

@@ -8,7 +8,7 @@
 	<select id="findId" resultType="String">
 		SELECT USER_ID
 		FROM USER_TB
-		WHERE NICKNAME = #{name}
+		WHERE NICKNAME = #{nickName}
 			AND EMAIL = #{email}
 	</select>
 
@@ -16,21 +16,22 @@
 	<select id="findPwd" resultType="String">
 		SELECT USER_PWD
 		FROM USER_TB
-		WHERE USER_ID = #{id}
+		WHERE USER_ID = #{userId}
 			AND EMAIL = #{email}
 	</select>
 
-	<!-- 회원가입 -->
+	<!-- 유저 고유 번호 생성 -->
 	<select id="selectNextUserNo" resultType="int">
-		SELECT SEQ_UNO.NEXTVAL FROM DUAL
+		SELECT USER_TB_SEQ.NEXTVAL FROM DUAL
 	</select>
 	
-	<insert id="insertUser">
+	<!-- 회원 정보 주입 -->
+	<insert id="insertUser" parameterType="user">
 		INSERT INTO USER_TB (
 			USER_NUM,
 			USER_ID,
 			USER_PWD,
-			NICKNAME,
+			NICK_NAME,
 			EMAIL,
 			PHONE,
 			BIRTH,
@@ -39,29 +40,29 @@
 			USER_INF_VALIDITY_PERIOD,
 			IS_QUIT
 		) VALUES (
-			SEQ_UNO.NEXTVAL,
+			#{userNum},
 			#{userId},
 			#{userPwd},
 			#{nickName},
 			#{email},
 			#{phone},
-			#{birth},
+			TO_DATE(#{birth}, 'YYYY-MM-DD'),
 			#{address},
-			DEFAULT,
+			SYSDATE,
 			#{validPeriod},
 			DEFAULT
 		)
 	</insert>
 	
 	<!-- 프로필 추가 -->
-	<insert id="insertProfile" parameterType="com.kh.itda.user.model.vo.User">
-		INSERT INTO PROFILE (USER_NO, IMAGE_URL)
-		VALUES (SEQ_UNO.NEXTVAL, #{imageUrl})
+	<insert id="insertProfile" parameterType="user">
+		INSERT INTO PROFILE (USER_NUM, IMAGE_URL)
+		VALUES (#{userNum}, #{imageUrl})
 	</insert>
 	
-	<!-- 권한 부연 -->
-	<insert id="insertAuthority">
-		INSERT INTO AUTHORITIY (USER_NUM, AUTHORITY) VALUES (SEQ_UNO.NEXTVAL, 'ROLE_USER')
+	<!-- 권한 부여 -->
+	<insert id="insertAuthority" parameterType="int">
+		INSERT INTO AUTHORITIES (USER_NUM, AUTHORITY) VALUES (#{userNum}, 'ROLE_USER')
 	</insert>
 	
 	<!-- 회원정보 수정 -->
@@ -75,7 +76,7 @@
 					BIRTH = #{birth},
 				</if>
 				<if test="nickName != null">
-					NICKNAME = #{nickName},
+					NICK_NAME = #{nickName},
 				</if>
 				<if test="phone != null">
 					PHONE = #{phone},

@@ -8,5 +8,6 @@
 </head>
 <body>
 	<h1>잇다 메인화면</h1>
+	<h1>${user.userNum}</h1>
 </body>
 </html>
