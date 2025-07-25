@@ -1,6 +1,7 @@
 package com.kh.itda.board.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -131,8 +133,8 @@ public class BoardDaoImpl implements BoardDao {
 	}
 
 	@Override
-	public List<BoardRentalWrapper> selectBoardRentalList() {
-		List<BoardRentalWrapper> boardRentalList = session.selectList("board.selectBoardRentalList");
+	public List<BoardRentalFileWrapper> selectBoardRentalList() {
+		List<BoardRentalFileWrapper> boardRentalList = session.selectList("board.selectBoardRentalList");
 		//System.out.println(boardRentalList);
 
 		return boardRentalList;
@@ -154,7 +156,6 @@ public class BoardDaoImpl implements BoardDao {
 
 	@Override
 	public List<String> selectTags(int boardId) {
-		// TODO Auto-generated method stub
 		return session.selectList("board.selectTags", boardId);
 	}
 
@@ -192,6 +193,20 @@ public class BoardDaoImpl implements BoardDao {
 		return session.selectOne("board.selectMannerScore", writerUserNum);
 	}
 
+	@Override
+	public List<BoardRentalFileWrapper> selectWriterRentalList(int userNum) {
+		return session.selectList("board.selectWriterRentalList", userNum);
+	}
+
+	@Override
+	public List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory) {
+		return session.selectList("board.selectEqualsCategoryList", smallCategory);
+	}
+
+	@Override
+	public List<FilePath> selectImgList(int boardId) {
+		return session.selectList("board.selectImgList", boardId);
+	}
 
 
 

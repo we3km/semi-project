@@ -1,6 +1,7 @@
 package com.kh.itda.board.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -110,7 +112,7 @@ public class BoardServiceImpl implements BoardService{
 
 
 	@Override
-	public List<BoardRentalWrapper> selectBoardRentalList() {
+	public List<BoardRentalFileWrapper> selectBoardRentalList() {
 		return boardDao.selectBoardRentalList();
 	}
 
@@ -171,6 +173,26 @@ public class BoardServiceImpl implements BoardService{
 		int score = boardDao.selectMannerScore(writerUserNum);
 		return score;
 	}
+
+
+	@Override
+	public List<BoardRentalFileWrapper> selectWriterRentalList(int userNum) {
+		return boardDao.selectWriterRentalList(userNum);
+	}
+
+
+	@Override
+	public List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory) {
+		return boardDao.selectEqualsCategoryList(smallCategory);
+	}
+
+
+	@Override
+	public List<FilePath> selectImgList(int boardId) {
+		return boardDao.selectImgList(boardId);
+	}
+
+
 
 
 

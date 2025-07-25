@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class FilePath {
-	private int pathId;
-	private String path;
+	private String categoryPath;
+	private String fileName;
 }

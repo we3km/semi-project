@@ -181,7 +181,8 @@
 
       <div class="card" onclick="moveDetail(${board.boardCommon.boardId});">
         <div class="heart">♡</div>
-        <img src="https://via.placeholder.com/180x120.png?text=DSLR" alt="DSLR">
+        <img src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}" alt="이미지"
+							style="width: 90%; height: auto; border:2px solid black;"/>
         <p>${board.boardCommon.productName }</p>
         <p class="price">${board.boardRental.rentalFee }</p>
         <p><fmt:formatDate value="${board.boardRental.rentalStartDate }" pattern="yyyy/MM/dd"/></p>~<p><fmt:formatDate value="${board.boardRental.rentalEndDate }" pattern="yyyy/MM/dd"/></p>

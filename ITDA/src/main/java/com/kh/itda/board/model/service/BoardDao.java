@@ -1,6 +1,7 @@
 package com.kh.itda.board.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -8,6 +9,7 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
 
@@ -21,7 +23,7 @@ public interface BoardDao {
 	List<ProductCategory> selectCategoryList();
 
 	List<ProductCategory> getCategoriesByParentNum(int parentNum);
-	List<BoardRentalWrapper> selectBoardRentalList();
+	List<BoardRentalFileWrapper> selectBoardRentalList();
 	BoardRentalWrapper selectBoardRental(int boardId);
 	String selectWriterNickname(int userNum);
 	List<String> selectTags(int boardId);
@@ -32,6 +34,12 @@ public interface BoardDao {
 	void insertLike(Dibs dibs);
 	int countDibs(Dibs dibs);
 	int selectMannerScore(int writerUserNum);
+	
+	List<BoardRentalFileWrapper> selectWriterRentalList(int userNum);
+	
+	List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory);
+	List<FilePath> selectImgList(int boardId);
+
 
 
 }

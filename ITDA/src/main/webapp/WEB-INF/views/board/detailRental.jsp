@@ -83,6 +83,17 @@
       overflow-x: auto;
       gap: 10px;
     }
+    
+    .related-img {
+      margin-top: 30px;
+    }
+
+    .img-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      width:500px;
+    }
 
     .product-item {
       flex: 0 0 auto;
@@ -116,13 +127,20 @@
       }
     }
   </style>
+
 </head>
 <body>
   <div class="container">
     <div class="top-section">
-      <div class="image-preview">
-        <img src="${product.imageUrl}" alt="${product.title}" />
-      </div>
+			<div class="related-img">
+				<div class="img-list">
+					<c:forEach var="img" items="${imgList}">
+							<img src="${pageContext.request.contextPath}/${img.categoryPath}/${img.fileName}" alt="이미지"
+							style="width: 90%; height: auto; border:2px solid black;"/>
+					</c:forEach>
+				</div>
+			</div>
+
       <div class="info">
         <h1>${board.boardCommon.productName}</h1>
         <div class="views">조회수:${board.boardCommon.views}</div>
@@ -194,23 +212,57 @@
     </script>
 
     <div class="related-products">
-      <h2>${writer} 님의 다른 상품들</h2>
+      <h2>${writer} 님의 다른 상품</h2>
       <div class="product-list">
-        <c:forEach var="item" items="${relatedProducts}">
-          <div class="product-item">
-            <img src="${item.imageUrl}" alt="${item.title}" />
-            <div class="title">${item.title}</div>
-            <div class="price">보증금 : ${item.deposit}원</div>
-            <div class="date">${item.startDate} ~ ${item.endDate}</div>
-          </div>
-        </c:forEach>
-      </div>
+ 
+	      <!-- 카드 반복 -->
+	     <c:forEach var="writerRentalWrapper" items="${writerRentalWrapperList }">
+	
+	      <div class="card" onclick="moveDetail(${writerRentalWrapper.boardCommon.boardId});">
+	        <div class="heart">♡</div>
+	        <img src="${pageContext.request.contextPath}/${writerRentalWrapper.filePath.categoryPath}/${writerRentalWrapper.filePath.fileName}" alt="이미지"
+							style="width: 90%; height: auto; border:2px solid black;"/>
+	        <p>${writerRentalWrapper.boardCommon.productName }</p>
+	        <p class="price">${writerRentalWrapper.boardRental.rentalFee }</p>
+	        <p><fmt:formatDate value="${writerRentalWrapper.boardRental.rentalStartDate }" pattern="yyyy/MM/dd"/></p>~<p><fmt:formatDate value="${board.boardRental.rentalEndDate }" pattern="yyyy/MM/dd"/></p>
+	      </div>
+	      </c:forEach>
+		  <script>
+		  	function moveDetail(bid){
+		  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+		  	}
+		  </script>
+
+		</div>
     </div>
 
     <div class="description">
       <h3>상품정보</h3>
       <pre>${board.boardCommon.productComment}</pre>
     </div>
+    
+    <div class="related-products">
+      <h2>이 상품과 유사한 상품</h2>
+      <div class="product-list">
+    	      <!-- 카드 반복 -->
+	     <c:forEach var="equalsCategoryboard" items="${equalsCategoryList }">
+	
+	      <div class="card" onclick="moveDetail(${equalsCategoryboard.boardCommon.boardId});">
+	        <div class="heart">♡</div>
+	        <img src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}" alt="이미지"
+							style="width: 90%; height: auto; border:2px solid black;"/>
+	        <p>${equalsCategoryboard.boardCommon.productName }</p>
+	        <p class="price">${equalsCategoryboard.boardRental.rentalFee }</p>
+	        <p><fmt:formatDate value="${equalsCategoryboard.boardRental.rentalStartDate }" pattern="yyyy/MM/dd"/></p>~<p><fmt:formatDate value="${equalsCategoryboard.boardRental.rentalEndDate }" pattern="yyyy/MM/dd"/></p>
+	      </div>
+	      </c:forEach>
+		  <script>
+		  	function moveDetail(bid){
+		  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+		  	}
+		  </script>
+		</div>
+  </div>
   </div>
 </body>
 </html>

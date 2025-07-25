@@ -150,27 +150,37 @@
 
 	</select>
 	
-	<select id="selectBoardRentalList" resultMap="boardRentalResultMap">
-		SELECT 
-			BC.BOARD_ID,
-			BC.USER_NUM,
-			BC.PRODUCT_NAME,
-			BC.PRODUCT_COMMENT,
-			BC.TRANSACTION_ADDRESS,
-			BC.TRANSACTION_CATEGORY,
-			BC.CREATE_DATE,
-			BC.VIEWS,
-			BC.TRANSACTION_STATUS,
-			BC.PRODUCT_CATEGORY_L,
-			BC.PRODUCT_CATEGORY_M,
-			BC.PRODUCT_CATEGORY_S,
-			BR.RENTAL_FEE,
-			BR.DEPOSIT,
-			BR.RENTAL_START_DATE,
-			BR.RENTAL_END_DATE
-			
-		FROM BOARD_COMMON BC
-		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+	<select id="selectBoardRentalList" resultMap="BoardRentalFileResultMap">
+SELECT *
+FROM (
+    SELECT 
+        BC.BOARD_ID,
+        BC.USER_NUM,
+        BC.PRODUCT_NAME,
+        BC.PRODUCT_COMMENT,
+        BC.TRANSACTION_ADDRESS,
+        BC.TRANSACTION_CATEGORY,
+        BC.CREATE_DATE,
+        BC.VIEWS,
+        BC.TRANSACTION_STATUS,
+        BC.PRODUCT_CATEGORY_L,
+        BC.PRODUCT_CATEGORY_M,
+        BC.PRODUCT_CATEGORY_S,
+        BR.RENTAL_FEE,
+        BR.DEPOSIT,
+        BR.RENTAL_START_DATE,
+        BR.RENTAL_END_DATE,
+        C.CATEGORY_PATH,
+        F.FILE_NAME,
+        ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+    FROM BOARD_COMMON BC
+    JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+    JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+    JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+    WHERE F.CATEGORY_ID = 6
+)
+WHERE RN = 1
+
 
 	</select>
 	
@@ -227,6 +237,108 @@
 	    </association>
 	</resultMap>
 	
+	<select id="selectWriterRentalList" parameterType="int" resultMap="BoardRentalFileResultMap">
+SELECT *
+FROM (
+    SELECT 
+        BC.BOARD_ID,
+        BC.USER_NUM,
+        BC.PRODUCT_NAME,
+        BC.PRODUCT_COMMENT,
+        BC.TRANSACTION_ADDRESS,
+        BC.TRANSACTION_CATEGORY,
+        BC.CREATE_DATE,
+        BC.VIEWS,
+        BC.TRANSACTION_STATUS,
+        BC.PRODUCT_CATEGORY_L,
+        BC.PRODUCT_CATEGORY_M,
+        BC.PRODUCT_CATEGORY_S,
+        BR.RENTAL_FEE,
+        BR.DEPOSIT,
+        BR.RENTAL_START_DATE,
+        BR.RENTAL_END_DATE,
+        C.CATEGORY_PATH,
+        F.FILE_NAME,
+        ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+    FROM BOARD_COMMON BC
+    JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+    JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+    JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+    WHERE F.CATEGORY_ID = 6 AND BC.USER_NUM = #{userNum}
+)
+WHERE RN = 1
+
+</select>
+	
+	<select id="selectEqualsCategoryList" parameterType="String" resultMap="BoardRentalFileResultMap">
+SELECT *
+FROM (
+    SELECT 
+        BC.BOARD_ID,
+        BC.USER_NUM,
+        BC.PRODUCT_NAME,
+        BC.PRODUCT_COMMENT,
+        BC.TRANSACTION_ADDRESS,
+        BC.TRANSACTION_CATEGORY,
+        BC.CREATE_DATE,
+        BC.VIEWS,
+        BC.TRANSACTION_STATUS,
+        BC.PRODUCT_CATEGORY_L,
+        BC.PRODUCT_CATEGORY_M,
+        BC.PRODUCT_CATEGORY_S,
+        BR.RENTAL_FEE,
+        BR.DEPOSIT,
+        BR.RENTAL_START_DATE,
+        BR.RENTAL_END_DATE,
+        C.CATEGORY_PATH,
+        F.FILE_NAME,
+        ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+    FROM BOARD_COMMON BC
+    JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+    JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+    JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+    WHERE F.CATEGORY_ID = 6 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
+)
+WHERE RN = 1
+
+	</select>
+
+	
+		<resultMap id="BoardRentalFileResultMap" type="BoardRentalFileWrapper">
+	  	<association property="boardCommon" javaType="BoardCommon">
+	  		<id property="boardId" column="BOARD_ID"/>
+	        <result property="userNum" column="USER_NUM"/>
+	        <result property="productName" column="PRODUCT_NAME"/>
+	        <result property="productComment" column="PRODUCT_COMMENT"/>
+	        <result property="transactionAddress" column="TRANSACTION_ADDRESS"/>
+	        <result property="transactionCategory" column="TRANSACTION_CATEGORY"/>
+	        <result property="createDate" column="CREATE_DATE"/>
+	        <result property="views" column="VIEWS"/>
+	        <result property="transactionStatus" column="TRANSACTION_STATUS"/>
+	        <result property="productCategoryL" column="PRODUCT_CATEGORY_L"/>
+	        <result property="productCategoryM" column="PRODUCT_CATEGORY_M"/>
+	        <result property="productCategoryS" column="PRODUCT_CATEGORY_S"/>
+	        <!-- BOARD_RENTAL 컬럼들 추가 -->
+	    </association>
+	    <!-- BOARD_COMMON 컬럼들 추가 -->
+	
+	    <association property="boardRental" javaType="BoardRental">
+	    	<id property="boardId" column="BOARD_ID"/>
+	        <result property="rentalFee" column="RENTAL_FEE"/>
+	        <result property="deposit" column="DEPOSIT"/>
+	        <result property="rentalStartDate" column="RENTAL_START_DATE"/>
+	        <result property="rentalEndDate" column="RENTAL_END_DATE"/>
+	        <!-- BOARD_RENTAL 컬럼들 추가 -->
+	    </association>
+	    
+	    <association property="filePath" javaType="FilePath">
+	    	<result property="categoryPath" column="CATEGORY_PATH"/>
+	        <result property="fileName" column="FILE_NAME"/>
+	    </association>
+	</resultMap>
+	
+	
+	
 	
 	<select id="selectWriterNickname" parameterType="int" resultType="String">
 		SELECT 
@@ -282,4 +394,27 @@
 		GROUP BY TARGET_USER_NUM
 		HAVING TARGET_USER_NUM = #{writerUserNum}
 	</select>
+	
+	
+	<select id="selectImgList" parameterType="int" resultType="FilePath">
+		SELECT 
+			C.CATEGORY_PATH,
+			F.FILE_NAME
+			
+		FROM "FILE" F
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6
+
+	</select>
+	
+<!-- 		<select id="selectWriterImg" parameterType="int" resultType="FilePath">
+		SELECT 
+			C.CATEGORY_PATH,
+			F.FILE_NAME
+			
+		FROM "FILE" F
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6 AND ROWNUM=1;
+
+	</select> -->
 </mapper>

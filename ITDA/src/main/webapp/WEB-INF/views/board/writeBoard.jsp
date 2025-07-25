@@ -243,45 +243,119 @@ img {
 
 			<main>
 				<section class="image-upload">
-					<p>상품 이미지(2/10)</p>
-					<div id="fileInputs">
-						<input type="file" id="upfile" class="inputImage" name="upfile[]" accept="images/*">
+					<p>상품 이미지 (<span id="imageCount">0</span>/10)</p>
+					  <div id="fileInputs">
+					    <!-- input 10개 미리 만들어놓기 -->
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: block;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					    <input type="file" class="inputImage" name="upfile" accept="image/*" style="display: none;">
+					  </div>
 					
-					</div>
 					<div id="previewContainer">
 						
 					</div>
 					
 
 <script>
-  const selectedFiles = []; // 이미지 파일들을 저장할 배열
-  const inputImage = document.querySelectorAll('.inputImage');
-  const fileInputsContainer = document.getElementById('fileInputs');
-  inputImage.forEach(function(value, index){
-	  value.addEventListener('change', function(){
-	    if(this.files[0] != undefined){
-	    	const reader = new FileReader();
-	    	reader.readAsDataURL(this.files[0]);
-	    	reader.onload = function(e) {
-	    		const img = document.createElement('img');
-	            img.setAttribute("src", e.target.result);
-	            img.style.width = '100px';
-	            img.style.height = '100px';
-	            img.style.objectFit = 'cover';
-	            img.style.margin = '5px';
-	            document.getElementById('previewContainer').appendChild(img);
-			}
-	    	reader.readAsDataURL(file);
-	    
+const inputImages = document.querySelectorAll('.inputImage');
+const previewContainer = document.getElementById('previewContainer');
+const imageCountDisplay = document.getElementById('imageCount');
 
-	        // input 초기화해서 다음에 같은 파일도 다시 선택 가능하도록
-	        event.target.value = '';
-	    }
-		  
-	  })
-	  
-  })
+let currentCount = 0;
 
+// 초기: input 중 첫 번째만 보이게
+inputImages.forEach((input, i) => {
+  input.style.display = i === 0 ? 'block' : 'none';
+});
+
+inputImages.forEach((input, index) => {
+  input.addEventListener('change', function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // 미리보기 wrapper 생성
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-wrapper';
+        wrapper.style.display = 'inline-block';
+        wrapper.style.position = 'relative';
+        wrapper.style.margin = '5px';
+
+        // 이미지
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.objectFit = 'cover';
+
+        // 삭제 버튼
+        const delBtn = document.createElement('button');
+        delBtn.innerText = 'X';
+        delBtn.type = 'button';
+        delBtn.style.position = 'absolute';
+        delBtn.style.top = '0';
+        delBtn.style.right = '0';
+        delBtn.style.background = 'red';
+        delBtn.style.color = 'white';
+        delBtn.style.border = 'none';
+        delBtn.style.borderRadius = '50%';
+        delBtn.style.width = '20px';
+        delBtn.style.height = '20px';
+        delBtn.style.cursor = 'pointer';
+
+        // 미리보기에 input 인덱스 저장
+        wrapper.dataset.inputIndex = index;
+
+        // 삭제 로직
+        delBtn.addEventListener('click', () => {
+          // 미리보기 삭제
+          previewContainer.removeChild(wrapper);
+
+          // input 초기화 및 다시 보이게
+          const targetInput = inputImages[index];
+          targetInput.value = '';
+          targetInput.style.display = 'block';
+
+          // 현재 보이는 input 숨기기
+          for (let i = 0; i < inputImages.length; i++) {
+            if (i !== index) inputImages[i].style.display = 'none';
+          }
+
+          currentCount--;
+          updateCount();
+        });
+
+        // 구성 추가
+        wrapper.appendChild(img);
+        wrapper.appendChild(delBtn);
+        previewContainer.appendChild(wrapper);
+
+        // 현재 input 숨기기
+        input.style.display = 'none';
+
+        // 다음 input 보이기 (없으면 아무것도 안 보이게)
+        if (index + 1 < inputImages.length) {
+          inputImages[index + 1].style.display = 'block';
+        }
+
+        currentCount++;
+        updateCount();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+function updateCount() {
+  imageCountDisplay.textContent = currentCount;
+}
 </script>
 				</section>
 

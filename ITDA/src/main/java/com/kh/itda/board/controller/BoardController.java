@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -44,6 +46,7 @@ import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.BoardSharing;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -75,10 +78,10 @@ public class BoardController {
 	@GetMapping("/rental")
 	public String rentalBoard(Model model) {
 		
-		List<BoardRentalWrapper> boardRentalList = boardService.selectBoardRentalList();
+		List<BoardRentalFileWrapper> boardRentalList = boardService.selectBoardRentalList();
 		
 	
-		
+System.out.println(boardRentalList);
 		model.addAttribute("list",boardRentalList);
 		return "board/rentalBoard";
 	}
@@ -184,10 +187,11 @@ public class BoardController {
 		
 			System.out.println("이미지:"+upfiles);
 			for(MultipartFile upfile : upfiles) {
+				
+				System.out.println("현재 저장중인 이미지 : "+upfile);
 				if(upfile.isEmpty()) {
 					continue;// 업로드한 첨부파일이 존재한다면 저장 진행
 				}
-				System.out.println(upfile);
 				
 				String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/rental"); 
 				File f = new File();
@@ -195,6 +199,8 @@ public class BoardController {
 				f.setFileName(imgPath);
 
 				imgList.add(f);
+				
+				System.out.println("저장된이미지리스트:"+imgList);
 			}
 		
 			model.addAttribute("board", board);
@@ -213,7 +219,7 @@ public class BoardController {
 			board.getBoardCommon().setTransactionCategory("rental");
 			
 			//System.out.println("태그:"+boardCommon.getTagList());
-			System.out.println(imgList);
+			//System.out.println("저장된이미지리스트:"+imgList);
 			int result = boardService.insertBoardRental(board, imgList);
 			if(result == 0) {
 				throw new RuntimeException("게시글 작성 실패");
@@ -261,7 +267,7 @@ public class BoardController {
 					FilePath fp = new FilePath();
 					File f = new File();
 					
-					fp.setPath(imgPath);
+				
 					f.setFileName(upfile.getOriginalFilename());
 					pathList.add(fp);
 					imgList.add(f);
@@ -332,7 +338,7 @@ public class BoardController {
 					FilePath fp = new FilePath();
 					File f = new File();
 					
-					fp.setPath(imgPath);
+					
 					f.setFileName(upfile.getOriginalFilename());
 					pathList.add(fp);
 					imgList.add(f);
@@ -402,7 +408,7 @@ public class BoardController {
 					FilePath fp = new FilePath();
 					File f = new File();
 					
-					fp.setPath(imgPath);
+				
 					f.setFileName(upfile.getOriginalFilename());
 					pathList.add(fp);
 					imgList.add(f);
@@ -487,15 +493,32 @@ public class BoardController {
 				}				
 			}			
 		//}
+			
+		// 게시물의 이미지
+		List<FilePath> imgList = boardService.selectImgList(boardId);
+		System.out.println(imgList);
+		model.addAttribute("imgList",imgList);
 		
+		// 조회한 게시글의 게시자가 올린 다른 대여 상품들
+		List<BoardRentalFileWrapper> writerRentalWrapperList = boardService.selectWriterRentalList(writerUserNum);
+		model.addAttribute("writerRentalWrapperList",writerRentalWrapperList);
+		System.out.println("게시자의 다른 상품 : " + writerRentalWrapperList);
+		
+		
+		// 조회한 게시글과 소분류 카테고리가 같은 대여 상품들
+		String smallCategory = board.getBoardCommon().getProductCategoryS();
+		List<BoardRentalFileWrapper> equalsCategoryList = boardService.selectEqualsCategoryList(smallCategory);
+		model.addAttribute("equalsCategoryList",equalsCategoryList);
 		
 		// 선택한 대여 게시물의 게시자 닉네임 추출
 		String writer = boardService.selectWriterNickname(writerUserNum);
 		model.addAttribute("writer", writer);
 		System.out.println(writerUserNum);
+		
 		// 선택한 대여 게시물의 게시자 매너점수 추출
 		int mannerScore = boardService.selectMannerScore(writerUserNum);
 		model.addAttribute("mannerScore", mannerScore);
+		
 		// 선택한 대여 게시물의 태그 추출
 		List<String> tags = boardService.selectTags(boardId);
 		model.addAttribute("tags", tags);
