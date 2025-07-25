@@ -5,7 +5,9 @@ import java.util.Map;
 
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.community.model.vo.Community;
+import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
+import com.kh.itda.community.model.vo.CommunityReaction;
 
 public interface CommunityDao {
 
@@ -18,5 +20,27 @@ public interface CommunityDao {
 	int insertCommunity(Community c);
 
 	int insertCommunityImgList(List<CommunityImg> imgList);
+
+	int increaseCount(int communityNo);
+
+	CommunityExt selectCommunity(int communityNo);
+
+	CommunityReaction selectUserReaction(int userNo, int communityNo);
+
+	int insertReaction(CommunityReaction reaction);
+
+	int deleteReaction(CommunityReaction reaction);
+
+	int updateReaction(CommunityReaction reaction);
+
+	int getLikeCount(int communityNo);
+
+	int getDislikeCount(int communityNo);
+
+	CommunityReaction userReactionNo(int userNo, int communityNo);
+
+	
+
+
 
 }

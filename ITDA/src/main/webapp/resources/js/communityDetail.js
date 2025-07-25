@@ -20,9 +20,11 @@
             $('#recommendCount').text(likeCurrent + 1);
 
             // 이미지 변경
-            $('#likeBtn img').attr('src', '../img/like_clike.png');
-            $('#dislikeBtn img').attr('src', '../img/dislike.png');
+            
+            $('#likeBtn img').attr('src', '${pageContext.request.contextPath}/resources/images/like_clike.png');
+            $('#dislikeBtn img').attr('src', '${pageContext.request.contextPath}/resources/images/dislike.png');
         });
+        
 
         //싫어요 click
         $('#dislikeBtn').click(() => {
@@ -37,8 +39,8 @@
             $('#recommendCount').text(0);
 
             // 이미지 변경
-            $('#dislikeBtn img').attr('src', '../img/dislike_click.png');
-            $('#likeBtn img').attr('src', '../img/like.png');
+            $('#dislikeBtn img').attr('src', '${pageContext.request.contextPath}/resources/images/dislike_click.png');
+            $('#likeBtn img').attr('src', '${pageContext.request.contextPath}/resources/images/like.png');
         });
 
 
@@ -66,8 +68,8 @@
                 <div class="author">익명</div>
                 <div class="text">${$('<div>').text(text).html()}</div>
                 <div class="actions">
-                    <span class="like"><img src="../img/like.png" alt="likeBtn" height="17px"> 0</span>
-                    <span class="dislike"><img src="../img/dislike.png" alt="dislikeBtn" height="17px"> 0</span>
+                    <span class="like"><img src="${pageContext.request.contextPath}/resources/images/like.png" alt="likeBtn" height="17px"> 0</span>
+                    <span class="dislike"><img src="${pageContext.request.contextPath}/resources/images/dislike.png" alt="dislikeBtn" height="17px"> 0</span>
                     ${!isReply ? '<span class="reply-toggle">답글</span>' : ''}
                 </div>
                 ${!isReply ? `
@@ -100,7 +102,7 @@
                     liked = false;
                     likeCount--;
                     $likeSpan.removeClass('active');
-                    $likeSpan.find('img').attr('src', '../img/like.png');
+                    $likeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/like.png');
                 } else {
                     liked = true;
                     likeCount++;
@@ -108,11 +110,11 @@
                         disliked = false;
                         dislikeCount--;
                         $dislikeSpan.removeClass('active');
-                        $dislikeSpan.find('img').attr('src', '../img/dislike.png');
+                        $dislikeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/dislike.png');
                     }
                     $likeSpan.addClass('active');
                     $dislikeSpan.removeClass('active');
-                    $likeSpan.find('img').attr('src', '../img/like_clike.png');
+                    $likeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/like_clike.png');
                 }
 
                 // 숫자만 변경 (텍스트 노드만 바꾸기)
@@ -137,7 +139,7 @@
                     disliked = false;
                     dislikeCount--;
                     $dislikeSpan.removeClass('active');
-                    $dislikeSpan.find('img').attr('src', '../img/dislike.png');
+                    $dislikeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/dislike.png');
                 } else {
                     disliked = true;
                     dislikeCount++;
@@ -145,11 +147,11 @@
                         liked = false;
                         likeCount--;
                         $likeSpan.removeClass('active');
-                        $likeSpan.find('img').attr('src', '../img/like.png');
+                        $likeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/like.png');
                     }
                     $dislikeSpan.addClass('active');
                     $likeSpan.removeClass('active');
-                    $dislikeSpan.find('img').attr('src', '../img/dislike_click.png');
+                    $dislikeSpan.find('img').attr('src', '${pageContext.request.contextPath}/resources/images/dislike_click.png');
                 }
 
                 $dislikeSpan.contents().filter(function () {

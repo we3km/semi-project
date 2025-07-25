@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 public class CommunityType {
 	private String communityCd;
 	private String communityName;
-
+	
 }

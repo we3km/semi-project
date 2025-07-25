@@ -22,5 +22,5 @@ public class User {
 	private Date birthday;
 	private char isQuit;
 	private String address;
-	private String userInfValidityPeriod;	//유지기간
+	private String userInfValidityPeriod;	//유지기간u
 }

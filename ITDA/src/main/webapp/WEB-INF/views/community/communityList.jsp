@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%-- JSTL c태그를 사용하기 위한 태그 라이브러리 (c:url 등 사용 시 필요) --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,8 +23,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<div class="container">
-		<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 
 		<!-- Sidebar -->
 		<aside class="sidebar">
@@ -55,7 +60,9 @@
 					name="category" value="p"> 반려동물</label> <label><input
 					type="checkbox" name="category" value="f"> 동네친구</label> <label><input
 					type="checkbox" name="category" value="s"> 자기계발/스터디</label> <label><input
-					type="checkbox" name="category" value="h"> 공포</label>
+					type="checkbox" name="category" value="h"> 공포</label> <label><input
+					type="checkbox" name="category" value="all"> 전체</label>
+
 				<button id="applyFilterBtn">적용</button>
 			</div>
 		</aside>
@@ -94,11 +101,13 @@
 								<tr onclick="movePage(${community.communityNo})">
 									<td>${community.communityNo}</td>
 									<td>${community.communityTitle }</td>
-									<td>${community.communityWriter}</td>
-									<td>${community.createDate }</td>
-									<td>${community.count }</td>
+									<td>${community.communityNickname}</td>
+									
+									 <td><fmt:formatDate value="${community.writeDate}" pattern="yyyy-MM-dd HH:mm" /></td>
+									<td>${community.views }</td>
 									<!-- 조회수 -->
 									<td>${community.recommendCount }</td>
+									<!-- <td>추천수</td> -->
 									<!-- 추천수 -->
 
 								</tr>
@@ -110,35 +119,48 @@
 			</table>
 			<script>
             function movePage(cno) {
-                location.href = "${contextPath}/community/detail/${communityCode}/"+cno
+                location.href = "${pageContext.request.contextPath}/community/detail/${communityCode}/"+cno
             }
         </script>
 
-			<!-- 페이징바 : 원래 작성했던거-->
-			<!--      <div class="pagination" id="pagination"></div>		 -->
 
 			<!-- 페이징바 : 학원꺼 -->
 			<div id="pagingArea">
 				<ul class="pagination">
 					<c:if test="${pi.currentPage eq 1 }">
-						<li class="page-item"><a class="page-link">Previous</a></li>
+						<li class="page-item"><a class="page-link">◀</a></li>
 					</c:if>
 					<c:if test="${pi.currentPage ne 1 }">
 						<li class="page-item"><a class="page-link"
-							href="${url}${pi.currentPage -1}${searchParam}">Previous</a></li>
+							href="${url}${pi.currentPage -1}${searchParam}">◀</a></li>
 					</c:if>
 
-					<c:forEach var="i" begin="${pi.startPage }" end="${pi.endPage }">
-						<li class="page-item"><a class="page-link"
-							href="${url}${i}${searchParam}">${i}</a></li>
-					</c:forEach>
+					<%-- <c:forEach var="i" begin="${pi.startPage }" end="${pi.endPage }">
+						<li class="page-item ${i == pi.currentPage ? 'active' : ''}">
+							<a class="page-link" href="${url}${i}${searchParam}">${i}</a>
+						</li>
+					</c:forEach> --%>
+					<c:choose>
+						<c:when test="${pi.maxPage == 1}">
+							<li class="page-item active"><a class="page-link"
+								href="${url}1${searchParam}">1</a></li>
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
+								<li class="page-item ${i == pi.currentPage ? 'active' : ''}">
+									<a class="page-link" href="${url}${i}${searchParam}">${i}</a>
+								</li>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
+
 
 					<c:if test="${pi.currentPage eq pi.maxPage }">
-						<li class="page-item"><a class="page-link">Next</a></li>
+						<li class="page-item"><a class="page-link">▶</a></li>
 					</c:if>
 					<c:if test="${pi.currentPage ne pi.maxPage }">
 						<li class="page-item"><a class="page-link"
-							href="${url}${pi.currentPage +1}${searchParam}">Next</a></li>
+							href="${url}${pi.currentPage +1}${searchParam}">▶</a></li>
 					</c:if>
 				</ul>
 			</div>
@@ -148,101 +170,42 @@
 
 	<script>
     $(document).ready(function () {
-        // 더미 게시글 데이터
-        const posts = Array.from({ length: 50 }, (_, i) => ({
-          id: i + 1,
-          title: `게시글 제목 ${i + 1}`,
-          writer: 'windsky01',
-          date: '25.07.09 13:45',
-          views: Math.floor(Math.random() * 1000),
-          likes: Math.floor(Math.random() * 100),
-          region: ['서울특별시', '경기도', '인천'][i % 3],
-          category: ['운동', '문화/예술', '동네친구'][i % 3],
-        }));
+        const communityCode = "${param.communityCode}"; // Controller에서 받은 communityCode
+		const contextPath = "${pageContext.request.contextPath}";
+        // 필터 적용 버튼 클릭 이벤트
+        $('#applyFilterBtn').on('click', function() {
+            // 선택된 값들을 가져옵니다.
+            const sort = $('input[name="sort"]:checked').val() || 'latest'; // 기본값 최신순
+            
+            const searchParams = new URLSearchParams();
+            searchParams.append("sort", sort);
+            
+            // 체크된 카테고리들을 추가
+            $('input[name="category"]:checked').each(function() {
+                searchParams.append("category", $(this).val());
+            });
 
-        let currentPage = 1;
-        const postsPerPage = 10;
+            // 체크된 지역들을 추가
+            $('input[name="region"]:checked').each(function() {
+                searchParams.append("region", $(this).val());
+            });
 
-        function getFilteredPosts() {
-          const selectedRegions = $('input[name="region"]:checked').map((_, el) => el.value).get();
-          const selectedCategories = $('input[name="category"]:checked').map((_, el) => el.value).get();
-          const sortBy = $('input[name="sort"]:checked').val();
-
-          let filtered = posts.slice();
-
-          if (selectedRegions.length > 0) {
-            filtered = filtered.filter(p => selectedRegions.includes(p.region));
-          }
-
-          if (selectedCategories.length > 0) {
-            filtered = filtered.filter(p => selectedCategories.includes(p.category));
-          }
-
-          if (sortBy === 'views') {
-            filtered.sort((a, b) => b.views - a.views);
-          } else if (sortBy === 'likes') {
-            filtered.sort((a, b) => b.likes - a.likes);
-          } else {
-            filtered.sort((a, b) => b.id - a.id); // 최신순은 id 기준
-          }
-
-          return filtered;
-        }
-
-        function renderPosts(page = 1) {
-          const filteredPosts = getFilteredPosts();
-          const start = (page - 1) * postsPerPage;
-          const end = start + postsPerPage;
-          const pagePosts = filteredPosts.slice(start, end);
-
-          $('#postList').empty();
-          pagePosts.forEach(post => {
-            $('#postList').append(`
-              <tr class="post-row" data-id="${post.id}">
-                <td>${post.id}</td>
-                <td>${post.title}</td>
-                <td>${post.writer}</td>
-                <td>${post.date}</td>
-                <td>${post.views}</td>
-                <td>${post.likes}</td>
-              </tr>
-            `);
-          });
-
-          renderPagination(filteredPosts.length);
-        }
-
-        function renderPagination(totalPosts) {
-          const totalPages = Math.ceil(totalPosts / postsPerPage);
-          $('#pagination').empty();
-          for (let i = 1; i <= totalPages; i++) {
-            $('#pagination').append(`<span class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</span>`);
-          }
-        }
-
-        $(document).on('click', '.page-btn', function () {
-          currentPage = parseInt($(this).data('page'));
-          renderPosts(currentPage);
+            // 완성된 URL로 페이지 이동 (페이지 번호는 1로 초기화)
+            location.href = `/community/list/${communityCode}?` + searchParams.toString();
         });
 
-      //   // 필터 변경 시 렌더링
-      //   $('input[name="region"], input[name="sort"], input[name="category"]').on('change', function () {
-      //     currentPage = 1;
-      //     renderPosts(currentPage);
-      //   });
-        //필터 변경시 적용
-        $('#applyFilterBtn').on('click',function(){
-          currentPage = 1;
-          renderPosts(currentPage);
-        })
-
-        // 초기 렌더링
-        renderPosts(currentPage);
+        // 글쓰기 버튼 클릭 이벤트
+        $('#writeBtn').on('click', function() {
+        	
+            location.href = contextPath + `/community/insert/${communityCode}`;
+        });
 
         $('#openListBtn').click(() => {
-          alert("오픈채팅방 리스트 연결");
+            alert("오픈채팅방 리스트 연결");
         });
-      });
-    </script>
+    });
+
+</script>
+
 </body>
 </html>

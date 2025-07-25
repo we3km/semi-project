@@ -2,6 +2,9 @@
 	pageEncoding="UTF-8"%>
 <%-- JSTL c태그를 사용하기 위한 태그 라이브러리 (c:url 등 사용 시 필요) --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,9 +26,47 @@
 <body>
 	<div class="container">
 		<div class="top-buttons">
-			<button class="btn" id="login-btn">로그인</button>
-			<button class="btn" id="signup-btn">회원가입</button>
+			<div class="unlogin">
+				<div class="btn" id="loginBtn">로그인</div>
+				<div class="btn" id="joinMembership">회원가입</div>
+			</div>
+			<div class="login">
+				<div class="btn" id="myPage">마이페이지</div>
+				<div class="btn" id="logoutBtn">로그아웃</div>
+			</div>
 		</div>
+		<c:choose>
+			<c:when test="${not empty sessionScope.loginUser}">
+				<script>
+					$('.unlogin').hide();
+					$('.login').show();
+				</script>
+			</c:when>
+			<c:otherwise>
+				<script>
+					$('.login').hide();
+					$('.unlogin').show();
+				</script>
+			</c:otherwise>
+		</c:choose>
+		
+		<%-- <div class="top-buttons">
+		    Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링
+		    <sec:authorize access="isAnonymous()">
+		        <div class="unlogin">
+		            <div class="btn" id="loginBtn">로그인</div>
+		            <div class="btn" id="joinMembership">회원가입</div>
+		        </div>
+		    </sec:authorize>--%>
+		
+		    <%--로그인했을 때만 이 div를 렌더링
+		    <sec:authorize access="isAuthenticated()">
+		        <div class="login">
+		            <div class="btn" id="myPage">마이페이지</div>
+		            <div class="btn" id="logoutBtn">로그아웃</div>
+		        </div>
+		    </sec:authorize>
+		</div> --%>
 
 		<div class="headline">IT다</div>
 		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
@@ -35,57 +76,59 @@
 				<!-- 거래유형 드롭다운 -->
 				<div class="dropdown" id="deal-type-dropdown">
 					<button class="dropbtn">
-						<span class="dropbtn_content">거래유형</span> <span
-							class="dropbtn_click" aria-hidden="true"> <svg
-								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-								width="16" height="16" viewBox="0 0 24 24">
-                <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
-              </svg>
-						</span>
-					</button>
+				        <span class="dropbtn_content">거래유형</span>
+				        <span class="dropbtn_click" aria-hidden="true">
+				            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+				                 width="16" height="16" viewBox="0 0 24 24">
+				                  <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
+				            </svg>
+				        </span>
+				    </button>
+					
+					<!-- 목록 -->
 					<div class="dropdown-content">
-						<div class="category">전체</div>
-						<div class="category">대여</div>
-						<div class="category">교환</div>
-						<div class="category">나눔</div>
-						<div class="category">경매</div>
-						<div class="category">커뮤니티</div>
-					</div>
+				        <c:forEach var="entry" items="${mainCategoryType}">
+				            <div class="category"
+				                data-id="${entry.value.categoryId}"
+				                data-gubun="${entry.value.categoryGubun}"
+				                data-name="${entry.value.category}">
+				                ${entry.value.category}
+				            </div>
+				        </c:forEach>
+				    </div>
 				</div>
 
 				<!-- 상품유형 드롭다운 -->
 				<div class="dropdown" id="product-type-dropdown">
 					<button class="dropbtn">
-						<span class="dropbtn_content">상품유형</span> <span
-							class="dropbtn_click" aria-hidden="true"> <svg
-								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-								width="16" height="16" viewBox="0 0 24 24">
-                <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
-              </svg>
+						<span class="dropbtn_content">상품유형</span> 
+						<span class="dropbtn_click" aria-hidden="true"> 
+							<svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+									width="16" height="16" viewBox="0 0 24 24">
+	                			<path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
+	              			</svg>
 						</span>
 					</button>
+				    
 					<div class="dropdown-content">
-						<div class="category">전체</div>
-						<div class="category">의류</div>
-						<div class="category">전자기기</div>
-						<div class="category">생활가전</div>
-						<div class="category">가구</div>
-						<div class="category">도서</div>
-						<div class="category">뷰티</div>
-						<div class="category">식품</div>
-						<div class="category">스포츠</div>
+						
 					</div>
 				</div>
 			</div>
 
 			<!-- 검색창 -->
 			<div class="search-bar">
-				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
+				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" />
+			  	<img src="${pageContext.request.contextPath}/resources/images/search.png"
+			       alt="search icon"
+			       id="search-btn"
+			       style="cursor: pointer;" />
+				<%-- <input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
 					src="${pageContext.request.contextPath}/resources/images/search.png" alt="search icon" id="search-btn"
-					style="cursor: pointer;" />
+					style="cursor: pointer;" /> --%>
 			</div>
 		</div>
-
+		
 
 		<div class="cards">
 			<div class="card">
@@ -110,100 +153,367 @@
 			</div>
 		</div>
 	</div>
-	
 	<script>
-  $(document).ready(function () {
+	$(document).ready(function () {
+	    // JSP에서 contextPath 변수 선언
+	    const contextPath = '${pageContext.request.contextPath}';
+	    
+	    // controller에서 받은 데이터 변환
+	    const subCategoryData={
+	    		//board 카테고리목록
+	    		board : [
+	    			<c:forEach var="item" items="${productCategories}">
+	                	{ id: "${item.categoryId}", name: "${item.category}" },
+	            	</c:forEach>
+	    		],
+	    		//community 카테고리 목록
+	    		community : [
+	    			<c:forEach var="item" items="${communityTypes}">
+	                	{ id: "${item.communityCd}", name: "${item.communityName}" },
+	            	</c:forEach>
+	    		]
+	    };
+	    
+	    let selectedCategoryId = null;
+	    let selectedCategoryGubun = null;
+	    let selectedProcuctTypeId = null;
+	
+	    // 드롭다운 화살표 클릭 시 목록 열기
+	    $('.dropbtn_click').on('click', function (e) {
+	        e.stopPropagation();
+	        const dropdown = $(this).closest('.dropdown');
+	        // 현재 드롭다운을 제외한 다른 모든 드롭다운은 닫기
+	        $('.dropdown-content').not(dropdown.find('.dropdown-content')).removeClass('show');
+	        // 현재 드롭다운 목록 보이기/숨기기
+	        dropdown.find('.dropdown-content').toggleClass('show');
+	    });
+	    $(window).on('click', () => $('.dropdown-content').removeClass('show'));
+	    
+	 // [수정 2] '거래유형' 드롭다운 클릭 이벤트 분리
+	    $('#deal-type-dropdown').on('click', '.category', function () {
+	        const dropdown = $(this).closest('.dropdown');
+	        const name = $(this).data('name');
+	        
+	        // 선택된 거래유형의 ID와 Gubun 저장
+	        selectedCategoryId = $(this).data('id');
+	        selectedCategoryGubun = $(this).data('gubun');
+
+	        // 거래유형 버튼의 제목을 선택한 항목으로 변경
+	        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
+	        dropdown.find('.dropdown-content').removeClass('show');
+
+	        // --- 상품유형 드롭다운을 동적으로 변경하는 로직 ---
+	        const $productDropdown = $('#product-type-dropdown .dropdown-content');
+	        const $productBtnText = $('#product-type-dropdown .dropbtn_content');
+
+	        $productDropdown.empty(); // 기존 목록 비우기
+	        $productBtnText.text('상품유형'); // 버튼 텍스트 초기화
+	        selectedProductTypeId = null; // 이전에 선택했던 상품유형 값 초기화
+
+	        let dataToPopulate = [];
+	        const id = Number(selectedCategoryId);
+
+	        if (id >= 6 && id <= 9) { // 대여, 교환 등
+	            dataToPopulate = subCategoryData.board;
+	        } else if (id === 10) { // 커뮤니티
+	            dataToPopulate = subCategoryData.community;
+	        }
+
+	        // 새 목록 생성 및 추가
+	        dataToPopulate.forEach(item => {
+	            const categoryDiv = $('<div></div>')
+	                .addClass('category')
+	                .attr('data-id', item.id)
+	                .attr('data-name', item.name)
+	                .text(item.name);
+	            $productDropdown.append(categoryDiv);
+	        });
+	    });
+
+	    // [추가] '상품유형' 드롭다운 클릭 이벤트 (동적으로 생성되므로 이벤트 위임 방식 사용)
+	    $('#product-type-dropdown').on('click', '.category', function() {
+	        selectedProductTypeId = $(this).data('id'); // 선택한 상품유형 ID 저장
+	        const name = $(this).data('name');
+	        $(this).closest('.dropdown').find('.dropbtn_content').text(name).css('color', '#252525');
+	        $(this).closest('.dropdown').find('.dropdown-content').removeClass('show');
+	    });
+
+
+	    // [수정 3] 검색 버튼 클릭 시 상품유형 파라미터 추가
+	    $('#search-btn').on('click', function () {
+	        if (!selectedCategoryId) {
+	            alert("거래유형을 선택해주세요.");
+	            return;
+	        }
+	        
+	        const keyword = $("#search-input").val().trim();
+	        const params = new URLSearchParams();
+
+	        if(keyword) {
+	            params.append('keyword', keyword);
+	        }
+	        // 선택된 상품유형 ID가 있으면 'category' 파라미터로 추가
+	        if(selectedProductTypeId) {
+	            params.append('category', selectedProductTypeId);
+	        }
+
+	        let url = "";
+	        const id = Number(selectedCategoryId);
+
+	        if (id >= 6 && id <= 9) {
+	            url = contextPath + "/board/" + selectedCategoryGubun + "/list";
+	        } else if (id === 10) {
+	            url = contextPath + "/community/list/all";
+	        } else {
+	            alert("잘못된 카테고리입니다.");
+	            return;
+	        }
+	        
+	        const queryString = params.toString();
+	        location.href = url + (queryString ? '?' + queryString : '');
+	    });
+	    
+	    // --- 나머지 이벤트 핸들러 (기존과 동일) ---
+	    $('#loginBtn').click(() => location.href = contextPath + '/user/tempLogin');
+	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
+	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
+	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
+	    $('.card').click(function () {
+	        const title = $(this).find('.card-title').text().trim();
+	        let targetUrl = '';
+	        switch(title) {
+	            case '대여': targetUrl = contextPath + '/rent/list'; break;
+	            case '교환': targetUrl = contextPath + '/exchange/list'; break;
+	            case '나눔': targetUrl = contextPath + '/share/list'; break;
+	            case '경매': targetUrl = contextPath + '/auction/list'; break;
+	            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
+	            default: alert('해당 페이지가 없습니다.'); return;
+	        }
+	        window.location.href = targetUrl;
+	    });
+	
+	   /*  // 드롭다운 메뉴 항목 클릭 시
+	    $('.dropdown .category').on('click', function () {
+	        const dropdown = $(this).closest('.dropdown');
+	        const name = $(this).data("name");
+	
+	        // 클릭된 항목의 data 속성 값 저장
+	        selectedCategoryId = $(this).data("id");
+	        selectedCategoryGubun = $(this).data("gubun");
+	
+	        // 현재 드롭다운의 제목만 변경하고 목록 닫기
+	        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
+	        dropdown.find('.dropdown-content').removeClass('show');
+	    });
+	
+	    // 화면의 다른 곳을 클릭하면 모든 드롭다운 닫기
+	    $(window).on('click', function () {
+	        $('.dropdown-content').removeClass('show');
+	    });
+	
+	    // 검색 버튼 클릭 이벤트
+	    $('#search-btn').on('click', function () {
+	        if (!selectedCategoryId || !selectedCategoryGubun) {
+	            alert("거래유형을 선택해주세요.");
+	            return;
+	        }
+	        
+	        const keyword = $("#search-input").val().trim();
+	        if (!keyword) {
+	            alert("검색어를 입력해주세요.");
+	            return;
+	        }
+	
+	        let url = "";
+	        // categoryId를 숫자로 변환하여 비교
+	        const id = Number(selectedCategoryId);
+	
+	        if (id >= 6 && id <= 9) { // 대여, 교환, 나눔, 경매
+	            url = contextPath + "/board/" + selectedCategoryGubun + "/list?keyword=" + encodeURIComponent(keyword);
+	        } else if (id === 10) { // 커뮤니티
+	            url = contextPath + "/community/list/all?keyword=" + encodeURIComponent(keyword);
+	        } else {
+	            alert("잘못된 카테고리입니다.");
+	            return;
+	        }
+	        location.href = url;
+	    }); 
+	    
+	    // 로그인/로그아웃/마이페이지/회원가입 버튼 이벤트
+	    $('#loginBtn').click(() => location.href = contextPath + '/user/tempLogin');
+	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
+	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
+	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
+	
+	    // 카드 클릭 이벤트
+	    $('.card').click(function () {
+	        const title = $(this).find('.card-title').text().trim();
+	        let targetUrl = '';
+	        switch(title) {
+	            case '대여': targetUrl = contextPath + '/rent/list'; break;
+	            case '교환': targetUrl = contextPath + '/exchange/list'; break;
+	            case '나눔': targetUrl = contextPath + '/share/list'; break;
+	            case '경매': targetUrl = contextPath + '/auction/list'; break;
+	            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
+	            default: alert('해당 페이지가 없습니다.'); return;
+	        }
+	        window.location.href = targetUrl;
+	    });*/
+	});
+	</script>
+	
+	<!-- <script>
+$(document).ready(function () {
     // 드롭다운 클릭 열기
     $('.dropbtn_click').on('click', function (e) {
-      e.stopPropagation();
-      const dropdown = $(this).closest('.dropdown');
-      $('.dropdown-content').not(dropdown.find('.dropdown-content')).removeClass('show');
-      dropdown.find('.dropdown-content').toggleClass('show');
+        e.stopPropagation();
+        const dropdown = $(this).closest('.dropdown');
+        $('.dropdown-content').not(dropdown.find('.dropdown-content')).removeClass('show');
+        dropdown.find('.dropdown-content').toggleClass('show');
     });
 
     // 항목 클릭 시 텍스트 설정
     $('.dropdown .category').on('click', function () {
-      const value = $(this).text();
-      const dropdown = $(this).closest('.dropdown');
-      dropdown.find('.dropbtn_content').text(value).css('color', '#252525');
-      dropdown.find('.dropdown-content').removeClass('show');
+        const value = $(this).text();
+        const dropdown = $(this).closest('.dropdown');
+        dropdown.find('.dropbtn_content').text(value).css('color', '#252525');
+        dropdown.find('.dropdown-content').removeClass('show');
     });
 
     // 외부 클릭 시 닫기
     $(window).on('click', function () {
-      $('.dropdown-content').removeClass('show');
+        $('.dropdown-content').removeClass('show');
     });
 
-    // 아이콘 클릭
-    $('.search img').click(function () {
-      alert('검색 아이콘 클릭!');
-    });
+ // 로그인 클릭 시
+	$('#loginBtn').click(
+			function() {
+				//로그인 페이지로 이동
+				alert(`로그인창`);
+				location.href = contextPath
+						+ '/user/tempLogin';
+				/* location.href = contextPath + '/user/login'; */
 
-    // 로그인 클릭 핸들러
-    function loginClickHandler() {
-      alert('로그인창');
-      $('#login-btn').text('로그아웃');
-      $('#signup-btn').text('마이페이지');
+				$('.unlogin').hide();
+				$('.login').css('display', 'flex');
+				$('.login_effect').show();
+			});
+	// 로그아웃 클릭 시
+	$('#logoutBtn').click(
+			function() {
+				//로그아웃
+				alert(`로그아웃 하였습니다`);
+				location.href = contextPath
+						+ '/user/logout';
 
-      $('#login-btn').off('click').on('click', logoutClickHandler);
-      $('#signup-btn').off('click').on('click', function () {
-        alert('마이페이지');
-      });
-    }
+				$('.login').hide();
+				$('.login_effect').hide();
+				$('.unlogin')
+						.css('display', 'flex');
+			});
 
-    // 로그아웃 클릭 핸들러
-    function logoutClickHandler() {
-      alert('로그아웃');
-      $('#login-btn').text('로그인');
-      $('#signup-btn').text('회원가입');
+	//회원가입 이동
+	$('#joinMembership').click(function() {
+		location.href = contextPath + '/user/join';
+	});
 
-      $('#login-btn').off('click').on('click', loginClickHandler);
-      $('#signup-btn').off('click').on('click', function () {
-        alert('회원가입');
-      });
-    }
+	//마이페이지 이동
+	$('#myPage').click(
+			function() {
+				location.href = contextPath
+						+ '/user/mypage';
+			});
+    
+    // JSP에서 contextPath 변수 선언
+    const contextPath = '${pageContext.request.contextPath}';
 
-    $('#login-btn').on('click', loginClickHandler);
-    $('#signup-btn').on('click', function () {
-      alert('회원가입');
-    });
-
+    // =================================================================
+    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 핵심 수정 사항 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+    // =================================================================
     // 검색 버튼 클릭 이벤트
     $('#search-btn').on('click', function () {
-      const dealType = $('#deal-type-dropdown .dropbtn_content').text().trim();
-      const productType = $('#product-type-dropdown .dropbtn_content').text().trim();
-      const searchText = $('#search-input').val().trim();
+        // 1. 필터 값 가져오기
+        const dealTypeText = $('#deal-type-dropdown .dropbtn_content').text().trim();
+        const productType = $('#product-type-dropdown .dropbtn_content').text().trim();
+        const keyword = $('#search-input').val().trim();
 
-      alert(`거래유형: ${dealType}\n상품유형: ${productType}\n검색어: ${searchText}`);
+        // 2. 거래 유형에 따라 기본 URL 설정
+        let baseUrl = '';
+        switch (dealTypeText) {
+            case '대여':
+                baseUrl = contextPath + '/rent/list';
+                break;
+            case '교환':
+                baseUrl = contextPath + '/exchange/list';
+                break;
+            case '나눔':
+                baseUrl = contextPath + '/share/list';
+                break;
+            case '경매':
+                baseUrl = contextPath + '/auction/list';
+                break;
+            case '커뮤니티':
+                baseUrl = contextPath + '/community/list/all';
+                break;
+            case '거래유형': // 기본값일 경우
+            case '전체':     // '전체'를 선택했을 경우
+                alert('검색할 거래 유형을 먼저 선택해주세요.');
+                return; // 함수 종료
+            default:
+                alert('유효하지 않은 거래 유형입니다.');
+                return;
+        }
+
+        // 3. URL 파라미터 만들기
+        const params = new URLSearchParams();
+        if (productType && productType !== '상품유형') {
+            params.append('productType', productType);
+        }
+        if (keyword) {
+            params.append('keyword', keyword);
+        }
+
+        // 4. 최종 URL로 이동
+        const queryString = params.toString();
+        if (queryString) {
+            window.location.href = baseUrl + '?' + queryString;
+        } else {
+            window.location.href = baseUrl;
+        }
     });
+    // =================================================================
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 핵심 수정 사항 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    // =================================================================
 
-    const contextPath = '<%=request.getContextPath()%>';
-
+    // 카드 클릭 이벤트 (기존과 동일)
     $('.card').click(function () {
-      const title = $(this).find('.card-title').text().trim();
+        const title = $(this).find('.card-title').text().trim();
 
-      switch(title) {
-        case '대여':
-          window.location.href = contextPath + '/rent/list';
-          break;
-        case '교환':
-          window.location.href = contextPath + '/exchange/list';
-          break;
-        case '나눔':
-          window.location.href = contextPath + '/share/list';
-          break;
-        case '경매':
-          window.location.href = contextPath + '/auction/lsit';
-          break;
-        case '커뮤니티':
-          window.location.href = contextPath + '/community/list';
-          break;
-        default:
-          alert('해당 페이지가 없습니다.');
-      }
+        let targetUrl = '';
+        switch(title) {
+            case '대여':
+                targetUrl = contextPath + '/rent/list';
+                break;
+            case '교환':
+                targetUrl = contextPath + '/exchange/list';
+                break;
+            case '나눔':
+                targetUrl = contextPath + '/share/list';
+                break;
+            case '경매':
+                targetUrl = contextPath + '/auction/list';
+                break;
+            case '커뮤니티':
+                targetUrl = contextPath + '/community/list/all';
+                break;
+            default:
+                alert('해당 페이지가 없습니다.');
+                return;
+        }
+        window.location.href = targetUrl;
     });
-  });
-</script>
+});
+</script> -->
 
 	
 

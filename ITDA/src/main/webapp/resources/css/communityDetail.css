@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
 
         * {
             margin: 0;
@@ -89,7 +88,7 @@
             line-height: 1.7;
             white-space: pre-wrap;
             margin-bottom: 30px;
-            width: 90%;
+            width: 95%;
 
         }
 
@@ -146,20 +145,24 @@
             cursor: pointer;
         }
 
-
         .vote-buttons {
             margin-bottom: 40px;
-            text-align: center;
+            text-align: center; 
+        }
+        
+        .vote-buttons form{
+        display : inline-block;
+        marfin : 0 10px
         }
 
         .vote-buttons button {
             font-size: 16px;
-            background: none;
             border: none;
             margin: 0px 20px;
             cursor: pointer;
             color: #444;
         }
+       
 
         .vote-buttons span {
             margin-left: 5px;

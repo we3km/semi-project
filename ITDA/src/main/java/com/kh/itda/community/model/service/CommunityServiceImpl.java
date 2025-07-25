@@ -3,13 +3,16 @@ package com.kh.itda.community.model.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.community.model.dao.CommunityDao;
 import com.kh.itda.community.model.vo.Community;
+import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
+import com.kh.itda.community.model.vo.CommunityReaction;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,5 +67,60 @@ public class CommunityServiceImpl implements CommunityService{
 		
 		return result;
 	}
+
+	@Override
+	public int increaseCount(int communityNo) {
+		return communityDao.increaseCount(communityNo);
+	}
+
+	@Override
+	public CommunityExt selectCommunity(int communityNo) {
+		return communityDao.selectCommunity(communityNo);
+	}
+
+	
+	// 게시글 좋아요/실허용
+	@Override
+	public String handleReaction(CommunityReaction reaction) {
+	    CommunityReaction existing = communityDao.selectUserReaction(reaction.getUserNo(), reaction.getCommunityNo());
+
+	    if (existing == null) {
+	        try {
+	            communityDao.insertReaction(reaction);
+	            return reaction.getType();
+	        } catch (DuplicateKeyException e) {
+	            // 이미 존재하는 경우 → 기존 반응 조회해서 처리
+	            return communityDao.selectUserReaction(reaction.getUserNo(), reaction.getCommunityNo()).getType();
+	        }
+	    }
+
+	    if (existing.getType().equals(reaction.getType())) {
+	        communityDao.deleteReaction(reaction);
+	        return "NONE";
+	    } else {
+	        communityDao.updateReaction(reaction);
+	        return reaction.getType();
+	    }
+	}
+
+	@Override
+	public int getLikeCount(int communityNo) {
+		return communityDao.getLikeCount(communityNo);
+	}
+
+	@Override
+	public int getDislikeCount(int communityNo) {
+		return communityDao.getDislikeCount(communityNo);
+	}
+
+	@Override
+	public CommunityReaction userReactionNo(int userNo, int communityNo) {
+		System.out.println(">>> selectUserReaction() 호출됨");
+		return communityDao.userReactionNo(userNo,communityNo);
+	}
+
+	
+
+
 
 }

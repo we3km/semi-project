@@ -1,91 +1,119 @@
-$(function () {
-            let tags = [];
+/**
+ * communityWrite.js (jQuery 버전)
+ */
+$(document).ready(function () {
 
-            //형식 초기화 형식
-            function resetForm() {
-                $('#category').val('');
-                $('#title').val('');
-                $('#tagInput').val('');
-                $('#content').val('');
-                $('#fileInput').val('');
-                tags = [];
-                $('#tagList').empty();
-                $('#fileName').text('');
+    const $cancelBtn = $('#cancelBtn');
+    const $submitBtn = $('#submitBtn');
+    const $tagInput = $('#tagInput');
+    const $tagList = $('#tagList');
+    const $fileInput = $('#fileInput');
+    const $fileNameSpan = $('#fileName');
+
+    let tags = [];
+
+    // 작성 취소
+    $cancelBtn.on('click', function () {
+        if (confirm('작성을 취소하시겠습니까? 변경사항이 저장되지 않습니다.')) {
+            location.href = '/community/list';
+        }
+    });
+
+    // 작성 완료
+    $submitBtn.on('click', function () {
+        submitForm();
+    });
+
+    // 태그 입력
+    $tagInput.on('keyup', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const newTagText = $(this).val().trim();
+            if (newTagText) {
+                addTag(newTagText);
+                $(this).val('');
             }
+        }
+    });
 
-            //태그 만들기
-            $('#tagInput').on('keypress', function (e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    let input = $(this).val().trim();
-                    if (input === '' || tags.includes(input)) return;
-                    if (tags.length >= 3) {
-                        alert("태그는 최대 3개까지 입력할 수 있습니다.");
-                        return;
-                    }
-                    tags.push(input);
-                    $('#tagList').append(`<span class="tag"> 
-                                                #${input}
-                                                <span class="remove-tag" data-tag="${input}">
-                                                    &times;
-                                                </span>
-                                            </span>`);
-                    $(this).val('');
-                }
-            });
+    // 파일 선택
+    $fileInput.on('change', function () {
+        if (this.files && this.files.length > 0) {
+            $fileNameSpan.text(this.files[0].name);
+        } else {
+            $fileNameSpan.text('');
+        }
+    });
 
-            // 태그지우기
-            $(document).on('click', '.remove-tag', function () {
-                const tag = $(this).data('tag');
-                tags = tags.filter(t => t !== tag);
+    // 태그 추가 함수
+    function addTag(text) {
+        if (tags.length >= 3) {
+            alert("태그는 최대 3개까지 입력할 수 있습니다.");
+            return;
+        }
+        if (tags.includes(text)) {
+            alert("이미 추가된 태그입니다.");
+            return;
+        }
+
+        tags.push(text);
+
+        const $tagSpan = $('<span>').addClass('tag').text(`#${text}`);
+        const $removeBtn = $('<span>')
+            .addClass('remove-tag')
+            .text('×')
+            .data('tag', text)
+            .on('click', function () {
+                const tagToRemove = $(this).data('tag');
+                tags = tags.filter(t => t !== tagToRemove);
                 $(this).parent().remove();
             });
 
-            //파일명 띄우기
-            $('#fileInput').on('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    $('#fileName').text(file.name);
-                } else {
-                    $('#fileName').text('');
-                }
-            });
+        $tagSpan.append($removeBtn);
+        $tagList.append($tagSpan);
+    }
 
-            //작성취소시 alert창 띄우기 및 양식 초기화
-            $('#cancelBtn').on('click', function () {
-                alert("작성이 취소되었습니다.");
-                resetForm;
-            });
+    // 폼 전송
+    function submitForm() {
+        const category = $('#category').val();
+        const title = $('#title').val().trim();
+        const content = $('#content').val().trim();
+        const file = $fileInput[0].files[0];
 
-            //작성 완료시 alert창 띄우기
-            $('#submitBtn').on('click', function () {
-                const category = $('#category').val().trim();
-                const title = $('#title').val().trim();
-                const content = $('#content').val().trim();
-                let missing = [];
+        let missing = [];
+        if (!category) missing.push("카테고리");
+        if (!title) missing.push("제목");
+        if (!content) missing.push("게시글 상세 내용");
 
-                if (!category) missing.push("카테고리");
-                if (!title) missing.push("제목");
-                if (!content) missing.push("게시글 상세 내용");
+        if (missing.length > 0) {
+            alert(`다음 항목을 작성해주세요: ${missing.join(", ")}`);
+            return;
+        }
 
-                if (missing.length > 0) {
-                    alert(`다음 항목을 작성해주세요: ${missing.join(", ")}`);
-                } else {
-                    // 태그 문자열 만들기
-                    const tagList = tags.length > 0 ? tags.map(t => `#${t}`).join(", ") : "태그 없음";
+        const formData = new FormData();
+        formData.append('category', category);
+        formData.append('title', title);
+        formData.append('content', content);
 
-                    // 파일 이름 가져오기
-                    const fileInput = $('#fileInput')[0];
-                    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "첨부된 파일 없음";
+        if (file) {
+            formData.append('file', file);
+        }
 
-                    alert(`✅ 작성이 완료되었습니다! \n
-📂 카테고리: ${category}
-📝 제목: ${title}
-💬 내용: ${content}
-🏷️ 태그: ${tagList}
-📎 파일: ${fileName}`);
-                    resetForm();
-                }
-            });
+        formData.append('tags', JSON.stringify(tags));
 
+        $.ajax({
+            url: '/community/write',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert('게시글이 성공적으로 등록되었습니다.');
+                location.href = '/community/list';
+            },
+            error: function () {
+                alert('오류가 발생했습니다. 다시 시도해주세요.');
+            }
         });
+    }
+});
