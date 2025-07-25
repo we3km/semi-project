@@ -8,7 +8,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.kh.itda.openchat.model.vo.Location;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
 import com.kh.itda.openchat.model.vo.OpenChatImg;
 

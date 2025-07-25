@@ -2,6 +2,8 @@ package com.kh.itda.openchat.model.vo;
 
 
 
+import com.kh.itda.location.model.vo.Location;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,8 +19,13 @@ public class OpenChatRoom {
 	private int userNum;
 	
 	private int fileId;
+	private String fileName;
 	
-	private String fileName;  
+	private long locationId;
+	private Location location;
+	
+	private String sido;
+    private String sigungu;
 	
 }
     

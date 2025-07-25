@@ -7,6 +7,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script
+	src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <meta charset="UTF-8">
 <title>오픈 채팅방 리스트</title>
 <link rel="stylesheet" href="${contextPath}/resources/css/openlist.css">
@@ -41,10 +43,14 @@
 									<div class="chat-img-box">
 										<c:choose>
 											<c:when test="${not empty chatRoom.fileName}">
-												<img src="${contextPath}/resources/images/chat/${chatRoom.fileName}" alt="채팅방 이미지" class="chat-img" />
+												<img
+													src="${contextPath}/resources/images/chat/${chatRoom.fileName}"
+													alt="채팅방 이미지" class="chat-img" />
 											</c:when>
 											<c:otherwise>
-												<img src="${contextPath}/resources/images/chat/openchat_default.jpg" alt="기본 이미지" class="chat-img" />
+												<img
+													src="${contextPath}/resources/images/chat/openchat_default.jpg"
+													alt="기본 이미지" class="chat-img" />
 											</c:otherwise>
 										</c:choose>
 									</div>
@@ -52,7 +58,9 @@
 
 									<div class="chat-tags" style="text-align: center;">
 										<c:if test="${not empty chatRoom.tagContent}">
-											<c:forEach var="tag" items="${fn:split(chatRoom.tagContent, ',')}" varStatus="status">
+											<c:forEach var="tag"
+												items="${fn:split(chatRoom.tagContent, ',')}"
+												varStatus="status">
 												<c:if test="${status.index lt 3}">
 													<span class="tag">#${tag}</span>
 												</c:if>
@@ -61,8 +69,7 @@
 									</div>
 
 									<div class="chat-members" style="text-align: center;">
-										참여인원: ${chatRoom.chatCount} / ${chatRoom.maxchatCount}
-									</div>
+										참여인원: ${chatRoom.chatCount} / ${chatRoom.maxchatCount}</div>
 
 									<div class="join-btn-box" style="text-align: center;">
 										<button type="button" class="join-btn open-detail"
@@ -107,7 +114,7 @@
 						<h2>채팅방 정보</h2>
 						<img id="detailImage" class="chat-img"
 							style="width: 100%; border-radius: 10px;" />
-							<!-- 모달 상세정보 타이틀 -->
+						<!-- 모달 상세정보 타이틀 -->
 						<div class="chat-title" id="detailTitle"></div>
 						<!-- 모달 상세정보 태그 -->
 						<div class="chat-tags" id="detailTags"></div>
@@ -117,7 +124,8 @@
 						<div class="chat-explanation" id="detailExplanation"
 							style="margin-top: 10px; white-space: pre-line; font-size: 14px;"></div>
 						<div style="text-align: center; margin-top: 16px;">
-							<form id="enterForm" method="get" action="${contextPath}/chat/enter">
+							<form id="enterForm" method="get"
+								action="${contextPath}/chat/enter">
 								<input type="hidden" name="roomId" id="roomIdInput">
 								<button type="submit" class="submit-btn">입장하기</button>
 							</form>
@@ -143,12 +151,25 @@
 										style="opacity: 0; position: absolute; left: -9999px;" />
 								</div>
 							</div>
-							<!-- <div class="form-row">
-								<label for="address">위치:</label> <input type="text" id="address"
-									name="address" readonly placeholder="위치 불러오는 중..." />
-							</div> -->
-							<input type="hidden" id="latitude" name="latitude" /> <input
-								type="hidden" id="longitude" name="longitude" />
+
+							<!-- 위도, 경도 숨김 -->
+							<input type="hidden" id="latitude" name="latitude" value="" /> <input
+								type="hidden" id="longitude" name="longitude" value="" /> <input
+								type="hidden" id="sido" name="sido" value="" /> <input
+								type="hidden" id="sigungu" name="sigungu" value="" />
+
+							<!-- 위치 자동 입력 & 수정 -->
+							<div class="form-row">
+								<label for="locationText">지역:</label>
+								<div style="display: flex; align-items: center;">
+									<input type="text" id="locationText" name="locationText"
+										placeholder="위치 불러오는 중..." style="flex: 1; margin-right: 8px;" />
+									<button type="button" onclick="getLocation()"
+										style="margin-right: 4px;">새로고침</button>
+									<button type="button" id="editLocationBtn">주소검색</button>
+								</div>
+							</div>
+
 
 							<div class="form-row">
 								<label for="chatName">제목:</label> <input type="text"
@@ -162,7 +183,8 @@
 
 							<div class="form-row">
 								<label for="maxchatCount">최대인원:</label> <input type="number"
-									id="maxchatCount" name="maxchatCount" min="1" max ="30" value="2" />
+									id="maxchatCount" name="maxchatCount" min="1" max="30"
+									value="2" />
 							</div>
 
 							<label for="explanation" class="details-label">세부사항:</label>
@@ -170,7 +192,7 @@
 								maxlength="2000" class="details-textarea"></textarea>
 
 							<div style="margin-top: 10px; text-align: right;">
-								<button type="submit" class="submit-btn">개설하기</button>
+								<button type="submit" class="submit-btn" id="submitBtn" disabled>개설하기</button>
 							</div>
 						</form>
 					</div>
@@ -183,17 +205,74 @@
 	<script>
 const contextPath = '${contextPath}';
 
-// [1] 상세 모달 열기
+// 1) 위치 가져오기
+function getLocation() {
+  if (!navigator.geolocation) {
+    alert("이 브라우저에서는 위치 정보가 지원되지 않습니다.");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(success, error, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  });
+}
+
+function success(position) {
+	  const lat = position.coords.latitude;
+	  const lng = position.coords.longitude;
+	  console.log("위도:", lat, "경도:", lng);
+
+	  // 위도/경도 hidden input에 저장
+	  document.getElementById("latitude").value  = lat;
+	  document.getElementById("longitude").value = lng;
+
+	  // 카카오 reverse API 호출
+	  fetch(contextPath + "/kakao/reverse?lat=" + lat + "&lng=" + lng)
+	    .then(res => {
+	      if (!res.ok) throw new Error(res.status);
+	      return res.json();
+	    })
+	    .then(data => {
+	    	const fullAddr = data.address || "";
+	    	document.getElementById("locationText").value = fullAddr
+	    	
+	    	const parts= fullAddr.split(" ");
+	        const sido =  parts[0] || ""; // e.g. "서울특별시" 또는 "경기도"
+	        const r2   =  parts[1] || ""; // e.g. "강남구" or "수원시"
+	        const r3   =  parts[2] || "";// e.g. "삼성동" or "팔달구"
+	        
+	        let sigungu;
+		    if ( r2.endsWith("시") || r2.endsWith("군") ) {
+		      sigungu = r2 + r3;    
+		    } else {
+		      sigungu = r2;         
+		    }
+	 
+	      // 시도·시군구 hidden input에 저장
+	      document.getElementById("sido").value    = data.sido;
+	      document.getElementById("sigungu").value = data.sigungu;
+	      
+	      console.log("시:", sido, "구:", sigungu);
+	      
+	      document.getElementById("submitBtn").disabled = false;
+	    })
+	    .catch(err => {
+	      console.error("주소 가져오기 실패", err);
+	      document.getElementById("locationText").value = "주소 오류";
+	    });
+	}
+function error(err) {
+  alert("위치 정보를 가져올 수 없습니다. 위치 권한을 허용해주세요.");
+}
+
+// 상세 모달 열기/닫기
 function showDetailModal() {
   document.getElementById("detailModal").classList.remove("hidden");
 }
-
-// [2] 상세 모달 닫기 + 내용 초기화
 function hideDetailModal() {
   const modal = document.getElementById("detailModal");
   modal.classList.add("hidden");
-
-  // 🧹 모달 내 요소 초기화
   document.getElementById("detailTags").innerHTML = '';
   document.getElementById("detailImage").src = '';
   document.getElementById("detailTitle").textContent = '';
@@ -202,77 +281,128 @@ function hideDetailModal() {
   document.getElementById("roomIdInput").value = '';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  // [1] 채팅방 리스트 > 상세정보 보기 (참여 버튼)
-  document.querySelectorAll(".open-detail").forEach(btn => {
-    btn.addEventListener("click", function () {
-      const chatRoomID = this.dataset.roomId;
-      const image = this.dataset.img || contextPath + "/resources/images/chat/openchat_default.jpg";
-      const name = this.dataset.name;
-      const tags = this.dataset.tags;
-      const count = this.dataset.count;
-      const max = this.dataset.max;
-      const explanation = this.dataset.des;
 
+
+document.addEventListener("DOMContentLoaded", function() {
+  // ◼ 개설 모달 열기
+  const createBtn = document.querySelector(".create-chat-btn");
+  const createModal = document.getElementById("modal");
+  createBtn.addEventListener("click", function() {
+    createModal.classList.remove("hidden");
+    createModal.style.display = "block";
+    getLocation();
+  });
+
+  // ◼ 개설 모달 닫기
+  document.getElementById("closeModalBtn")
+          .addEventListener("click", () => {
+    createModal.classList.add("hidden");
+    createModal.style.display = "none";
+  });
+
+  // ◼ 주소 검색/수정 버튼 (Daum 우편번호)
+document.getElementById("editLocationBtn")
+  .addEventListener("click", () => {
+    new daum.Postcode({
+      oncomplete: function(data) {
+        // 1) 화면에 주소 세팅
+        const fullAddr = data.address
+        document.getElementById("locationText").value = fullAddr;
+
+        // 2) 위도/경도도 함께 세팅(필요하다면)
+        document.getElementById("latitude").value  = data.y;
+        document.getElementById("longitude").value = data.x;
+
+        // 3) Daum이 준 시/도·시/군/구를 hidden 필드에 바로 채워주기
+        const parts= fullAddr.split(" ");
+        const sido =  parts[0] || ""; // e.g. "서울특별시" 또는 "경기도"
+        const r2   =  parts[1] || ""; // e.g. "강남구" or "수원시"
+        const r3   =  parts[2] || "";// e.g. "삼성동" or "팔달구"
+
+	    
+	    let sigungu;
+	    if ( r2.endsWith("시") || r2.endsWith("군") ) {
+	      sigungu = r2 + r3;    
+	    } else {
+	      sigungu = r2;         
+	    }
+	    
+        document.getElementById("sido").value    = sido;
+        document.getElementById("sigungu").value = sigungu;
+
+        // 4) 버튼 활성화
+        document.getElementById("submitBtn").disabled = false;
+
+        // (선택) 디버그 로그
+        console.log("Daum postcode → 시:", sido, "구:", sigungu);
+      }
+    }).open();
+  });
+
+  // ◼ 상세 모달 > 참여 버튼 클릭
+  document.querySelectorAll(".open-detail").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const chatRoomID = this.dataset.roomId;
+      const image      = this.dataset.img
+                         || contextPath + "/resources/images/chat/openchat_default.jpg";
+      const name       = this.dataset.name;
+      const tags       = this.dataset.tags;
+      const count      = this.dataset.count;
+      const max        = this.dataset.max;
+      const explanation= this.dataset.des;
       if (!chatRoomID || !name) return;
 
-      document.getElementById("detailImage").src = image;
-      document.getElementById("detailTitle").textContent = name;
-
+      document.getElementById("detailImage").src            = image;
+      document.getElementById("detailTitle").textContent    = name;
       const tagContainer = document.getElementById("detailTags");
-      tagContainer.innerHTML = ''; // 중복 방지
+      tagContainer.innerHTML = '';
       if (tags) {
         tags.split(',').forEach(tag => {
           const span = document.createElement('span');
-          span.className = 'tag';
+          span.className   = 'tag';
           span.textContent = '#' + tag.trim();
           tagContainer.appendChild(span);
         });
       }
-
-      document.getElementById("detailMembers").textContent = "참여 인원: " + count + " / " + max;
-      document.getElementById("detailExplanation").textContent = explanation || '설명이 없습니다.';
-      document.getElementById("enterForm").action = `${contextPath}/chat/enter`;
+      document.getElementById("detailMembers").textContent     = 
+        "참여 인원: " + count + " / " + max;
+      document.getElementById("detailExplanation").textContent = 
+        explanation || '설명이 없습니다.';
+      document.getElementById("enterForm").action = 
+        `${contextPath}/chat/enter`;
       document.getElementById("roomIdInput").value = chatRoomID;
       showDetailModal();
     });
   });
+  
+  function validateForm(form) {
+	  if (!form.sido.value || !form.sigungu.value) {
+	    alert("위치 정보가 아직 설정되지 않았습니다.\n“새로고침” 또는 “주소검색” 버튼을 눌러주세요.");
+	    return false;
+	  }
+	  return true;
+	}
 
-  document.getElementById("closeDetailBtn").onclick = hideDetailModal;
+  // ◼ 상세 모달 닫기
+  document.getElementById("closeDetailBtn")
+          .addEventListener("click", hideDetailModal);
 
-  // [2] 채팅방 개설 모달 열기
-  document.querySelector(".create-chat-btn").onclick = () => {
-    const modal = document.getElementById("modal");
-    modal.classList.remove("hidden");
-    modal.style.display = "block";
-  };
-
-  // [2] 채팅방 개설 모달 닫기
-  document.getElementById("closeModalBtn").onclick = () => {
-    const modal = document.getElementById("modal");
-    modal.classList.add("hidden");
-    modal.style.display = "none";
-  };
-
-  // [3] 이미지 미리보기
-  const addImageBtn = document.getElementById('addImageBtn');
-  const imageFileInput = document.getElementById('imageFile');
-  const previewContainer = document.getElementById('previewContainer');
-
-  addImageBtn.onclick = () => imageFileInput.click();
-
-  imageFileInput.addEventListener('change', function () {
+  // ◼ 이미지 미리보기
+  const addImageBtn     = document.getElementById('addImageBtn');
+  const imageFileInput  = document.getElementById('imageFile');
+  const previewContainer= document.getElementById('previewContainer');
+  addImageBtn.addEventListener("click", () => imageFileInput.click());
+  imageFileInput.addEventListener('change', function() {
     const files = imageFileInput.files;
     previewContainer.innerHTML = '';
-
     Array.from(files).forEach(file => {
       const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.style.width = '80px';
+      reader.onload = function(e) {
+        const img = document.createElement(onsubmit='img');
+        img.src          = e.target.result;
+        img.style.width  = '80px';
         img.style.height = '80px';
-        img.style.marginRight = '5px';
+        img.style.marginRight  = '5px';
         img.style.borderRadius = '10px';
         previewContainer.appendChild(img);
       };
@@ -281,7 +411,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
-
 
 
 </body>

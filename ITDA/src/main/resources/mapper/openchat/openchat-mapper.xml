@@ -4,44 +4,45 @@
 
 <mapper namespace="openchat">
 
+
 	<!-- 오픈 채팅방 목록 조회 -->
 	<select id="selectOpenChatRoomList"
 	resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
 	SELECT
-		r.CHATROOM_ID AS chatRoomID,
-		r.OPEN_CHAT_ROOM_NAME AS chatName,
-		COUNT(DISTINCT m.USER_NUM) AS chatCount,
-		r.MAX_CHATROOM_COUNT AS maxchatCount,
-		r.EXPLANATION AS explanation,
+		OC.CHATROOM_ID AS chatRoomID,
+		OC.OPEN_CHAT_ROOM_NAME AS chatName,
+		COUNT(DISTINCT CP.USER_NUM) AS chatCount,
+		OC.MAX_CHATROOM_COUNT AS maxchatCount,
+		OC.EXPLANATION AS explanation,
 		LISTAGG(DISTINCT t.TAG_CONTENT, ',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent,
 
-		f.FILE_ID AS fileId,
-		f.FILE_NAME AS fileName
+		F.FILE_ID AS fileId,
+		F.FILE_NAME AS fileName
 
-	FROM OPEN_CHAT r
-		LEFT JOIN CHAT_PARTICIPANT m ON r.CHATROOM_ID = m.CHATROOM_ID
-		LEFT JOIN OPENCHATROOM_TAG ot ON r.CHATROOM_ID = ot.CHATROOM_ID
-		LEFT JOIN TAG t ON ot.TAG_ID = t.TAG_ID
+	FROM OPEN_CHAT OC
+		LEFT JOIN CHAT_PARTICIPANT CP ON OC.CHATROOM_ID = CP.CHATROOM_ID
+		LEFT JOIN OPENCHATROOM_TAG OT ON OC.CHATROOM_ID = OT.CHATROOM_ID
+		LEFT JOIN TAG T ON ot.TAG_ID = T.TAG_ID
 
-		LEFT JOIN "FILE" f 
-			ON f.REF_NO = r.CHATROOM_ID 
-			AND f.CATEGORY_ID = 11
-			AND f.FILE_ID = (
+		LEFT JOIN "FILE" F 
+			ON F.REF_NO = OC.CHATROOM_ID 
+			AND F.CATEGORY_ID = 11
+			AND F.FILE_ID = (
 				SELECT MIN(FILE_ID)
 				FROM "FILE"
-				WHERE REF_NO = r.CHATROOM_ID 
+				WHERE REF_NO = OC.CHATROOM_ID 
 				AND CATEGORY_ID = 11
 			)
 
 	GROUP BY
-		r.CHATROOM_ID,
-		r.OPEN_CHAT_ROOM_NAME,
-		r.MAX_CHATROOM_COUNT,
-		r.EXPLANATION,
-		f.FILE_ID,
-		f.FILE_NAME
+		OC.CHATROOM_ID,
+		OC.OPEN_CHAT_ROOM_NAME,
+		OC.MAX_CHATROOM_COUNT,
+		OC.EXPLANATION,
+		F.FILE_ID,
+		F.FILE_NAME
 
-	ORDER BY r.CHATROOM_ID
+	ORDER BY OC.CHATROOM_ID
 </select>
 
 
@@ -72,13 +73,15 @@
 		OPEN_CHAT_ROOM_NAME,
 		OPEN_CHAT_COUNT,
 		MAX_CHATROOM_COUNT,
-		EXPLANATION
+		EXPLANATION,
+		LOCATION_ID
 		) VALUES (
 		#{chatRoomID},
 		#{chatName},
 		0,
 		#{maxchatCount},
-		#{explanation}
+		#{explanation},
+		#{locationId}
 		)
 	</insert>
 
@@ -165,25 +168,6 @@
     )
     WHERE CHATROOM_ID = #{chatRoomID}
 </update>
-
-	<insert id="insertLocation" parameterType="com.kh.itda.openchat.model.vo.Location"
-        useGeneratedKeys="true" keyProperty="locationId" keyColumn="LOCATION_ID">
-    INSERT INTO LOCATION (LOCATION_ID, LAT, LNG, SIDO, SIGUNGU, EMD)
-    VALUES (LOCATION_ID_SEQ.NEXTVAL, #{lat}, #{lng}, #{sido}, #{sigungu}, #{emd})
-</insert>
-
-<insert id="insertLocationLink">
-    INSERT INTO LOCATION_LINK (LOCATION_ID, TARGET_TYPE, TARGET_ID)
-    VALUES (#{locationId}, 'OPENCHAT', #{chatRoomId})
-</insert>
-
-<select id="findLocationIdByRegion" resultType="long">
-    SELECT LOCATION_ID
-    FROM LOCATION
-    WHERE SIDO = #{sido}
-      AND SIGUNGU = #{sigungu}
-      AND EMD = #{emd}
-</select>
 
 <select id="selectChatRoombyId" parameterType="int"
         resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">

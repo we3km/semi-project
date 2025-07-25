@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="location">
+
+
+  <!-- 시도·시군구로 Location 조회 -->
+  <select id="findBySidoSigungu" parameterType="map" resultType="com.kh.itda.location.model.vo.Location">
+    SELECT LOCATION_ID as locationId,
+           SIDO as sido, 
+           SIGUNGU as sigungu
+      FROM LOCATION
+     WHERE SIDO    = #{sido}
+       AND SIGUNGU = #{sigungu}
+  </select>
+
+  <!-- Location 삽입 (자동생성키) -->
+  <insert id="insertLocation"
+          parameterType="com.kh.itda.location.model.vo.Location">
+    <selectKey keyProperty="locationId"
+               resultType="long"
+               order="BEFORE">
+      SELECT SEQ_LOCATION_ID.NEXTVAL FROM DUAL
+    </selectKey>
+
+    INSERT INTO LOCATION (
+      LOCATION_ID,
+      SIDO,
+      SIGUNGU
+    ) VALUES (
+      #{locationId},
+      #{sido},
+      #{sigungu}
+    )
+  </insert>
+
+</mapper>

@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.itda.common.Utils;
+import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.dao.OpenChatDao;
-import com.kh.itda.openchat.model.vo.Location;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
 import com.kh.itda.openchat.model.vo.OpenChatImg;
 
@@ -29,7 +29,6 @@ public class OpenChatServiceImpl implements OpenChatService {
 
 	@Override
 	public List<OpenChatRoom> selectOpenChatRoomList() {
-
 		return dao.selectOpenChatRoomList();
 	}
 
@@ -37,9 +36,10 @@ public class OpenChatServiceImpl implements OpenChatService {
 	@Transactional(rollbackFor = Exception.class)
 	public int createOpenChat(OpenChatRoom room, List<MultipartFile> openImages, List<String> tags,
 	                          ServletContext servletContext) {
-
+		
+		
 	    log.debug(">> [START] createOpenChat");
-
+	    
 
 	    // 1. 채팅방 공통/상세 정보 등록
 	    int result = dao.insertChatRoom(room);
@@ -58,38 +58,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 	    if (p < 1) throw new RuntimeException("개설자 자동참가 실패");   
 	    
 	    int a = dao.updateOpenChatCount(chatRoomID);
-	    
-	    
-		/*
-		 * // 위치 저장 (중복 검사 포함) String[] parts = (room.getAddress() != null) ?
-		 * room.getAddress().split(" ") : new String[0];
-		 * 
-		 * String sido = parts.length > 0 ? parts[0] : null; String sigungu =
-		 * parts.length > 1 ? parts[1] : null; String emd = parts.length > 2 ? parts[2]
-		 * : null;
-		 * 
-		 * // 중복된 위치 있는지 검사 Long existingLocationId = dao.findLocationIdByRegion(sido,
-		 * sigungu, emd);
-		 * 
-		 * Long locationId = null;
-		 * 
-		 * if (existingLocationId != null) { locationId = existingLocationId;
-		 * log.debug(">> 기존 위치 존재: locationId={}", locationId); } else { Location
-		 * location = new Location(); location.setLat(room.getLatitude());
-		 * location.setLng(room.getLongitude()); location.setSido(sido);
-		 * location.setSigungu(sigungu); location.setEmd(emd);
-		 * 
-		 * int locResult = dao.insertLocation(location); if (locResult == 0) throw new
-		 * RuntimeException("위치 저장 실패"); locationId = location.getLocationId();
-		 * 
-		 * log.debug(">> 새 위치 등록 완료: locationId={}", locationId); }
-		 * 
-		 * // LOCATION_LINK 연결 int linkResult = dao.insertLocationLink(locationId,
-		 * chatRoomID); if (linkResult == 0) throw new RuntimeException("위치 연결 실패");
-		 */
-	   
-	  
-	 // 2. 이미지 저장
+
 	 // 2. 이미지 저장
 	    boolean hasImage = false;
 	    String webPath = "/resources/images/chat/";  // 오픈채팅 경로 (CATEGORY_ID = 11)
@@ -152,11 +121,8 @@ public class OpenChatServiceImpl implements OpenChatService {
 	    // 최종 성공 로그 및 결과 리턴
 	    log.debug(">> [END] createOpenChat 성공");
 	    return result;
-
-
-
-
 	}
+	
 	@Override
 	public OpenChatRoom joinChatRoom(int roomId, int userNum) {
 	    log.debug(">> joinChatRoom 호출됨: roomId={}, userNum={}", roomId, userNum);
