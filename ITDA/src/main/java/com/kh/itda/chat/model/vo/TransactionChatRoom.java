@@ -4,8 +4,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 @Data
-public class ChatRoomJoin {
-	private int userNum; // 참여할 회원 번호 
+public class TransactionChatRoom {
+	private int boardId; // 참조할 게시판 번호 
 	private int chatRoomId; // 참여할 채팅방 번호
 //	private String profileImg; // 참여하는 회원의 프로필 사진
 }

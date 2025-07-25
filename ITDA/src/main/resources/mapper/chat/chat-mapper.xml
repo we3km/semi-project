@@ -2,61 +2,79 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="chat">
 
-<!-- ==================== 채팅방 검색 ==================== 
-		- 거래 채팅방
-		- 오픈 채팅방
--->
-		<!-- SELECT CHAT_ROOM_NUM, TITLE, USER_NAME, (SELECT COUNT(*)
-												FROM CHAT_PARTICIPANT CRJ
-												WHERE CRJ.CHAT_ROOM_NO = CR.CHAT_ROOM_NO )
-		FROM CHAT_ROOM CR
-			LEFT JOIN USER_TB USING(USER_NUM)
-		WHERE CR.STATUS = 'Y'
-		ORDER BY CHATROOM_ID DESC -->
-		<!-- 살아있는 채팅방에 한해 채팅방 번호 기준 내림차순 -->
 
-<!-- 채팅방 검색 -->
+<!-- 거래 채팅방 검색 -->
 <!-- 접속한 회원이 현재 대화하고 있는 채팅방 리스트 검색 -->
-	<select id="selectChatRoomList" resultType="chatRoom">
-	SELECT
-        CR.CHATROOM_ID,
-		U.USER_NUM,
-		TC.BOARD_ID,
-		CR.STATUS,
-        CR.REF_NUM,
-        OC.OPEN_CHAT_ROOM_NAME
+	<select id="selectChatRoomList" parameterType="int" resultType="chatRoom">	
+		SELECT
+		    CP.CHATROOM_ID,
+		    CP.USER_NUM,
+		    TC.BOARD_ID,
+		    CR.STATUS,
+		    CR.REF_NUM,
+		    U.NICK_NAME,
+		    M.CHAT_CONTENT,
+		    M.SENT_AT,
+            OC.OPEN_CHAT_ROOM_NAME,
+            OC.OPEN_CHAT_COUNT
 		
-	FROM CHAT_ROOM CR
-	LEFT JOIN TRANSACTION_CHAT TC ON CR.CHATROOM_ID = TC.CHATROOM_ID
-    LEFT JOIN OPEN_CHAT OC ON CR.CHATROOM_ID = OC.CHATROOM_ID 
-	LEFT JOIN BOARD_COMMON BC ON TC.BOARD_ID = BC.BOARD_ID
-	LEFT JOIN USER_TB U ON CR.USER_NUM = U.USER_NUM
-	INNER JOIN CHAT_PARTICIPANT CP ON CR.CHATROOM_ID = CP.CHATROOM_ID
-	
-	WHERE CR.STATUS = 'Y'
-	  AND CP.USER_NUM = 1 
-	ORDER BY CR.CHATROOM_ID DESC
+		FROM CHAT_ROOM CR
+		LEFT JOIN TRANSACTION_CHAT TC ON CR.CHATROOM_ID = TC.CHATROOM_ID
+		LEFT JOIN BOARD_COMMON BC ON TC.BOARD_ID = BC.BOARD_ID
+		LEFT JOIN USER_TB U ON CR.USER_NUM = U.USER_NUM
+        LEFT JOIN OPEN_CHAT OC ON CR.CHATROOM_ID = OC.CHATROOM_ID
+		INNER JOIN CHAT_PARTICIPANT CP ON CR.CHATROOM_ID = CP.CHATROOM_ID
+		
+		LEFT JOIN (
+		    SELECT *
+		    FROM (
+		        SELECT
+		            CHATROOM_ID,
+		            CHAT_CONTENT,
+		            SENT_AT,
+		            ROW_NUMBER() OVER (PARTITION BY CHATROOM_ID ORDER BY SENT_AT DESC) AS RN
+		        FROM CHAT_MESSAGE
+		    )
+		    WHERE RN = 1
+		) M ON CR.CHATROOM_ID = M.CHATROOM_ID
+		
+		WHERE CR.STATUS = 'Y'
+			AND CR.USER_NUM = #{userNum}
+		ORDER BY M.SENT_AT DESC NULLS LAST
 	</select>
 	
-	
+<!-- 각 채팅방 마지막 메세지 불러오기 -->
+	<select id="selectLastMessage" parameterType="int" resultType="String">
+	    SELECT CHAT_CONTENT
+	    FROM (
+	        SELECT CHAT_CONTENT
+	        FROM CHAT_MESSAGE
+	        WHERE CHATROOM_ID = #{chatRoomId}
+	        ORDER BY SENT_AT DESC
+	    )
+	</select>
+
+<!-- ==================== 게시물 정보 얻어오기 ==================== -->
+<!-- 보드 아이디 51번인 더미데이터 -->
+	<select id="selectBoardInfo" parameterType="int" resultType="SelectBoardInfo">
+		SELECT 
+		    P.IMAGE_URL,
+		    BC.BOARD_ID,
+		    BC.PRODUCT_NAME,
+		    BC.TRANSACTION_CATEGORY
+		FROM BOARD_COMMON BC
+		LEFT JOIN USER_TB UT ON UT.USER_NUM = BC.USER_NUM
+		LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
+		WHERE BC.BOARD_ID = #{boardId}
+	</select>	
+
 <!-- ==================== 채팅방 생성 ==================== -->
-	<!-- 채팅룸 생성 종류
-		- OPENCHAT
-		- TRANSACTIONCHAT
-	-->
 	<!-- 
 	CHAT_ROOM (채팅방 - 공통)
 		- CHATROOM_ID
 		- USER_NUM
 		- REF_NUM
 		- STATUS
-	
-	OPEN_CHAT (CHAT_ROOM => 오픈 채팅방)
-		- CHATROOM_ID
-		- OPEN_CHAT_ROOM_NAME
-		- OPEN_CHAT_COUNT
-		- MAX_CHATROOM_COUNT
-		- DESCRIPTION
 	
 	TRANSACTION_CHAT (CHAT_ROOM => 거래 채팅방)
 		- CHATROOM_ID
@@ -68,45 +86,46 @@
 		채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등), 채팅방 상태,
 		오픈 채팅방 이름, 오픈 채팅방 참여인원, 최대 참여 인원, 세부 사항
 		-->
-	<!-- <insert id = "createOpenChat">
-		INSERT INTO CHAT_ROOM (CHATROOM_ID, USER_NUM, REF_NUM, STATUS)
-		VALUES
-		(SEQ_CR_NO.NEXTVAL, #{userNum}, #{refNum}, DEFAULT)
-		
-		INSERT INTO OPEN_CHAT (
-			CHATROOM_ID,
-			OPEN_CHAT_ROOM_NAME,
-			OPEN_CHAT_COUNT,
-			MAX_CHATROOM_COUNT,
-			DESCRIPTION
-		) VALUES (
-			#{chatRoomId},
-			#{openChatRoomName},
-			#{openChatCount},
-			#{maxChatRoomCount},
-			#{description}
-		)
-	</insert> -->
+
+	<!-- 채팅방 생성 -->
 	
-	<!-- 거래 채팅방 생성 -->
-	<insert id = "openChatRoom">
+	<!-- 임의로 넣는 데이터 채팅방 번호 : 3, 회원 번호 : 1, 채팅방 종류 : 3 -->
+	<!-- 채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등) -->
+	<insert id="openChatRoom" parameterType="map">
+		<selectKey keyProperty="chatRoomId" resultType="int" order="BEFORE">
+	        SELECT CHATROOM_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+	    
 		INSERT INTO CHAT_ROOM (CHATROOM_ID, USER_NUM, REF_NUM, STATUS)
 		VALUES (
-		SEQ_CR_NO.NEXTVAL, 
-		#{userNum}, 
-		#{refNum}, 
-		DEFAULT)
-		<!-- 채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등) -->	
-			
+			#{chatRoomId}, 
+			#{userNum},
+			#{refNum},
+			DEFAULT)
+	</insert> 
+	
+	<!-- TransactionChatRoom 생성 -->
+	<!-- 채팅방 번호, 게시물 Id => BOARD_COMMON의 BOARD_ID 참조 -->
+	<insert id="openTransactionChatRoom"
+		parameterType="map">
 		INSERT INTO TRANSACTION_CHAT (
 			CHATROOM_ID,
 			BOARD_ID
 		) VALUES (
-			#{chatRoomId}, 
+			#{chatRoomId},
 			#{boardId})
-		<!-- 채팅방 상태, 게시물 Id => BOARD_COMMON의 BOARD_ID 참조 -->
-	</insert>
+	</insert>  
 	
+	<!-- 참여중인 채팅방 설정 -->
+	<insert id="openChatParticipant"
+		parameterType="map">
+		INSERT INTO CHAT_PARTICIPANT (
+			CHATROOM_ID,
+			USER_NUM
+		) VALUES (
+			#{chatRoomId},
+			#{userNum})
+	</insert>  
 	
 <!-- ==================== 채팅방 참여 여부 검색 ====================
 -->
@@ -129,45 +148,61 @@
 
 
 <!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
-	<select id="selectChatMessage" resultType="chatMessage">
+	<select id="selectChatMessage" resultType="ChatMessage">
 		SELECT
 			MESSAGE_ID,
 			CHATROOM_ID,
-			SENT_AT,
-			CHAT_CONTENT
+			TO_CHAR(SENT_AT, 'YYYY-MM-DD HH24:MI') AS SENT_AT,
+			CHAT_CONTENT,
+			USER_NUM
 		FROM CHAT_MESSAGE
-		LEFT JOIN CHAT_ROOM USING(CHATROOM_ID)
 		WHERE CHATROOM_ID = #{chatRoomId}
-		ORDER BY MESSAGE_ID
+		ORDER BY CHATROOM_ID
 	</select>
 
 
 <!-- ==================== 메세지 DB 삽입 ==================== -->	
 	<insert id="insertMessage">
-		INSERT INTO CHAT_MESSAGE
-		<!-- 
-			MESSAGE_ID,
-			CHATROOM_ID (CHAT_ROOM 참조),
-			SENT_AT,
-			CHAT_CONTENT
-		 -->
-		VALUES (
-			SEQ_CM_NO.NEXTVAL,
-			#{chatRoomId},
-			SYSDATE,
-			#{chatContent}
-		)
-	</insert>
+    INSERT INTO CHAT_MESSAGE (
+        MESSAGE_ID,
+        CHATROOM_ID,
+        SENT_AT,
+        CHAT_CONTENT,
+        USER_NUM
+    )
+    VALUES (
+        CHATMESSAGE_SEQ.NEXTVAL,
+        #{chatRoomId},
+        TRUNC(SYSDATE, 'MI'),
+        #{chatContent},
+        #{userNum}        
+    )
+</insert>
 
 
-<!-- ==================== 채팅방 나가기 ==================== -->	
-	<!-- 접속한 회원 기준 채팅방 없앰 -->
-	<delete id="exitChatRoom">
+<!-- ==================== 거래 채팅방 나가기 ==================== -->	
+	<!-- 방 번호 받아서 접속한 회원 기준 채팅방 없앰 STATUS='N' -->
+ 	<update id="exitChatRoom">
+		UPDATE CHAT_ROOM SET
+			STATUS = 'N'
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</update>
+	
+<!-- 	<delete id="exitChatRoom">
 		DELETE FROM CHAT_PARTICIPANT
 		WHERE CHATROOM_ID = #{chatRoomId} AND
 			USER_NUM = #{userNum}
 	</delete>
-
+ -->
+ 
+ 
+<!-- ==================== 거래 채팅방 닫기 ==================== -->	
+	<update id="closeChatRoom">
+		UPDATE CHAT_ROOM SET
+		STATUS = 'N'
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</update>
+	
 	
 <!-- ==================== 채팅방 참여중인 회원 수 세기 ==================== -->
 	<select id="countChatRoomMember" resultType="int">
@@ -177,10 +212,52 @@
 	</select>
 
 
-<!-- ==================== 채팅방 닫기 ==================== -->	
-	<update id="closeChatRoom">
-		UPDATE CHAT_ROOM SET
-		STATUS = 'N'
-		WHERE CHATROOM_ID = #{chatRoomId}
+<!-- ==================== 거래 완료 ==================== -->
+	<!-- 
+	거래 완료된 게시물 boardId 받아와서 해당 게시물
+	거래 상태 완료로 TRANSACTION_STATUS = 'Y' 변경 
+	--> 
+	<update id="updateBoardCommon">
+		UPDATE BOARD_COMMON SET
+		TRANSACTION_STATUS = 'Y'
+		WHERE BOARD_ID = #{boardId}
 	</update>
+	
+	
+	<!-- TRANSACTION_END 테이블에 해당 게시물 정보 넣어줌 -->
+	<!-- 게시물 ID, 구매자 회원번호, 거래 시간 -->
+	<insert id="insertTransactionEnd">
+		INSERT INTO TRANSACTION_END VALUES(
+		#{boardId},
+		#{traderUserNum},
+		TRUNC(SYSDATE, 'MI')
+		)
+	</insert>
+	
+	
+	<!-- MANNER 테이블에 거래 완료시 받아오는 정보 할당 -->
+	<!-- 
+		매너 고유키
+		평가자 회원번호(로그인 세션 회원정보)
+		평가 당하는 사람(대화 상대방)
+		SCORE
+		MANNER_CONTENT
+		 -->
+		 
+		<!-- INSERT INTO MANNER VALUES(
+			MANNER_SEQ.NEXTVAL,
+			#{reviewerUserNum},
+			#{revieweeUserNum},
+			#{score},
+			#{mannerContent}	
+		) -->
+	<insert id="insertManner">
+		INSERT INTO MANNER VALUES(
+			MANNER_SEQ.NEXTVAL,
+			#{reviewerUserNum},
+			2,
+			#{mannerScore},
+			#{reviewText}	
+		)
+	</insert>
 </mapper>

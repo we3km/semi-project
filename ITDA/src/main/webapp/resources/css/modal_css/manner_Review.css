@@ -1,0 +1,236 @@
+/* body 기본 스타일 */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f5f8fd;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 모달 배경 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none; /* 필요시 flex로 변경해서 표시 */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* 모달 컨테이너 */
+.modal {
+  background-color: #fff;
+  width: 480px;
+  padding: 40px 35px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* 닫기 버튼 */
+.close-button {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #666;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.close-button:hover {
+  color: #000;
+}
+
+/* 제목 */
+.modal h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+/* 설명 텍스트 */
+.modal p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 18px;
+  line-height: 1.4;
+}
+
+/* 사용자 정보 섹션 */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* 프로필 이미지 */
+.user-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #ddd;
+  border-radius: 50%;
+  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.username {
+  font-size: 16px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* 슬라이더 컨테이너 */
+.slider-container {
+  position: relative;
+  margin: 30px 0;
+}
+
+/* 슬라이더 스타일 */
+input[type=range] {
+  width: 100%;
+  height: 14px;
+  border-radius: 8px;
+  background-color: #eee;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #7b61ff;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(123, 97, 255, 0.5);
+  transition: background-color 0.2s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  background-color: #6c53e8;
+}
+
+/* 온도 표시 */
+.temp-indicator {
+  position: absolute;
+  top: -38px;
+  left: 36%;
+  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 16px;
+  color: #7b61ff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 피드백 텍스트 */
+.feedback {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+/* 후기 입력 textarea */
+.feedback-input {
+  width: 100%;
+  height: 100px;
+  padding: 14px;
+  font-size: 14px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  resize: none;
+  line-height: 1.5;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.feedback-input:focus {
+  outline: none;
+  border-color: #7b61ff;
+  box-shadow: 0 0 6px rgba(123, 97, 255, 0.5);
+}
+
+/* 버튼 영역 */
+.btns {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+/* 버튼 공통 */
+.btn {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* 취소 버튼 */
+.btn.cancel {
+  background-color: #fff;
+  color: #7b61ff;
+  border: 2px solid #7b61ff;
+}
+.btn.cancel:hover {
+  background-color: #f3eaff;
+}
+
+/* 확인 버튼 */
+.btn.confirm {
+  background-color: #7b61ff;
+  color: #fff;
+  font-weight: 600;
+}
+.btn.confirm:hover {
+  background-color: #6c53e8;
+}
+
+/* 거래 완료 버튼 */
+.system-message {
+  display: flex;
+  justify-content: center;
+  margin: 25px 0;
+}
+
+.review-button {
+  background-color: #7b61ff;
+  color: white;
+  font-size: 13px; 
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px; 
+  width: 100px; 
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(123, 97, 255, 0.25);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  line-height: 1.4;
+  text-align: center;
+  margin: 0 auto; /* 가운데 정렬 */
+  white-space: normal; /* ✅ 줄바꿈 줄이기 */
+}
+
+.review-button:hover {
+  background-color: #6c53e8;
+  transform: translateY(-2px);
+}

@@ -1,100 +1,135 @@
-// 메뉴 토글 함수
-function chatRoomType() {
-const menu = document.getElementById("chatMenu");
-menu.classList.toggle("hidden");
-}
+// ============================ 각 모달 scipt구문 ============================
 
-// 상단 텍스트 바꾸는 함수
-function filterChatByType(type) {
-const chatList = document.querySelectorAll(".list-chat");
+    // 배송 정보 저장
+    document.getElementById('submitShippingInfo').addEventListener('click', function () {
+        var deliveryCompany = document.getElementById('deliveryCompany').value;
+        var trackingNumber = document.getElementById('trackingNumber').value.trim();
 
-chatList.forEach(chat => {
-const chatType = chat.getAttribute("data-chat-type");
-// 교환인지, 나눔인지, 경매인지 얻어옴
+        console.log('택배사:', deliveryCompany);
+        console.log('운송장 번호:', trackingNumber);
 
-// '전체 채팅방'일 때는 모두 보이게
-if (type === "전체 채팅방" || chatType === type) {
-chat.style.display = "flex";
-} else {
-chat.style.display = "none";
-}
-});
+        if (!deliveryCompany) {
+            alert('택배사를 선택해주세요.');
+            return;
+        }
+        if (!trackingNumber) {
+            alert('운송장 번호를 입력해주세요.');
+            return;
+        }
 
-// 상단 라벨 변경
-const label = document.getElementById("chatTypeLabel");
-if (label) label.textContent = type;
+        const chatContent = document.querySelector('.chat-content2');
 
-// 메뉴 닫기
-const menu = document.getElementById("chatMenu");
-if (menu) menu.classList.add("hidden");
-}
+        const shippingMessage = document.createElement('div');
+        shippingMessage.className = 'chat-message sent';
+        shippingMessage.innerHTML = `<배송 정보><br><br>택배사: ${deliveryCompany}<br>운송장 번호: ${trackingNumber}`;
 
-// 채팅방 나가기, 신고하기
-function toggleActionMenu(el) {
-const menu = el.nextElementSibling;
-menu.classList.toggle('hidden');
-}
+        chatContent.appendChild(shippingMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
 
-function reportChat() {
-alert("신고가 접수되었습니다.");
-// 실제 신고 처리 로직 추가 가능
-}
+        closeModal('shipping_Inform_Input');
+    });
 
-// 채팅방 나가면 채팅방에서 쌓인 데이터베이스 삭제
-function leaveChat(button) {
-const confirmLeave = confirm("대화방에서 나가시겠습니까?");
-if (confirmLeave) {
-let listChat = button.closest(".list-chat");
-if (listChat) {
-listChat.classList.add("left-chat"); // 나간 채팅방 표시
-// 채팅방 아예 삭제
-listChat.remove();
-}
+    // 주소 정보 입력
+    function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                document.getElementById('zipcode').value = data.zonecode;
+                document.getElementById('address').value = data.roadAddress;
+                document.getElementById('detailAddress').focus();
+            }
+        }).open();
+    }
 
-alert("대화방을 나갔습니다.");
-// 실제 서버에서 삭제하는 코드도 추가 가능
-/* 대화방 나가면 실제 서버에 있는 채팅 정보 삭제할 것인지*/
-}
-}
-// 프로필 이미지 누르면 그 사람 소개페이지로 이동
-function goToUserPage(userId) {
-// 예: /mypage/user123 으로 이동
-window.location.href = `/mypage/${userId}`;
-}
+    document.getElementById("nextButton").addEventListener("click", function () {
+        const name = document.getElementById("name").value.trim();
+        const zipcode = document.getElementById("zipcode").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const detailAddress = document.getElementById("detailAddress").value.trim();
+        const rawPhone = document.getElementById("phone").value.trim();
+        const phone = rawPhone.replace(/-/g, "");
 
-// 왼쪽쪽 채팅창 헤더 + 버튼 눌렀을 때
-// 거래유형에 맞는 채팅방 갈 수 있도록
-function chatRoomType() {
-const menu = document.getElementById('chatMenu');
-menu.classList.toggle('hidden');
-}
+        const phoneRegex = /^01[016789][0-9]{7,8}$/;
+        if (!phoneRegex.test(phone)) {
+            alert("휴대폰 번호 형식이 올바르지 않습니다. n(예: 01012345678)");
+            return;
+        }
 
-// 왼쪽 채팅 클릭 시 오른쪽 채팅에 반영
-const chatRooms = document.querySelectorAll(".list-chat");
+        if (!name || !zipcode || !address || !detailAddress) {
+            alert("모든 정보를 입력해주세요.");
+            return;
+        }
 
-chatRooms.forEach(chat => {
-chat.addEventListener("click", function () {
-// 클릭된 상태
+        // 채팅창에 출력
+        const chatContent = document.querySelector('.chat-content2');
 
-// 상대 이름, 마지막 메세지 저장
-const name = chat.querySelector(".chatname").textContent;
-const lastMsg = chat.querySelector(".last-message").textContent;
+        const message = document.createElement('div');
 
-// 오른쪽 채팅창 요소들
-const chatHeader2 = document.querySelector(".chat-header2");
-const chatContent2 = document.querySelector(".chat-content2");
+        message.className = 'chat-message sent';
+        message.innerHTML = `<배송지 정보><br><br>수령인: ${name}<br>주소: ${address} ${detailAddress}<br>우편번호: ${zipcode}<br>연락처:
+		${phone}
+		<br><br>해당 주소로 상품 발송 바랍니다.`;
+        chatContent.appendChild(message);
+        chatContent.scrollTop = chatContent.scrollHeight;
 
-// 상대 이름 업데이트
-chatHeader2.childNodes[0].textContent = name;
+        // 모달 닫기
+        closeModal('shipping_Address_Modal');
+    });
 
-// 상품 설명은 그대로 두고, 기존 메시지들 삭제
-const messages = chatContent2.querySelectorAll(".chat-message:not(#item-board)");
-messages.forEach(msg => msg.remove());
+	// 모달 열고 닫기
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+    }
 
-// 새 메시지 추가
-const newMessage = document.createElement("div");
-newMessage.className = "chat-message received";
-newMessage.textContent = lastMsg;
-chatContent2.appendChild(newMessage);
-});
-});
+    function openModal(id) {
+        const modal = document.getElementById(id); // ← 이 줄 추가해야 함
+        modal.style.display = "flex"; // 중앙 정렬 위해 flex
+    }
+
+
+
+
+    // 계좌 정보 전송
+    function submitAccountInfo() {
+        const price = document.getElementById("price").value.trim();
+        const account = document.getElementById("bank").value.trim();
+        const bank = document.getElementById("account").value.trim();
+
+        const chatContent = document.querySelector('.chat-content2');
+
+        const accountMessage = document.createElement('div');
+        accountMessage.className = 'chat-message sent';
+        accountMessage.innerHTML = `<계좌 정보><br><br>계좌번호: ${bank}<br>은행: ${account} <br>가격: ${price}`;
+
+        chatContent.appendChild(accountMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
+
+        const confirmAccount = confirm(
+            `📄 계좌 정보 확인\n\n계좌번호: ${account}\n은행: ${bank}\n가격: ${price}\n\n해당 계좌정보가 맞습니까?`
+        );
+        if (confirmAccount) {
+            alert("계좌 정보가 제출되었습니다!");
+            closeModal('accountInfoModal');
+        }
+    }
+
+    
+// ============================ 모달 끝 ============================
+
+// 왼쪽 채팅방 기술
+// 왼쪽 햄버거 버튼 눌렀을때
+    function toggleActionMenu(el) {
+        const menu = el.nextElementSibling;
+        menu.classList.toggle('hidden');
+    }
+
+    function reportChat() {
+        alert("신고가 접수되었습니다.");
+        // 실제 신고 처리 로직 추가 가능
+    }
+
+
+// 왼쪽 채팅방 헤더 채팅방 선택 버튼 눌렀을 때 거래 유형에 맞게 채팅방 보여줌
+	function chatRoomType() {
+	        const menu = document.getElementById('chatMenu');
+	        menu.classList.toggle('hidden');
+	}

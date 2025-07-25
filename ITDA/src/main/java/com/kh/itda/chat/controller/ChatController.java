@@ -1,16 +1,32 @@
 package com.kh.itda.chat.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.chat.model.service.ChatService;
+import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
+import com.kh.itda.chat.model.vo.SelectBoardInfo;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,12 +41,138 @@ public class ChatController {
 	private ChatService chatService;
 
 	@GetMapping("/chatroomlist")
-	public String selectChatRoomList(Model model) {
+	public String selectChatRoomList(Model model, HttpSession session) {
 
-		List<ChatRoom> chatRoomList = chatService.selectChatRoomList();
+		User loginUser = (User) session.getAttribute("loginUser");
+
+		if (loginUser == null) {
+			log.info("담긴 회원정보가 없습니다.");
+		}
+
+		int userNum = loginUser.getUserNum();
+		log.info("로그인한 회원정보 아이디 : {}", userNum);
+
+		List<ChatRoom> chatRoomList = chatService.selectChatRoomList(userNum);
 		model.addAttribute("chatRoomList", chatRoomList);
-		// jsp에선 chatRoomList로 쓰자
 
+		if (chatRoomList.isEmpty()) {
+			log.info("참여 중인 채팅방이 없습니다.");
+		} else {
+			log.info("채팅방 리스트 : {}", chatRoomList);
+		}
 		return "chat/chatRoomList"; // /WEB-INF/views/chat/chatRoomList.jsp
+	}
+
+	// 게시판 정보 불러오기
+	@GetMapping("/selectBoardInfo")
+	@ResponseBody
+	public SelectBoardInfo selectBoardInfo(int boardId) {
+		SelectBoardInfo boardInfo = chatService.selectBoardInfo(boardId);
+
+		System.out.println("boardInfo: " + boardInfo);
+		return boardInfo;
+	}
+
+	// 게시물 정보 받아와서 채팅방 속성 할당 
+	@PostMapping("/openChatRoom")
+	@ResponseBody
+	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, 
+			RedirectAttributes redirectAttr, HttpSession session) {
+		// 현재 로그인한 회원 정보 받아옴
+		User loginUser = (User) session.getAttribute("loginUser");
+		
+		int userNum = loginUser.getUserNum();
+		log.info("로그인한 회원정보 아이디 : {}", userNum);
+		
+		int refNum = boardInfo.getTransactionRefNum();
+		log.info("거래 유형 번호 : {}", refNum);
+		
+		int boardId = boardInfo.getBoardId();
+		log.info("게시판 번호 : {}", boardId);
+		
+		int result = chatService.openChatRoom(userNum, refNum, boardId); 
+		
+		if (result > 0) {
+			log.info("채팅방 성공! : {}", result);
+		} 
+		return "redirect:/chat/chatroomlist";
+	}
+
+	@PostMapping("/sendMessage")
+	@ResponseBody
+	// CHATROOM_ID, CHAT_CONTENT, USER_NUM
+	public ResponseEntity<String> sendMessage(@RequestParam String chatContent, @RequestParam int chatRoomId,
+			HttpSession session) {
+		ChatMessage chatMessage = new ChatMessage();
+
+		User loginUser = (User) session.getAttribute("loginUser");
+
+		// 채팅방 번호, 채팅 내용, 로그인한 회원 번호 할당
+		chatMessage.setChatRoomId(chatRoomId);
+		chatMessage.setChatContent(chatContent);
+		chatMessage.setUserNum(loginUser.getUserNum());
+
+		int result = chatService.insertMessage(chatMessage);
+		if (result > 0) {
+			log.info("채팅 정보 생성 성공");
+			return ResponseEntity.ok("success");
+		} else {
+			log.info("채팅 정보 생성 실패ㅠㅠ");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+		}
+	}
+
+	// 메세지 받아와서 채팅방 오른쪽에 출력하자이
+	@GetMapping("/messages/{chatRoomId}")
+	@ResponseBody // JSP에서 데이터만 받겠다
+	public List<ChatMessage> getMessages(@PathVariable int chatRoomId) {
+		return chatService.getMessagesByChatRoomId(chatRoomId);
+	}
+
+	// 채팅방 나가기 -> 단순히 나가는 것이기 때문에 채팅방의 STATUS값만 바꿔줌
+	@PostMapping("/exit/{chatRoomId}")
+	@ResponseBody
+	public void exitChatRoom(@PathVariable int chatRoomId) {
+		int result = chatService.exitChatRoom(chatRoomId);
+
+		if (result > 0) {
+			log.info(chatRoomId + "번 채팅방 STATUS N으로 변경 완료");
+		} else {
+			log.info(chatRoomId + "번 채팅방 STATUS N으로 변경 실패ㅠㅠ");
+		}
+	}
+
+	@PostMapping("/insertManner")
+	@ResponseBody
+	// 매너 평가자, 매너 평가 받는 사람, 매너 점수(int), 후기 내용(String)
+	public void insertManner(@RequestBody Map<String, Object> data, HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
+
+		Integer mannerScore = (int) data.get("sliderValue");
+		String reviewText = (String) data.get("reviewText");
+		int reviewerUserNum = loginUser.getUserNum();
+		log.info("매너 평가 하는 사람 : {}", reviewerUserNum);
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("reviewText", reviewText);
+		map.put("mannerScore", mannerScore);
+		map.put("reviewerUserNum", reviewerUserNum);
+
+		int result = chatService.insertManner(map);
+		if (result > 0) {
+			log.info("후기 등록 성공!!");
+		} else {
+			log.info("후기 등록 실패!!");
+		}
+	}
+
+	// 각 채팅방 마다 메세지 마지막메세지 가져오기
+	@GetMapping("/bringLastMessage")
+	@ResponseBody
+	public Map<String, Object> bringLastMessage(int chatRoomId, HttpServletResponse res) {
+		String text = chatService.bringLastMessage(chatRoomId);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("lastMessage", text);
+		return map;
 	}
 }
