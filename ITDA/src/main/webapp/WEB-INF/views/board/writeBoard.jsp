@@ -235,10 +235,33 @@ img {
 				<div class="region">
 					거래지역 &gt; <span class="region-name">서울특별시 강남구 📍</span>
 				</div>
+
 				<div class="buttons">
-					<button id="cancel-btn" class="cancel">작성 취소</button>
+					<button id="cancel-btn" type="button" class="cancel" onclick="history.back()">작성 취소</button>
+
 					<button id="submit-btn" type="submit">작성 완료</button>
 				</div>
+
+				<script>
+					document.getElementById('submit-btn').addEventListener('click', function(event) {
+					  const productName = document.getElementById('product-name').value.trim();
+					  const productComment = document.getElementById('product-comment').value.trim();
+					  const rentalFee = document.getElementById('rental-fee').value;
+					  const deposit = document.getElementById('deposit').value;
+					  const startDate = document.getElementById('start-date').value;
+					  const endDate = document.getElementById('end-date').value;
+					  const categorySmall = document.getElementById('categorySmallHiddenInput').value;
+					  if (!productName || !productComment || !rentalFee || !deposit
+							  || !startDate || !endDate || !categorySmall ) {
+					    event.preventDefault(); // 폼 제출 막기
+					    alert("모든 항목을 입력해 주세요.");
+					    //openModal();
+					  }
+					});
+					
+
+				</script>
+
 			</header>
 
 			<main>
@@ -360,7 +383,7 @@ function updateCount() {
 				</section>
 
 				<section class="info-input">
-					<form:input path="boardCommon.productName" type="text"
+					<form:input id="product-name" path="boardCommon.productName" type="text"
 						placeholder="상품명" cssClass="title-input" />
 
 
@@ -415,7 +438,7 @@ function updateCount() {
 					</script>
 
 
-					<form:textarea path="boardCommon.productComment"
+					<form:textarea id="product-comment" path="boardCommon.productComment"
 						placeholder="상품 설명" cssClass="description" />
 				</section>
 
@@ -427,21 +450,53 @@ function updateCount() {
 					<section class="price-date-category">
 						<div class="price-area">
 							<label>대여 가격</label>
-							<form:input path="boardRental.rentalFee" type="text" />
+							<form:input id="rental-fee" path="boardRental.rentalFee" type="text" />
 							원 <label>보증금</label>
-							<form:input path="boardRental.deposit" type="text" />
+							<form:input id="deposit" path="boardRental.deposit" type="text" />
 							원
 						</div>
 
 						<div class="date-area">
 							<label>대여 기간</label>
 							<div class="dates">
-								<form:input path="boardRental.rentalStartDate" type="date" />
+								<form:input id="start-date" path="boardRental.rentalStartDate" type="date" />
 								부터
-								<form:input path="boardRental.rentalEndDate" type="date" />
+								<form:input id="end-date" path="boardRental.rentalEndDate" type="date" />
 								까지
 							</div>
 						</div>
+						<script>
+						const startInput = document.getElementById('start-date');
+						const endInput = document.getElementById('end-date');
+						
+						// 시작일 선택 시 → 종료일 최소값 설정
+						startInput.addEventListener('change', function () {
+						  const startDate = new Date(this.value);
+						  if (startDate.toString() !== "Invalid Date") {
+						    // 종료일은 시작일 +1일부터 가능
+						    const minEndDate = new Date(startDate);
+						    minEndDate.setDate(minEndDate.getDate() + 1);
+						
+						    // yyyy-mm-dd 형식으로 설정
+						    endInput.min = minEndDate.toISOString().split("T")[0];
+						  }
+						});
+						
+						// 종료일 선택 시 → 시작일 최대값 설정
+						endInput.addEventListener('change', function () {
+						  const endDate = new Date(this.value);
+						  if (endDate.toString() !== "Invalid Date") {
+						    const maxStartDate = new Date(endDate);
+						    maxStartDate.setDate(maxStartDate.getDate() - 1);
+						
+						    startInput.max = maxStartDate.toISOString().split("T")[0];
+						  }
+						});
+						
+			
+						</script>
+						
+						
 
 						<div class="category-area">
 							<label>상품 카테고리</label>

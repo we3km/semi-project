@@ -150,7 +150,7 @@
 
 	</select>
 	
-	<select id="selectBoardRentalList" resultMap="BoardRentalFileResultMap">
+	<select id="selectBoardRentalList" parameterType="String" resultMap="BoardRentalFileResultMap">
 SELECT *
 FROM (
     SELECT 
@@ -160,7 +160,7 @@ FROM (
         BC.PRODUCT_COMMENT,
         BC.TRANSACTION_ADDRESS,
         BC.TRANSACTION_CATEGORY,
-        BC.CREATE_DATE,
+        BC.CREATE_DATE AS,
         BC.VIEWS,
         BC.TRANSACTION_STATUS,
         BC.PRODUCT_CATEGORY_L,
@@ -180,7 +180,38 @@ FROM (
     WHERE F.CATEGORY_ID = 6
 )
 WHERE RN = 1
-
+<!-- 	<if test="location != null and location != ''">
+      AND BC.TRANSACTION_ADDRESS = #{location}
+    </if>
+    <if test="minPrice != null">
+      AND b.rental_fee >= #{minPrice}
+    </if>
+    <if test="maxPrice != null">
+      AND b.rental_fee &lt;= #{maxPrice}
+    </if>
+    <if test="startDate != null">
+      AND b.rental_start_date &gt;= #{startDate}
+    </if>
+    <if test="endDate != null">
+      AND b.rental_end_date &lt;= #{endDate}
+    </if>
+    <if test="category != null and category != ''">
+      AND b.category = #{category}
+    </if> -->
+  <choose>
+    <when test="sort == 'views'">
+      ORDER BY VIEWS DESC
+    </when>
+<!--     <when test="#{sort} == 'dibs'">
+      ORDER BY b.dibs_count DESC
+    </when> -->
+    <when test="sort == 'price'">
+      ORDER BY RENTAL_FEE DESC
+    </when>
+    <otherwise>
+      ORDER BY CREATE_DATE ASC
+    </otherwise>
+  </choose>
 
 	</select>
 	
@@ -405,6 +436,12 @@ WHERE RN = 1
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6
 
+	</select>
+	
+	<select id="selectLikedBoardIdsByUser" parameterType="int" resultType="int">
+	  SELECT BOARD_ID
+	  FROM DIBS
+	  WHERE LIKES_USER_ID = #{userNum}
 	</select>
 	
 <!-- 		<select id="selectWriterImg" parameterType="int" resultType="FilePath">

@@ -1,5 +1,6 @@
 package com.kh.itda.board.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public interface BoardService {
 	List<ProductCategory> selectCategoryList();
 
 	List<ProductCategory> getCategoriesByParentNum(int parentNum);
-	List<BoardRentalFileWrapper> selectBoardRentalList();
+	List<BoardRentalFileWrapper> selectBoardRentalList(String sort);
 	BoardRentalWrapper selectBoardRental(int boardId);
 	String selectWriterNickname(int userNum);
 	List<String> selectTags(int boardId);
@@ -41,6 +42,8 @@ public interface BoardService {
 	
 	List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory);
 	List<FilePath> selectImgList(int boardId);
+	List<Integer> getLikedBoardIdsByUser(int userNum);
+
 
 
 }

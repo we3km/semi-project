@@ -112,8 +112,8 @@ public class BoardServiceImpl implements BoardService{
 
 
 	@Override
-	public List<BoardRentalFileWrapper> selectBoardRentalList() {
-		return boardDao.selectBoardRentalList();
+	public List<BoardRentalFileWrapper> selectBoardRentalList(String sort) {
+		return boardDao.selectBoardRentalList(sort);
 	}
 
 
@@ -191,6 +191,16 @@ public class BoardServiceImpl implements BoardService{
 	public List<FilePath> selectImgList(int boardId) {
 		return boardDao.selectImgList(boardId);
 	}
+
+
+	@Override
+	public List<Integer> getLikedBoardIdsByUser(int userNum) {
+		return boardDao.selectLikedBoardIdsByUser(userNum);
+	}
+
+
+
+
 
 
 

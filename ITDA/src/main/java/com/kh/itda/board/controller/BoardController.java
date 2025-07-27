@@ -2,12 +2,11 @@ package com.kh.itda.board.controller;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -41,12 +41,12 @@ import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchange;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRental;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.BoardSharing;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
-import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -76,12 +76,17 @@ public class BoardController {
 
 	// 대여게시판 매핑
 	@GetMapping("/rental")
-	public String rentalBoard(Model model) {
+	public String rentalBoard(Model model,
+			@RequestParam(defaultValue = "date") String sort
+) {
 		
-		List<BoardRentalFileWrapper> boardRentalList = boardService.selectBoardRentalList();
+		List<BoardRentalFileWrapper> boardRentalList = boardService.selectBoardRentalList(sort);
 		
-	
-System.out.println(boardRentalList);
+		// 로그인한 회원이 찜한 게시글 목록
+		// userNum을 로그인 세션에서 받아올것임(지금은 임의 데이터)
+		List<Integer> likedBoardIds = boardService.getLikedBoardIdsByUser(1);
+		model.addAttribute("likedBoardIds", likedBoardIds);
+		
 		model.addAttribute("list",boardRentalList);
 		return "board/rentalBoard";
 	}

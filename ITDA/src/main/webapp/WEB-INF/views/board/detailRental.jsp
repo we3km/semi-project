@@ -170,7 +170,7 @@
         </div>
         <div class="buttons">
           <button>개인 메시지 보내기</button>
-          <button>대화하기</button>
+
           <button id="dibsBtn">찜</button>
         </div>
       </div>

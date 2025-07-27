@@ -1,5 +1,6 @@
 package com.kh.itda.board.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -133,8 +134,8 @@ public class BoardDaoImpl implements BoardDao {
 	}
 
 	@Override
-	public List<BoardRentalFileWrapper> selectBoardRentalList() {
-		List<BoardRentalFileWrapper> boardRentalList = session.selectList("board.selectBoardRentalList");
+	public List<BoardRentalFileWrapper> selectBoardRentalList(String sort) {
+		List<BoardRentalFileWrapper> boardRentalList = session.selectList("board.selectBoardRentalList", sort);
 		//System.out.println(boardRentalList);
 
 		return boardRentalList;
@@ -206,6 +207,12 @@ public class BoardDaoImpl implements BoardDao {
 	@Override
 	public List<FilePath> selectImgList(int boardId) {
 		return session.selectList("board.selectImgList", boardId);
+	}
+
+	@Override
+	public List<Integer> selectLikedBoardIdsByUser(int userNum) {
+		
+		return session.selectList("board.selectLikedBoardIdsByUser", userNum);
 	}
 
 
