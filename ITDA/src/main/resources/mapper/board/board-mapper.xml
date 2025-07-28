@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="board">
+	<insert id="insertBoardCommon" parameterType="BoardCommon">
+		<selectKey keyProperty="boardId" resultType="int"
+			order="BEFORE">
+			SELECT BOARD_COMMON_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO BOARD_COMMON
+		(
+		BOARD_ID,
+		USER_NUM,
+		PRODUCT_NAME,
+		PRODUCT_COMMENT,
+		TRANSACTION_ADDRESS,
+		TRANSACTION_CATEGORY,
+		PRODUCT_CATEGORY_L,
+		CREATE_DATE,
+		VIEWS,
+		TRANSACTION_STATUS,
+		PRODUCT_CATEGORY_M,
+		PRODUCT_CATEGORY_S
+		) VALUES
+		(
+		#{boardId} ,
+		#{userNum},
+		#{productName},
+		#{productComment} ,
+		#{transactionAddress},
+		#{transactionCategory},
+		#{productCategoryL},
+		DEFAULT,
+		DEFAULT,
+		DEFAULT,
+		#{productCategoryM},
+		#{productCategoryS}
+		)
+	</insert>
+
+	<insert id="insertBoardRental" parameterType="BoardRental">
+
+		INSERT INTO BOARD_RENTAL
+		(
+		BOARD_ID,
+		RENTAL_FEE,
+		DEPOSIT,
+		RENTAL_START_DATE,
+		RENTAL_END_DATE
+		) VALUES
+		(
+		#{boardId},
+		#{rentalFee},
+		#{deposit},
+		#{rentalStartDate} ,
+		#{rentalEndDate}
+		)
+
+
+	</insert>
+
+
+	<insert id="insertImg" parameterType="File">
+
+		<selectKey keyProperty="fileId" resultType="int"
+			order="BEFORE">
+			SELECT FILE_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO "FILE"
+		(
+		FILE_ID,
+		CATEGORY_ID,
+		FILE_NAME,
+		REF_NO
+		)
+		VALUES
+		(
+		#{fileId},
+		#{categoryId},
+		#{fileName},
+		#{refNo}
+		)
+
+	</insert>
+
+	<insert id="insertTag" parameterType="Tag">
+
+		<selectKey keyProperty="tagId" resultType="int"
+			order="BEFORE">
+			SELECT TAG_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO TAG
+		(
+		TAG_ID,
+		TAG_CONTENT
+		)
+		VALUES
+		(
+		#{tagId},
+		#{tagContent}
+		)
+
+	</insert>
+
+	<insert id="insertBoardTag" parameterType="BoardTag">
+
+		INSERT INTO BOARD_TAG
+		(
+		TAG_ID,
+		BOARD_ID,
+		BOARD_CATEGORY
+		)
+		VALUES
+		(
+		#{tagId},
+		#{boardId},
+		#{boardCategory}
+		)
+
+	</insert>
+
+
+	<select id="selectCategoryList" resultType="productCategory">
+		SELECT
+		PRODUCT_CATEGORY_NUM,
+		CATEGORY_NAME,
+		CATEGORY_TIER,
+		PARENT_NUM
+		FROM PRODUCT_CATEGORY
+
+	</select>
+
+	<select id="getCategoriesByParentNum" parameterType="int"
+		resultType="productCategory">
+		SELECT
+		PRODUCT_CATEGORY_NUM,
+		CATEGORY_NAME,
+		CATEGORY_TIER,
+		PARENT_NUM
+		FROM PRODUCT_CATEGORY
+		WHERE PARENT_NUM = #{parentNum}
+
+	</select>
+
+	<select id="selectBoardRentalList" 
+		resultMap="BoardRentalFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE AS,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BR.RENTAL_FEE,
+		BR.DEPOSIT,
+		BR.RENTAL_START_DATE,
+		BR.RENTAL_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 6
+		)
+		WHERE RN = 1
+		<!-- <if test="location != null and location != ''">
+			 	AND BC.TRANSACTION_ADDRESS = #{location} </if>
+		-->	<if test="minRentalFee != null">
+				AND RENTAL_FEE >= #{minRentalFee} 
+			</if> 
+			<if test="maxRentalFee != null">
+				AND RENTAL_FEE &lt;= #{maxRentalFee} 
+			</if> 
+			<if test="startDate != null"> 
+				AND RENTAL_START_DATE &gt;= #{startDate} 
+			</if> 
+			<if test="endDate != null"> 	
+				AND RENTAL_END_DATE &lt;= #{endDate} 
+			</if>
+			<if test="productCategoryL != null and productCategoryL != ''"> 
+				AND PRODUCT_CATEGORY_L = #{productCategoryL} 
+			</if>
+			<if test="productCategoryM != null and productCategoryM != ''"> 
+				AND PRODUCT_CATEGORY_M = #{productCategoryM} 
+			</if>
+			<if test="productCategoryS != null and productCategoryS != ''"> 
+				AND PRODUCT_CATEGORY_S = #{productCategoryS} 
+			</if>
+		<choose>
+			<when test="sort == 'views'">
+				ORDER BY VIEWS DESC
+			</when>
+			<!-- <when test="#{sort} == 'dibs'"> ORDER BY b.dibs_count DESC </when> -->
+			<when test="sort == 'price'">
+				ORDER BY RENTAL_FEE DESC
+			</when>
+			<otherwise>
+				ORDER BY CREATE_DATE DESC
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<select id="selectBoardRental" parameterType="int"
+		resultMap="boardRentalResultMap">
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BR.RENTAL_FEE,
+		BR.DEPOSIT,
+		BR.RENTAL_START_DATE,
+		BR.RENTAL_END_DATE
+
+		FROM BOARD_COMMON BC
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+		WHERE BC.BOARD_ID = #{boardId}
+
+	</select>
+
+	<resultMap id="boardRentalResultMap"
+		type="BoardRentalWrapper">
+		<association property="boardCommon" javaType="BoardCommon">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="userNum" column="USER_NUM" />
+			<result property="productName" column="PRODUCT_NAME" />
+			<result property="productComment" column="PRODUCT_COMMENT" />
+			<result property="transactionAddress"
+				column="TRANSACTION_ADDRESS" />
+			<result property="transactionCategory"
+				column="TRANSACTION_CATEGORY" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="views" column="VIEWS" />
+			<result property="transactionStatus"
+				column="TRANSACTION_STATUS" />
+			<result property="productCategoryL"
+				column="PRODUCT_CATEGORY_L" />
+			<result property="productCategoryM"
+				column="PRODUCT_CATEGORY_M" />
+			<result property="productCategoryS"
+				column="PRODUCT_CATEGORY_S" />
+			<!-- BOARD_RENTAL 컬럼들 추가 -->
+		</association>
+		<!-- BOARD_COMMON 컬럼들 추가 -->
+
+		<association property="boardRental" javaType="BoardRental">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="rentalFee" column="RENTAL_FEE" />
+			<result property="deposit" column="DEPOSIT" />
+			<result property="rentalStartDate" column="RENTAL_START_DATE" />
+			<result property="rentalEndDate" column="RENTAL_END_DATE" />
+			<!-- BOARD_RENTAL 컬럼들 추가 -->
+		</association>
+	</resultMap>
+
+	<select id="selectWriterRentalList" parameterType="int"
+		resultMap="BoardRentalFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BR.RENTAL_FEE,
+		BR.DEPOSIT,
+		BR.RENTAL_START_DATE,
+		BR.RENTAL_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 6 AND BC.USER_NUM = #{userNum}
+		)
+		WHERE RN = 1
+
+	</select>
+
+	<select id="selectEqualsCategoryList" parameterType="String"
+		resultMap="BoardRentalFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BR.RENTAL_FEE,
+		BR.DEPOSIT,
+		BR.RENTAL_START_DATE,
+		BR.RENTAL_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 6 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
+		)
+		WHERE RN = 1
+
+	</select>
+
+
+	<resultMap id="BoardRentalFileResultMap"
+		type="BoardRentalFileWrapper">
+		<association property="boardCommon" javaType="BoardCommon">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="userNum" column="USER_NUM" />
+			<result property="productName" column="PRODUCT_NAME" />
+			<result property="productComment" column="PRODUCT_COMMENT" />
+			<result property="transactionAddress"
+				column="TRANSACTION_ADDRESS" />
+			<result property="transactionCategory"
+				column="TRANSACTION_CATEGORY" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="views" column="VIEWS" />
+			<result property="transactionStatus"
+				column="TRANSACTION_STATUS" />
+			<result property="productCategoryL"
+				column="PRODUCT_CATEGORY_L" />
+			<result property="productCategoryM"
+				column="PRODUCT_CATEGORY_M" />
+			<result property="productCategoryS"
+				column="PRODUCT_CATEGORY_S" />
+			<!-- BOARD_RENTAL 컬럼들 추가 -->
+		</association>
+		<!-- BOARD_COMMON 컬럼들 추가 -->
+
+		<association property="boardRental" javaType="BoardRental">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="rentalFee" column="RENTAL_FEE" />
+			<result property="deposit" column="DEPOSIT" />
+			<result property="rentalStartDate" column="RENTAL_START_DATE" />
+			<result property="rentalEndDate" column="RENTAL_END_DATE" />
+			<!-- BOARD_RENTAL 컬럼들 추가 -->
+		</association>
+
+		<association property="filePath" javaType="FilePath">
+			<result property="categoryPath" column="CATEGORY_PATH" />
+			<result property="fileName" column="FILE_NAME" />
+		</association>
+	</resultMap>
+
+
+
+
+	<select id="selectWriterNickname" parameterType="int"
+		resultType="String">
+		SELECT
+		NICK_NAME
+
+		FROM USER_TB
+		WHERE USER_NUM = #{userNum}
+
+	</select>
+
+	<select id="selectTags" parameterType="int" resultType="String">
+		SELECT
+		TAG_CONTENT
+
+		FROM BOARD_TAG BT
+		JOIN TAG T USING(TAG_ID)
+		WHERE BT.BOARD_ID = #{boardId}
+		AND BT.BOARD_CATEGORY= 'rental'
+	</select>
+
+	<update id="increaseViews" parameterType="int">
+		UPDATE BOARD_COMMON SET
+		VIEWS = VIEWS +1
+		WHERE BOARD_ID = #{boardId} AND TRANSACTION_CATEGORY=
+		'rental'
+	</update>
+
+	<select id="isLiked" parameterType="Dibs" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM DIBS
+		WHERE LIKES_USER_ID = #{likesUserId} AND BOARD_ID = #{boardId} AND
+		BOARD_CATEGORY = #{boardCategory}
+	</select>
+
+	<insert id="insertLike" parameterType="Dibs">
+		INSERT INTO DIBS(BOARD_ID, LIKES_USER_ID, BOARD_CATEGORY)
+		VALUES (#{boardId}, #{likesUserId}, #{boardCategory})
+	</insert>
+
+	<delete id="deleteLike" parameterType="Dibs">
+		DELETE FROM DIBS
+		WHERE LIKES_USER_ID = #{likesUserId} AND BOARD_ID = #{boardId} AND
+		BOARD_CATEGORY = #{boardCategory}
+	</delete>
+
+	<select id="countDibs" parameterType="Dibs" resultType="int">
+		SELECT COUNT(*)
+		FROM DIBS
+		WHERE BOARD_ID = #{boardId} AND BOARD_CATEGORY = #{boardCategory}
+	</select>
+
+	<select id="selectMannerScore" parameterType="int"
+		resultType="int">
+		SELECT
+		ROUND(AVG(SCORE))
+		FROM MANNER
+		GROUP BY TARGET_USER_NUM
+		HAVING TARGET_USER_NUM =
+		#{writerUserNum}
+	</select>
+
+
+	<select id="selectImgList" parameterType="int"
+		resultType="FilePath">
+		SELECT
+		C.CATEGORY_PATH,
+		F.FILE_NAME
+
+		FROM "FILE" F
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE
+		F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6
+
+	</select>
+
+	<select id="selectLikedBoardIdsByUser" parameterType="int"
+		resultType="int">
+		SELECT BOARD_ID
+		FROM DIBS
+		WHERE LIKES_USER_ID = #{userNum}
+	</select>
+	
+	<select id="selectUserAddress" parameterType="int"
+		resultType="String">
+		SELECT ADDRESS
+		FROM USER_TB
+		WHERE USER_NUM = #{userNum}
+	</select>
+	<!-- <select id="selectWriterImg" parameterType="int" resultType="FilePath"> 
+		SELECT C.CATEGORY_PATH, F.FILE_NAME FROM "FILE" F JOIN CATEGORY C ON F.CATEGORY_ID 
+		= C.CATEGORY_ID WHERE F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6 AND ROWNUM=1; 
+		</select> -->
+</mapper>
