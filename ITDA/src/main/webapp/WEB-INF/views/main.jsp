@@ -233,13 +233,13 @@ $(document).ready(function () {
                 targetUrl = contextPath + '/board/rental/list';
                 break;
             case '교환':
-                targetUrl = contextPath + '/exchange/list';
+                targetUrl = contextPath + '/board/exchange/list';
                 break;
             case '나눔':
-                targetUrl = contextPath + '/share/list';
+                targetUrl = contextPath + '/board/share/list';
                 break;
             case '경매':
-                targetUrl = contextPath + '/auction/list';
+                targetUrl = contextPath + '/board/auction/list';
                 break;
             case '커뮤니티':
                 targetUrl = contextPath + '/community/list/all';

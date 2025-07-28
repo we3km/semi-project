@@ -231,6 +231,12 @@ public class BoardDaoImpl implements BoardDao {
 	}
 
 
+	@Override
+	public String selectUserAddress(int userNum) {
+		return session.selectOne("board.selectUserAddress", userNum);
+	}
+
+
 
 	
 	

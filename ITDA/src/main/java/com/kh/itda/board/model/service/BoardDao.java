@@ -41,6 +41,7 @@ public interface BoardDao {
 	List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory);
 	List<FilePath> selectImgList(int boardId);
 	List<Integer> selectLikedBoardIdsByUser(int userNum);
+	String selectUserAddress(int userNum);
 
 
 

@@ -182,6 +182,13 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 
+	// 사용자의 회원정보에 있는 주소 추출
+	@Override
+	public String selectUserAddress(int userNum) {
+		return boardDao.selectUserAddress(userNum);
+	}
+
+
 
 
 

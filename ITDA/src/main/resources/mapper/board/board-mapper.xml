@@ -470,7 +470,13 @@
 		FROM DIBS
 		WHERE LIKES_USER_ID = #{userNum}
 	</select>
-
+	
+	<select id="selectUserAddress" parameterType="int"
+		resultType="String">
+		SELECT ADDRESS
+		FROM USER_TB
+		WHERE USER_NUM = #{userNum}
+	</select>
 	<!-- <select id="selectWriterImg" parameterType="int" resultType="FilePath"> 
 		SELECT C.CATEGORY_PATH, F.FILE_NAME FROM "FILE" F JOIN CATEGORY C ON F.CATEGORY_ID 
 		= C.CATEGORY_ID WHERE F.REF_NO = #{boardId} AND F.CATEGORY_ID = 6 AND ROWNUM=1; 

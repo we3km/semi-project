@@ -43,6 +43,7 @@ public interface BoardService {
 	List<BoardRentalFileWrapper> selectEqualsCategoryList(String smallCategory);
 	List<FilePath> selectImgList(int boardId);
 	List<Integer> getLikedBoardIdsByUser(int userNum);
+	String selectUserAddress(int userNum);
 
 
 

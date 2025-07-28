@@ -301,7 +301,7 @@ img {
 				
 				<!-- 위치 서비스 추가후 추가할 기능 -->
 				<div class="region">
-					거래지역 &gt; <span class="region-name">서울특별시 강남구 📍</span>
+					거래지역 &gt; <span class="region-name">${userAddress}</span>
 				</div>
 
 				<!-- 작성 취소와 작성 완료 버튼 -->
@@ -518,7 +518,7 @@ img {
 
 			<!-- 거래 유형마다 다른 정보들 입력(카테고리는 동일) -->
 			<c:choose>
-				<!-- 대여 게시물 정보 작성 -->
+			
 				<c:when test="${boardCategory eq 'rental'}">
 					<section class="price-date-category">
 						<div class="price-area">
@@ -541,7 +541,7 @@ img {
 								까지
 							</div>
 						</div>
-						<!-- 시작일 ~ 종료일 순서 설정 스크립트 -->
+						
 						<script>
 							const startInput = document.getElementById('start-date');
 							const endInput = document.getElementById('end-date');
@@ -574,7 +574,7 @@ img {
 						</script>
 
 					
-				<!-- 상품 카테고리 선택 대 > 중 > 소 -->
+				
 				<div class="category-area">
 			    <label>상품 카테고리</label>
 			
@@ -594,14 +594,14 @@ img {
 			        <input type="hidden" id="categoryLargeHiddenInput" name="boardCommon.productCategoryL" />
 			      </div>
 			
-			      <!-- 중분류 -->
+			      
 			      <div class="category-column" id="middle" style="display: none;">
 			        <h5>중분류</h5>
 			        <div id="category-list-middle"></div>
 			        <input type="hidden" id="categoryMiddleHiddenInput" name="boardCommon.productCategoryM" />
 			      </div>
 			
-			      <!-- 소분류 -->
+			      
 			      <div class="category-column" id="small" style="display: none;">
 			        <h5>소분류</h5>
 			        <div id="category-list-small" ></div>

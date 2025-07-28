@@ -166,7 +166,12 @@ public class BoardController {
 		// 상품 카테고리 추출
 		List<ProductCategory> list = boardService.selectCategoryList();
 		model.addAttribute("list", list);
-
+		
+		// 회원의 위치 정보 추출
+		// 로그인 정보를 가져오기 추가 예정
+		int userNum = 1;
+		String userAddress = boardService.selectUserAddress(userNum);
+		model.addAttribute("userAddress", userAddress);
 		return "board/writeBoard";
 	}
 
