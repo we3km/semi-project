@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.itda.common.Utils;
+import com.kh.itda.common.model.vo.File;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.dao.OpenChatDao;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.openchat.model.vo.OpenChatImg;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,7 +52,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 	    if (result == 0) throw new RuntimeException("채팅방 등록 실패");
 	    
 	    
-	    int p = dao.insertParticipant(chatRoomID, userNum);  // ← 이름 통일
+	    int p = dao.insertParticipant(chatRoomID, userNum); 
 	    log.debug(">> upsertParticipant result={}", p );
 	    log.debug("upsertParticipant 결과 roomId={}, userNum={}",chatRoomID, userNum);
 	    if (p < 1) throw new RuntimeException("개설자 자동참가 실패");   
@@ -61,7 +61,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 
 	 // 2. 이미지 저장
 	    boolean hasImage = false;
-	    String webPath = "/resources/images/chat/";  // 오픈채팅 경로 (CATEGORY_ID = 11)
+	    String webPath = "/resources/images/chat/openchat/";  // 오픈채팅 경로 (CATEGORY_ID = 11)
 
 	    if (openImages != null && !openImages.isEmpty()) {
 	        for (MultipartFile openImage : openImages) {
@@ -69,9 +69,9 @@ public class OpenChatServiceImpl implements OpenChatService {
 	            hasImage = true;
 
 	            // 실제 파일 저장 (파일명만 반환)
-	            String fileName = Utils.saveFileToCategoryFolder(openImage, servletContext, "chat");
+	            String fileName = Utils.saveFileToCategoryFolder(openImage, servletContext, "chat/openchat");
 
-	            OpenChatImg img = new OpenChatImg();
+	            File img = new File();
 	            img.setFileName(fileName);
 	            img.setCategoryId(11); // 오픈채팅 카테고리
 	            img.setRefNo(chatRoomID);
@@ -85,7 +85,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 
 	    // 2-1. 업로드가 없으면 기본 이미지 등록
 	    if (!hasImage) {
-	        OpenChatImg img = new OpenChatImg();
+	    	File img = new File();
 	        img.setFileName("openchat_default.jpg");
 	        img.setCategoryId(11);
 	        img.setRefNo(chatRoomID);

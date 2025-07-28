@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,6 @@ import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -102,6 +102,7 @@ public class OpenChatController {
 	    @RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
 	    @RequestParam(value = "tagContent", required = false) String tagContent,
 	    RedirectAttributes ra,
+	    //로그인되면 수정해야함
 	    HttpSession session
 	) {
 	    User u = (User) session.getAttribute("loginUser");
@@ -110,8 +111,9 @@ public class OpenChatController {
 	        return "redirect:/member/login";
 	    }
 
-	    room.setUserNum(u.getUserNum());
-	    room.setTagContent(tagContent);
+		/*
+		 * room.setUserNum(u.getUsername()); room.setTagContent(tagContent);
+		 */
 
 	    
 	    log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());

@@ -35,6 +35,7 @@
     )
   </insert>
   
+  <!-- 전체 시도 조회  -->
   <select id="findAllSido" resultType="string">
     SELECT DISTINCT SIDO
     FROM LOCATION

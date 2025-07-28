@@ -1,17 +1,13 @@
 package com.kh.itda.user.model.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-@Builder
-public class User {
-	private int userNum;
-	private String userId;
-	private String userPwd;
-	private String nickName;
+@NoArgsConstructor
+public class USER {
+	private int UserNum;
+	private int userId;
+	private int userPwd;
+
 }

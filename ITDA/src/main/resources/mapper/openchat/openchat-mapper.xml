@@ -105,7 +105,7 @@
 
 	<!-- FILE 테이블 INSERT -->
 	<insert id="insertFile"
-		parameterType="com.kh.itda.openchat.model.vo.OpenChatImg">
+		parameterType="com.kh.itda.common.model.vo.File">
 		<selectKey keyProperty="fileId" resultType="int"
 			order="BEFORE">
 			SELECT FILE_SEQ.NEXTVAL FROM DUAL
@@ -176,6 +176,7 @@
       VALUES (src.CHATROOM_ID, src.USER_NUM)
 </insert>
 
+<!-- 현재 참여인원 늘리기 -->
 <update id="updateOpenChatCount" parameterType="int">
     UPDATE OPEN_CHAT
     SET OPEN_CHAT_COUNT = (

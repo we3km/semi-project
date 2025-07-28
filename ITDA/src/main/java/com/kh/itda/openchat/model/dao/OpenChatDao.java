@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.openchat.model.vo.OpenChatImg;
+import com.kh.itda.common.model.vo.File;
 
 @Repository
 public class OpenChatDao {
@@ -34,7 +34,7 @@ public class OpenChatDao {
 
 
 	// 5. 파일 정보 INSERT (FILE)
-	public int insertFile(OpenChatImg img) {
+	public int insertFile(File img) {
 		return session.insert("openchat.insertFile", img);
 	}
 
@@ -87,18 +87,5 @@ public class OpenChatDao {
 		return session.selectOne("openchat.existsOpenChatRoomTag", param);
 	}
 
-	/*
-	 * public int insertLocation(Location location) { return
-	 * session.insert("openchat.insertLocation", location); }
-	 * 
-	 * public int insertLocationLink(Long locationId, int chatRoomID) { Map<String,
-	 * Object> paramMap = new HashMap<>(); paramMap.put("locationId", locationId);
-	 * paramMap.put("chatRoomId", chatRoomID); return
-	 * session.insert("openchat.insertLocationLink", paramMap); }
-	 * 
-	 * public Long findLocationIdByRegion(String sido, String sigungu, String emd) {
-	 * Map<String, String> paramMap = new HashMap<>(); paramMap.put("sido", sido);
-	 * paramMap.put("sigungu", sigungu); paramMap.put("emd", emd); return
-	 * session.selectOne("openchat.findLocationIdByRegion", paramMap); }
-	 */
+	
 }

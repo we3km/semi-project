@@ -82,7 +82,7 @@
 										<c:choose>
 											<c:when test="${not empty chatRoom.fileName}">
 												<img
-													src="${contextPath}/resources/images/chat/${chatRoom.fileName}"
+													src="${contextPath}/resources/images/chat/openchat/${chatRoom.fileName}"
 													alt="채팅방 이미지" class="chat-img" />
 											</c:when>
 											<c:otherwise>
