@@ -24,7 +24,7 @@ public interface BoardDao {
 	List<ProductCategory> selectCategoryList();
 
 	List<ProductCategory> getCategoriesByParentNum(int parentNum);
-	List<BoardRentalFileWrapper> selectBoardRentalList(String sort);
+	List<BoardRentalFileWrapper> selectBoardRentalList(Map<String, Object> filterMap);
 	BoardRentalWrapper selectBoardRental(int boardId);
 	String selectWriterNickname(int userNum);
 	List<String> selectTags(int boardId);

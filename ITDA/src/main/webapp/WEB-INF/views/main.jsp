@@ -230,7 +230,7 @@ $(document).ready(function () {
         let targetUrl = '';
         switch(title) {
             case '대여':
-                targetUrl = contextPath + '/rent/list';
+                targetUrl = contextPath + '/board/rental/list';
                 break;
             case '교환':
                 targetUrl = contextPath + '/exchange/list';
