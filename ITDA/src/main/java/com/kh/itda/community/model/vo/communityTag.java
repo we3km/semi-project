@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Tag {
+public class communityTag {
 	private int tagId;
 	private String tagContent;
 

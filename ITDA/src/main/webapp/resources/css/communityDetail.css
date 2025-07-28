@@ -55,10 +55,20 @@
             margin: 0 8px;
             color: #bbb;
         }
-
-        .top-row .post-title {
-            color: #222;
-        }
+		
+		.tag-display-area{
+			display:flex;
+			flex-wrap: wrap;
+		}
+		
+		.tag-item{
+			color: #6e4fb5 !important;
+			background: linear-gradient(135deg, #f3e8ff, #e6dbff) !important;
+			border-radius: 15px !important;
+			padding: 2px 10px !important;
+		}
+        
+		
 
         .meta-row {
             display: flex;
@@ -76,6 +86,7 @@
         .meta-row .right .red #commentCount {
             color: red;
         }
+        
 
         hr {
             border: none;
@@ -344,3 +355,18 @@
         .options-popup div:hover {
             background-color: #f0f0f0;
         }
+        .hidden {
+			display: none;
+		}
+		.delete-menu {
+			position: absolute;
+			top: 30px;
+			right: 0;
+			background-color: #fff;
+			border: 1px solid #ccc;
+			padding: 5px 10px;
+			border-radius: 4px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+        
+		

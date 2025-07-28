@@ -37,31 +37,28 @@
 				<p>
 					<strong>지역</strong>
 				</p>
-				<label><input type="checkbox" name="region" value="서울특별시">
-					서울특별시</label> <label><input type="checkbox" name="region"
-					value="경기도"> 경기도</label> <label><input type="checkbox"
-					name="region" value="인천"> 인천</label>
+				<label><input type="checkbox" name="region" value="서울특별시"> 서울특별시</label> 
+				<label><input type="checkbox" name="region" value="경기도"> 경기도</label> 
+				<label><input type="checkbox" name="region" value="인천"> 인천</label>
 
 				<p>
 					<strong>정렬순</strong>
 				</p>
-				<label><input type="radio" name="sort" value="latest">
-					최신순</label> <label><input type="radio" name="sort" value="views">
-					조회순</label> <label><input type="radio" name="sort" value="likes">
-					추천순</label>
+				<label><input type="radio" name="sort" value="latest"> 최신순</label> 
+				<label><input type="radio" name="sort" value="views">조회순</label> 
+				<label><input type="radio" name="sort" value="likes">추천순</label>
 
 				<p>
 					<strong>카테고리</strong>
 				</p>
-				<label><input type="checkbox" name="category" value="w">
-					운동</label> <label><input type="checkbox" name="category" value="a">
-					문화/예술</label> <label><input type="checkbox" name="category"
-					value="g"> 취미/오락</label> <label><input type="checkbox"
-					name="category" value="p"> 반려동물</label> <label><input
-					type="checkbox" name="category" value="f"> 동네친구</label> <label><input
-					type="checkbox" name="category" value="s"> 자기계발/스터디</label> <label><input
-					type="checkbox" name="category" value="h"> 공포</label> <label><input
-					type="checkbox" name="category" value="all"> 전체</label>
+				<label> <input type="checkbox" name="category" value="w"> 운동</label> 
+				<label><input type="checkbox" name="category" value="a">문화/예술</label> 
+				<label><input type="checkbox" name="category" value="g"> 취미/오락</label> 
+				<label><input type="checkbox" name="category" value="p"> 반려동물</label> 
+				<label><input type="checkbox" name="category" value="f"> 동네친구</label> 
+				<label><input type="checkbox" name="category" value="s"> 자기계발/스터디</label> 
+				<label><input type="checkbox" name="category" value="h"> 공포</label> 
+				<label><input type="checkbox" name="category" value="all"> 전체</label>
 
 				<button id="applyFilterBtn">적용</button>
 			</div>
@@ -83,7 +80,7 @@
 						<th>제목</th>
 						<th>글쓴이</th>
 						<th>작성일</th>
-						<th>조회</th>
+						<th>조회수</th>
 						<th>추천</th>
 					</tr>
 				</thead>
@@ -98,7 +95,7 @@
 						</c:when>
 						<c:otherwise>
 							<c:forEach var="community" items="${list }">
-								<tr onclick="movePage(${community.communityNo})">
+								<tr onclick="movePage('${community.communityCd}', ${community.communityNo})">
 									<td>${community.communityNo}</td>
 									<td>${community.communityTitle }</td>
 									<td>${community.communityNickname}</td>
@@ -118,10 +115,10 @@
 
 			</table>
 			<script>
-            function movePage(cno) {
-                location.href = "${pageContext.request.contextPath}/community/detail/${communityCode}/"+cno
+            function movePage(cd, cno) {
+            	location.href = "${pageContext.request.contextPath}/community/detail/" + cd + "/" + cno;
             }
-        </script>
+        	</script>
 
 
 			<!-- 페이징바 : 학원꺼 -->
@@ -197,7 +194,7 @@
         // 글쓰기 버튼 클릭 이벤트
         $('#writeBtn').on('click', function() {
         	
-            location.href = contextPath + `/community/insert/${communityCode}`;
+            location.href = contextPath + `/community/insert`;
         });
 
         $('#openListBtn').click(() => {

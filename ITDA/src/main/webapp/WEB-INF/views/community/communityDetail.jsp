@@ -33,7 +33,15 @@
         <div class="top-row">
             <div class="category">${community.communityCdName}</div>
             <div class="separator">|</div>
-            <div class="post-title">${community.communityTitle }</div>
+            <div class="post-title">${community.communityTitle }</div> 
+            <div class="separator">|</div>
+            <div class="tag-display-area">
+		    <c:if test="${not empty community.tags}">
+			        <c:forEach var="tag" items="${community.tags}">
+			            <span class="tag-item" >#${tag.tagContent}</span>
+			        </c:forEach>
+			    </c:if>
+			</div>      
         </div>
 
         <!-- 게시글 정보 -->
@@ -52,17 +60,18 @@
         <div class="post-actions">
             <button class="share-btn">공유</button>
             <button class="report-btn">신고하기</button>
-				<%
-				    String currentURL = request.getRequestURL().toString();
-				    String queryString = request.getQueryString();
-				    if(queryString != null) {
-				        currentURL += "?" + queryString;
-				    }
-				%>
+            <button class="sub-btn">︙</button>
             <div class="share-popup" id="sharePopup">
-                <input type="text" id="shareUrl" readonly value="<%= currentURL %>">
-                <button onclick="copyUrl()">복사</button>
+                <input type="text" id="shareUrl" readonly >
+                <button onclick="copyUrl()" id="copy">복사</button>
             </div>
+            
+            <div id="deleteToggleArea" class="delete-menu hidden">
+				<form method="post" action="/community/delete">
+					<input type="hidden" name="communityNo" value="${community.communityNo}" />
+					<button type="submit" class="delete-btn">삭제하기</button>
+				</form>
+			</div>
         </div>
 
         <!-- 게시글 내용 -->
@@ -73,6 +82,8 @@
        	<!-- 게시글 이미지 -->
         <div class="post-img">
         </div>
+        
+        
 
         <div class="vote-buttons">
 		    <!-- 좋아요 버튼 -->
@@ -117,8 +128,35 @@
 			    $('#dislikeBtn').click(function () {
 			        sendReaction("DISLIKE");
 			    });
+			    
+			  //url 복사 함수
+			    $('.share-btn').click(function () {
+		            $('#sharePopup').toggle();         
+		        });
+			  //신고하기
+			   $('.report-btn').click(function(){
+				   openReportModal('community', ${communityNo},  '<c:out value="${communityTitle}" />');
+			   });
+			 // 복사 버튼 클릭
+			 	$('#shareUrl').val(window.location.href);
+			 
+				$('#copy').click(function () {
+					const $urlInput = $('#shareUrl');
+					$urlInput.prop('readonly', false); // 복사 위해 잠깐 활성화
+					$urlInput.select();
+					document.execCommand('copy');
+					$urlInput.prop('readonly', true); // 다시 readonly로 복구
+					alert('URL이 복사되었습니다!');
+				});
+				// sub-btn 클릭 → 삭제 버튼 토글
+				$('.sub-btn').click(function () {
+					$('#deleteToggleArea').toggle();
+				});
+		    
 	    });
 	    
+		  
+	        
 
 		    function sendReaction(type) {
 		        $.ajax({
@@ -153,6 +191,7 @@
 		            }
 		        });
 		    }
+		    
 		</script>
 
         <hr>

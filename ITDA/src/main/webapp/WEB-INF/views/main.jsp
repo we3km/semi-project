@@ -164,14 +164,14 @@
 	    const subCategoryData={
 	    		//board 카테고리목록
 	    		board : [
-	    			<c:forEach var="item" items="${productCategories}">
-	                	{ id: "${item.categoryId}", name: "${item.category}" },
+	    			<c:forEach var="entry" items="${productCategories}">
+	                	{ id: "${entry.categoryId}", name: "${entry.value.category}" },
 	            	</c:forEach>
 	    		],
 	    		//community 카테고리 목록
 	    		community : [
-	    			<c:forEach var="item" items="${communityTypes}">
-	                	{ id: "${item.communityCd}", name: "${item.communityName}" },
+	    			<c:forEach var="entry" items="${communityTypes}">
+	                	{ id: "${entry.key}", name: "${entry.value.communityName}" },
 	            	</c:forEach>
 	    		]
 	    };
@@ -191,7 +191,7 @@
 	    });
 	    $(window).on('click', () => $('.dropdown-content').removeClass('show'));
 	    
-	 // [수정 2] '거래유형' 드롭다운 클릭 이벤트 분리
+	 //  '거래유형' 드롭다운 클릭 이벤트 분리
 	    $('#deal-type-dropdown').on('click', '.category', function () {
 	        const dropdown = $(this).closest('.dropdown');
 	        const name = $(this).data('name');
@@ -232,7 +232,7 @@
 	        });
 	    });
 
-	    // [추가] '상품유형' 드롭다운 클릭 이벤트 (동적으로 생성되므로 이벤트 위임 방식 사용)
+	    //  '상품유형' 드롭다운 클릭 이벤트 (동적으로 생성되므로 이벤트 위임 방식 사용)
 	    $('#product-type-dropdown').on('click', '.category', function() {
 	        selectedProductTypeId = $(this).data('id'); // 선택한 상품유형 ID 저장
 	        const name = $(this).data('name');
@@ -241,7 +241,7 @@
 	    });
 
 
-	    // [수정 3] 검색 버튼 클릭 시 상품유형 파라미터 추가
+	    //  검색 버튼 클릭 시 상품유형 파라미터 추가
 	    $('#search-btn').on('click', function () {
 	        if (!selectedCategoryId) {
 	            alert("거래유형을 선택해주세요.");
@@ -284,10 +284,10 @@
 	        const title = $(this).find('.card-title').text().trim();
 	        let targetUrl = '';
 	        switch(title) {
-	            case '대여': targetUrl = contextPath + '/rent/list'; break;
-	            case '교환': targetUrl = contextPath + '/exchange/list'; break;
-	            case '나눔': targetUrl = contextPath + '/share/list'; break;
-	            case '경매': targetUrl = contextPath + '/auction/list'; break;
+	            case '대여': targetUrl = contextPath + '/board/rental/list'; break;
+	            case '교환': targetUrl = contextPath + '/board/exchange/list'; break;
+	            case '나눔': targetUrl = contextPath + '/board/share/list'; break;
+	            case '경매': targetUrl = contextPath + '/board/auction/list'; break;
 	            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
 	            default: alert('해당 페이지가 없습니다.'); return;
 	        }

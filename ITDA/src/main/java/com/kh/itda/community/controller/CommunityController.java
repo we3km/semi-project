@@ -106,8 +106,9 @@ public class CommunityController {
 	}
 
 	// 게시판 등록폼 이동 서비스
-	@GetMapping("/insert/{communityCode}")
-	public String enrollForm(@ModelAttribute Community c, @PathVariable("communityCode") String communityCode,
+	@GetMapping("/insert")
+	public String enrollForm(
+			@ModelAttribute Community c, /* @PathVariable("communityCode") String communityCode, */
 			Model model) {
 		Map<String, String> communityTypeMap = communityService.getCommunityTypeMap();
 	    model.addAttribute("communityTypeMap", communityTypeMap);
@@ -116,15 +117,17 @@ public class CommunityController {
 	}
 
 	// 게시판 등록기능
-	@PostMapping("/insert/{communityCode}")
+	@PostMapping("/insert")
 	public String insertCommunity(
-								@ModelAttribute Community c, @PathVariable("communityCode") String communityCode,
-								Authentication auth, Model model, RedirectAttributes ra,
+								@ModelAttribute Community c, /*@PathVariable("communityCode") String communityCode,*/
+								Authentication auth,
+								/* Model model, */ RedirectAttributes ra,
 								@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles
 								) {
 		
 		List<CommunityImg> imgList = new ArrayList<>();
 		int level = 0; // 첨부파일의 레벨
+		
 		// 0 = 썸네일, 0이 아닌 값들은 썸네일이 아닌 기타 파일들
 		for (MultipartFile upfile : upfiles) {
 			if (upfile.isEmpty()) {
@@ -132,7 +135,7 @@ public class CommunityController {
 			}
 			// 첨부파일이 존재한다면 WEB서버상에 첨부파일 저장
 			// 첨부파일 관리를 위해 DB에 첨부파일의 위치정보를 저장
-			String changeName = Utils.saveFile(upfile, application, communityCode);
+			String changeName = Utils.saveFile(upfile, application, c.getCommunityCd());
 			CommunityImg ci = new CommunityImg();
 			ci.setChangeName(changeName);
 			ci.setOriginName(upfile.getOriginalFilename());
@@ -143,14 +146,14 @@ public class CommunityController {
 		
 		//로그인 사용자 정보 등록
 //		User loginUser = (User) auth.getPrincipal();
-		
-		
 //		c.setCommunityWriter(String.valueOf(loginUser.getUserNo()));
+		
+		//임시로그인
 		c.setCommunityWriter(1);
 		
 		c.setCommunityNickname(String.valueOf(1));
 		c.setWriteDate(new Date());
-		c.setCommunityCd(communityCode);
+		/* c.setCommunityCd(communityCode); */
 
 		
 		// 정보체크
@@ -165,14 +168,14 @@ public class CommunityController {
 		}
 		
 		ra.addFlashAttribute("alertMsg", "게시글 작성 성공");
-		System.out.println(c);
-		return "redirect:/community/list/" + communityCode;
+		
+		return "redirect:/community/list/" + c.getCommunityCd();
 	}
 	
 	//게시판 상세보기
 	@GetMapping("/detail/{communityCd}/{communityNo}")
 	public String selectCommunity(
-								@PathVariable("communityCd") String communityCode,
+								@PathVariable("communityCd") String communityCd,
 								@PathVariable("communityNo") int communityNo,
 								Authentication auth,
 								Model model,
@@ -255,7 +258,7 @@ public class CommunityController {
 		model.addAttribute("community", c);
 		model.addAttribute("reactionForm", new CommunityReaction());
 		model.addAttribute("userReaction", userReaction);
-		model.addAttribute("communityCd", communityCode); 
+		model.addAttribute("communityCd", communityCd); 
 		
 		return "community/communityDetail"; 
 	}

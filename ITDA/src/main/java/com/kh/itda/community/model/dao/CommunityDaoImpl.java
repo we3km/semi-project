@@ -12,6 +12,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.communityTag;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +113,27 @@ public class CommunityDaoImpl implements CommunityDao{
 		param.put("userNo", userNo);
 		param.put("communityNo", communityNo);
 		return session.selectOne("community.selectUserReaction", param);
+	}
+
+	@Override
+	public communityTag selectTagByName(String tagName) {
+		return session.selectOne("community.selectTagByName",tagName);
+	}
+
+	@Override
+	public int insertTag(communityTag tag) {
+		return session.insert("community.insertTag",tag);
+		
+	}
+
+	@Override
+	public int insertCommunityTag(Map<String, Integer> params) {
+		return session.insert("community.insertCommunityTag", params);
+	}
+
+	@Override
+	public List<communityTag> selectTagsByCommunityNo(int communityNo) {
+		return session.selectList("community.selectTagsByCommunityNo", communityNo);
 	}
 
 	

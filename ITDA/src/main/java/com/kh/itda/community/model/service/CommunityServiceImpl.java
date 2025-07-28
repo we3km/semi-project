@@ -1,5 +1,6 @@
 package com.kh.itda.community.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.communityTag;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,7 +49,6 @@ public class CommunityServiceImpl implements CommunityService{
 		
 		// 게시글 저장
 		int result = communityDao.insertCommunity(c);
-		
 		if(result == 0 ) {
 			throw new RuntimeException("게시글 등록 실패");
 		}
@@ -65,6 +66,32 @@ public class CommunityServiceImpl implements CommunityService{
 			}
 		}
 		
+		// 태그 저장 로직
+        String tagStr = c.getTagStr();
+        if (tagStr != null && !tagStr.isEmpty()) {
+            String[] tagNames = tagStr.split(",");
+            for (String tagName : tagNames) {
+                tagName = tagName.trim();
+                if (tagName.isEmpty()) continue;
+
+                communityTag existingTag = communityDao.selectTagByName(tagName);
+                int tagId;
+
+                if (existingTag == null) {
+                    communityTag newTag = new communityTag();
+                    newTag.setTagContent(tagName);
+                    communityDao.insertTag(newTag);
+                    tagId = newTag.getTagId();
+                } else {
+                    tagId = existingTag.getTagId();
+                }
+
+                Map<String, Integer> params = new HashMap<>();
+                params.put("communityNo", c.getCommunityNo());
+                params.put("tagId", tagId);
+                communityDao.insertCommunityTag(params);
+            }
+         }
 		return result;
 	}
 
@@ -75,7 +102,16 @@ public class CommunityServiceImpl implements CommunityService{
 
 	@Override
 	public CommunityExt selectCommunity(int communityNo) {
-		return communityDao.selectCommunity(communityNo);
+		// 게시글 정보 조회
+        CommunityExt c = communityDao.selectCommunity(communityNo);
+        
+        // 태그 목록 추가 조회
+        if (c != null) {
+            List<communityTag> tags = communityDao.selectTagsByCommunityNo(communityNo);
+            c.setTags(tags); // 조회된 태그 목록을 객체에 담아줌
+        }
+        
+        return c;
 	}
 
 	

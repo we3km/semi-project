@@ -8,6 +8,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.communityTag;
 
 public interface CommunityDao {
 
@@ -38,6 +39,14 @@ public interface CommunityDao {
 	int getDislikeCount(int communityNo);
 
 	CommunityReaction userReactionNo(int userNo, int communityNo);
+
+	communityTag selectTagByName(String tagName);
+
+	int insertTag(communityTag newTag);
+
+	int insertCommunityTag(Map<String, Integer> params);
+
+	List<communityTag> selectTagsByCommunityNo(int communityNo);
 
 	
 

@@ -10,8 +10,7 @@
 	</select>
 
 	<!-- 게시글 수 조회 -->
-	<select id="selectListCount" parameterType="map"
-		resultType="int">
+	<select id="selectListCount" parameterType="map" resultType="int">
 		SELECT COUNT(*)
 		FROM BOARD_COMMUNITY C
 		LEFT JOIN USER_TB U	USING(USER_NUM)
@@ -19,23 +18,29 @@
 		<if test="keyword != null and keyword != '' ">
 			AND
 			<choose>
-				<when test="condition.equals('title')">
+				<when test="condition != null and condition.equals('title')">
 					C.TITLE LIKE '%' || #{keyword} || '%'
 				</when>
-				<when test="condition.equals('writer')">
+				<when test="condition != null and condition.equals('writer')">
 					U.NICK_NAME LIKE '%' || #{keyword} || '%'
 				</when>
-				<when test="condition.equals('content')">
+				<when test="condition != null and condition.equals('content')">
 					C.CONTENT LIKE '%' || #{keyword} || '%'
 				</when>
-				<when test="condition.equals('titleAndContent')">
+				<when test="condition != null and condition.equals('titleAndContent')">
 					(C.TITLE LIKE '%' || #{keyword} || '%' OR
 					C.CONTENT
 					LIKE '%' || #{keyword} || '%' )
 				</when>
+				<otherwise>
+                    (C.TITLE LIKE '%' || #{keyword} || '%' OR C.CONTENT LIKE '%' || #{keyword} || '%')
+                </otherwise>
 			</choose>
-
 		</if>
+		<!-- [추가] 상품유형(카테고리) 필터 조건 -->
+        <if test="category != null and category != '' ">
+            AND C.COMMUNITY_CD = #{category}
+        </if>
 		</where>
 	</select>
 
@@ -46,6 +51,7 @@
 		SELECT 
 			C.COMMUNITY_BOARD_ID AS communityNo, 
 			C.TITLE AS communityTitle, 
+			C.COMMUNITY_CD AS communityCd,
 			U.NICK_NAME AS communityNickname,
 			C.WRITE_DATE AS writeDate, 
 			C.VIEWS AS views,
@@ -56,32 +62,67 @@
 				AND R.REACTION_TYPE = 'LIKE'
 			) AS recommendCount
 		FROM BOARD_COMMUNITY C
-		LEFT JOIN USER_TB U USING(USER_NUM)
+		LEFT JOIN USER_TB U ON C.USER_NUM = U.USER_NUM
 		<where>
-		<if test="keyword != null and keyword != '' ">
-			AND
-			<choose>
-				<when test="condition.equals('title')">
-					C.TITLE LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="condition.equals('writer')">
-					U.NICK_NAME LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="condition.equals('content')">
-					C.CONTENT LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="condition.equals('titleAndContent')">
-					(C.TITLE LIKE '%' || #{keyword} || '%' OR
-					C.CONTENT
-					LIKE '%' || #{keyword} || '%' )
-				</when>
-			</choose>
-		</if>
-		</where>
+	        <if test="communityCode != null and communityCode != 'all'">
+	            AND C.COMMUNITY_CD = #{communityCode}
+	        </if>
+	
+	        <if test="category != null and category != '' and category != 'all'">
+	            AND C.COMMUNITY_CD = #{category}
+	        </if>
+	
+	        <if test="keyword != null and keyword != ''">
+	            AND
+	            <choose>
+	                <when test="condition != null and condition.equals('title')">
+	                    C.TITLE LIKE '%' || #{keyword} || '%'
+	                </when>
+	                <when test="condition != null and condition.equals('writer')">
+	                    U.NICK_NAME LIKE '%' || #{keyword} || '%'
+	                </when>
+	                <when test="condition != null and condition.equals('content')">
+	                    C.CONTENT LIKE '%' || #{keyword} || '%'
+	                </when>
+	                <when test="condition != null and condition.equals('titleAndContent')">
+	                    (C.TITLE LIKE '%' || #{keyword} || '%' OR C.CONTENT LIKE '%' || #{keyword} || '%')
+	                </when>
+	                <otherwise>
+	                    (C.TITLE LIKE '%' || #{keyword} || '%' OR C.CONTENT LIKE '%' || #{keyword} || '%')
+	                </otherwise>
+	            </choose>
+	        </if>
+	    </where>
 		ORDER BY COMMUNITY_BOARD_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT
 		#{limit} ROWS ONLY
 	</select>
+	
+	<!-- 태그기능 -->
+	<select id="selectTagByName" parameterType="string" resultType="CommunityTag">
+		SELECT TAG_ID AS tagId, TAG_CONTENT AS tagContent
+		FROM TAG
+		WHERE TAG_CONTENT= #{tagStr}
+	</select>
+	<insert id="insertTag" parameterType="CommunityTag">
+		<selectKey keyProperty="tagId" resultType="_int" order="BEFORE">
+	        SELECT TAG_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO TAG (TAG_ID, TAG_CONTENT)
+	    VALUES (#{tagId}, #{tagContent})
+	</insert>
+	<select id="selectTagsByCommunityNo" parameterType="_int" resultType="CommunityTag">
+	    SELECT 
+	        T.TAG_ID AS tagId,
+	        T.TAG_CONTENT AS tagContent
+	    FROM TAG T
+	    JOIN BOARD_COMMUNITY_TAG BCT ON T.TAG_ID = BCT.TAG_ID
+	    WHERE BCT.COMMUNITY_BOARD_ID = #{communityNo}
+	</select>	
+	<insert id="insertCommunityTag" parameterType="map">
+	    INSERT INTO BOARD_COMMUNITY_TAG (COMMUNITY_BOARD_ID, TAG_ID)
+	    VALUES (#{communityNo}, #{tagId})
+	</insert>
 	
 	
 	<!--  좋아요기능 -->
@@ -94,19 +135,26 @@
 		
 
 	<!-- 게시글 등록 -->
-	<insert id="insertCommunity" parameterType="com.kh.itda.community.model.vo.Community">
-		<!-- selectKey - INSERT 전/후에 실행되어 게시글 번호와 같은 자동증가값을 가져오는 구문 - keyProperty 
-			: 결과값을 저장할 필드명 - resultType : 반환되는 타입의 자료형 - order : insert 전에 실행될지 후에 실행될지를 
-			지정하는 속성 - 같은 트랜잭션에서 현재 테이블의 PK값이 필요한 경우 사용 -->
-		<selectKey keyProperty="communityNo" resultType="int" order="BEFORE">
-			SELECT BOARD_COMMUNITY_SEQ.NEXTVAL
-			FROM DUAL
-		</selectKey>
-		INSERT INTO BOARD_COMMUNITY (COMMUNITY_BOARD_ID, USER_NUM, TITLE, CONTENT, COMMUNITY_CD)
-		VALUES (#{communityNo},#{communityWriter}, #{communityTitle}, #{communityContent}, #{communityCd})
-		<!-- 그니까 여기에서 DB값을 가져오고 저장시키고하는곳
-		쿼리문으로 어떤칼럼에 내가적은 #{}을 넣겠다,
-		혹은, 쿼리문으로 테이블의 값#{}을 ${}으로 controller혹은 jsp에서 뽑아쓰겠다!-->
+	<insert id="insertCommunity" parameterType="community">
+	    INSERT INTO BOARD_COMMUNITY (
+	        COMMUNITY_BOARD_ID, 
+	        TITLE, 
+	        CONTENT,
+	        COMMUNITY_CD,
+	        USER_NUM,
+	        WRITE_DATE
+	    ) VALUES (
+	        BOARD_COMMUNITY_SEQ.NEXTVAL,
+	        #{communityTitle},
+	        #{communityContent},
+	        #{communityCd},
+	        #{communityWriter},
+	        SYSDATE
+	    )
+	
+	    <selectKey keyProperty="communityNo" resultType="_int" order="AFTER">
+	        SELECT BOARD_COMMUNITY_SEQ.CURRVAL FROM DUAL
+	    </selectKey>
 	</insert>
 
 	<!-- 게시글 첨부 이미지 등록 --><!-- 순서 주의 필요 =============오류시 확인해보셈============ -->
@@ -133,6 +181,7 @@
 			U.NICK_NAME AS communityNickname,
 			C.WRITE_DATE AS writeDate,
 			T.COMMUNITY_NAME AS communityCdName,
+			C.COMMUNITY_CD AS communityCd,
 			C.VIEWS AS views,
 			(
 				SELECT COUNT(*)

@@ -137,6 +137,7 @@ select, input[type="text"], textarea {
 	display: flex;
 	align-items: center;
 	margin-bottom: 5px;
+	justify-content: space-between;
 }
 
 .tag .remove-tag {
@@ -144,6 +145,11 @@ select, input[type="text"], textarea {
 	cursor: pointer;
 	font-weight: bold;
 	color: #555;
+	
+}
+
+.tag .remove-tag:hover {
+	color: #333; /* X 버튼에 마우스 올렸을 때 색상 */
 }
 
 .search-icon {

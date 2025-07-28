@@ -10,5 +10,6 @@ import lombok.ToString;
 public class CommunityExt extends Community{
 	private List<CommunityImg> imgList;
 	private String userName;
+	private List<communityTag> tags;
 
 }
