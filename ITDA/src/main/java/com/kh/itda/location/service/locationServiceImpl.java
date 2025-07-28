@@ -1,5 +1,7 @@
 package com.kh.itda.location.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,5 +38,20 @@ public class locationServiceImpl implements locationService{
         // loc.getLocationId() 에 방금 생성된 PK 값이 채워집니다.
         return loc.getLocationId();
     }
+
+	@Override
+	public List<String> findAllSido() {
+		
+		List<String> sidoList = dao.findAllSido();
+		
+		return sidoList;
+	}
+
+	@Override
+	public List<String> findSigunguBySido(String sido) {
+		List<String> sigunguList = dao.findSigunguBySido(sido);
+		
+		return sigunguList;
+	}
 
 }

@@ -18,8 +18,8 @@ public class OpenChatDao {
 	private SqlSessionTemplate session;
 
 	// 1. 오픈채팅방 전체 목록 조회
-	public List<OpenChatRoom> selectOpenChatRoomList() {
-		return session.selectList("openchat.selectOpenChatRoomList");
+	public List<OpenChatRoom> selectOpenChatRoomList(Map<String,Object> params) {
+		return session.selectList("openchat.selectOpenChatRoomList",params);
 	}
 
 	// 2. 채팅방 공통 테이블 INSERT (CHAT_ROOM)

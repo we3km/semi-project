@@ -7,7 +7,8 @@
 
 	<!-- 오픈 채팅방 목록 조회 -->
 	<select id="selectOpenChatRoomList"
-	resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+	resultType="com.kh.itda.openchat.model.vo.OpenChatRoom"
+	parameterType="map">
 	SELECT
 		OC.CHATROOM_ID AS chatRoomID,
 		OC.OPEN_CHAT_ROOM_NAME AS chatName,
@@ -23,6 +24,7 @@
 		LEFT JOIN CHAT_PARTICIPANT CP ON OC.CHATROOM_ID = CP.CHATROOM_ID
 		LEFT JOIN OPENCHATROOM_TAG OT ON OC.CHATROOM_ID = OT.CHATROOM_ID
 		LEFT JOIN TAG T ON ot.TAG_ID = T.TAG_ID
+		LEFT JOIN LOCATION L ON OC.LOCATION_ID = L.LOCATION_ID
 
 		LEFT JOIN "FILE" F 
 			ON F.REF_NO = OC.CHATROOM_ID 
@@ -33,6 +35,21 @@
 				WHERE REF_NO = OC.CHATROOM_ID 
 				AND CATEGORY_ID = 11
 			)
+	<where>
+	<if test="sido !=null and sido !=''">
+	 AND L.SIDO = #{sido}
+	</if>
+	<if test="sigungu !=null and sigungu !=''">
+		AND L.SIGUNGU = #{sigungu}
+	</if>
+	<if test="keyword != null and keyword != ''">
+        AND (
+             OC.OPEN_CHAT_ROOM_NAME LIKE '%' || #{keyword} || '%'
+          OR OC.EXPLANATION LIKE '%' || #{keyword} || '%'
+          OR upper(T.TAG_CONTENT) LIKE '%' || upper(#{keyword}) || '%'
+        )
+      </if>
+	</where>
 
 	GROUP BY
 		OC.CHATROOM_ID,

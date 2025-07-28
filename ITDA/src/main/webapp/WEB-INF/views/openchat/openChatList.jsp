@@ -12,25 +12,63 @@
 <meta charset="UTF-8">
 <title>오픈 채팅방 리스트</title>
 <link rel="stylesheet" href="${contextPath}/resources/css/openlist.css">
-<style>
-.hidden {
-	display: none !important;
-}
-</style>
 </head>
 <body>
 	<div class="container">
 		<header class="header"></header>
 		<div class="layout">
+			<form id="filterForm" method="get"
+				action="${contextPath}/openchat/openChatList">
+
+				<aside class="filter-sidebar">
+					<!-- 1) 시·도 고정 제목 -->
+					<div class="location-filter">
+						<h4>위치</h4>
+						<div class="sido-label">${selectedSido}</div>
+					</div>
+					<!-- 2) 시·군·구 라디오 버튼 (선택 즉시 submit) -->
+					<div class="sigungu-list">
+						<c:forEach var="sg" items="${sigunguList}">
+							<label class="sigungu-item"> <input type="radio"
+								name="sigungu" value="${sg}"
+								${sg == selectedSigungu ? 'checked' : ''}
+								onchange="this.form.submit()" /> <span class="sigungu-label">${sg}</span>
+							</label>
+						</c:forEach>
+					</div>
+
+					<!-- 3) 다른 지역 검색 토글 -->
+					<div class="other-region">
+						<button type="button" id="toggleSidoSelect">다른 지역 검색</button>
+					</div>
+
+					<!-- 4) 숨겨진 시·도 선택 박스 (선택 즉시 submit) -->
+					<div id="sidoSelectContainer">
+						<select name="sido" id="sidoSelect" onchange="this.form.submit()">
+							<option value="">시·도 선택</option>
+							<c:forEach var="sd" items="${sidoList}">
+								<option value="${sd}" ${sd == selectedSido ? 'selected' : ''}>
+									${sd}</option>
+							</c:forEach>
+						</select>
+					</div>
+				</aside>
+			</form>
 			<main class="main-content">
 				<h1 class="main-title">오픈 채팅방 리스트</h1>
-
+				<h2 class="location"></h2>
 				<!-- 상단 바 -->
 				<div class="top-bar">
-					<input type="text" class="search-bar" placeholder="채팅방 검색" />
+					<form id="sortForm" method="get"
+						action="${contextPath}/openchat/openChatList">
+						<input type="hidden" name="sido" value="${selectedSido}" /> 
+					    <input type="hidden" name="sigungu" value="${selectedSigungu}" />
+
+							<input type="text" name="keyword" class="search-bar"
+								value="${keyword}" placeholder="채팅방 검색" />
+					</form>
 					<button type="button" class="create-chat-btn">채팅방 개설</button>
 				</div>
-
 				<!-- 채팅방 리스트 -->
 				<div class="chat-list-box">
 					<c:choose>
@@ -54,9 +92,9 @@
 											</c:otherwise>
 										</c:choose>
 									</div>
-									<div class="chat-title" style="text-align: center;">${chatRoom.chatName}</div>
+									<div class="chat-title">${chatRoom.chatName}</div>
 
-									<div class="chat-tags" style="text-align: center;">
+									<div class="chat-tags">
 										<c:if test="${not empty chatRoom.tagContent}">
 											<c:forEach var="tag"
 												items="${fn:split(chatRoom.tagContent, ',')}"
@@ -68,10 +106,10 @@
 										</c:if>
 									</div>
 
-									<div class="chat-members" style="text-align: center;">
-										참여인원: ${chatRoom.chatCount} / ${chatRoom.maxchatCount}</div>
+									<div class="chat-members">참여인원: ${chatRoom.chatCount} /
+										${chatRoom.maxchatCount}</div>
 
-									<div class="join-btn-box" style="text-align: center;">
+									<div class="join-btn-box">
 										<button type="button" class="join-btn open-detail"
 											data-room-id="${chatRoom.chatRoomID}"
 											data-img="${contextPath}/resources/images/chat/${chatRoom.fileName}"
@@ -112,8 +150,7 @@
 					<div class="modal-content">
 						<span class="close-btn" id="closeDetailBtn">&times;</span>
 						<h2>채팅방 정보</h2>
-						<img id="detailImage" class="chat-img"
-							style="width: 100%; border-radius: 10px;" />
+						<img id="detailImage" class="chat-img" />
 						<!-- 모달 상세정보 타이틀 -->
 						<div class="chat-title" id="detailTitle"></div>
 						<!-- 모달 상세정보 태그 -->
@@ -121,9 +158,8 @@
 						<!-- 모달 상세정보 참여인원/최대인원 -->
 						<div class="chat-members" id="detailMembers"></div>
 						<!-- 모달 상세정보 채팅방 상세내용 -->
-						<div class="chat-explanation" id="detailExplanation"
-							style="margin-top: 10px; white-space: pre-line; font-size: 14px;"></div>
-						<div style="text-align: center; margin-top: 16px;">
+						<div class="chat-explanation" id="detailExplanation"></div>
+						<div>
 							<form id="enterForm" method="get"
 								action="${contextPath}/chat/enter">
 								<input type="hidden" name="roomId" id="roomIdInput">
@@ -142,13 +178,12 @@
 							method="post" enctype="multipart/form-data"
 							onsubmit="return validateForm(this)">
 							<div class="image-upload-area">
-								<label class="image-label">이미지 업로드</label>
+								<label class="image-label">채팅방 대표 이미지</label>
 								<div class="image-preview-box">
-									<div id="previewContainer" style="display: flex;"></div>
+									<div id="previewContainer"></div>
 									<button type="button" class="add-image-btn" id="addImageBtn">+</button>
 									<input type="file" id="imageFile" name="openImage" multiple
-										accept="image/*"
-										style="opacity: 0; position: absolute; left: -9999px;" />
+										accept="image/*" />
 								</div>
 							</div>
 
@@ -161,12 +196,10 @@
 							<!-- 위치 자동 입력 & 수정 -->
 							<div class="form-row">
 								<label for="locationText">지역:</label>
-								<div style="display: flex; align-items: center;">
+								<div>
 									<input type="text" id="locationText" name="locationText"
-										placeholder="위치 불러오는 중..." style="flex: 1; margin-right: 8px;" />
-									<button type="button" onclick="getLocation()"
-										style="margin-right: 4px;">새로고침</button>
-									<button type="button" id="editLocationBtn">주소검색</button>
+										placeholder="위치 불러오는 중..." />
+									<button type="button" id="editLocationBtn" class="small-btn">주소검색</button>
 								</div>
 							</div>
 
@@ -178,20 +211,21 @@
 
 							<div class="form-row">
 								<label for="tagContent">태그:</label> <input type="text"
-									id="tagContent" name="tagContent" placeholder="#음악 #운동" />
+									id="tagContent" name="tagContent" placeholder="#음악 #운동"
+									required />
 							</div>
 
 							<div class="form-row">
 								<label for="maxchatCount">최대인원:</label> <input type="number"
 									id="maxchatCount" name="maxchatCount" min="1" max="30"
-									value="2" />
+									placeholder="최대인원 30명" required />
 							</div>
 
 							<label for="explanation" class="details-label">세부사항:</label>
 							<textarea id="explanation" name="explanation" rows="6"
-								maxlength="2000" class="details-textarea"></textarea>
+								maxlength="2000" class="details-textarea" required></textarea>
 
-							<div style="margin-top: 10px; text-align: right;">
+							<div>
 								<button type="submit" class="submit-btn" id="submitBtn" disabled>개설하기</button>
 							</div>
 						</form>
@@ -234,8 +268,9 @@ function success(position) {
 	      return res.json();
 	    })
 	    .then(data => {
+	    	console.log("locHeader element is:", document.querySelector("h2.location"));
 	    	const fullAddr = data.address || "";
-	    	document.getElementById("locationText").value = fullAddr
+	    	document.getElementById("locationText").value = fullAddr;
 	    	
 	    	const parts= fullAddr.split(" ");
 	        const sido =  parts[0] || ""; // e.g. "서울특별시" 또는 "경기도"
@@ -244,15 +279,19 @@ function success(position) {
 	        
 	        let sigungu;
 		    if ( r2.endsWith("시") || r2.endsWith("군") ) {
-		      sigungu = r2 + r3;    
+		      sigungu = r2 + " " + r3;    
 		    } else {
 		      sigungu = r2;         
 		    }
 	 
 	      // 시도·시군구 hidden input에 저장
-	      document.getElementById("sido").value    = data.sido;
-	      document.getElementById("sigungu").value = data.sigungu;
+	      document.getElementById("sido").value    = sido;
+	      document.getElementById("sigungu").value = sigungu;
 	      
+	      const locHeader = document.querySelector("h2.location");
+	      if (locHeader) {
+	        locHeader.textContent = sido + " " + sigungu;
+	      }
 	      console.log("시:", sido, "구:", sigungu);
 	      
 	      document.getElementById("submitBtn").disabled = false;
@@ -260,6 +299,7 @@ function success(position) {
 	    .catch(err => {
 	      console.error("주소 가져오기 실패", err);
 	      document.getElementById("locationText").value = "주소 오류";
+	      document.querySelector("h2.location").textContent =" 위치 불러오기 실패 "
 	    });
 	}
 function error(err) {
@@ -284,6 +324,7 @@ function hideDetailModal() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
+	getLocation();
   // ◼ 개설 모달 열기
   const createBtn = document.querySelector(".create-chat-btn");
   const createModal = document.getElementById("modal");
@@ -298,7 +339,16 @@ document.addEventListener("DOMContentLoaded", function() {
           .addEventListener("click", () => {
     createModal.classList.add("hidden");
     createModal.style.display = "none";
+    
+    createForm.reset();
+    
+    previewContainer.innerHTML = "";
+    
+    imageFileInput.value = "";
+    
+    addImageBtn.style.display = "flex";  
   });
+  
 
   // ◼ 주소 검색/수정 버튼 (Daum 우편번호)
 document.getElementById("editLocationBtn")
@@ -322,7 +372,7 @@ document.getElementById("editLocationBtn")
 	    
 	    let sigungu;
 	    if ( r2.endsWith("시") || r2.endsWith("군") ) {
-	      sigungu = r2 + r3;    
+	      sigungu = r2 + " " + r3;    
 	    } else {
 	      sigungu = r2;         
 	    }
@@ -387,29 +437,58 @@ document.getElementById("editLocationBtn")
   document.getElementById("closeDetailBtn")
           .addEventListener("click", hideDetailModal);
 
-  // ◼ 이미지 미리보기
-  const addImageBtn     = document.getElementById('addImageBtn');
-  const imageFileInput  = document.getElementById('imageFile');
-  const previewContainer= document.getElementById('previewContainer');
+  const addImageBtn      = document.getElementById('addImageBtn');
+  const imageFileInput   = document.getElementById('imageFile');
+  const previewContainer = document.getElementById('previewContainer');
+
+  // "+" 버튼 누르면 파일 선택창 열기
   addImageBtn.addEventListener("click", () => imageFileInput.click());
+
+  // 파일이 선택되면
   imageFileInput.addEventListener('change', function() {
-    const files = imageFileInput.files;
+    const file = this.files[0];    // 첫 번째 파일만 꺼냄
+    if (!file) return;
+
+    // 기존 미리보기 초기화
     previewContainer.innerHTML = '';
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = document.createElement(onsubmit='img');
-        img.src          = e.target.result;
-        img.style.width  = '80px';
-        img.style.height = '80px';
-        img.style.marginRight  = '5px';
-        img.style.borderRadius = '10px';
-        previewContainer.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // 대표 이미지로 하나만 보여주기
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.classList.add('preview-img');
+      previewContainer.appendChild(img);
+      // "+" 버튼 숨기기
+      addImageBtn.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
   });
 });
+
+
+ 	document.addEventListener("DOMContentLoaded", function() {
+	const toggleBtn = document.getElementById('toggleSidoSelect');
+	const container = document.getElementById('sidoSelectContainer');
+
+	// 초기 상태(숨김)가 필요하면 스타일시트나 여기서 명시적으로 처리
+	container.style.display = 'none';
+	toggleBtn.textContent    = '다른 지역 검색';
+
+	toggleBtn.addEventListener('click', function() {
+	  // block ↔ none 토글
+	  const isHidden = container.style.display === 'none';
+	  
+	  container.style.display = isHidden ? 'block' : 'none';
+	  this.textContent        = isHidden ? '검색 영역 접기' : '다른 지역 검색';
+	});
+  });
+ 	const maxCount = document.getElementById('maxchatCount');
+ 	maxCount.addEventListener('input', () => {
+ 	  let v = parseInt(maxCount.value, 10) || 0;
+ 	  if (v > 30)      maxCount.value = 30;
+ 	  else if (v < 1)  maxCount.value = 1;
+ 	});
 </script>
 
 

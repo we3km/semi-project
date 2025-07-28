@@ -1,6 +1,7 @@
 package com.kh.itda.location.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -28,6 +29,15 @@ public class locationDao {
 		param.put("sido", sido);
 		param.put("sigungu",sigungu);
 		return session.selectOne("location.findBySidoSigungu",param);
+	}
+
+	public List<String> findAllSido() {
+        return session.selectList("location.findAllSido");
+
+	}
+
+	public List<String> findSigunguBySido(String sido) {
+		return session.selectList("location.findSigunguBySido", sido);
 	}
 
 }

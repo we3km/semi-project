@@ -2,7 +2,10 @@ package com.kh.itda.openchat.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
@@ -19,13 +22,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.itda.common.Utils;
 import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
-import com.kh.itda.openchat.model.service.FileService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.openchat.model.vo.OpenChatImg;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,31 +43,54 @@ public class OpenChatController {
 	private OpenChatService openChatService;
 
 	@GetMapping("/openChatList")
-	public String selectOpenChatList(@RequestParam(defaultValue = "1") int page, Model model) {
-	    int pageSize = 8;
-	    int pageLimit = 5;  // 하단에 보여줄 페이지 수
-	    int offset = (page - 1) * pageSize;
+	public String selectOpenChatList(
+	        @RequestParam(required = false) String sido,
+	        @RequestParam(required = false) String sigungu,
+	        @RequestParam(required = false) String keyword,
+	        @RequestParam(defaultValue = "1") int page,
+	        Model model) {
 
-	    List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList();
-	    int total = allList.size();
+	    // ——— 기존 시·도 / 시·군·구 셋업 ———
+	    List<String> sidoList = locationService.findAllSido();
+	    model.addAttribute("sidoList", sidoList);
+	    model.addAttribute("selectedSido", sido == null ? "" : sido);
+
+	    List<String> sigunguList = Collections.emptyList();
+	    if (sido != null && !sido.isEmpty()) {
+	        sigunguList = locationService.findSigunguBySido(sido);
+	    }
+	    model.addAttribute("sigunguList", sigunguList);
+	    model.addAttribute("selectedSigungu", sigungu == null ? "" : sigungu);
+	    
+	    model.addAttribute("keyword", keyword == null ? "" : keyword);
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("sido",    sido);
+	    params.put("sigungu", sigungu);
+	    params.put("keyword", keyword);
+
+	    // ——— 필터 적용된 전체 리스트 조회 ———
+	    List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList(params);
+
+	    int pageSize  = 8;
+	    int pageLimit = 10;
+	    int offset    = (page - 1) * pageSize;
+	    int total     = allList.size();
 	    int totalPage = (int) Math.ceil((double) total / pageSize);
-
-	    // 페이지 리스트 계산
 	    int startPage = ((page - 1) / pageLimit) * pageLimit + 1;
-	    int endPage = startPage + pageLimit - 1;
-	    if (endPage > totalPage) endPage = totalPage;
+	    int endPage   = Math.min(startPage + pageLimit - 1, totalPage);
 
 	    List<OpenChatRoom> pagedList = allList.stream()
 	        .skip(offset)
 	        .limit(pageSize)
 	        .collect(Collectors.toList());
 
-	    model.addAttribute("openlist", pagedList);
-	    model.addAttribute("currentPage", page);
-	    model.addAttribute("totalPage", totalPage);
-	    model.addAttribute("startPage", startPage);
-	    model.addAttribute("endPage", endPage);
-	    model.addAttribute("listCount", total);
+	    model.addAttribute("openlist",     pagedList);
+	    model.addAttribute("currentPage",  page);
+	    model.addAttribute("totalPage",    totalPage);
+	    model.addAttribute("startPage",    startPage);
+	    model.addAttribute("endPage",      endPage);
+	    model.addAttribute("listCount",    total);
 
 	    return "openchat/openChatList";
 	}
@@ -75,7 +98,7 @@ public class OpenChatController {
 	@PostMapping("/createOpenChat")
 	public String createChatList(
 	    @ModelAttribute OpenChatRoom room,
-	    @ModelAttribute Location loc,               // 여기로 이미 들어와 있음
+	    @ModelAttribute Location loc,              
 	    @RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
 	    @RequestParam(value = "tagContent", required = false) String tagContent,
 	    RedirectAttributes ra,

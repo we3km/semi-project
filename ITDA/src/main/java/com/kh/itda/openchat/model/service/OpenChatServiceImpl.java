@@ -28,8 +28,8 @@ public class OpenChatServiceImpl implements OpenChatService {
 	private OpenChatDao dao;
 
 	@Override
-	public List<OpenChatRoom> selectOpenChatRoomList() {
-		return dao.selectOpenChatRoomList();
+	public List<OpenChatRoom> selectOpenChatRoomList(Map<String,Object> params) {
+		return dao.selectOpenChatRoomList(params);
 	}
 
 	@Override
@@ -133,6 +133,16 @@ public class OpenChatServiceImpl implements OpenChatService {
 	        log.warn(">> 채팅방 정보 없음: roomId={}", roomId);
 	        return null;
 	    }
+	    
+	    int currentCount = room.getChatCount();       // 현재 참여 인원
+	    int maxCount = room.getMaxchatCount();        // 최대 참여 가능 인원
+
+	    if (currentCount >= maxCount) {
+	    	log.warn(">> 채팅방 인원 초과: roomId={}", roomId);
+	    	log.warn("   현재인원={}, 최대인원={}", currentCount, maxCount);
+	    	return null; // 혹은 예외 던지기
+	    }
+	    
 
 	    // 2. 참여자 등록
 	    int inserted = dao.insertParticipant(roomId, userNum);

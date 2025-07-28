@@ -34,5 +34,20 @@
       #{sigungu}
     )
   </insert>
+  
+  <select id="findAllSido" resultType="string">
+    SELECT DISTINCT SIDO
+    FROM LOCATION
+    ORDER BY SIDO
+  </select>
+
+  <!-- 특정 시·도에 속한 시·군·구 목록 -->
+  <select id="findSigunguBySido" parameterType="string" resultType="string">
+    SELECT DISTINCT SIGUNGU
+    FROM LOCATION
+    WHERE SIDO = #{sido}
+    ORDER BY SIGUNGU
+  </select>
+  
 
 </mapper>
