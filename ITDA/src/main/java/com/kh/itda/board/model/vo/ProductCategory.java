@@ -12,5 +12,4 @@ public class ProductCategory {
 	private int parentNum;
 	
 	
-	
 }

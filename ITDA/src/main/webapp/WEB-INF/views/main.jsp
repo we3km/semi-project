@@ -17,8 +17,7 @@
 	rel="stylesheet">
 
 <%-- mainPage CSS 파일 --%>
-<link href="${pageContext.request.contextPath}/resources/css/mainPage.css"
-	rel="stylesheet">
+<link href="${pageContext.request.contextPath}/resources/css/mainPage.css" rel="stylesheet">
 
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -68,6 +67,7 @@
 		    </sec:authorize>
 		</div> --%>
 
+
 		<div class="headline">IT다</div>
 		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
 
@@ -96,6 +96,7 @@
 				            </div>
 				        </c:forEach>
 				    </div>
+
 				</div>
 
 				<!-- 상품유형 드롭다운 -->
@@ -129,6 +130,7 @@
 			</div>
 		</div>
 		
+
 
 		<div class="cards">
 			<div class="card">
@@ -292,228 +294,10 @@
 	        window.location.href = targetUrl;
 	    });
 	
-	   /*  // 드롭다운 메뉴 항목 클릭 시
-	    $('.dropdown .category').on('click', function () {
-	        const dropdown = $(this).closest('.dropdown');
-	        const name = $(this).data("name");
-	
-	        // 클릭된 항목의 data 속성 값 저장
-	        selectedCategoryId = $(this).data("id");
-	        selectedCategoryGubun = $(this).data("gubun");
-	
-	        // 현재 드롭다운의 제목만 변경하고 목록 닫기
-	        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
-	        dropdown.find('.dropdown-content').removeClass('show');
-	    });
-	
-	    // 화면의 다른 곳을 클릭하면 모든 드롭다운 닫기
-	    $(window).on('click', function () {
-	        $('.dropdown-content').removeClass('show');
-	    });
-	
-	    // 검색 버튼 클릭 이벤트
-	    $('#search-btn').on('click', function () {
-	        if (!selectedCategoryId || !selectedCategoryGubun) {
-	            alert("거래유형을 선택해주세요.");
-	            return;
-	        }
-	        
-	        const keyword = $("#search-input").val().trim();
-	        if (!keyword) {
-	            alert("검색어를 입력해주세요.");
-	            return;
-	        }
-	
-	        let url = "";
-	        // categoryId를 숫자로 변환하여 비교
-	        const id = Number(selectedCategoryId);
-	
-	        if (id >= 6 && id <= 9) { // 대여, 교환, 나눔, 경매
-	            url = contextPath + "/board/" + selectedCategoryGubun + "/list?keyword=" + encodeURIComponent(keyword);
-	        } else if (id === 10) { // 커뮤니티
-	            url = contextPath + "/community/list/all?keyword=" + encodeURIComponent(keyword);
-	        } else {
-	            alert("잘못된 카테고리입니다.");
-	            return;
-	        }
-	        location.href = url;
-	    }); 
-	    
-	    // 로그인/로그아웃/마이페이지/회원가입 버튼 이벤트
-	    $('#loginBtn').click(() => location.href = contextPath + '/user/tempLogin');
-	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
-	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
-	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
-	
-	    // 카드 클릭 이벤트
-	    $('.card').click(function () {
-	        const title = $(this).find('.card-title').text().trim();
-	        let targetUrl = '';
-	        switch(title) {
-	            case '대여': targetUrl = contextPath + '/rent/list'; break;
-	            case '교환': targetUrl = contextPath + '/exchange/list'; break;
-	            case '나눔': targetUrl = contextPath + '/share/list'; break;
-	            case '경매': targetUrl = contextPath + '/auction/list'; break;
-	            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
-	            default: alert('해당 페이지가 없습니다.'); return;
-	        }
-	        window.location.href = targetUrl;
-	    });*/
+	  
 	});
 	</script>
-	
-	<!-- <script>
-$(document).ready(function () {
-    // 드롭다운 클릭 열기
-    $('.dropbtn_click').on('click', function (e) {
-        e.stopPropagation();
-        const dropdown = $(this).closest('.dropdown');
-        $('.dropdown-content').not(dropdown.find('.dropdown-content')).removeClass('show');
-        dropdown.find('.dropdown-content').toggleClass('show');
-    });
 
-    // 항목 클릭 시 텍스트 설정
-    $('.dropdown .category').on('click', function () {
-        const value = $(this).text();
-        const dropdown = $(this).closest('.dropdown');
-        dropdown.find('.dropbtn_content').text(value).css('color', '#252525');
-        dropdown.find('.dropdown-content').removeClass('show');
-    });
-
-    // 외부 클릭 시 닫기
-    $(window).on('click', function () {
-        $('.dropdown-content').removeClass('show');
-    });
-
- // 로그인 클릭 시
-	$('#loginBtn').click(
-			function() {
-				//로그인 페이지로 이동
-				alert(`로그인창`);
-				location.href = contextPath
-						+ '/user/tempLogin';
-				/* location.href = contextPath + '/user/login'; */
-
-				$('.unlogin').hide();
-				$('.login').css('display', 'flex');
-				$('.login_effect').show();
-			});
-	// 로그아웃 클릭 시
-	$('#logoutBtn').click(
-			function() {
-				//로그아웃
-				alert(`로그아웃 하였습니다`);
-				location.href = contextPath
-						+ '/user/logout';
-
-				$('.login').hide();
-				$('.login_effect').hide();
-				$('.unlogin')
-						.css('display', 'flex');
-			});
-
-	//회원가입 이동
-	$('#joinMembership').click(function() {
-		location.href = contextPath + '/user/join';
-	});
-
-	//마이페이지 이동
-	$('#myPage').click(
-			function() {
-				location.href = contextPath
-						+ '/user/mypage';
-			});
-    
-    // JSP에서 contextPath 변수 선언
-    const contextPath = '${pageContext.request.contextPath}';
-
-    // =================================================================
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 핵심 수정 사항 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    // =================================================================
-    // 검색 버튼 클릭 이벤트
-    $('#search-btn').on('click', function () {
-        // 1. 필터 값 가져오기
-        const dealTypeText = $('#deal-type-dropdown .dropbtn_content').text().trim();
-        const productType = $('#product-type-dropdown .dropbtn_content').text().trim();
-        const keyword = $('#search-input').val().trim();
-
-        // 2. 거래 유형에 따라 기본 URL 설정
-        let baseUrl = '';
-        switch (dealTypeText) {
-            case '대여':
-                baseUrl = contextPath + '/rent/list';
-                break;
-            case '교환':
-                baseUrl = contextPath + '/exchange/list';
-                break;
-            case '나눔':
-                baseUrl = contextPath + '/share/list';
-                break;
-            case '경매':
-                baseUrl = contextPath + '/auction/list';
-                break;
-            case '커뮤니티':
-                baseUrl = contextPath + '/community/list/all';
-                break;
-            case '거래유형': // 기본값일 경우
-            case '전체':     // '전체'를 선택했을 경우
-                alert('검색할 거래 유형을 먼저 선택해주세요.');
-                return; // 함수 종료
-            default:
-                alert('유효하지 않은 거래 유형입니다.');
-                return;
-        }
-
-        // 3. URL 파라미터 만들기
-        const params = new URLSearchParams();
-        if (productType && productType !== '상품유형') {
-            params.append('productType', productType);
-        }
-        if (keyword) {
-            params.append('keyword', keyword);
-        }
-
-        // 4. 최종 URL로 이동
-        const queryString = params.toString();
-        if (queryString) {
-            window.location.href = baseUrl + '?' + queryString;
-        } else {
-            window.location.href = baseUrl;
-        }
-    });
-    // =================================================================
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 핵심 수정 사항 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-    // =================================================================
-
-    // 카드 클릭 이벤트 (기존과 동일)
-    $('.card').click(function () {
-        const title = $(this).find('.card-title').text().trim();
-
-        let targetUrl = '';
-        switch(title) {
-            case '대여':
-                targetUrl = contextPath + '/rent/list';
-                break;
-            case '교환':
-                targetUrl = contextPath + '/exchange/list';
-                break;
-            case '나눔':
-                targetUrl = contextPath + '/share/list';
-                break;
-            case '경매':
-                targetUrl = contextPath + '/auction/list';
-                break;
-            case '커뮤니티':
-                targetUrl = contextPath + '/community/list/all';
-                break;
-            default:
-                alert('해당 페이지가 없습니다.');
-                return;
-        }
-        window.location.href = targetUrl;
-    });
-});
-</script> -->
 
 	
 
