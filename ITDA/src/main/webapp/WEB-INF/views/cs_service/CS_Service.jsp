@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,33 +9,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>고객센터</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/report/CS_Service.css" />
+	href="${pageContext.request.contextPath}/resources/css/cs_service/CS_Service.css" />
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/header.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<!-- 헤더부분 -->
+	<!-- 헤더 -->
 	<div id="header"></div>
 
-	<!-- 고객센터 작성 시작 -->
+	<!-- 고객센터 본문 -->
 	<div class="center-wrapper">
 		<div class="cs-header">
 			<div class="cs-service">고객센터</div>
 		</div>
 
-		<!-- 고객센터 주의사항 안내 문구박스 -->
 		<div class="notice-box">
 			<p>최근 6개월 동안 접수하신 내역을 확인할 수 있습니다.</p>
 			<p>개인정보가 포함된 문의, 중복된 문의는 삭제될 수 있습니다.</p>
 			<p>욕설, 인격침해, 성희롱 등 수치심을 유발하는 표현이 있다면 상담이 중단될 수 있습니다.</p>
 		</div>
 
-		<!-- 문의 내역 테이블 및 1:1문의 버튼 -->
 		<div class="header-mq">
-			<div class="my-question">내 문의 내역</div>
-			<button class="inquiry-btn" type="button"
-				onclick="location.href='${pageContext.request.contextPath}/cs/inquiry'">1:1문의</button>
+			<div class="my-question">
+				<c:choose>
+					<c:when test="${isAdmin}">
+                        전체 문의 내역
+                    </c:when>
+					<c:otherwise>
+                        내 문의 내역
+                    </c:otherwise>
+				</c:choose>
+			</div>
+
+			<!-- 일반 사용자만 1:1문의 버튼 보이기 -->
+			<c:if test="${!isAdmin}">
+				<form:form method="get"
+					action="${pageContext.request.contextPath}/cs/inquiry"
+					cssClass="inline-form">
+					<button class="inquiry-btn" type="submit">1:1문의</button>
+				</form:form>
+			</c:if>
 		</div>
 
 		<table class="inquiry-table">
@@ -44,21 +61,30 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>배송이 아직 오지 않았습니다. 확인 부탁드립니다.</td>
-					<td>2025-07-17</td>
-					<td>배송</td>
-				</tr>
-				<tr>
-					<td>사이트 오류로 결제가 두 번 되었어요</td>
-					<td>2025-07-16</td>
-					<td>결제</td>
-				</tr>
-				<!-- 더 많은 문의가 여기에 들어갑니다 -->
+				<c:choose>
+					<c:when test="${not empty list}">
+						<c:forEach var="inq" items="${list}">
+							<tr
+								onclick="location.href='${pageContext.request.contextPath}/cs/inquiry/detail/${inq.csNum}'"
+								style="cursor: pointer;">
+								<td>${inq.csTitle}</td>
+								<td><fmt:formatDate value="${inq.csDate}"
+										pattern="yyyy-MM-dd" /></td>
+								<td>${inq.categoryName}</td>
+							</tr>
+						</c:forEach>
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td colspan="3" style="text-align: center; color: #333;">문의
+								내역이 없습니다.</td>
+						</tr>
+					</c:otherwise>
+				</c:choose>
 			</tbody>
 		</table>
 
-		<!-- 자주묻는 질문은 Q1,A 슬라이드 토글식 -->
+		<!-- 자주 묻는 질문 -->
 		<div class="QNA">자주 묻는 질문</div>
 
 		<div class="faq-list">
@@ -95,7 +121,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<script>
 		$(function() {
