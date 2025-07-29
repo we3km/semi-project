@@ -33,7 +33,7 @@
             height: 30px;
             margin-left: 5px;
         }
-        #id, #email, #auth-code {
+        #userId, #email, #auth-code {
             width: 320px;
             height: 30px;
             margin-bottom: 10px;
@@ -65,11 +65,12 @@
     </div>
     <div class="middle">
         <form>
-            아이디 <input type="text" id="id" name="id"><br>
+            아이디 <input type="text" id="userId" name="userId"><br>
             이메일 <input type="email" id="email" name="email">
             <button type="button" class="send" id="send-auth-btn">전송</button><br>
             인증번호 <input type="text" id="auth-code" name="authCode" disabled><br><br>
             <input type="button" id="submit-btn" class="check" value="확인" disabled onclick="checkAuthCode(event)">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         </form>
     </div>
     <div class="bottom">
@@ -80,25 +81,25 @@
         const sendBtn = document.getElementById('send-auth-btn');
         const authCodeInput = document.getElementById('auth-code');
         const submitBtn = document.getElementById('submit-btn');
+        const csrfToken = '${_csrf.token}';
 
         sendBtn.addEventListener('click', function() {
-            const id = document.getElementById('id').value.trim();
+            const userId = document.getElementById('userId').value.trim();
             const email = document.getElementById('email').value.trim();
-
-            if (!id || !email) {
+			
+            if (!userId || !email) {
                 alert('아이디와 이메일을 모두 입력해주세요.');
                 return;
             }
-            
 			// 인증번호 전송
-            fetch('${pageContext.request.contextPath}/user/findPwd', {
+            fetch('${pageContext.request.contextPath}/user/findPwd/sendCode', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ id: id, email: email })
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
+                body: new URLSearchParams({ userId: userId, email: email })
             })
-            .then(res => res.text())
+            .then(res => res.json())
             .then(data => {
-                if (data.result = 'success') {
+                if (data.success === true) {
                     alert('인증번호가 이메일로 발송되었습니다.');
                     authCodeInput.disabled = false;
                     submitBtn.disabled = false;
@@ -110,32 +111,58 @@
             .catch(err => alert('오류 발생: ' + err));
         });
 
+        // 인증번호 확인
         function checkAuthCode(event) {
         	event.preventDefault();
         	
+        	const userId = document.getElementById('userId').value.trim();
+            const email = document.getElementById('email').value.trim();
             const inputCode = authCodeInput.value.trim();
-
+			
             if (!inputCode) {
                 alert("인증번호를 입력해주세요.");
                 return;
             }
-
-            fetch('${pageContext.request.contextPath}/user/checkVerification', {
+            fetch('${pageContext.request.contextPath}/user/findPwd/verifyCode', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ code: inputCode })
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
+                body: new URLSearchParams({ 
+                	userId: userId,
+                	email: email,
+                	code: inputCode
             })
-            .then(res => res.json())
+        })
+        .then(res => res.json())
         .then(data => {
-                if (res.ok) {
-                    alert("인증에 성공했습니다.");
-                    window.location.href = '${pageContext.request.contextPath}/user/login';
-                } else {
-                    alert("인증번호가 일치하지 않습니다.");
-                }
+        	if (data.success === true) {
+            	findPwdRequest(userId, email);
+            } else {
+                alert("인증번호가 일치하지 않습니다.");
+            }
+        })
+        .catch(err => alert("서버 오류: " + err));
+    }
+    
+    function findPwdRequest(userId, email) {
+    	fetch('${pageContext.request.contextPath}/user/findPwd', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
+            body: new URLSearchParams({ 
+            	userId: userId,
+                email: email
             })
-            .catch(err => alert("서버 오류: " + err));
-        }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success === true) {
+                alert("인증에 성공했습니다. 임시 비밀번호가 이메일로 전송되었습니다.");
+                window.location.href = '${pageContext.request.contextPath}/user/login';
+            } else {
+                alert(data.message || "비밀번호 찾기에 실패했습니다.");
+            }
+        })
+        .catch(err => alert("서버 오류: " + err));
+	}
     </script>
 </body>
 </html>

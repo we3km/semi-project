@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="security">
-	
+
+	<!-- 회원 정보 조회 -->
 	<select id="loadUserByUsername" resultMap="userResultMap">
-		SELECT U.*, P.IMAGE_URL
+		SELECT U.*,
+		P.IMAGE_URL
 		FROM USER_TB U
 		LEFT JOIN PROFILE USING(USER_NUM)
-		WHERE USER_ID = #{userId}
+		WHERE
+		USER_ID = #{userId}
 	</select>
-	
+
+	<!-- 권한 조회 -->
+	<select id="findAuthoritiesByUserNum" parameterType="int"
+		resultType="string">
+		SELECT AUTHORITY
+		FROM AUTHORITIES
+		WHERE USER_NUM = #{userNum}
+	</select>
+
+	<select id="findUserById" parameterType="string"
+		resultType="User">
+		SELECT * FROM USER_TB WHERE USER_ID = #{userId}
+	</select>
+
 	<!-- 아이디 중복 체크 -->
 	<select id="idCheck" resultType="int" parameterType="String">
-		SELECT COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
+		SELECT
+		COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
 	</select>
-	
+
 	<resultMap type="userExt" id="userResultMap">
 		<id column="USER_NUM" property="userNum" />
 		<result column="USER_ID" property="userId" />
@@ -25,12 +42,9 @@
 		<result column="ADDRESS" property="adress" />
 		<result column="CREATE_DATE" property="createDate" />
 		<result column="IMAGE_URL" property="imageUrl" />
-		<collection property="authorities" 
-			javaType="arraylist"
+		<collection property="authorities" javaType="arraylist"
 			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
-			column="USER_ID"
-			select="selectAuthorities"
-		/>
+			column="USER_NUM" select="user.findAuthoritiesByUserNum" />
 	</resultMap>
-	
+
 </mapper>

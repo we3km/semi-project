@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@RequestMapping("/user/signup")
+@RequestMapping("/user/join")
 @RequiredArgsConstructor
 @Slf4j
 public class SignUpController { //회원가입
@@ -46,7 +46,7 @@ public class SignUpController { //회원가입
     // 1단계: 이용약관
     @GetMapping("/terms")
     public String showTermsPage() {
-        return "user/signup/terms";
+        return "user/join/terms";
     }
 
     @PostMapping("/terms")
@@ -57,9 +57,9 @@ public class SignUpController { //회원가입
             HttpSession session) {
         if (terms1 != null && terms2 != null && terms3 != null) {
             session.setAttribute("termsAccepted", true);
-            return "redirect:/user/signup/emailAuth";
+            return "redirect:/user/join/emailAuth";
         } else {
-            return "redirect:/user/signup/terms?error=notAgreed";
+            return "redirect:/user/join/terms?error=notAgreed";
         }
     }
 
@@ -67,9 +67,9 @@ public class SignUpController { //회원가입
     @GetMapping("/emailAuth")
     public String showEmailVerificationPage(HttpSession session) {
         if (session.getAttribute("termsAccepted") == null) {
-            return "redirect:/user/signup/terms";
+            return "redirect:/user/join/terms";
         }
-        return "user/signup/emailAuth";
+        return "user/join/emailAuth";
     }
 
     // 이메일로 인증번호 발송
@@ -154,7 +154,7 @@ public class SignUpController { //회원가입
     @GetMapping("/enroll")
     public String showSignUpForm(Model model, HttpSession session) {
         if (session.getAttribute("emailVerified") == null) {
-            return "redirect:/user/signup/emailAuth";
+            return "redirect:/user/join/emailAuth";
         }
         
         User user = new User();
@@ -166,7 +166,7 @@ public class SignUpController { //회원가입
         }
         
         model.addAttribute("user", user);
-        return "user/signup/enroll";
+        return "user/join/enroll";
     }
     
     @PostMapping("/enroll")
@@ -183,7 +183,7 @@ public class SignUpController { //회원가입
     		if (session.getAttribute("verifiedEmail") != null) {
     	        user.setEmail((String) session.getAttribute("verifiedEmail"));
     	    }
-    	    return "user/signup/enroll";
+    	    return "user/join/enroll";
     	}
     	
     	//디버그용 5줄 코드
@@ -198,7 +198,7 @@ public class SignUpController { //회원가입
         // 비밀번호 일치 확인
         if (user.getUserPwd() == null || !userPwdCheck.equals(user.getUserPwd())) {
         	ra.addFlashAttribute("alertMsg", "비밀번호가 일치하지 않습니다.");
-        	return "redirect:/user/signup/enroll";
+        	return "redirect:/user/join/enroll";
         }
         
         // 비밀번호 암호화
@@ -243,7 +243,7 @@ public class SignUpController { //회원가입
         } catch (Exception e) {
             e.printStackTrace();
             ra.addFlashAttribute("alertMsg", "회원가입 중 오류가 발생했습니다.");
-            return "user/signup/enroll";
+            return "user/join/enroll";
         }
         // 반환값이 0인지 아닌지 검사
         System.out.println("userNum: " + userNum);

@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,7 +65,7 @@ public class SecurityController {
 	    return "user/findPwd";
 	}
 	
-	// 회원가입 폼 인증번호 전송
+	// 회원가입용 인증번호 전송
     @PostMapping("/user/sendVerification")
     @ResponseBody
     public ResponseEntity<?> sendVerification(@RequestParam String email) {
@@ -80,7 +81,7 @@ public class SecurityController {
         }
     }
 
-    // 회원가입 폼 인증번호 확인
+    // 회원가입용 인증번호 확인
     @PostMapping("/user/checkVerification")
     @ResponseBody
     public ResponseEntity<?> checkVerification(@RequestParam String code) {
@@ -92,7 +93,7 @@ public class SecurityController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("result", "fail", "message", "인증 실패, 일치하지 않습니다."));
         }
     }
-
+    
     //아이디 찾기
     @PostMapping("/user/findId")
     @ResponseBody
@@ -102,7 +103,7 @@ public class SecurityController {
                 HttpSession session) {
     	Map<String, Object> response = new HashMap<>();
     	
-        Boolean verified = (Boolean) session.getAttribute("verified");
+        Boolean verified = (Boolean) session.getAttribute("findIdVerified");
         
         // 이메일 인증 여부 확인
         if (verified == null || !verified) {
@@ -117,8 +118,8 @@ public class SecurityController {
         	if(mailSent) {
         		response.put("success", true);
                 response.put("message", "이메일로 아이디를 전송했습니다.");
-                session.removeAttribute("verified");
-                session.removeAttribute("authCode");
+                session.removeAttribute("findIdVerified");
+                session.removeAttribute("findIdAuthCode");
         	} else {
         		response.put("success", false);
                 response.put("message", "이메일 전송에 실패했습니다.");
@@ -129,32 +130,85 @@ public class SecurityController {
         }
         return response;
     }
+    
+    // 아이디 찾기용 인증번호 전송
+    @PostMapping("/user/findId/sendCode")
+    @ResponseBody
+    public Map<String, Object> sendFindIdCode(@RequestParam String nickName,
+                                              @RequestParam String email,
+                                              HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        // 닉네임과 이메일이 일치하는지 확인
+        Optional<String> userId = uService.findIdByNameAndEmail(nickName, email);
+        if (userId.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "일치하는 회원 정보가 없습니다.");
+            return response;
+        }
+
+        // 인증번호 생성 및 전송
+        String code = emailService.generateVerificationCode();
+        boolean mailSent = emailService.sendEmail(email, "아이디 찾기 인증번호", "인증번호는 " + code + "입니다.");
+
+        if (mailSent) {
+            session.setAttribute("findIdAuthCode", code);
+            session.setAttribute("findIdVerified", false);  // 초기 상태
+            response.put("success", true);
+            response.put("message", "인증번호를 발송했습니다.");
+        } else {
+            response.put("success", false);
+            response.put("message", "이메일 발송 실패");
+        }
+        return response;
+    }
+    
+    // 아이디 찾기용 인증번호 확인
+    @PostMapping("/user/findId/verifyCode")
+    @ResponseBody
+    public Map<String, Object> verifyFindIdCode(@RequestParam String code,
+                                                HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String storedCode = (String) session.getAttribute("findIdAuthCode");
+
+        if (storedCode != null && storedCode.equals(code)) {
+            session.setAttribute("findIdVerified", true);
+            response.put("success", true);
+            response.put("message", "인증이 완료되었습니다.");
+        } else {
+            response.put("success", false);
+            response.put("message", "인증번호가 일치하지 않습니다.");
+        }
+
+        return response;
+    }
 
     //비밀번호 찾기
     @PostMapping("/user/findPwd")
     @ResponseBody
-    public String findPwdProcess(@RequestParam String id,
-                                 @RequestParam String email,
-                                 HttpSession session) {
+    public Map<String, Object> findPwdProcess(
+    							@RequestParam("userId") String userId,
+                                @RequestParam("email") String email,
+                                HttpSession session) {
     	Map<String, Object> response = new HashMap<>();
     	
-        Boolean verified = (Boolean) session.getAttribute("verified");
+        Boolean verified = (Boolean) session.getAttribute("findPwdVerified");
         
         // 이메일 인증 여부 확인
         if (verified == null || !verified) {
         	response.put("success", false);
         	response.put("message", "이메일 인증을 먼저 완료해주세요.");
-            return "response";
+            return response;
         }
 
-        Optional<String> userPwd = uService.findPwdByIdAndEmail(id, email);
+        Optional<String> userPwd = uService.findPwdByIdAndEmail(userId, email);
         if (userPwd.isPresent()) {
         	// 임시 비밀번호 생성
         	String tempPwd = generateTempPassword();
         	
         	// 비밀번호 암호화 및 DB저장
         	String encodedPwd = passwordEncoder.encode(tempPwd);
-        	uService.updatePassword(id, encodedPwd);
+        	uService.updatePassword(userId, encodedPwd);
         	
         	// 임시 비밀번호 전송
         	emailService.sendEmail(email, "임시 비밀번호 발급", "회원님의 임시 비밀번호는: " + tempPwd);
@@ -164,9 +218,64 @@ public class SecurityController {
         	response.put("success", false);
             response.put("message", "일치하는 회원이 없습니다.");
         }
+        
+        // 세션 제거
+        session.removeAttribute("findPwdVerified");
+        session.removeAttribute("findPwdAuthCode");
+        
+        return response;
+    }
+    
+    // 비밀번호 찾기용 인증번호 전송
+    @PostMapping("/user/findPwd/sendCode")
+    @ResponseBody
+    public Map<String, Object> sendFindPwdCode(@RequestParam String userId,
+                                              @RequestParam String email,
+                                              HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
 
-        session.removeAttribute("verified");
-        return "user/findPwd";
+        // 아이디와 이메일이 일치하는지 확인
+        Optional<String> userPwd = uService.findPwdByIdAndEmail(userId, email);
+        if (userPwd.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "일치하는 회원 정보가 없습니다.");
+            return response;
+        }
+
+        // 인증번호 생성 및 전송
+        String code = emailService.generateVerificationCode();
+        boolean mailSent = emailService.sendEmail(email, "아이디 찾기 인증번호", "인증번호는 " + code + "입니다.");
+
+        if (mailSent) {
+            session.setAttribute("findPwdAuthCode", code);
+            session.setAttribute("findPwdVerified", false);  // 초기 상태
+            response.put("success", true);
+            response.put("message", "인증번호를 발송했습니다.");
+        } else {
+            response.put("success", false);
+            response.put("message", "이메일 발송 실패");
+        }
+        return response;
+    }
+    
+    // 비밀번호 찾기용 인증번호 확인
+    @PostMapping("/user/findPwd/verifyCode")
+    @ResponseBody
+    public Map<String, Object> verifyFindPwdCode(@RequestParam String code,
+                                                HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String storedCode = (String) session.getAttribute("findPwdAuthCode");
+
+        if (storedCode != null && storedCode.equals(code)) {
+            session.setAttribute("findPwdVerified", true);
+            response.put("success", true);
+            response.put("message", "인증이 완료되었습니다.");
+        } else {
+            response.put("success", false);
+            response.put("message", "인증번호가 일치하지 않습니다.");
+        }
+
+        return response;
     }
 	
     private String generateTempPassword() {

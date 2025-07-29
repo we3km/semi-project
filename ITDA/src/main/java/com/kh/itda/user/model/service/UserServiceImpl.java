@@ -12,10 +12,12 @@ import com.kh.itda.user.model.dao.UserDao;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService{
 
 	@Autowired
@@ -23,12 +25,6 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private SqlSessionTemplate sqlSession;
-	
-	@Override
-	public User loginUser(User user) { // 로그인 확인
-		
-		return null;
-	}
 	
     public void register(User user) {
         int userNum = sqlSession.selectOne("user.selectNextUserNo");  // 시퀀스 호출
@@ -46,13 +42,15 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public Optional<String> findIdByNameAndEmail(String nickName, String email) {
+		log.debug(" findIdByNameAndEmail {},{}",nickName , email);
 		String userId = sqlSession.selectOne("user.findId", Map.of("nickName", nickName, "email", email));
         return Optional.ofNullable(userId);
 	}
-
+	
 	@Override
-	public Optional<String> findPwdByIdAndEmail(String id, String email) {
-		return null;
+	public Optional<String> findPwdByIdAndEmail(String userId, String email) {
+		String userpwd = sqlSession.selectOne("user.findPwd", Map.of("userId", userId, "email", email));
+        return Optional.ofNullable(userpwd);
 	}
 
 	@Override
@@ -61,8 +59,8 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void updatePassword(String id, String encodedPwd) {
-		
+	public void updatePassword(String userId, String encodedPwd) {
+		userDao.updatePassword(userId, encodedPwd);
 	}
 
 	@Override

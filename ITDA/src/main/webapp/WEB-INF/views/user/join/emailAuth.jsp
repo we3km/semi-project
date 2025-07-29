@@ -77,6 +77,7 @@
 <body>
     <!-- form action, method 수정 필요 -->
     <form id="emailAuth">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <div class="top">
             <h1>본인확인</h1>
             <h2>고객님의 <span class="blue">본인확인</span>을 진행해주세요</h2>
@@ -112,7 +113,7 @@
             }
 			
             //이메일 중복 여부 확인
-            fetch('${pageContext.request.contextPath}/user/signup/emailAuth/checkEmail?email='
+            fetch('${pageContext.request.contextPath}/user/join/emailAuth/checkEmail?email='
             		+encodeURIComponent(email))
             		.then(res => res.json())
             		.then(data => {
@@ -120,11 +121,12 @@
             				alert("이미 가입된 이메일입니다.");
             				return;
             			}	
-            
+            			const token = '${_csrf.token}';
             			//인증번호 전송
-            			return fetch('${pageContext.request.contextPath}/user/signup/emailAuth/sendAuthCode', {
+            			return fetch('${pageContext.request.contextPath}/user/join/emailAuth/sendAuthCode', {
                 			method: 'POST',
-			                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			                headers: {'Content-Type': 'application/x-www-form-urlencoded',
+			                	'X-CSRF-TOKEN': token},
 			                body: new URLSearchParams({email: email})
 			            });
             		})
@@ -150,12 +152,13 @@
     	        alert('인증번호를 입력해주세요.');
     	        return;
     	    }
-    	    
+    	    const token = '${_csrf.token}';
     	 	//서버에 인증번호 검증 요청
-    		fetch('${pageContext.request.contextPath}/user/signup/emailAuth/verifyCode', {
+    		fetch('${pageContext.request.contextPath}/user/join/emailAuth/verifyCode', {
     			method: 'POST',
     			headers: {
-    				'Content-Type': 'application/x-www-form-urlencoded'
+    				'Content-Type': 'application/x-www-form-urlencoded',
+    				'X-CSRF-TOKEN': token
     			},
     			body: new URLSearchParams({
     				code: inputCode,
@@ -167,11 +170,12 @@
     			if (data.result === 'success') {
     				alert("인증에 성공했습니다.");
     				emailVerified = true;
-
+    				const token = '${_csrf.token}';
     				// 이메일 인증 성공 상태를 서버 세션에 저장
-    				fetch('${pageContext.request.contextPath}/user/signup/emailAuth/verifyEmailSuccess', {
+    				fetch('${pageContext.request.contextPath}/user/join/emailAuth/verifyEmailSuccess', {
     					method: 'POST',
-    					headers: { 'Content-Type': 'application/json' },
+    					headers: { 'Content-Type': 'application/json',
+    						'X-CSRF-TOKEN': token},
     					body: JSON.stringify({ email: email })
     				});
     			} else {
@@ -189,7 +193,7 @@
                 return;
             }
             // 인증 완료되었으면 회원가입 정보 입력 페이지로 이동
-            window.location.href = "${pageContext.request.contextPath}/user/signup/enroll";
+            window.location.href = "${pageContext.request.contextPath}/user/join/enroll";
         }
     </script>
 </body>

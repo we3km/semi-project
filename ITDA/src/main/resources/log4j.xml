@@ -10,9 +10,18 @@
 		</layout>
 	</appender>
 	
+	<!-- dailyLog 설정 -->
+	<appender name="dailyLog" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="logs/app.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%c{1}] %m%n" />
+		</layout>
+	</appender>
+	
 	<!-- Application Loggers -->
 	<logger name="com.kh.itda">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 	
 	<!-- 3rdparty Loggers -->
@@ -34,7 +43,7 @@
 
 	<!-- Root Logger -->
 	<root>
-		<priority value="warn" />
+		<level value="warn" />
 		<appender-ref ref="console" />
 		<appender-ref ref="dailyLog" />
 	</root>

@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html;charset=UTF-8" 
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
@@ -32,13 +31,14 @@
     <div class="image1"></div>
     <br>
     <div class="main">
-        <form action="${pageContext.request.contextPath}/user/login" method="post">
-            <input id="user-id" name="username" placeholder="아이디 또는 이메일" maxlength="12" required><br>
-            <input type="password" id="user-pwd" name="password" placeholder="비밀번호" maxlength="15"><br>
+        <form action="${pageContext.request.contextPath}/user/loginprocess" method="post">
+            <input id="user-id" name="userId" placeholder="아이디 또는 이메일" maxlength="12" required autocomplete="username"><br>
+            <input type="password" id="user-pwd" name="userPwd" placeholder="비밀번호" maxlength="15"><br>
             <input type="checkbox" id="login-keep" name="remember-me"> 로그인 상태 유지<br>
             <input type="submit" id="login-try" value="IT다 로그인"><br>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         </form>
-        <a href="${pageContext.request.contextPath}/user/signup/terms">회원가입</a>
+        <a href="${pageContext.request.contextPath}/user/join/terms">회원가입</a>
         <a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a>
         <a href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
         <br><br>

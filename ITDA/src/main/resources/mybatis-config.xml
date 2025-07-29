@@ -12,10 +12,6 @@
 	<typeAliases>
 		<package name="com.kh.itda"/>
 	</typeAliases>
-	
-	<!-- com.kh.itda.mapper의 하위의 모든 매퍼를 인식 -->
-	<mappers>
-        <package name="com.kh.itda.mapper"/>
-    </mappers>
+
     
 </configuration>

@@ -1,4 +1,7 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -70,6 +73,7 @@
             <button type="button" id="send-auth-btn" class="send">전송</button><br>
             인증번호 <input type="text" id="auth-code" name="auth-code" disabled><br><br>
             <input type="button" id="submit-btn" class="check" value="확인" disabled onclick="checkAuthCode(event)">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         </form>
     </div>
     <div class="bottom">
@@ -80,7 +84,8 @@
     const sendBtn = document.getElementById('send-auth-btn');
     const authCodeInput = document.getElementById('auth-code');
     const submitBtn = document.getElementById('submit-btn');
-
+    const csrfToken = '${_csrf.token}';
+    
     sendBtn.addEventListener('click', function() {
         const nickName = document.getElementById('nickName').value.trim();
         const email = document.getElementById('email').value.trim();
@@ -89,12 +94,11 @@
             alert('닉네임과 이메일을 모두 입력해주세요.');
             return;
         }
-
         // 인증번호 전송
-        fetch('${pageContext.request.contextPath}/user/sendVerification', {
+        fetch('${pageContext.request.contextPath}/user/findId/sendCode', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ nickName: nickName, email: email })
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
+            body: new URLSearchParams({ nickName, email })
         })
         .then(res => res.json())
         .then(data => {
@@ -110,23 +114,45 @@
         .catch(err => alert('오류가 발생했습니다: ' + err));
     });
 
+    // 인증번호 확인
     function checkAuthCode(event) {
     	event.preventDefault();
     	
+    	const nickName = document.getElementById('nickName').value.trim();
+        const email = document.getElementById('email').value.trim();
     	const inputCode = authCodeInput.value.trim();
 
         if (!inputCode) {
             alert("인증번호를 입력해주세요.");
             return;
         }
-
-        fetch('${pageContext.request.contextPath}/user/findId', {
+        fetch('${pageContext.request.contextPath}/user/findId/verifyCode', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
             body: new URLSearchParams({ 
             	nickName: nickName,
                 email: email,
-                authCode: authCodeInput.value.trim()
+                code: inputCode
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success === true) {
+                findIdRequest(nickName, email);
+            } else {
+                alert("인증번호가 일치하지 않습니다.");
+            }
+        })
+        .catch(err => alert("서버 오류: " + err));
+    }
+    
+    function findIdRequest(nickName, email) {
+        fetch('${pageContext.request.contextPath}/user/findId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
+            body: new URLSearchParams({ 
+                nickName: nickName,
+                email: email
             })
         })
         .then(res => res.json())
@@ -135,7 +161,7 @@
                 alert("인증에 성공했습니다. 아이디가 이메일로 전송되었습니다.");
                 window.location.href = '${pageContext.request.contextPath}/user/login';
             } else {
-                alert("인증번호가 일치하지 않습니다.");
+                alert(data.message || "아이디 찾기에 실패했습니다.");
             }
         })
         .catch(err => alert("서버 오류: " + err));

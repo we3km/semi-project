@@ -6,12 +6,16 @@ public interface UserDao {
 
 	int insertUser(User user);
 	
+	void insertProfile(int userNum, String imageUrl);
+	
 	void insertAuthority(User user);
-
-	void insertUserAndAuthority(User user);
 	
 	int idCheck(String userId);
-
-	void insertProfile(int userNum, String imageUrl);
+	
+	User findUserById(String userId);	// 로그인 시 유저 조회
+	
+    User findUserByNum(int userNum);	// 로그인 외 다른 곳에서 조회
+    
+    void updatePassword(String userId, String encodedPwd);
 
 }

@@ -102,7 +102,8 @@
     </style>
 </head>
 <body>
-    <form action="${pageContext.request.contextPath}/user/signup/terms" method="post" onsubmit="return validateForm()">
+    <form action="${pageContext.request.contextPath}/user/join/terms" method="post" onsubmit="return validateForm()">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <div id="top">다음 내용에 동의해주세요<br></div>
 
         <div class="top">

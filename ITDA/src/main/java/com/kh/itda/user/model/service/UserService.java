@@ -10,9 +10,7 @@ public interface UserService {
 
 	Optional<String> findIdByNameAndEmail(String nickName, String email);
 
-	Optional<String> findPwdByIdAndEmail(String id, String email);
-
-	User loginUser(User user);
+	Optional<String> findPwdByIdAndEmail(String userId, String email);
 
 	int idCheck(String userId);
 
