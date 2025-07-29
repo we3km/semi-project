@@ -30,20 +30,6 @@ public class ChatDao {
 		
 		return result;
 	}
-
-	/*
-	 * public int openChatRoom(ChatRoom chatRoom) { return
-	 * session.insert("chat.openChatRoom", chatRoom); }
-	 */
-	/*
-	 * public int openTransactionChatRoom(TransactionChatRoom transactionChatRoom) {
-	 * return session.insert("chat.openTransactionChatRoom", transactionChatRoom); }
-	 */
-	/*
-	 * public int openChatParticipant(ChatRoomJoin chatRoomJoin) { return
-	 * session.insert("chat.openChatParticipant", chatRoomJoin); }
-	 */
-	
 	
 	public int joinCheck(ChatRoomJoin join) {
 		return session.selectOne("chat.joinCheck", join);

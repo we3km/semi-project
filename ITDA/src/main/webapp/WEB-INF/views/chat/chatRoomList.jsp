@@ -31,15 +31,29 @@
 	href="${pageContext.request.contextPath}/resources/css/modal_css/shipping_Address.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/modal_css/manner_Review.css">
-
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<script
+	src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
+<script>
+	//stompClient 연결 설정
+	const userNum = '${loginUser.userNum}';
+	const nickName = '${loginUser.nickName}';
+	const contextPath = '${contextPath}';
+	const stompClient = Stomp.over(new SockJS(contextPath+"/stomp"));
+</script>
+
+<script type="text/javascript"
+	src="${contextPath}/resources/js/stomp.js"></script>
+	
+<!-- 카카오 우편번호 API -->
+<script
+	src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 
 <body>
-	<!-- 카카오 우편번호 API -->
-	<script
-		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 	<div class="chat-wrapper">
 		<!-- 왼쪽 채팅창 -->
@@ -581,44 +595,7 @@
 			</div>
 
 			<script>
-			  function sendMessage() {
-			    const input = document.querySelector('.chat-input');
-			    const message = input.value;
-			
-			    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
-			    console.log("보내는 메세지 : ", message);
-			
-			    fetch("${contextPath}/chat/sendMessage", {
-			      method: "POST",
-			      headers: {
-			        "Content-Type": "application/json"
-			      },
-			      body: JSON.stringify({
-			        chatContent: message,
-			        chatRoomId: window.chatRoomId
-			      })
-			    })
-			    .then(response => {
-				    if (!response.ok) throw new Error("서버 에러");
-				    return response.json();
-				})
-			    .then(data => {
-			      const chatContent = document.querySelector('.chat-content2');
-			
-			      const newMessage = document.createElement('div');
-			      newMessage.className = 'chat-message sent';
-			      newMessage.textContent = data.chatContent;
-			
-			      chatContent.appendChild(newMessage);
-			      chatContent.scrollTop = chatContent.scrollHeight;
-			
-			      input.value = ""; // 입력란 비워줌
-			    })
-			    .catch(error => {
-			      console.error("메시지 전송 실패:", error);
-			      alert("메시지 전송 실패");
-			    });
-			  }
+			  
 			</script>
 
 			<div class="chat-footer2">
@@ -634,7 +611,6 @@
 				<button class="send-button" onclick="sendMessage()">
 					<b>전송</b>
 				</button>
-
 
 				<!-- =========================우측 채팅방 기능========================= -->
 				<script>
@@ -746,7 +722,7 @@
                         });
 
 
-                } else if(chatRoomType==="오픈채팅방") {
+                } else if(chatRoomType==="오픈채팅방") {	
                     // ===== 오픈채팅방인 경우, 게시물 없이 메세지만 가져오자 =====
                     chatHeader2.textContent = window.chatRightTitle;
 
@@ -776,7 +752,13 @@
                         .catch(err => {
                             console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
                         });
-                }
+                }       
+                stompClient.subscribe("/topic/room/" + window.chatRoomId, function(message){
+                    // message.body가 본문 
+                    const chatMessage = JSON.parse(message.body);
+                    console.log(chatMessage)
+                    showMessage(chatMessage);
+                });
             }); // addEventListener close
         }); // forEach close
     });

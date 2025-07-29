@@ -40,7 +40,7 @@ public class ChatController {
 	public String selectChatRoomList(Model model, HttpSession session) {
 
 		User loginUser = (User) session.getAttribute("loginUser");
-		
+
 		if (loginUser == null) {
 			log.info("담긴 회원정보가 없습니다.");
 		}
@@ -50,6 +50,7 @@ public class ChatController {
 
 		List<ChatRoom> chatRoomList = chatService.selectChatRoomList(userNum);
 		model.addAttribute("chatRoomList", chatRoomList);
+		model.addAttribute("loginUser", loginUser);
 
 		if (chatRoomList.isEmpty()) {
 			log.info("참여 중인 채팅방이 없습니다.");
@@ -99,48 +100,41 @@ public class ChatController {
 		return "/chat/chatroomlist";
 	}
 
-	@PostMapping("/sendMessage")
-	@ResponseBody
-	// CHATROOM_ID, CHAT_CONTENT, USER_NUM
-	public ChatMessage sendMessage(@RequestBody Map<String, Object> messageMap, HttpSession session) {
-		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null) {
-			log.info("로그인 유저 없음");
-		}
-
-		/*
-		 * System.out.println("loginUser: " + loginUser);
-		 * System.out.println("messageMap: " + messageMap);
-		 */
-		
-		String chatContent = (String) messageMap.get("chatContent");
-		String chatRoomIdStr = (String) messageMap.get("chatRoomId");
-		int chatRoomId = Integer.parseInt(chatRoomIdStr);
-		
-		/*
-		 * System.out.println("chatContent: " + chatContent);
-		 * System.out.println("chatRoomId: " + chatRoomId);
-		 */
-		
-		// 채팅방 번호, 채팅 내용, 로그인한 회원 번호 할당
-		ChatMessage chatMessage = new ChatMessage();
-		
-		chatMessage.setChatRoomId(chatRoomId);
-		chatMessage.setChatContent(chatContent);
-		chatMessage.setUserNum(loginUser.getUserNum());
-
-		log.info("채팅방 정보 : {}", chatMessage);
-
-		int result = chatService.sendMessage(chatMessage);
-
-		if (result > 0) {
-			log.info("채팅 정보 : {}", result);
-			return chatMessage;
-		} else {
-			log.info("채팅 보내기 실패");
-			throw new RuntimeException("채팅 저장 실패");
-		}
-	}
+	/*
+	 * @PostMapping("/sendMessage")
+	 * 
+	 * @ResponseBody // CHATROOM_ID, CHAT_CONTENT, USER_NUM public ChatMessage
+	 * sendMessage(@RequestBody Map<String, Object> messageMap, HttpSession session)
+	 * { User loginUser = (User) session.getAttribute("loginUser"); if (loginUser ==
+	 * null) { log.info("로그인 유저 없음"); }
+	 * 
+	 * 
+	 * System.out.println("loginUser: " + loginUser);
+	 * System.out.println("messageMap: " + messageMap);
+	 * 
+	 * 
+	 * String chatContent = (String) messageMap.get("chatContent"); String
+	 * chatRoomIdStr = (String) messageMap.get("chatRoomId"); int chatRoomId =
+	 * Integer.parseInt(chatRoomIdStr);
+	 * 
+	 * 
+	 * System.out.println("chatContent: " + chatContent);
+	 * System.out.println("chatRoomId: " + chatRoomId);
+	 * 
+	 * 
+	 * // 채팅방 번호, 채팅 내용, 로그인한 회원 번호 할당 ChatMessage chatMessage = new ChatMessage();
+	 * 
+	 * chatMessage.setChatRoomId(chatRoomId);
+	 * chatMessage.setChatContent(chatContent);
+	 * chatMessage.setUserNum(loginUser.getUserNum());
+	 * 
+	 * log.info("채팅방 정보 : {}", chatMessage);
+	 * 
+	 * int result = chatService.sendMessage(chatMessage);
+	 * 
+	 * if (result > 0) { log.info("채팅 정보 : {}", result); return chatMessage; } else
+	 * { log.info("채팅 보내기 실패"); throw new RuntimeException("채팅 저장 실패"); } }
+	 */
 
 	// 메세지 받아와서 채팅방 오른쪽에 출력하자이
 	@GetMapping("/messages/{chatRoomId}")

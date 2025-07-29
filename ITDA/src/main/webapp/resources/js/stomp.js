@@ -1,57 +1,51 @@
-/*
-    stomp 동작 방식
-    1. 클라이언트가 SockJS를 이용하여 서버에 "연결요청"을 보냄
-     - 연결 수락시 서버는 Connected프레임을 웹소켓을 통해 반환
-    
-    2. 클라이언트는 서버와 연결 수립 후 구독중인 url 전달
-*/
-
-// 스톰프클라이언트로 연결이 완료된 후 실행할 이벤트 핸들러
-stompClient.connect({}, function(e){
+stompClient.connect({}, function (e) {
     console.log(e);
     // 현재 클라이언트가 구독중인 url목록들을 전달
     // 현재 채팅방에 새로운 사용자가 입장하거나,
     // 사용자가 퇴장하는 경우의 구독 url
-    stompClient.subscribe("/topic/room/" + chatRoomNo, function(message){
-        // message.body가 본문 
-        const chatMessage = JSON.parse(message.body);
-        showMessage(chatMessage);
-    });
-
-    // 입장메세지 서버로 전송
-    stompClient.send("/app/chat/enter/" + chatRoomNo ,{}, JSON.stringify({
-        userName,
-        chatRoomNo,
-        userNo
-    }))
 })
 
-function showMessage(message){
-    const li = document.createElement("li");
-    const p = document.createElement("p");
+function sendMessage() {
+    const input = document.querySelector('.chat-input');
+    const message = input.value;
 
-    p.classList.add("chat");
-    p.innerText = message.message;
-    p.style.textAlign = "center";
-    li.append(p);
+    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
+    console.log("보내는 메세지 : ", message);
 
-    document.querySelector(".display-chatting").append(li);
-}
-
-const exitBtn = document.querySelector("#exit-btn");
-
-exitBtn.onclick = function(){
-    // 서버로 퇴장 메세지 전송
-    // 1. CHAT_ROOM_JOIN에서 한 행의 데이터 삭제
-    // 2. 현재 채팅방에 참여자가 0명이라면 채팅방 삭제
-    // 3. 같은 방을 이용하는 모든 사용자에게 알림내용 전송
-    stompClient.send("/app/chat/exit/" + chatRoomNo, {}, JSON.stringify({
-        userName : userName,
-        chatRoomNo : chatRoomNo,
-        userNo : userNo
+    stompClient.send("/app/chat/sendMessage", {}, JSON.stringify({
+        chatContent: message,
+        chatRoomId: window.chatRoomId
     }))
 
-    stompClient.disconnect(function(){
-        location.href = `${contextPath}/chat/chatRoomList`;
-    })
+    input.value = ""; // 입력란 비워줌
+    // fetch("${contextPath}/chat/sendMessage", {
+    //     method: "POST",
+    //     headers: {
+    //     "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //     chatContent: message,
+    //     chatRoomId: window.chatRoomId
+    //     })
+    // })
+    // .then(response => {
+    //     if (!response.ok) throw new Error("서버 에러");
+    //     return response.json();
+    // })
+    // .then(showMessage)
+    // .catch(error => {
+    //     console.error("메시지 전송 실패:", error);
+    //     alert("메시지 전송 실패");
+    // });
+}
+
+const showMessage = data => {
+    const chatContent = document.querySelector('.chat-content2');
+
+    const newMessage = document.createElement('div');
+    newMessage.className = 'chat-message sent';
+    newMessage.textContent = data.chatContent;
+
+    chatContent.appendChild(newMessage);
+    chatContent.scrollTop = chatContent.scrollHeight;
 }

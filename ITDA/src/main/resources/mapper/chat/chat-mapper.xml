@@ -39,7 +39,8 @@
 			AND CR.USER_NUM = #{userNum}
 	</select>
 	
-<!-- 각 채팅방 마지막 메세지 불러오기 -->
+	
+<!-- ==================== 각 채팅방 마지막 메세지 불러오기 ==================== -->
 	<select id="selectLastMessage" parameterType="int" resultType="String">
 	    SELECT CHAT_CONTENT
 	    FROM (
@@ -50,7 +51,8 @@
 	    ) WHERE ROWNUM = 1
 	</select>
 
-<!-- ==================== 게시물 정보 얻어오기 ==================== -->
+
+<!-- ==================== 게시물 정보 및 회원 프로필 얻어오기 ==================== -->
 <!-- 보드 아이디 51번인 더미데이터 -->
 	<select id="selectBoardInfo" parameterType="int" resultType="SelectBoardInfo">
 		SELECT 
@@ -64,6 +66,7 @@
 		LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
 		WHERE BC.BOARD_ID = #{boardId}
 	</select>	
+
 
 <!-- ==================== 채팅방 생성 ==================== -->
 	<!-- 
@@ -85,14 +88,11 @@
 		-->
 
 	<!-- 채팅방 생성 -->
-	
-	<!-- 임의로 넣는 데이터 채팅방 번호 : 3, 회원 번호 : 1, 채팅방 종류 : 3 -->
 	<!-- 채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등) -->
 	<insert id="openChatRoom" parameterType="map">
 		<selectKey keyProperty="chatRoomId" resultType="int" order="BEFORE">
 	        SELECT CHATROOM_SEQ.NEXTVAL FROM DUAL
 	    </selectKey>
-	    
 		INSERT INTO CHAT_ROOM (CHATROOM_ID, USER_NUM, REF_NUM, STATUS)
 		VALUES (
 			#{chatRoomId}, 
@@ -124,24 +124,13 @@
 			#{userNum})
 	</insert>  
 	
-<!-- ==================== 채팅방 참여 여부 검색 ====================
--->
+	
+<!-- ==================== 채팅방 참여 여부 검색 ==================== -->
 	<select id="joinCheck" resultType="int">
 		SELECT COUNT(*) FROM CHAT_PARTICIPANT
 		WHERE CHAT_ROOM_ID = #{chatRoomId}
 			AND USER_NUM = #{userNum}
 	</select>
-	
-	
-<!-- ==================== 채팅방 참여 ==================== -->
-	<!-- 채팅방 참여 
-			- CHATROOM_ID
-			- USER_NUM
-	-->
-	<insert id="joinChatRoom">
-		INSERT INTO CHAT_PARTICIPANT VALUES
-		(#{chatRoomId}, #{userNum})
-	</insert>
 
 
 <!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
@@ -184,13 +173,6 @@
 			STATUS = 'N'
 		WHERE CHATROOM_ID = #{chatRoomId}
 	</update>
-	
-<!-- 	<delete id="exitChatRoom">
-		DELETE FROM CHAT_PARTICIPANT
-		WHERE CHATROOM_ID = #{chatRoomId} AND
-			USER_NUM = #{userNum}
-	</delete>
- -->
  
  
 <!-- ==================== 거래 채팅방 닫기 ==================== -->	
