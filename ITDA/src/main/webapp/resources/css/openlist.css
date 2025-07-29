@@ -35,7 +35,7 @@ body {
   box-sizing: border-box;
 }
 
-/* 왼쪽 필터(정렬조건) */
+/* 왼쪽 필터 박스 */
 .filter-sidebar {
   width: 220px;
   min-width: 180px;
@@ -50,15 +50,15 @@ body {
   margin-top: 220px;
   margin-left: -50px;
   flex-shrink: 0;
-  flex: 40px 0 80px;
 }
 
-
-/* 필터 내부 요소 */
-.location-filter, .sigungu-list, .other-region, #sidoSelectContainer {
+/* 공통 필터 섹션 */
+.location-filter, .sigun-list, .gu-list, .other-region, #sidoSelectContainer {
   margin-bottom: 14px;
   width: 100%;
 }
+
+/* 필터 제목 */
 .location-filter h4 {
   margin: 0 0 4px 0;
   font-size: 1rem;
@@ -70,29 +70,59 @@ body {
   color: #5A54FF;
   margin-bottom: 6px;
 }
-.sigungu-list {
+
+/* === 시 리스트 (sigun-list) === */
+.sigun-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ccc;
+}
+.sigun-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #ADAAF8;
+  border-radius: 14px;
+  background: #eaf0ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.sigun-item input[type="radio"] {
+  margin-right: 4px;
+}
+.sigun-item:hover {
+  background: #dbe5ff;
+}
+
+/* === 구 리스트 (gu-list) === */
+.gu-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
-.sigungu-item {
+.gu-item {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
-  border: 1px solid #ADAAF8;
-  border-radius: 16px;
-  background: #f4f6ff;
+  padding: 6px 10px;
+  border: 1px solid #c8c6ff;
+  border-radius: 14px;
+  background: #f4f4ff;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-  margin-bottom: 4px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
 }
-.sigungu-item input[type="radio"] {
-  accent-color: #5A54FF;
+.gu-item input[type="radio"] {
   margin-right: 4px;
 }
-.sigungu-item:hover {
-  background: #e6e8ff;
+.gu-item:hover {
+  background: #ecebff;
 }
+
+/* 다른 지역 버튼 */
 .other-region {
   margin-bottom: 8px;
 }
@@ -108,6 +138,8 @@ body {
 #toggleSidoSelect:hover {
   color: #413aff;
 }
+
+/* 시·도 셀렉트박스 */
 #sidoSelectContainer {
   margin-top: 8px;
 }
@@ -218,6 +250,7 @@ h2.location {
   justify-content: center;
   align-items: center;
 }
+
 .chat-img {
   width: 220px;
   height: 150px;
@@ -377,7 +410,7 @@ h2 {
 }
 .image-preview-box {
   position: relative;
-  width: 400px;
+  width: 300px;
   height: 150px;
   background: #f3f3f3;
   border: 1.5px solid #ADAAF8;
@@ -502,6 +535,17 @@ h2 {
   text-align: left;
   font-weight: 500;
 }
+
+.detailchat-img{
+  width: 300px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f3f3f3;
+  display: block;
+  margin: 0 auto;
+}
+
 .details-textarea {
   width: 100%;
   padding: 8px 12px;

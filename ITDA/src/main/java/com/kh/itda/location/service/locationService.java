@@ -8,6 +8,10 @@ public interface locationService {
 
 	List<String> findAllSido();
 
-	List<String> findSigunguBySido(String sido); 
+	List<String> findSigunguBySido(String sido);
+
+	List<String> findSigunListBySido(String sido);
+
+	List<String> findGuListBySigun(String sido, String sigun); 
 
 }

@@ -19,53 +19,69 @@
 		<div class="layout">
 			<form id="filterForm" method="get"
 				action="${contextPath}/openchat/openChatList">
-
 				<aside class="filter-sidebar">
-					<!-- 1) 시·도 고정 제목 -->
+
+					<!-- 1) 시·도 제목 -->
 					<div class="location-filter">
 						<h4>위치</h4>
 						<div class="sido-label">${selectedSido}</div>
 					</div>
-					<!-- 2) 시·군·구 라디오 버튼 (선택 즉시 submit) -->
-					<div class="sigungu-list">
-						<c:forEach var="sg" items="${sigunguList}">
-							<label class="sigungu-item"> <input type="radio"
-								name="sigungu" value="${sg}"
-								${sg == selectedSigungu ? 'checked' : ''}
-								onchange="this.form.submit()" /> <span class="sigungu-label">${sg}</span>
+
+					<!-- 2) 시 (예: 수원시, 성남시) 라디오 -->
+					<div class="sigun-list">
+						<c:forEach var="sg" items="${sigunList}">
+							<label class="sigun-item"> <input type="radio"
+								name="sigun" value="${sg}"
+								${sg == selectedSigun ? 'checked' : ''}
+								onchange="this.form.submit()" /> <span class="sigun-label">${sg}</span>
 							</label>
 						</c:forEach>
 					</div>
 
-					<!-- 3) 다른 지역 검색 토글 -->
+					<!-- 3) 구 (예: 팔달구, 영통구) 라디오 -->
+					<c:if test="${not empty selectedSigun}">
+						<div class="gu-list">
+							<c:forEach var="g" items="${guList}">
+								<c:set var="fullSigungu" value="${selectedSigun} ${g}" />
+								<label class="gu-item"> <input type="radio" name="gu"
+									value="${g}" ${selectedSigungu == fullSigungu ? 'checked' : ''}
+									onchange="this.form.submit()" /> <span class="gu-label">${g}</span>
+								</label>
+							</c:forEach>
+						</div>
+					</c:if>
+
+					<!-- 4) 다른 지역 선택 -->
 					<div class="other-region">
 						<button type="button" id="toggleSidoSelect">다른 지역 검색</button>
 					</div>
 
-					<!-- 4) 숨겨진 시·도 선택 박스 (선택 즉시 submit) -->
-					<div id="sidoSelectContainer">
+					<!-- 5) 숨겨진 시·도 셀렉트 -->
+					<div id="sidoSelectContainer" style="display: none;">
 						<select name="sido" id="sidoSelect" onchange="this.form.submit()">
 							<option value="">시·도 선택</option>
 							<c:forEach var="sd" items="${sidoList}">
-								<option value="${sd}" ${sd == selectedSido ? 'selected' : ''}>
-									${sd}</option>
+								<option value="${sd}" ${sd == selectedSido ? 'selected' : ''}>${sd}</option>
 							</c:forEach>
 						</select>
 					</div>
+
 				</aside>
 			</form>
+
+
 			<main class="main-content">
 				<h1 class="main-title">오픈 채팅방 리스트</h1>
 				<h2 class="location"></h2>
+
 				<!-- 상단 바 -->
 				<div class="top-bar">
 					<form id="sortForm" method="get"
 						action="${contextPath}/openchat/openChatList">
-						<input type="hidden" name="sido" value="${selectedSido}" /> 
-					    <input type="hidden" name="sigungu" value="${selectedSigungu}" />
-
-							<input type="text" name="keyword" class="search-bar"
-								value="${keyword}" placeholder="채팅방 검색" />
+						<input type="hidden" name="sido" value="${selectedSido}" /> <input
+							type="hidden" name="sigungu" value="${selectedSigungu}" /> <input
+							type="text" name="keyword" class="search-bar" value="${keyword}"
+							placeholder="채팅방 검색" />
 					</form>
 					<button type="button" class="create-chat-btn">채팅방 개설</button>
 				</div>
@@ -112,7 +128,7 @@
 									<div class="join-btn-box">
 										<button type="button" class="join-btn open-detail"
 											data-room-id="${chatRoom.chatRoomID}"
-											data-img="${contextPath}/resources/images/chat/${chatRoom.fileName}"
+											data-img="${contextPath}/resources/images/chat/openchat/${chatRoom.fileName}"
 											data-name="${chatRoom.chatName}"
 											data-tags="${chatRoom.tagContent}"
 											data-count="${chatRoom.chatCount}"
@@ -150,7 +166,7 @@
 					<div class="modal-content">
 						<span class="close-btn" id="closeDetailBtn">&times;</span>
 						<h2>채팅방 정보</h2>
-						<img id="detailImage" class="chat-img" />
+						<img id="detailImage" class="detailchat-img" />
 						<!-- 모달 상세정보 타이틀 -->
 						<div class="chat-title" id="detailTitle"></div>
 						<!-- 모달 상세정보 태그 -->
@@ -161,7 +177,7 @@
 						<div class="chat-explanation" id="detailExplanation"></div>
 						<div>
 							<form id="enterForm" method="get"
-								action="${contextPath}/chat/enter">
+								action="${contextPath}/openchat/enter">
 								<input type="hidden" name="roomId" id="roomIdInput">
 								<button type="submit" class="submit-btn">입장하기</button>
 							</form>
@@ -178,7 +194,7 @@
 							method="post" enctype="multipart/form-data"
 							onsubmit="return validateForm(this)">
 							<div class="image-upload-area">
-								<label class="image-label">채팅방 대표 이미지</label>
+								<label class="image-label">대표 이미지</label>
 								<div class="image-preview-box">
 									<div id="previewContainer"></div>
 									<button type="button" class="add-image-btn" id="addImageBtn">+</button>
@@ -198,7 +214,7 @@
 								<label for="locationText">지역:</label>
 								<div>
 									<input type="text" id="locationText" name="locationText"
-										placeholder="위치 불러오는 중..." />
+										placeholder="위치 불러오는 중..." readonly />
 									<button type="button" id="editLocationBtn" class="small-btn">주소검색</button>
 								</div>
 							</div>
@@ -312,6 +328,7 @@ function showDetailModal() {
 }
 function hideDetailModal() {
   const modal = document.getElementById("detailModal");
+  
   modal.classList.add("hidden");
   document.getElementById("detailTags").innerHTML = '';
   document.getElementById("detailImage").src = '';
@@ -339,14 +356,18 @@ document.addEventListener("DOMContentLoaded", function() {
           .addEventListener("click", () => {
     createModal.classList.add("hidden");
     createModal.style.display = "none";
-    
-    createForm.reset();
-    
-    previewContainer.innerHTML = "";
-    
-    imageFileInput.value = "";
-    
-    addImageBtn.style.display = "flex";  
+  //개설 모달 닫으면 안에 내용 초기화
+    const createForm = document.querySelector('#modal form');
+    if (createForm) createForm.reset();
+
+    const previewContainer = document.getElementById('previewContainer');
+    if (previewContainer) previewContainer.innerHTML = '';
+
+    const imageFileInput = document.getElementById('imageFile');
+    if (imageFileInput) imageFileInput.value = '';
+
+    const addImageBtn = document.getElementById('addImageBtn');
+    if (addImageBtn) addImageBtn.style.display = 'flex'; 
   });
   
 
@@ -402,16 +423,26 @@ document.getElementById("editLocationBtn")
       const explanation= this.dataset.des;
       if (!chatRoomID || !name) return;
 
-      document.getElementById("detailImage").src            = image;
-      document.getElementById("detailTitle").textContent    = name;
+      document.getElementById("detailImage").src = image;
+      document.getElementById("detailTitle").textContent = name;
       const tagContainer = document.getElementById("detailTags");
+
       tagContainer.innerHTML = '';
+
       if (tags) {
-        tags.split(',').forEach(tag => {
-          const span = document.createElement('span');
-          span.className   = 'tag';
-          span.textContent = '#' + tag.trim();
-          tagContainer.appendChild(span);
+        // 1. 먼저 태그 문자열을 공백 또는 쉼표 또는 # 기준으로 분할
+        const rawTags = tags.split(/[\s,#]+/); // 공백, 쉼표, # 전부 분리 기준
+
+        rawTags.forEach(tag => {
+          tag = tag.trim();
+          if (tag.length > 0) {
+            const cleaned = '#' + tag.replace(/^#+/, ''); // # 여러 개 제거 후 하나만 붙임
+
+            const span = document.createElement('span');
+            span.className = 'tag';
+            span.textContent = cleaned;
+            tagContainer.appendChild(span);
+          }
         });
       }
       document.getElementById("detailMembers").textContent     = 
@@ -419,7 +450,7 @@ document.getElementById("editLocationBtn")
       document.getElementById("detailExplanation").textContent = 
         explanation || '설명이 없습니다.';
       document.getElementById("enterForm").action = 
-        `${contextPath}/chat/enter`;
+        `${contextPath}/openchat/enter`;
       document.getElementById("roomIdInput").value = chatRoomID;
       showDetailModal();
     });

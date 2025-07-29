@@ -1,6 +1,8 @@
 package com.kh.itda.location.service;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,30 @@ public class locationServiceImpl implements locationService{
 		List<String> sigunguList = dao.findSigunguBySido(sido);
 		
 		return sigunguList;
+	}
+
+	@Override
+	public List<String> findSigunListBySido(String sido) {
+	    List<String> sigunguList = dao.findSigunguBySido(sido);
+
+	    return sigunguList.stream()
+	        .map(s -> {
+	            String[] parts = s.trim().split(" ");
+	            return parts.length >= 2 ? parts[0] : s; // "수원시 팔달구" → "수원시"
+	        })
+	        .distinct()
+	        .collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> findGuListBySigun(String sido, String sigun) {
+		 List<String> sigunguList = dao.findSigunguBySido(sido);
+
+		    return sigunguList.stream()
+		        .filter(s -> s.startsWith(sigun + " "))
+		        .map(s -> s.split(" ")[1]) // "수원시 팔달구" → "팔달구"
+		        .distinct()
+		        .collect(Collectors.toList());
 	}
 
 }
