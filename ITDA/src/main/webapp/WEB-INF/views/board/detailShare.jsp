@@ -175,14 +175,8 @@ body {
 						pattern="yyyy/MM/dd" />
 				</div>
 
-				<div class="price">대여금액 : ${board.boardRental.rentalFee}원</div>
-				<div class="date-range">
-					대여기간 :
-					<fmt:formatDate value="${board.boardRental.rentalStartDate }"
-						pattern="yyyy/MM/dd" />
-					~
-					<fmt:formatDate value="${board.boardRental.rentalEndDate }"
-						pattern="yyyy/MM/dd" />
+				<div class="price">나눔수량 : ${board.boardSharing.sharingCount}개</div>
+				
 				</div>
 				<div class="location">지역 :
 					${board.boardCommon.transactionAddress}</div>
@@ -220,7 +214,7 @@ body {
           	data: {
           	  userId: 1,
           	  boardId: '${boardId}',
-          	  boardCategory: 'rental'
+          	  boardCategory: 'share'
          	 },
          	 success: function (res) {
          		 console.log(res);
@@ -234,7 +228,7 @@ body {
 	               type: 'GET',
 	               url: '${pageContext.request.contextPath}/board/dibsCount',
 	               data: { boardId: '${boardId}',
-	            	   boardCategory: 'rental'},
+	            	   boardCategory: 'share'},
 	               success: function (count) {
 	                 $('#dibCount').text(count);
 	               }
@@ -247,6 +241,8 @@ body {
          	 
            });
     	});
+
+		
     </script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
@@ -254,33 +250,23 @@ body {
 			<div class="product-list">
 
 				<!-- 카드 반복 -->
-				<c:forEach var="writerRentalWrapper"
-					items="${writerRentalWrapperList }">
+				<c:forEach var="writerShareWrapper"
+					items="${writerShareWrapperList }">
 
 					<div class="card"
-						onclick="moveDetail(${writerRentalWrapper.boardCommon.boardId});">
+						onclick="moveDetail(${writerShareWrapper.boardCommon.boardId});">
 						<img
-							src="${pageContext.request.contextPath}/${writerRentalWrapper.filePath.categoryPath}/${writerRentalWrapper.filePath.fileName}"
+							src="${pageContext.request.contextPath}/${writerShareWrapper.filePath.categoryPath}/${writerShareWrapper.filePath.fileName}"
 							alt="이미지"
 							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${writerRentalWrapper.boardCommon.productName }</p>
-						<p class="price">${writerRentalWrapper.boardRental.rentalFee }</p>
-						<p>
-							<fmt:formatDate
-								value="${writerRentalWrapper.boardRental.rentalStartDate }"
-								pattern="yyyy/MM/dd" />
-						</p>
-						~
-						<p>
-							<fmt:formatDate value="${board.boardRental.rentalEndDate }"
-								pattern="yyyy/MM/dd" />
-						</p>
+						<p>${writerShareWrapper.boardCommon.productName }</p>
+						<p class="price">나눔수량:${writerShareWrapper.boardSharing.sharingCount }개</p>
 					</div>
 				</c:forEach>
 				<!-- 클릭시 상세보기로 이동 -->
 				<script>
 				  	function moveDetail(bid){
-				  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+				  		location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
 				  	}
 				 </script>
 
@@ -306,24 +292,14 @@ body {
 							alt="이미지"
 							style="width: 90%; height: auto; border: 2px solid black;" />
 						<p>${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="price">${equalsCategoryboard.boardRental.rentalFee }</p>
-						<p>
-							<fmt:formatDate
-								value="${equalsCategoryboard.boardRental.rentalStartDate }"
-								pattern="yyyy/MM/dd" />
-						</p>
-						~
-						<p>
-							<fmt:formatDate
-								value="${equalsCategoryboard.boardRental.rentalEndDate }"
-								pattern="yyyy/MM/dd" />
-						</p>
+						<p class="price">${equalsCategoryboard.boardSharing.sharingCount }</p>
+						
 					</div>
 				</c:forEach>
 				<!-- 게시물 클릭시 상세보기 이동 -->
 				<script>
 				  	function moveDetail(bid){
-				  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+				  		location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
 				  	}
 				 </script>
 			</div>
