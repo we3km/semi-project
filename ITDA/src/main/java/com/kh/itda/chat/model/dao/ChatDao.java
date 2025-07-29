@@ -11,7 +11,6 @@ import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
-import com.kh.itda.chat.model.vo.TransactionChatRoom;
 
 @Repository
 public class ChatDao {
@@ -32,16 +31,18 @@ public class ChatDao {
 		return result;
 	}
 
-	public int openChatRoom(ChatRoom chatRoom) {
-	    return session.insert("chat.openChatRoom", chatRoom);
-	}
-	public int openTransactionChatRoom(TransactionChatRoom transactionChatRoom) {
-	    return session.insert("chat.openTransactionChatRoom", transactionChatRoom);
-	}
-	public int openChatParticipant(ChatRoomJoin chatRoomJoin) {
-	    return session.insert("chat.openChatParticipant", chatRoomJoin);
-	}
-	
+	/*
+	 * public int openChatRoom(ChatRoom chatRoom) { return
+	 * session.insert("chat.openChatRoom", chatRoom); }
+	 */
+	/*
+	 * public int openTransactionChatRoom(TransactionChatRoom transactionChatRoom) {
+	 * return session.insert("chat.openTransactionChatRoom", transactionChatRoom); }
+	 */
+	/*
+	 * public int openChatParticipant(ChatRoomJoin chatRoomJoin) { return
+	 * session.insert("chat.openChatParticipant", chatRoomJoin); }
+	 */
 	
 	
 	public int joinCheck(ChatRoomJoin join) {
@@ -52,10 +53,10 @@ public class ChatDao {
 		return session.insert("chat.joinChatRoom", join);
 	}
 
-	public List<ChatMessage> selectChatMessage(int chatRoomId) {
-		return session.selectList("chat.selectChatMessage", chatRoomId);
+	public List<ChatMessage> getMessagesByChatRoomId(int chatRoomId) {
+		return session.selectList("chat.getMessagesByChatRoomId", chatRoomId);
 	}
-
+	
 	public int insertMessage(ChatMessage chatMessage) {
 		return session.insert("chat.insertMessage", chatMessage);
 	}
@@ -73,14 +74,15 @@ public class ChatDao {
 	}
 
 	public int insertManner(Map<String, Object> map) {
-		return session.insert("chat.insertManner", map);
+		session.update("chat.updateBoardCommon", map); // 게시물 상태 업데이트
+		session.insert("chat.insertTransactionEnd", map); // 종료된 게시물 첨가 
+		return session.insert("chat.insertManner", map); // 매너 업데이트
 	}
 	
 	public String bringLastMessage(int chatRoomId) {
 		return session.selectOne("chat.selectLastMessage", chatRoomId);
 	}
 	
-	// 게시물 정보 객체 하나만 불러오기
 	public SelectBoardInfo selectBoardInfo(int boardId) {
 		return session.selectOne("chat.selectBoardInfo", boardId);
 	}

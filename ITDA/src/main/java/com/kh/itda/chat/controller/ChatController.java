@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.chat.model.service.ChatService;
 import com.kh.itda.chat.model.vo.ChatMessage;
@@ -44,7 +40,7 @@ public class ChatController {
 	public String selectChatRoomList(Model model, HttpSession session) {
 
 		User loginUser = (User) session.getAttribute("loginUser");
-
+		
 		if (loginUser == null) {
 			log.info("담긴 회원정보가 없습니다.");
 		}
@@ -73,52 +69,76 @@ public class ChatController {
 		return boardInfo;
 	}
 
-	// 게시물 정보 받아와서 채팅방 속성 할당 
+	// 게시물 정보 받아와서 채팅방 생성
 	@PostMapping("/openChatRoom")
 	@ResponseBody
-	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, 
-			RedirectAttributes redirectAttr, HttpSession session) {
+	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, HttpSession session) {
 		// 현재 로그인한 회원 정보 받아옴
 		User loginUser = (User) session.getAttribute("loginUser");
-		
+		if (loginUser == null) {
+			log.info("로그인 유저 없음");
+		}
+
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
-		
+
 		int refNum = boardInfo.getTransactionRefNum();
 		log.info("거래 유형 번호 : {}", refNum);
-		
+
 		int boardId = boardInfo.getBoardId();
 		log.info("게시판 번호 : {}", boardId);
-		
-		int result = chatService.openChatRoom(userNum, refNum, boardId); 
-		
+
+		int result = chatService.openChatRoom(userNum, refNum, boardId);
+
 		if (result > 0) {
 			log.info("채팅방 성공! : {}", result);
-		} 
-		return "redirect:/chat/chatroomlist";
+		}
+
+		log.info("생성된 채팅방 정보 : {}", boardInfo);
+
+		return "/chat/chatroomlist";
 	}
 
 	@PostMapping("/sendMessage")
 	@ResponseBody
 	// CHATROOM_ID, CHAT_CONTENT, USER_NUM
-	public ResponseEntity<String> sendMessage(@RequestParam String chatContent, @RequestParam int chatRoomId,
-			HttpSession session) {
-		ChatMessage chatMessage = new ChatMessage();
-
+	public ChatMessage sendMessage(@RequestBody Map<String, Object> messageMap, HttpSession session) {
 		User loginUser = (User) session.getAttribute("loginUser");
+		if (loginUser == null) {
+			log.info("로그인 유저 없음");
+		}
 
+		/*
+		 * System.out.println("loginUser: " + loginUser);
+		 * System.out.println("messageMap: " + messageMap);
+		 */
+		
+		String chatContent = (String) messageMap.get("chatContent");
+		String chatRoomIdStr = (String) messageMap.get("chatRoomId");
+		int chatRoomId = Integer.parseInt(chatRoomIdStr);
+		
+		/*
+		 * System.out.println("chatContent: " + chatContent);
+		 * System.out.println("chatRoomId: " + chatRoomId);
+		 */
+		
 		// 채팅방 번호, 채팅 내용, 로그인한 회원 번호 할당
+		ChatMessage chatMessage = new ChatMessage();
+		
 		chatMessage.setChatRoomId(chatRoomId);
 		chatMessage.setChatContent(chatContent);
 		chatMessage.setUserNum(loginUser.getUserNum());
 
-		int result = chatService.insertMessage(chatMessage);
+		log.info("채팅방 정보 : {}", chatMessage);
+
+		int result = chatService.sendMessage(chatMessage);
+
 		if (result > 0) {
-			log.info("채팅 정보 생성 성공");
-			return ResponseEntity.ok("success");
+			log.info("채팅 정보 : {}", result);
+			return chatMessage;
 		} else {
-			log.info("채팅 정보 생성 실패ㅠㅠ");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+			log.info("채팅 보내기 실패");
+			throw new RuntimeException("채팅 저장 실패");
 		}
 	}
 
@@ -150,13 +170,18 @@ public class ChatController {
 
 		Integer mannerScore = (int) data.get("sliderValue");
 		String reviewText = (String) data.get("reviewText");
-		int reviewerUserNum = loginUser.getUserNum();
+		int boardId = (int) data.get("boardId");
+		int reviewerUserNum = loginUser.getUserNum(); // 리뷰하는 사람
+		int revieweeUserNum = (int) data.get("userNum"); // 리뷰받는 사람
+
 		log.info("매너 평가 하는 사람 : {}", reviewerUserNum);
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("reviewText", reviewText);
 		map.put("mannerScore", mannerScore);
+		map.put("boardId", boardId);
 		map.put("reviewerUserNum", reviewerUserNum);
+		map.put("revieweeUserNum", revieweeUserNum);
 
 		int result = chatService.insertManner(map);
 		if (result > 0) {

@@ -15,6 +15,7 @@ public class SelectBoardInfo {
 	private int boardId; // 게시물 번호, FROM BOARD_COMMON
 	private String productName = null; // 상품 이름, FROM BOARD_COMMON
 	private String transactionCategory = null; // 거래 유형, FROM BOARD_COMMON
+	private int userNum; // 게시물 주인 회원 ID 
 
 	public int getTransactionRefNum() {
 		switch (transactionCategory) {

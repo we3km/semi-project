@@ -57,7 +57,7 @@ public class ChatServiceImpl implements ChatService {
 	@Override
 	public List<ChatMessage> getMessagesByChatRoomId(int chatRoomId) {
 		// DAO에서 메시지 리스트 조회
-		return dao.selectChatMessage(chatRoomId);
+		return dao.getMessagesByChatRoomId(chatRoomId);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class ChatServiceImpl implements ChatService {
 		}
 
 		if (result > 0) {
-			list = dao.selectChatMessage(join.getChatRoomId());
+			list = dao.getMessagesByChatRoomId(join.getChatRoomId());
 		}
 		// 참여자 정보를 Chat_room_join에 Insert
 		// Insert성공시, list를 반환, 실패시 null반환
@@ -81,7 +81,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public int insertMessage(ChatMessage chatMessage) {
+	public int sendMessage(ChatMessage chatMessage) {
 		return dao.insertMessage(chatMessage);
 	}
 

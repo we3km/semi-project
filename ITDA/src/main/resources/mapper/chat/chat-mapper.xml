@@ -2,45 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="chat">
 
-
 <!-- 거래 채팅방 검색 -->
 <!-- 접속한 회원이 현재 대화하고 있는 채팅방 리스트 검색 -->
 	<select id="selectChatRoomList" parameterType="int" resultType="chatRoom">	
 		SELECT
-		    CP.CHATROOM_ID,
+		    CP.CHATROOM_ID, 
 		    CP.USER_NUM,
+            
 		    TC.BOARD_ID,
 		    CR.STATUS,
 		    CR.REF_NUM,
 		    U.NICK_NAME,
-		    M.CHAT_CONTENT,
-		    M.SENT_AT,
+            P.IMAGE_URL,
+            
             OC.OPEN_CHAT_ROOM_NAME,
-            OC.OPEN_CHAT_COUNT
-		
+            OC.OPEN_CHAT_COUNT,
+            F.FILE_NAME
+                      
 		FROM CHAT_ROOM CR
 		LEFT JOIN TRANSACTION_CHAT TC ON CR.CHATROOM_ID = TC.CHATROOM_ID
-		LEFT JOIN BOARD_COMMON BC ON TC.BOARD_ID = BC.BOARD_ID
 		LEFT JOIN USER_TB U ON CR.USER_NUM = U.USER_NUM
         LEFT JOIN OPEN_CHAT OC ON CR.CHATROOM_ID = OC.CHATROOM_ID
+        LEFT JOIN PROFILE P ON P.USER_NUM = U.USER_NUM
 		INNER JOIN CHAT_PARTICIPANT CP ON CR.CHATROOM_ID = CP.CHATROOM_ID
 		
-		LEFT JOIN (
-		    SELECT *
-		    FROM (
-		        SELECT
-		            CHATROOM_ID,
-		            CHAT_CONTENT,
-		            SENT_AT,
-		            ROW_NUMBER() OVER (PARTITION BY CHATROOM_ID ORDER BY SENT_AT DESC) AS RN
-		        FROM CHAT_MESSAGE
-		    )
-		    WHERE RN = 1
-		) M ON CR.CHATROOM_ID = M.CHATROOM_ID
-		
+        LEFT JOIN "FILE" F
+			ON F.REF_NO = OC.CHATROOM_ID
+			AND F.CATEGORY_ID = 11
+			AND F.FILE_ID = (
+				SELECT MIN(FILE_ID)
+				FROM "FILE"
+				WHERE REF_NO = OC.CHATROOM_ID
+				AND CATEGORY_ID = 11
+			)
 		WHERE CR.STATUS = 'Y'
 			AND CR.USER_NUM = #{userNum}
-		ORDER BY M.SENT_AT DESC NULLS LAST
 	</select>
 	
 <!-- 각 채팅방 마지막 메세지 불러오기 -->
@@ -51,7 +47,7 @@
 	        FROM CHAT_MESSAGE
 	        WHERE CHATROOM_ID = #{chatRoomId}
 	        ORDER BY SENT_AT DESC
-	    )
+	    ) WHERE ROWNUM = 1
 	</select>
 
 <!-- ==================== 게시물 정보 얻어오기 ==================== -->
@@ -61,7 +57,8 @@
 		    P.IMAGE_URL,
 		    BC.BOARD_ID,
 		    BC.PRODUCT_NAME,
-		    BC.TRANSACTION_CATEGORY
+		    BC.TRANSACTION_CATEGORY,
+		    BC.USER_NUM
 		FROM BOARD_COMMON BC
 		LEFT JOIN USER_TB UT ON UT.USER_NUM = BC.USER_NUM
 		LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
@@ -148,7 +145,7 @@
 
 
 <!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
-	<select id="selectChatMessage" resultType="ChatMessage">
+	<select id="getMessagesByChatRoomId" resultType="ChatMessage">
 		SELECT
 			MESSAGE_ID,
 			CHATROOM_ID,
@@ -157,7 +154,7 @@
 			USER_NUM
 		FROM CHAT_MESSAGE
 		WHERE CHATROOM_ID = #{chatRoomId}
-		ORDER BY CHATROOM_ID
+		ORDER BY SENT_AT
 	</select>
 
 
@@ -229,33 +226,18 @@
 	<insert id="insertTransactionEnd">
 		INSERT INTO TRANSACTION_END VALUES(
 		#{boardId},
-		#{traderUserNum},
+		#{reviewerUserNum},
 		TRUNC(SYSDATE, 'MI')
 		)
 	</insert>
 	
-	
+		
 	<!-- MANNER 테이블에 거래 완료시 받아오는 정보 할당 -->
-	<!-- 
-		매너 고유키
-		평가자 회원번호(로그인 세션 회원정보)
-		평가 당하는 사람(대화 상대방)
-		SCORE
-		MANNER_CONTENT
-		 -->
-		 
-		<!-- INSERT INTO MANNER VALUES(
-			MANNER_SEQ.NEXTVAL,
-			#{reviewerUserNum},
-			#{revieweeUserNum},
-			#{score},
-			#{mannerContent}	
-		) -->
 	<insert id="insertManner">
 		INSERT INTO MANNER VALUES(
 			MANNER_SEQ.NEXTVAL,
 			#{reviewerUserNum},
-			2,
+			#{revieweeUserNum},
 			#{mannerScore},
 			#{reviewText}	
 		)
