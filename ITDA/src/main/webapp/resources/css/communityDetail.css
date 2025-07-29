@@ -179,6 +179,19 @@
             margin-left: 5px;
             font-size: 14px;
         }
+        /* communityDetail.css 파일에 추가 */
+		.post-img {
+		    margin-top: 20px;
+		    margin-bottom: 30px;
+		    display:flex;
+		    justify-content: center;
+		}
+		
+		.post-img img {
+		    max-width: 100%; /* 이미지가 게시글 너비를 넘어가지 않도록 설정 */
+		    border-radius: 8px;
+		    margin-bottom: 10px; /* 이미지 여러 개일 때 사이 간격 */
+		}
 
         /* 기존 스타일 유지하면서 댓글 입력창 스타일 및 댓글 리스트 스타일 추가 */
         .comment-input {

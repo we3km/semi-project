@@ -8,10 +8,11 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.CommunityType;
 
 public interface CommunityService {
 
-	Map<String, String> getCommunityTypeMap();
+	Map<String, CommunityType> getCommunityTypeMap();
 
 	int selectListCount(Map<String, Object> paramMap);
 
@@ -30,6 +31,8 @@ public interface CommunityService {
 	int getDislikeCount(int communityNo);
 
 	CommunityReaction userReactionNo(int userNo, int communityNo);
+
+	int deleteCommunity(int communityNo, int userNo);
 
 	
 

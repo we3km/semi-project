@@ -14,6 +14,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.CommunityType;
 import com.kh.itda.community.model.vo.communityTag;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class CommunityServiceImpl implements CommunityService{
 	private final CommunityDao communityDao;
 	
 	@Override
-	public Map<String, String> getCommunityTypeMap() {
+	public Map<String, CommunityType> getCommunityTypeMap() {
 		return communityDao.getCommunityTypeMap();
 	}
 
@@ -155,8 +156,16 @@ public class CommunityServiceImpl implements CommunityService{
 		return communityDao.userReactionNo(userNo,communityNo);
 	}
 
-	
-
+	@Override
+	public int deleteCommunity(int communityNo, int userNo) {
+		CommunityExt originalPost = communityDao.selectCommunity(communityNo);
+		
+		if(originalPost != null && originalPost.getCommunityWriter() == userNo) {
+			return communityDao.deleteCommunity(communityNo);
+		}else {
+		return 0;
+		}
+	}
 
 
 }

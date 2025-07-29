@@ -21,6 +21,7 @@
 
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="icon" href="${pageContext.request.contextPath}/resources/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
 	<div class="wrapper">
@@ -56,7 +57,7 @@
         </div>
         <hr>
 
-        <!-- 공유 + 신고하기 버튼-->
+        <!-- 공유 + 신고하기 + 삭제 버튼-->
         <div class="post-actions">
             <button class="share-btn">공유</button>
             <button class="report-btn">신고하기</button>
@@ -67,10 +68,10 @@
             </div>
             
             <div id="deleteToggleArea" class="delete-menu hidden">
-				<form method="post" action="/community/delete">
-					<input type="hidden" name="communityNo" value="${community.communityNo}" />
-					<button type="submit" class="delete-btn">삭제하기</button>
-				</form>
+				<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/community/delete">
+			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
+			        <button type="submit" class="delete-btn">삭제하기</button>
+			    </form>
 			</div>
         </div>
 
@@ -81,9 +82,17 @@
         
        	<!-- 게시글 이미지 -->
         <div class="post-img">
+	        <c:if test="${not empty community.imgList}">
+		        <c:forEach var="img" items="${community.imgList}">
+		            <%-- 
+		                Utils.saveFile에서 저장한 경로와 맞춰주어야 합니다.
+		                예시: /resources/uploads/커뮤니티코드/파일명
+		            --%>
+		            <img src="${pageContext.request.contextPath}${img.changeName}">
+		        </c:forEach>
+		    </c:if>
         </div>
-        
-        
+		            
 
         <div class="vote-buttons">
 		    <!-- 좋아요 버튼 -->
@@ -135,8 +144,9 @@
 		        });
 			  //신고하기
 			   $('.report-btn').click(function(){
-				   openReportModal('community', ${communityNo},  '<c:out value="${communityTitle}" />');
-			   });
+				    /* openReportModal('community', ${communityNo}, "${community.communityTitle}"); */
+				    alert('신고 모달창');
+				});
 			 // 복사 버튼 클릭
 			 	$('#shareUrl').val(window.location.href);
 			 
@@ -151,6 +161,11 @@
 				// sub-btn 클릭 → 삭제 버튼 토글
 				$('.sub-btn').click(function () {
 					$('#deleteToggleArea').toggle();
+				});
+				$('#deleteForm').on('submit',function(e){
+					if(!confirm('정말로 이 게시글을 삭제하시겠습니까?')){
+						e.preventDefault();
+					}
 				});
 		    
 	    });

@@ -12,6 +12,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.CommunityType;
 import com.kh.itda.community.model.vo.communityTag;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class CommunityDaoImpl implements CommunityDao{
 	private final SqlSessionTemplate session;
 
 	@Override
-	public Map<String, String> getCommunityTypeMap() {
+	public Map<String, CommunityType> getCommunityTypeMap() {
 		return session.selectMap("community.getCommunityTypeMap", "communityCd");
 	}
 
@@ -134,6 +135,11 @@ public class CommunityDaoImpl implements CommunityDao{
 	@Override
 	public List<communityTag> selectTagsByCommunityNo(int communityNo) {
 		return session.selectList("community.selectTagsByCommunityNo", communityNo);
+	}
+
+	@Override
+	public int deleteCommunity(int communityNo) {
+		return session.delete("community.deleteCommunity",communityNo);
 	}
 
 	

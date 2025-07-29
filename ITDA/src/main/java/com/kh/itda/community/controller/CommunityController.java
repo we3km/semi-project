@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -38,6 +39,7 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.CommunityType;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -63,7 +65,7 @@ public class CommunityController {
 	public void init() {
 		// key=value, COMMUNITY_CODE=community_name
 		// all= 전체 , w = 운동, a = 문화/예술, g = 취미/오락, p = 반려동물, f = 동네친구 , s = 자기계발/스터디, h = 공포
-		Map<String, String> communityTypeMap = communityService.getCommunityTypeMap();
+		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
 		application.setAttribute("communityTypeMap", communityTypeMap);
 		log.info("communityTypeMap:{}", communityTypeMap);
 	}
@@ -75,33 +77,54 @@ public class CommunityController {
 	// 게시판 목록 서비스 communityList
 	@GetMapping("/list/{communityCode}")
 	public String selectList(@PathVariable("communityCode") String communityCode,
-			// communityCode로 동적인 모든 커뮤니티 코드값 저장
-			@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
-			// 클라이언트가 요청시 전달한 파라미터의 key,value을 Map형태로 만들어서 대입
-			@RequestParam Map<String, Object> paramMap, Model model) {
+            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+            @RequestParam Map<String, Object> paramMap, @RequestParam(value="category", required=false) List<String> cat, Model model) {
 		// 기본 로직
 		// 1. 페이징 처리
 		// 1) 현재 요청한 게시판 코드 및 검색정보와 일치하는 게시글의 총 갯수를 조회
 		// 2) 개시글 갯수, 페이지 번호, 기본 파라미터들을 추가하여 페이징정보*(PageInfo)객체를 생성
 		// 2. 현재 요청한 게시판코드와 일치하면서, 현재 페이지에 해당하는게시글정보를 조회
 		// 3. 게시글 목록페이지로 게시글 정보, 페이징 정보, 검색정보를 담아서 forward
+		
+		System.out.println(cat);
+		//if (cat != null) {
+		//String category = cat.stream().map(c -> "'"+c+"'").collect(Collectors.joining(","));
+		paramMap.put("category", cat);
+		//}
+		
+		paramMap.put("communityCode", communityCode);
+		System.out.println(paramMap);
+		
 
-		paramMap.put("communityCode", communityCode); // 검색 조건 + 커뮤니티 코드
+	    int listCount = communityService.selectListCount(paramMap);
+	    PageInfo pi = Pagination.getPagInfo(listCount, currentPage, 10, 10);
+	    List<Community> list = communityService.selectList(pi, paramMap);
+	    
+	    // 1. 기본 URL 생성 (contextPath는 JSP에서 처리하므로 여기서는 제외)
+	    String url = "community/list/" + communityCode + "?currentPage=";
 
-		int listCount = communityService.selectListCount(paramMap);
-		int pageLimit = 10;
-		int communityLimit = 10;
+	    // 2. 검색/필터 조건을 담을 문자열 생성
+	    StringBuilder searchParamBuilder = new StringBuilder();
+	    for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+	        String key = entry.getKey();
+	        // 페이지 번호와 카테고리 코드는 기본 URL에 이미 있으므로 제외
+	        if (!key.equals("currentPage") && !key.equals("communityCode")) {
+	            searchParamBuilder.append("&").append(key).append("=").append(entry.getValue());
+	        }
+	    }
+	    String searchParam = searchParamBuilder.toString();
 
-		// 페이지 정보 생성 템플릿을 이용하여 PageInfo생성
-		PageInfo pi = Pagination.getPagInfo(listCount, currentPage, pageLimit, communityLimit);
+	    model.addAttribute("list", list);
+	    model.addAttribute("pi", pi);
+	    model.addAttribute("param", paramMap);
+	    model.addAttribute("communityCode", communityCode);
+	    model.addAttribute("selectedCategories", cat);
+	    
+	    // [중요] 새로 만든 url과 searchParam을 model에 담아 전달
+	    model.addAttribute("url", url);
+	    model.addAttribute("searchParam", searchParam);
 
-		List<Community> list = communityService.selectList(pi, paramMap);
-
-		model.addAttribute("list", list);
-		model.addAttribute("pi", pi);
-		model.addAttribute("param", paramMap);
-
-		return "community/communityList";
+	    return "community/communityList";
 
 	}
 
@@ -110,7 +133,7 @@ public class CommunityController {
 	public String enrollForm(
 			@ModelAttribute Community c, /* @PathVariable("communityCode") String communityCode, */
 			Model model) {
-		Map<String, String> communityTypeMap = communityService.getCommunityTypeMap();
+		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
 	    model.addAttribute("communityTypeMap", communityTypeMap);
 		model.addAttribute("c", c);
 		return "community/communityWrite";
@@ -179,7 +202,7 @@ public class CommunityController {
 								@PathVariable("communityNo") int communityNo,
 								Authentication auth,
 								Model model,
-								@CookieValue(value="readCommunityNo", required = false) String readCommunityNoCookie,
+								//@CookieValue(value="readCommunityNo", required = false) String readCommunityNoCookie,
 								HttpServletRequest req,
 								HttpServletResponse res
 							 ) {
@@ -201,48 +224,102 @@ public class CommunityController {
 		
 		//	============================= 시큐리티 이후에 사용=========
 		//유져관련
-//		int userNo = ((User) auth.getPrincipal()).getUserNo();
-		int userNo = 1;
-		System.out.println("===== 최종 userReaction 확인 =====");
-	    System.out.println("c 객체: " + c);
+		//User loginUser = (User) auth.getPrincipal();
+		//int userNo = ((User) auth.getPrincipal()).getUserNo();
+		int userNo = 3;
 	    
 		
 				
-		if(userNo != c.getCommunityWriter()) {
-			boolean increase = false;	//조회수 증가를 위한 체크변수
-			
-			// readCommunityNo라는 이름의 쿠키가 있는지 조사
-			if(readCommunityNoCookie == null) {
-				//첫 조회
-				increase = true;
-				readCommunityNoCookie = String.valueOf(communityNo);
-			}else {
-				//쿠키가 있는 경우
-				List<String> list = Arrays.asList(readCommunityNoCookie.split("/"));
-				// 기존 쿠키값들 중 게시글 번호화 일치하는 값이 하나도 없는 경우
-				if(!list.contains(String.valueOf(communityNo))) {
-					increase = true;
-					readCommunityNoCookie = readCommunityNoCookie.trim() + "/" + communityNo;
-				}
-			}
-			if(increase) {
-				int result = communityService.increaseCount(communityNo);
-				if(result > 0) {
-					c.setViews(c.getViews() + 1);
-					
-					// 새 쿠키 생성하여 클라이언트에게 전달
-					Cookie newCookie = new Cookie("readCommunityNo",readCommunityNoCookie);
-					newCookie.setPath("/"); 
-					newCookie.setMaxAge(1 * 60 * 60);	//1시간
-					res.addCookie(newCookie);
-					
-				}
-			}
-		}
+//		// 1. 본인 글인지 확인
+//	    if (userNo != c.getCommunityWriter()) {	        
+//	        boolean increase = false; // 조회수 증가 여부를 결정하는 변수
+//	        log.debug("[조회수 디버깅] 현재 쿠키 값: {}", readCommunityNoCookie);
+//
+//	        // 2. 쿠키 존재 여부 확인
+//	        if (readCommunityNoCookie == null) {
+//	            log.debug("[조회수 디버깅] 쿠키 없음. 조회수를 증가시킵니다.");
+//	            increase = true;
+//	            readCommunityNoCookie = String.valueOf(communityNo);
+//	        } else {
+//	            List<String> list = Arrays.asList(readCommunityNoCookie.split("/"));
+//	            if (!list.contains(String.valueOf(communityNo))) {
+//	                log.debug("[조회수 디버깅] 쿠키에 현재 게시글 번호 없음. 조회수를 증가시킵니다.");
+//	                increase = true;
+//	                readCommunityNoCookie = readCommunityNoCookie.trim() + "/" + communityNo;
+//	            } else {
+//	                log.debug("[조회수 디버깅] 이미 읽은 게시글이라 조회수를 증가시키지 않습니다.");
+//	            }
+//	        }
+//
+//	        // 3. 조회수 증가 결정
+//	        if (increase) {
+//	            int result = communityService.increaseCount(communityNo);
+//	            log.debug("[조회수 디버깅] DB 조회수 증가 결과: {}", result);
+//	            
+//	            if (result > 0) {
+//	                c.setViews(c.getViews() + 1); // 화면에 표시될 조회수도 1 증가
+//	                
+//	                Cookie newCookie = new Cookie("readCommunityNo", readCommunityNoCookie);
+//	                newCookie.setPath("/");
+//	                newCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효기간 1일로 설정
+//	                res.addCookie(newCookie);
+//	                log.debug("[조회수 디버깅] 새 쿠키를 생성하여 브라우저에 전송했습니다: {}", newCookie.getValue());
+//	            }
+//	        }
+//	    } else {
+//	        log.debug("[조회수 디버깅] 작성자와 현재 유저가 동일하여 조회수를 증가시키지 않습니다.");
+//		}
+		// 1. 본인 글이 아닐 경우에만 조회수 증가 로직 실행
+	    if (userNo != c.getCommunityWriter()) {
+	        
+	        // 2. 현재 사용자에 맞는 쿠키 이름 생성 (예: "readCommunityNo_1")
+	        String cookieName = "readCommunityNo_" + userNo;
+	        String readCommunityNoCookie = null; // 쿠키 값을 담을 변수
+
+	        // 3. request에 담겨온 모든 쿠키를 확인
+	        Cookie[] cookies = req.getCookies();
+	        if (cookies != null) {
+	            for (Cookie cookie : cookies) {
+	                // 4. 내가 찾던 이름의 쿠키가 있는지 확인
+	                if (cookie.getName().equals(cookieName)) {
+	                    readCommunityNoCookie = cookie.getValue();
+	                    break; // 찾았으면 반복 중단
+	                }
+	            }
+	        }
+
+	        boolean increase = false; // 조회수 증가 여부
+	        
+	        // 5. 사용자별 쿠키가 없거나, 쿠키는 있지만 현재 게시글 번호가 포함되지 않은 경우
+	        if (readCommunityNoCookie == null) {
+	            increase = true;
+	            readCommunityNoCookie = String.valueOf(communityNo);
+	        } else {
+	            if (!Arrays.asList(readCommunityNoCookie.split("/")).contains(String.valueOf(communityNo))) {
+	                increase = true;
+	                readCommunityNoCookie += "/" + communityNo;
+	            }
+	        }
+
+	        // 6. 조회수를 증가시켜야 할 경우 DB 업데이트 및 새 쿠키 생성
+	        if (increase) {
+	            int result = communityService.increaseCount(communityNo);
+	            if (result > 0) {
+	                c.setViews(c.getViews() + 1);
+	                
+	                Cookie newCookie = new Cookie(cookieName, readCommunityNoCookie);
+	                newCookie.setPath("/");
+	                newCookie.setMaxAge(60 * 60 * 24); // 1일
+	                res.addCookie(newCookie);
+	            }
+	        }
+	    }
+	    
+	    
 		 // 현재 유저가 해당 게시글에 대해 좋아요/싫어요 한 상태 조회
 		CommunityReaction reaction = communityService.userReactionNo(userNo, communityNo);
 
-		String userReaction = "NONE"; // 기본값 ========================얘가문제야야ㅣ아ㅓ이ㅏ어;이ㅑ어ㅣㅏ너
+		String userReaction = "NONE"; 
 	    if(reaction != null && reaction.getType() != null) {
 	        userReaction = reaction.getType(); // "LIKE" 또는 "DISLIKE" 등
 	    }
@@ -267,7 +344,7 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, Object> react(@RequestBody CommunityReaction reaction, HttpSession session) {
 		// 임시 로그인 유저 번호 
-	    int userNo = 1;
+	    int userNo = 3;
 	//  int userNo = ((User) session.getAttribute("loginUser")).getUserNo();
 	    
 	    reaction.setUserNo(userNo);
@@ -285,6 +362,29 @@ public class CommunityController {
 	    map.put("dislikeCount", dislikeCount);
 
 	    return map;
+	}
+	
+	//게시글 삭제
+	@PostMapping("/delete")
+	public String deleteCommunity( int communityNo,
+									Authentication auth,
+									RedirectAttributes ra) {
+		//로그인 유저정보
+		//User loginUser = (User)auth.getPrincipal();
+		//int userNo = loginUser.getUserNo();
+		int userNo = 1;
+		
+		//삭제 시도
+		int result = communityService.deleteCommunity(communityNo, userNo);
+		
+		//결과
+		if(result>0) {
+			ra.addFlashAttribute("alertMsg","게시글이 성공적으로 삭제되었습니다.");
+		 } else {
+	        ra.addFlashAttribute("alertMsg", "게시글 삭제에 실패했습니다. (권한이 없거나 존재하지 않는 게시글)");
+	     }
+
+		return "redirect:/community/list/all";
 	}
 
 	

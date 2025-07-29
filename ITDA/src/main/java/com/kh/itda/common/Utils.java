@@ -11,9 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class Utils {
 
-	public static String saveFile(MultipartFile upfile, ServletContext application, String communityCode) {
+	public static String saveFile(MultipartFile upfile, ServletContext application, String communityCd) {
 		// 첨부파일을 저장할 저장경로 획득
-		   String webPath ="/resources/images/community/"+communityCode+"/";
+		   String webPath ="/resources/images/community/"+communityCd+"/";
 		   //getRealPath(경로)
 		   // - 실제 서버의 파일 시스템 경로를 절대경로로 반환하는 메서드
 		   // ex) C:/springWorkspace/spring=project/...

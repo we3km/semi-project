@@ -8,11 +8,12 @@ import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
+import com.kh.itda.community.model.vo.CommunityType;
 import com.kh.itda.community.model.vo.communityTag;
 
 public interface CommunityDao {
 
-	Map<String, String> getCommunityTypeMap();
+	Map<String, CommunityType> getCommunityTypeMap();
 
 	int selectListCount(Map<String, Object> paramMap);
 
@@ -47,6 +48,8 @@ public interface CommunityDao {
 	int insertCommunityTag(Map<String, Integer> params);
 
 	List<communityTag> selectTagsByCommunityNo(int communityNo);
+
+	int deleteCommunity(int communityNo);
 
 	
 

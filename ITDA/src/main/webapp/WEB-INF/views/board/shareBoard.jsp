@@ -122,7 +122,12 @@ input[type="date"] {
 </style>
 </head>
 <body>
-
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
+	
 	<div class="sidebar">
 		<div class="filter-section">
 			<h3>정렬 조건</h3>
