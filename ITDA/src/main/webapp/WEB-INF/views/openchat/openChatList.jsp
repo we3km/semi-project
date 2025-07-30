@@ -21,50 +21,34 @@
 				action="${contextPath}/openchat/openChatList">
 				<aside class="filter-sidebar">
 
-					<!-- 1) 시·도 제목 -->
-					<div class="location-filter">
-						<h4>위치</h4>
-						<div class="sido-label">${selectedSido}</div>
+					<%-- 1) 지역 검색창 --%>
+					<div class="gu-search">
+						<input type="text" id="regionSearch"
+							placeholder="시·도 시·군 입력 후 Enter" />
 					</div>
 
-					<!-- 2) 시 (예: 수원시, 성남시) 라디오 -->
-					<div class="sigun-list">
-						<c:forEach var="sg" items="${sigunList}">
-							<label class="sigun-item"> <input type="radio"
-								name="sigun" value="${sg}"
-								${sg == selectedSigun ? 'checked' : ''}
-								onchange="this.form.submit()" /> <span class="sigun-label">${sg}</span>
-							</label>
-						</c:forEach>
-					</div>
+					<%-- 2) 선택된 시·도·시·군(구) 표시 --%>
+					<c:if test="${not empty selectedSido and not empty selectedSigun}">
+						<div class="location-filter">
+							<h4>위치</h4>
+							<div class="sido-label">${selectedSido} ${selectedSigun}</div>
+						</div>
 
-					<!-- 3) 구 (예: 팔달구, 영통구) 라디오 -->
-					<c:if test="${not empty selectedSigun}">
-						<div class="gu-list">
-							<c:forEach var="g" items="${guList}">
-								<c:set var="fullSigungu" value="${selectedSigun} ${g}" />
-								<label class="gu-item"> <input type="radio" name="gu"
-									value="${g}" ${selectedSigungu == fullSigungu ? 'checked' : ''}
-									onchange="this.form.submit()" /> <span class="gu-label">${g}</span>
+						<%-- 3) 구 리스트 (최대 6개만, 나머지는 .more-hidden 클래스) --%>
+						<div class="gu-list" id="guListContainer">
+							<c:forEach var="g" items="${guList}" varStatus="st">
+								<label class="gu-item ${st.index >= 6 ? 'more-hidden' : ''}">
+									<input type="radio" name="gu" value="${g}"
+									${g == selectedGu ? 'checked' : ''}
+									onchange="this.form.submit()" /> <span
+									class="gu-label">${g}</span>
 								</label>
 							</c:forEach>
 						</div>
+
+						<%-- 4) 토글 버튼 --%>
+						<button type="button" id="toggleMore">더보기</button>
 					</c:if>
-
-					<!-- 4) 다른 지역 선택 -->
-					<div class="other-region">
-						<button type="button" id="toggleSidoSelect">다른 지역 검색</button>
-					</div>
-
-					<!-- 5) 숨겨진 시·도 셀렉트 -->
-					<div id="sidoSelectContainer" style="display: none;">
-						<select name="sido" id="sidoSelect" onchange="this.form.submit()">
-							<option value="">시·도 선택</option>
-							<c:forEach var="sd" items="${sidoList}">
-								<option value="${sd}" ${sd == selectedSido ? 'selected' : ''}>${sd}</option>
-							</c:forEach>
-						</select>
-					</div>
 
 				</aside>
 			</form>
@@ -522,6 +506,48 @@ document.getElementById("editLocationBtn")
  	});
 </script>
 
+	<script>
+	document.addEventListener('DOMContentLoaded', function(){
+		  const regionInput = document.getElementById('regionSearch');
+		  if (!regionInput) return;
+
+		  regionInput.placeholder = '시·도 시·군 입력 후 Enter';
+
+		  regionInput.addEventListener('keydown', function(e){
+		    if (e.key !== 'Enter') return;
+		    e.preventDefault();
+
+		    const form = document.getElementById('filterForm');
+		    const parts = this.value.trim().split(/\s+/);
+		    const sidoVal  = parts[0] || '';
+		    const sigunVal = parts[1] || '';
+
+		    // 기존 hidden[name="sido"/"sigun"/"gu"] 전부 제거
+		    form.querySelectorAll('input[name="sido"], input[name="sigun"], input[name="gu"]')
+		        .forEach(el => el.remove());
+
+		    // 시도 hidden
+		    if (sidoVal) {
+		      const hSido = document.createElement('input');
+		      hSido.type  = 'hidden';
+		      hSido.name  = 'sido';
+		      hSido.value = sidoVal;
+		      form.appendChild(hSido);
+		    }
+
+		    // 시·군 hidden — 입력이 있을 때만 추가
+		    if (sigunVal) {
+		      const hSigun = document.createElement('input');
+		      hSigun.type  = 'hidden';
+		      hSigun.name  = 'sigun';
+		      hSigun.value = sigunVal;
+		      form.appendChild(hSigun);
+		    }
+
+		    form.submit();
+		  });
+		});        
+</script>
 
 </body>
 </html>

@@ -143,7 +143,6 @@ public class OpenChatServiceImpl implements OpenChatService {
 	    	return null; // 혹은 예외 던지기
 	    }
 	    
-
 	    // 2. 참여자 등록
 	    int inserted = dao.insertParticipant(roomId, userNum);
 	    log.debug(">> 참여자 등록 완료: inserted={}, userNum={}", inserted, userNum);

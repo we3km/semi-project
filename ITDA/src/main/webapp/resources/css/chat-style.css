@@ -156,7 +156,8 @@ body {
 	margin-bottom: 3px;
 }
 
-.last-message {
+.lastM {
+	margin-top: 5px;
 	font-size: 12px;
 	color: #666;
 	white-space: nowrap;
@@ -170,6 +171,13 @@ body {
 	border: none;
 	padding: 0;
 	cursor: pointer;
+}
+
+.chatMemberCount {
+	margin-left: 60%;
+	font-size: 12px;
+	color: #666;
+	white-space: nowrap;
 }
 
 /* ================================================= */
@@ -266,12 +274,28 @@ body {
 	text-align: right;
 }
 
+/* 새로운 메세지 클래스 (받는 거) */
+.chat-message-talk {
+	padding: 10px 15px;
+	border-radius: 20px;
+	margin: 5px 0;
+	max-width: 100%;
+	word-break: break-word;
+	font-size: 14px;
+	white-space: pre-line;
+	
+	align-self: flex-start;
+	background-color: #f1f1f1;
+	color: black;
+}
+
 /* 상대방 메시지 (왼쪽) */
 .chat-message.received {
 	align-self: flex-start;
 	background-color: #f1f1f1;
 	color: black;
 }
+
 
 .chat-footer2 {
 	padding: 25px;
@@ -369,8 +393,10 @@ body {
 }
 
 #item-board {
-	background-color: white;
-	border: 2px;
+	background-color: #f1f1f1;
+	display: none;
+	border: 1px solid #ccc;
+	border-radius: 20px;
 }
 
 .list-chat {
@@ -385,4 +411,8 @@ body {
 
 .chat-wrapper>.chatlist-container, .chat-wrapper>.chattingroom {
 	height: 800px;
+}
+
+#transMenuIcon {
+	display: none;
 }

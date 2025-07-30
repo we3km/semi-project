@@ -34,71 +34,64 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/openchat")
 @Slf4j
-@SessionAttributes({"chatRoomID"})
+@SessionAttributes({ "chatRoomID" })
 public class OpenChatController {
-	
-	 @Autowired
-	    private locationService locationService;
-	
+
+	@Autowired
+	private locationService locationService;
+
 	@Autowired
 	private OpenChatService openChatService;
 
 	@GetMapping("/openChatList")
 	public String selectOpenChatList(
 	        @RequestParam(required = false) String sido,
-	        @RequestParam(required = false) String sigungu,
-	        @RequestParam(required = false) String keyword,
 	        @RequestParam(required = false) String sigun,
 	        @RequestParam(required = false) String gu,
+	        // @RequestParam(required = false) String sigungu, // ── 삭제됨
+	        @RequestParam(required = false) String keyword,
 	        @RequestParam(defaultValue = "1") int page,
 	        Model model) {
-		
-		  // sido 약칭 → 전체 행정명으로 변환
-			/*
-			 * if (sido != null && !sido.isEmpty()) { sido =
-			 * LocationUtils.SIDO_MAP.getOrDefault(sido, sido); // 못 찾으면 원본 유지 }
-			 */
 
-	    // ——— 기존 시·도 / 시·군·구 셋업 ———
+	    // ——— 시·도 리스트 준비 ———
 	    List<String> sidoList = locationService.findAllSido();
 	    model.addAttribute("sidoList", sidoList);
 	    model.addAttribute("selectedSido", sido == null ? "" : sido);
 
-	    List<String> sigunguList = Collections.emptyList();
-	    if (sido != null && !sido.isEmpty()) {
-	        sigunguList = locationService.findSigunguBySido(sido);
-	    }
-	    
-	    model.addAttribute("sigunguList", sigunguList);
-	    model.addAttribute("selectedSigungu", sigungu == null ? "" : sigungu);
-	    
+	    // —── 시·군 리스트 준비 —──
 	    List<String> sigunList = locationService.findSigunListBySido(sido);
 	    model.addAttribute("sigunList", sigunList);
-	    
+	    model.addAttribute("selectedSigun", sigun == null ? "" : sigun);
+
+	    // —── 구 리스트 준비 —──
 	    List<String> guList = (sido != null && sigun != null)
 	            ? locationService.findGuListBySigun(sido, sigun)
 	            : Collections.emptyList();
 	    model.addAttribute("guList", guList);
-	        
-	    model.addAttribute("selectedSigun", sigun == null ? "" : sigun);
+	    // ── sigunguList 관련 전부 삭제됨
 
-	    
+	    // ——— 검색 키워드 유지 ———
 	    model.addAttribute("keyword", keyword == null ? "" : keyword);
-	    
-	    if (sigungu == null || sigungu.isEmpty()) {
-	        if (sigun != null && !sigun.isEmpty() && gu != null && !gu.isEmpty()) {
-	            sigungu = sigun + " " + gu; // ex) 수원시 팔달구
-	        }
-	    }
 
-	    Map<String, Object> params = new HashMap<>();
+	    // ——— selectedSigungu 조합 후 한 번만 등록 ———
+	    String selectedSigungu = "";
+	    if (sigun != null && !sigun.isEmpty() && gu != null && !gu.isEmpty()) {
+	        selectedSigungu = sigun + " " + gu;
+	    }
+	    model.addAttribute("selectedSigungu", selectedSigungu);
+
+	    // —── 조회 파라미터 맵에 모두 담기 —──
+	    Map<String,Object> params = new HashMap<>();
 	    params.put("sido",    sido);
-	    params.put("sigungu", sigungu);
+	    params.put("sigun",   sigun);
+	    params.put("gu",      gu);
+	    params.put("sigungu", selectedSigungu);
 	    params.put("keyword", keyword);
 
 	    // ——— 필터 적용된 전체 리스트 조회 ———
 	    List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList(params);
 
+	    // ——— 페이징 처리 ———
 	    int pageSize  = 8;
 	    int pageLimit = 10;
 	    int offset    = (page - 1) * pageSize;
@@ -123,6 +116,7 @@ public class OpenChatController {
 	}
 
 	@PostMapping("/createOpenChat")
+<<<<<<< Updated upstream
 	public String createChatList(
 	    @ModelAttribute OpenChatRoom room,
 	    @ModelAttribute Location loc,              
@@ -145,50 +139,73 @@ public class OpenChatController {
 	    // loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
 	    Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
 	    room.setLocationId(locId);
+=======
+	public String createChatList(@ModelAttribute OpenChatRoom room, @ModelAttribute Location loc,
+			@RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
+			@RequestParam(value = "tagContent", required = false) String tagContent, RedirectAttributes ra,
+			// 로그인되면 수정해야함
+			HttpSession session) {
+		USER u = (USER) session.getAttribute("loginUser");
+		if (u == null) {
+			ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
+			return "redirect:/member/login";
+		}
+>>>>>>> Stashed changes
 
-	    List<String> tags = tagContent != null
-	        ? Arrays.stream(tagContent.split("[\\s,#]+"))
-	                .map(t -> t.replaceAll("^#+", ""))
-	                .filter(t -> !t.isEmpty())
-	                .collect(Collectors.toList())
-	        : new ArrayList<>();
+		room.setUserNum(u.getUserNum());
+		room.setTagContent(tagContent);
 
-	    int result = openChatService.createOpenChat(room, openImages, tags, session.getServletContext());
-	    if (result == 0) throw new RuntimeException("채팅방 생성 실패");
+		log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());
+		// loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
+		Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
+		room.setLocationId(locId);
 
-	    ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
-	    return "redirect:/openchat/openChatList";
+		List<String> tags = tagContent != null
+				? Arrays.stream(tagContent.split("[\\s,#]+")).map(t -> t.replaceAll("^#+", ""))
+						.filter(t -> !t.isEmpty()).collect(Collectors.toList())
+				: new ArrayList<>();
+
+		int result = openChatService.createOpenChat(room, openImages, tags, session.getServletContext());
+		if (result == 0)
+			throw new RuntimeException("채팅방 생성 실패");
+
+		ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
+		return "redirect:/openchat/openChatList";
 	}
-	
-	@GetMapping("/enter")
-    public String enterChatRoom(@RequestParam("roomId") int roomId,
-                                HttpSession session,
-                                Model model,
-                                RedirectAttributes ra) {
 
+	@GetMapping("/enter")
+	public String enterChatRoom(@RequestParam("roomId") int roomId, HttpSession session, Model model,
+			RedirectAttributes ra) {
+
+<<<<<<< Updated upstream
         // 세션에서 로그인 유저 정보 가져오기
         User loginUser = (User) session.getAttribute("loginUser");
         if (loginUser == null) {
             ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
             return "redirect:/";
         }
+=======
+		// 세션에서 로그인 유저 정보 가져오기
+		USER loginUser = (USER) session.getAttribute("loginUser");
+		if (loginUser == null) {
+			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
+			return "redirect:/";
+		}
+>>>>>>> Stashed changes
 
-        int userNum = loginUser.getUserNum();
+		int userNum = loginUser.getUserNum();
 
-        // 채팅방 참여 처리
-        OpenChatRoom room = openChatService.joinChatRoom(roomId, userNum);
+		// 채팅방 참여 처리
+		OpenChatRoom room = openChatService.joinChatRoom(roomId, userNum);
 
-        if (room == null) {
-            ra.addFlashAttribute("msg", "입장할 수 없는 채팅방입니다.");
-            return "redirect:/openchat/openChatList";
-        }
+		if (room == null) {
+			ra.addFlashAttribute("msg", "입장할 수 없는 채팅방입니다.");
+			return "redirect:/openchat/openChatList";
+		}
 
-        // 입장 성공 시 채팅방 정보 전달
-        model.addAttribute("chatRoom", room);
-        return "chat/chatRoomList"; // → /WEB-INF/views/chat/chatRoom.jsp
-    }
-	
+		// 입장 성공 시 채팅방 정보 전달
+		model.addAttribute("chatRoom", room);
+		return "redirect:/chat/chatroomlist"; // → /WEB-INF/views/chat/chatRoomList.jsp
+	}
+
 }
-
-
-
