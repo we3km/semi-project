@@ -14,6 +14,7 @@ import com.kh.itda.user.model.vo.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -68,5 +69,6 @@ public class UserServiceImpl implements UserService{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 
 }

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.EmailService;
 import com.kh.itda.user.model.service.UserService;
@@ -324,5 +323,5 @@ public class SecurityController {
 		
 		return "redirect:/user/myPage";
 	}
-	
+
 }

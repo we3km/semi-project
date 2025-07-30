@@ -6,6 +6,7 @@ public interface UserDao {
 
 	int insertUser(User user);
 	
+
 	void insertProfile(int userNum, String imageUrl);
 	
 	void insertAuthority(User user);
@@ -17,5 +18,9 @@ public interface UserDao {
     User findUserByNum(int userNum);	// 로그인 외 다른 곳에서 조회
     
     void updatePassword(String userId, String encodedPwd);
+
+	//void insertUserAndAuthority(User user);
+	
+
 
 }

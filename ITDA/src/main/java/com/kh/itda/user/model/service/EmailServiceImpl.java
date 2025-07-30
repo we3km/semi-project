@@ -2,11 +2,13 @@ package com.kh.itda.user.model.service;
 
 import java.util.Random;
 
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -45,4 +47,5 @@ public class EmailServiceImpl implements EmailService {
             return false;
         }
     }
+
 }

@@ -54,6 +54,11 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("encodedPwd", encodedPwd);
 	    session.update("user.updatePassword", param);
-	}
 
+/*	public void insertUserAndAuthority(User user) {
+		// TODO Auto-generated method stub
+		
+
+	}*/
+	}
 }

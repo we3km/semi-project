@@ -31,11 +31,13 @@
 			</div>
 			<div class="login">
 				<div class="btn" id="myPage">마이페이지</div>
+
 				<!-- <div class="btn" id="logoutBtn">로그아웃</div> -->
 				<form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post" style="display:inline;">
 			        <%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> --%>
 			        <button type="submit" class="btn" id="logoutBtn">로그아웃</button>
 			    </form>
+
 			</div>
 		</div>
 		<c:choose>
@@ -195,7 +197,7 @@
 	    });
 	    $(window).on('click', () => $('.dropdown-content').removeClass('show'));
 	    
-	 	// '거래유형' 드롭다운 클릭 이벤트 분리
+
 	    $('#deal-type-dropdown').on('click', '.category', function () {
 	        const dropdown = $(this).closest('.dropdown');
 	        const name = $(this).data('name');
@@ -286,6 +288,7 @@
 		    e.preventDefault();
 		    $('#logoutForm').submit();
 		});
+
 	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
 	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
 	    $('.card').click(function () {

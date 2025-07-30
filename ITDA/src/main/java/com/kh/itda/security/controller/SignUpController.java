@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class SignUpController { //회원가입
-
     private final UserService uService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;

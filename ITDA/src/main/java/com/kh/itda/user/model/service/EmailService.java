@@ -6,4 +6,5 @@ public interface EmailService {
 	
 	boolean sendEmail(String email, String string, String string2);
 
+
 }
