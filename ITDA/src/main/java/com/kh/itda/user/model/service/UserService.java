@@ -22,6 +22,8 @@ public interface UserService {
 	 * void updatePassword(String id, String encodedPwd);
 	 * 
 	 * boolean emailExists(String email);
+	 * 
+	 * 	User findByUserId(String username);
 	 */
 
 }

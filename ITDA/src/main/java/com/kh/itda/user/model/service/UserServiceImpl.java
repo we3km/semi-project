@@ -54,5 +54,11 @@ public class UserServiceImpl implements UserService{
 	 * 
 	 * @Override public boolean emailExists(String email) { // TODO Auto-generated
 	 * method stub return false; }
+	 * 
+	 * 	@Override
+	public User findByUserId(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	 */
 }

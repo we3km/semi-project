@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="report">
+
+	<!-- 1. 신고 등록 -->
+	<insert id="insertReport"
+		parameterType="com.kh.itda.support.model.vo.Report">
+		INSERT INTO report (
+		report_num,
+		reason,
+		type,
+		target_id,
+		status,
+		created_at
+		) VALUES (
+		#{reportNum},
+		#{reason},
+		#{type},
+		#{targetId},
+		#{status},
+		SYSDATE
+		)
+	</insert>
+
+	<!-- 2. 신고 상세 조회 -->
+	<select id="selectReportById" parameterType="int"
+		resultType="com.kh.itda.support.model.vo.Report">
+		SELECT
+		report_num,
+		reason,
+		type,
+		target_id,
+		status,
+		created_at
+		FROM report
+		WHERE report_num = #{reportNum}
+	</select>
+
+	<!-- 3. 신고 상태 업데이트 -->
+	<update id="updateReportStatus"
+		parameterType="com.kh.itda.support.model.vo.Report">
+		UPDATE report
+		SET status = #{status}
+		WHERE report_num = #{reportNum}
+	</update>
+
+</mapper>

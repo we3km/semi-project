@@ -1,4 +1,4 @@
-package com.kh.itda.user.model.dao;
+	package com.kh.itda.user.model.dao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +20,11 @@ public class UserDaoImpl implements UserDao {
 		return session.insert("user.insertUser", user);
 	}
 
+	@Override
+	public HashMap<String, Object> selectOne(String userId) {
+		return session.selectOne("member.selectOne",userId);
+	}
+	
 	@Override
 	public void insertAuthority(User user) {
 		session.insert("user.insertAuthority", user);

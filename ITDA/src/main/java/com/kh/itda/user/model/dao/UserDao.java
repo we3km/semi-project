@@ -1,5 +1,7 @@
 package com.kh.itda.user.model.dao;
 
+import java.util.HashMap;
+
 import com.kh.itda.user.model.vo.User;
 
 public interface UserDao {
@@ -13,5 +15,7 @@ public interface UserDao {
 	int idCheck(String userId);
 
 	void insertProfile(int userNum, String imageUrl);
+
+	HashMap<String, Object> selectOne(String userId);
 
 }
