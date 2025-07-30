@@ -158,7 +158,8 @@ public class CommunityController {
 			}
 			// 첨부파일이 존재한다면 WEB서버상에 첨부파일 저장
 			// 첨부파일 관리를 위해 DB에 첨부파일의 위치정보를 저장
-			String changeName = Utils.saveFile(upfile, application, c.getCommunityCd());
+			String folderName = "community/"+c.getCommunityCd();
+			String changeName = Utils.saveFileToCategoryFolder(upfile, application,folderName );
 			CommunityImg ci = new CommunityImg();
 			ci.setChangeName(changeName);
 			ci.setOriginName(upfile.getOriginalFilename());
@@ -182,6 +183,7 @@ public class CommunityController {
 		// 정보체크
 		log.debug("community : {}", c);		
 		log.debug("imgList : {}", imgList);
+		
 		int result = communityService.insertCommunity(c, imgList);
 		
 		// 게시글 등록 결과에 따른 페이지 지정
@@ -192,7 +194,7 @@ public class CommunityController {
 		
 		ra.addFlashAttribute("alertMsg", "게시글 작성 성공");
 		
-		return "redirect:/community/list/" + c.getCommunityCd();
+		return "redirect:/community/list/all";
 	}
 	
 	//게시판 상세보기
@@ -228,47 +230,7 @@ public class CommunityController {
 		//int userNo = ((User) auth.getPrincipal()).getUserNo();
 		int userNo = 3;
 	    
-		
-				
-//		// 1. 본인 글인지 확인
-//	    if (userNo != c.getCommunityWriter()) {	        
-//	        boolean increase = false; // 조회수 증가 여부를 결정하는 변수
-//	        log.debug("[조회수 디버깅] 현재 쿠키 값: {}", readCommunityNoCookie);
-//
-//	        // 2. 쿠키 존재 여부 확인
-//	        if (readCommunityNoCookie == null) {
-//	            log.debug("[조회수 디버깅] 쿠키 없음. 조회수를 증가시킵니다.");
-//	            increase = true;
-//	            readCommunityNoCookie = String.valueOf(communityNo);
-//	        } else {
-//	            List<String> list = Arrays.asList(readCommunityNoCookie.split("/"));
-//	            if (!list.contains(String.valueOf(communityNo))) {
-//	                log.debug("[조회수 디버깅] 쿠키에 현재 게시글 번호 없음. 조회수를 증가시킵니다.");
-//	                increase = true;
-//	                readCommunityNoCookie = readCommunityNoCookie.trim() + "/" + communityNo;
-//	            } else {
-//	                log.debug("[조회수 디버깅] 이미 읽은 게시글이라 조회수를 증가시키지 않습니다.");
-//	            }
-//	        }
-//
-//	        // 3. 조회수 증가 결정
-//	        if (increase) {
-//	            int result = communityService.increaseCount(communityNo);
-//	            log.debug("[조회수 디버깅] DB 조회수 증가 결과: {}", result);
-//	            
-//	            if (result > 0) {
-//	                c.setViews(c.getViews() + 1); // 화면에 표시될 조회수도 1 증가
-//	                
-//	                Cookie newCookie = new Cookie("readCommunityNo", readCommunityNoCookie);
-//	                newCookie.setPath("/");
-//	                newCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효기간 1일로 설정
-//	                res.addCookie(newCookie);
-//	                log.debug("[조회수 디버깅] 새 쿠키를 생성하여 브라우저에 전송했습니다: {}", newCookie.getValue());
-//	            }
-//	        }
-//	    } else {
-//	        log.debug("[조회수 디버깅] 작성자와 현재 유저가 동일하여 조회수를 증가시키지 않습니다.");
-//		}
+
 		// 1. 본인 글이 아닐 경우에만 조회수 증가 로직 실행
 	    if (userNo != c.getCommunityWriter()) {
 	        

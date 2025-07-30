@@ -23,6 +23,7 @@
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
+<div class="container" >
 
 	<div class="sidebar">
 		<form id="filterForm" method="get"
@@ -81,6 +82,7 @@
 			    </div>
 			  </div>
 			</div>
+			
 			<script>
 			  // Helper 함수: 모든 대/중/소 항목에서 active 제거
 			  function clearActive(className) {
@@ -299,7 +301,7 @@
 
 		</div>
 	</div>
-
+</div>
 
 <script>
   window.addEventListener('DOMContentLoaded', () => {

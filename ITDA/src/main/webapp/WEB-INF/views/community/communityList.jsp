@@ -57,14 +57,69 @@
 				<p>
 					<strong>카테고리</strong>
 				</p>
-				<label> <input type="checkbox" name="category" value="w"> 운동</label> 
-				<label><input type="checkbox" name="category" value="a">문화/예술</label> 
-				<label><input type="checkbox" name="category" value="g"> 취미/오락</label> 
-				<label><input type="checkbox" name="category" value="p"> 반려동물</label> 
-				<label><input type="checkbox" name="category" value="f"> 동네친구</label> 
-				<label><input type="checkbox" name="category" value="s"> 자기계발/스터디</label> 
-				<label><input type="checkbox" name="category" value="h"> 공포</label> 
-				<label><input type="checkbox" name="category" value=""> 전체</label>
+				<label> 
+					<input type="checkbox" name="category" value="w" 
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'w'}">checked</c:if>
+					    </c:forEach>	
+					> 운동
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="a"
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'a'}">checked</c:if>
+					    </c:forEach>	
+					>문화/예술
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="g" 
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'g'}">checked</c:if>
+					    </c:forEach>
+					> 취미/오락
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="p"
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'p'}">checked</c:if>
+					    </c:forEach>
+					 > 반려동물
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="f"
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'f'}">checked</c:if>
+					    </c:forEach>
+					> 동네친구
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="s"
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 's'}">checked</c:if>
+					    </c:forEach>
+					> 자기계발/스터디
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value="h"
+						<c:forEach var="c" items="${paramValues.category}">
+					      <c:if test="${c == 'h'}">checked</c:if>
+					    </c:forEach>
+					> 공포
+				</label> 
+				
+				<label>
+					<input type="checkbox" name="category" value=""
+					 <c:if test="${empty param.category}">checked</c:if>
+					    <c:forEach var="c" items="${paramValues.category}">
+					        <c:if test="${c == ''}">checked</c:if>
+					    </c:forEach>> 전체
+				</label>
 
 				<button id="applyFilterBtn">적용</button>
 			</div>

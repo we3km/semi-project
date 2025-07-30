@@ -80,7 +80,7 @@
 		   </if> 
 	
 	        <if test="keyword != null and keyword != ''">
-	            <!-- AND -->
+	            AND
 	            <choose>
 	                <when test="condition != null and condition.equals('title')">
 	                    C.TITLE LIKE '%' || #{keyword} || '%'

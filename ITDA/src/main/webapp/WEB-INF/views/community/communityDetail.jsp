@@ -88,10 +88,11 @@
 		                Utils.saveFile에서 저장한 경로와 맞춰주어야 합니다.
 		                예시: /resources/uploads/커뮤니티코드/파일명
 		            --%>
-		            <img src="${pageContext.request.contextPath}${img.changeName}">
+		            <img src="${pageContext.request.contextPath}/resources/images/community/${community.communityCd }/${img.changeName}">
 		        </c:forEach>
 		    </c:if>
         </div>
+        
 		            
 
         <div class="vote-buttons">
