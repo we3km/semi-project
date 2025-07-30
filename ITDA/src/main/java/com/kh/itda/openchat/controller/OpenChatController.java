@@ -44,101 +44,114 @@ public class OpenChatController {
 	private OpenChatService openChatService;
 
 	@GetMapping("/openChatList")
-	public String selectOpenChatList(
-	        @RequestParam(required = false) String sido,
-	        @RequestParam(required = false) String sigun,
-	        @RequestParam(required = false) String gu,
-	        // @RequestParam(required = false) String sigungu, // ── 삭제됨
-	        @RequestParam(required = false) String keyword,
-	        @RequestParam(defaultValue = "1") int page,
-	        Model model) {
+	public String selectOpenChatList(@RequestParam(required = false) String sido,
+			@RequestParam(required = false) String sigun, @RequestParam(required = false) String gu,
+			// @RequestParam(required = false) String sigungu, // ── 삭제됨
+			@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, Model model) {
 
-	    // ——— 시·도 리스트 준비 ———
-	    List<String> sidoList = locationService.findAllSido();
-	    model.addAttribute("sidoList", sidoList);
-	    model.addAttribute("selectedSido", sido == null ? "" : sido);
+		// ——— 시·도 리스트 준비 ———
+		List<String> sidoList = locationService.findAllSido();
+		model.addAttribute("sidoList", sidoList);
+		model.addAttribute("selectedSido", sido == null ? "" : sido);
 
-	    // —── 시·군 리스트 준비 —──
-	    List<String> sigunList = locationService.findSigunListBySido(sido);
-	    model.addAttribute("sigunList", sigunList);
-	    model.addAttribute("selectedSigun", sigun == null ? "" : sigun);
+		// —── 시·군 리스트 준비 —──
+		List<String> sigunList = locationService.findSigunListBySido(sido);
+		if (sigunList != null && sigunList.size() == 1 && sigunList.get(0).equals(sigun)) {
+			// 사실상 구만 있는 경우로 판단
+			sigunList = Collections.emptyList();
+		}
+		model.addAttribute("sigunList", sigunList);
+		model.addAttribute("selectedSigun", sigun != null ? sigun : gu != null ? gu : "");
 
-	    // —── 구 리스트 준비 —──
-	    List<String> guList = (sido != null && sigun != null)
-	            ? locationService.findGuListBySigun(sido, sigun)
-	            : Collections.emptyList();
-	    model.addAttribute("guList", guList);
-	    // ── sigunguList 관련 전부 삭제됨
+		// —── 구 리스트 준비 —──
+		List<String> guList = null;
+		if (sigunList == null || sigunList.isEmpty()) {
+			// 시 바로 아래 구가 있는 경우
+			guList = locationService.findGuListBySidoIfDirect(sido);
+		} else if (sigun != null && !sigun.isEmpty()) {
+			// 일반적인 시/군 → 구 구조
+			guList = locationService.findGuListBySigun(sido, sigun);
+		}
+		model.addAttribute("guList", guList);
+		model.addAttribute("selectedGu", gu != null ? gu : "");
+		// ── sigunguList 관련 전부 삭제됨
 
-	    // ——— 검색 키워드 유지 ———
-	    model.addAttribute("keyword", keyword == null ? "" : keyword);
+		// ——— 검색 키워드 유지 ———
+		model.addAttribute("keyword", keyword == null ? "" : keyword);
 
-	    // ——— selectedSigungu 조합 후 한 번만 등록 ———
-	    String selectedSigungu = "";
-	    if (sigun != null && !sigun.isEmpty() && gu != null && !gu.isEmpty()) {
-	        selectedSigungu = sigun + " " + gu;
-	    }
-	    model.addAttribute("selectedSigungu", selectedSigungu);
+		// ——— selectedSigungu 조합 후 한 번만 등록 ———
+		String selectedSigungu = "";
+		if (gu != null && !gu.isEmpty()) {
+			if (sigun != null && !sigun.isEmpty()) {
+				selectedSigungu = sigun + " " + gu; // 예: 수원시 권선구
+			} else {
+				selectedSigungu = gu; // 예: 서초구
+			}
+		} else if (sigun != null && !sigun.isEmpty()) {
+			selectedSigungu = sigun;
+		}
+		model.addAttribute("selectedSigungu", selectedSigungu);
 
-	    // —── 조회 파라미터 맵에 모두 담기 —──
-	    Map<String,Object> params = new HashMap<>();
-	    params.put("sido",    sido);
-	    params.put("sigun",   sigun);
-	    params.put("gu",      gu);
-	    params.put("sigungu", selectedSigungu);
-	    params.put("keyword", keyword);
+		String selectedSigun = "";
+		if (sigun != null && !sigun.isEmpty()) {
+			selectedSigun = sigun; // 서울 서초구 선택 시 → 서초구
+		} else if (gu != null && !gu.isEmpty()) {
+			selectedSigun = gu; //
+		}
+		model.addAttribute("selectedSigun", selectedSigun);
 
-	    // ——— 필터 적용된 전체 리스트 조회 ———
-	    List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList(params);
+		// —── 조회 파라미터 맵에 모두 담기 —──
+		Map<String, Object> params = new HashMap<>();
+		params.put("sido", sido);
+		params.put("sigun", sigun);
+		params.put("gu", gu);
+		params.put("sigungu", selectedSigungu);
+		params.put("keyword", keyword);
 
-	    // ——— 페이징 처리 ———
-	    int pageSize  = 8;
-	    int pageLimit = 10;
-	    int offset    = (page - 1) * pageSize;
-	    int total     = allList.size();
-	    int totalPage = (int) Math.ceil((double) total / pageSize);
-	    int startPage = ((page - 1) / pageLimit) * pageLimit + 1;
-	    int endPage   = Math.min(startPage + pageLimit - 1, totalPage);
+		// ——— 필터 적용된 전체 리스트 조회 ———
+		List<OpenChatRoom> allList = openChatService.selectOpenChatRoomList(params);
 
-	    List<OpenChatRoom> pagedList = allList.stream()
-	        .skip(offset)
-	        .limit(pageSize)
-	        .collect(Collectors.toList());
+		// ——— 페이징 처리 ———
+		int pageSize = 8;
+		int pageLimit = 10;
+		int offset = (page - 1) * pageSize;
+		int total = allList.size();
+		int totalPage = (int) Math.ceil((double) total / pageSize);
+		int startPage = ((page - 1) / pageLimit) * pageLimit + 1;
+		int endPage = Math.min(startPage + pageLimit - 1, totalPage);
 
-	    model.addAttribute("openlist",     pagedList);
-	    model.addAttribute("currentPage",  page);
-	    model.addAttribute("totalPage",    totalPage);
-	    model.addAttribute("startPage",    startPage);
-	    model.addAttribute("endPage",      endPage);
-	    model.addAttribute("listCount",    total);
+		List<OpenChatRoom> pagedList = allList.stream().skip(offset).limit(pageSize).collect(Collectors.toList());
 
-	    return "openchat/openChatList";
+		model.addAttribute("openlist", pagedList);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPage", totalPage);
+		model.addAttribute("startPage", startPage);
+		model.addAttribute("endPage", endPage);
+		model.addAttribute("listCount", total);
+
+		return "openchat/openChatList";
 	}
 
 	@PostMapping("/createOpenChat")
 
-	public String createChatList(
-	    @ModelAttribute OpenChatRoom room,
-	    @ModelAttribute Location loc,              
-	    @RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
-	    @RequestParam(value = "tagContent", required = false) String tagContent,
-	    RedirectAttributes ra,
-	    //로그인되면 수정해야함
-	    HttpSession session
-	) {
+	public String createChatList(@ModelAttribute OpenChatRoom room, @ModelAttribute Location loc,
+			@RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
+			@RequestParam(value = "tagContent", required = false) String tagContent, RedirectAttributes ra,
+			// 로그인되면 수정해야함
+			HttpSession session) {
 		User u = (User) session.getAttribute("loginUser");
-	    if (u == null) {
-	        ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
-	        return "redirect:/member/login";
-	    }
-		
-		 room.setUserNum(u.getUserNum()); 
-		 room.setTagContent(tagContent);
-		 
-	    log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());
-	    // loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
-	    Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
-	    room.setLocationId(locId);
+		if (u == null) {
+			ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
+			return "redirect:/member/login";
+		}
+
+		room.setUserNum(u.getUserNum());
+		room.setTagContent(tagContent);
+
+		log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());
+		// loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
+		Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
+		room.setLocationId(locId);
 
 		List<String> tags = tagContent != null
 				? Arrays.stream(tagContent.split("[\\s,#]+")).map(t -> t.replaceAll("^#+", ""))
@@ -153,17 +166,16 @@ public class OpenChatController {
 		return "redirect:/openchat/openChatlist";
 	}
 
-
 	@GetMapping("/enter")
 	public String enterChatRoom(@RequestParam("roomId") int roomId, HttpSession session, Model model,
 			RedirectAttributes ra) {
 
-        // 세션에서 로그인 유저 정보 가져오기
-        User loginUser = (User) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
-            return "redirect:/";
-        }
+		// 세션에서 로그인 유저 정보 가져오기
+		User loginUser = (User) session.getAttribute("loginUser");
+		if (loginUser == null) {
+			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
+			return "redirect:/";
+		}
 
 		int userNum = loginUser.getUserNum();
 

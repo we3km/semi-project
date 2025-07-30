@@ -47,20 +47,14 @@ body {
   box-shadow: 0 4px 12px rgba(90,84,255,0.07);
   padding: 24px 18px;
   box-sizing: border-box;
-  margin-top: 220px;
-  margin-left: -50px;
+  margin-top: 220px;      /* 너무 크던 margin-top 줄임 */
+  margin-left: 0;        /* 음수 마진 제거 */
   flex-shrink: 0;
 }
 
-/* 공통 필터 섹션 */
-.location-filter, .sigun-list, .gu-list, .other-region, #sidoSelectContainer {
-  margin-bottom: 14px;
-  width: 100%;
-}
-
-/* 필터 제목 */
+/* 필터 제목 및 위치 표시 */
 .location-filter h4 {
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   font-size: 1rem;
   color: #333;
 }
@@ -68,41 +62,42 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   color: #5A54FF;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-/* === 시 리스트 (sigun-list) === */
-.sigun-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #ccc;
+/* 시·도, 시·군 셀렉트박스 */
+.sido-select,
+.sigun-select {
+  width: 100%;
+  margin-bottom: 14px;
 }
-.sigun-item {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border: 1px solid #ADAAF8;
-  border-radius: 14px;
-  background: #eaf0ff;
+#sidoSelect,
+#sigunSelect {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border: 1.5px solid #ADAAF8;
+  border-radius: 20px;
+  background: #fafaff;
+  transition: border-color 0.2s;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
+  margin-bottom: 8px;
 }
-.sigun-item input[type="radio"] {
-  margin-right: 4px;
-}
-.sigun-item:hover {
-  background: #dbe5ff;
+#sidoSelect:focus,
+#sigunSelect:focus {
+  outline: none;
+  border-color: #5A54FF;
 }
 
-/* === 구 리스트 (gu-list) === */
-.gu-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+/* 구 라디오 그룹 */
+.gu-radio-group {
+  margin-bottom: 14px;
+}
+.gu-radio-group p {
+  margin: 0 0 6px 0;
+  font-size: 0.97rem;
+  color: #444;
+  font-weight: 500;
 }
 .gu-item {
   display: inline-flex;
@@ -113,6 +108,8 @@ body {
   background: #f4f4ff;
   cursor: pointer;
   font-size: 0.9rem;
+  margin-right: 6px;
+  margin-bottom: 6px;
   transition: background 0.2s;
 }
 .gu-item input[type="radio"] {
@@ -122,42 +119,30 @@ body {
   background: #ecebff;
 }
 
-/* 다른 지역 버튼 */
-.other-region {
-  margin-bottom: 8px;
+/* 구 리스트 (시군 아래 구 리스트) */
+.gu-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
 }
-#toggleSidoSelect {
+.more-hidden {
+  display: none;
+}
+#toggleMore {
   background: none;
   border: none;
   color: #5A54FF;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   text-decoration: underline;
   cursor: pointer;
+  margin-top: 4px;
   padding: 2px 4px;
 }
-#toggleSidoSelect:hover {
+#toggleMore:hover {
   color: #413aff;
 }
 
-/* 시·도 셀렉트박스 */
-#sidoSelectContainer {
-  margin-top: 8px;
-}
-#sidoSelect {
-  width: 100%;
-  max-width: 220px;
-  padding: 8px 12px;
-  font-size: 0.95rem;
-  border: 1.5px solid #ADAAF8;
-  border-radius: 20px;
-  background: #fafaff;
-  transition: border-color 0.2s;
-  cursor: pointer;
-}
-#sidoSelect:focus {
-  outline: none;
-  border-color: #5A54FF;
-}
 
 /* 오른쪽 메인 콘텐츠 */
 .main-content {

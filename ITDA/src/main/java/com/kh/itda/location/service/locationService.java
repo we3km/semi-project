@@ -12,6 +12,8 @@ public interface locationService {
 
 	List<String> findSigunListBySido(String sido);
 
-	List<String> findGuListBySigun(String sido, String sigun); 
+	List<String> findGuListBySigun(String sido, String sigun);
+
+	List<String> findGuListBySidoIfDirect(String sido); 
 
 }

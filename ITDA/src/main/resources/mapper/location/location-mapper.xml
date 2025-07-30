@@ -50,5 +50,13 @@
     ORDER BY SIGUNGU
   </select>
   
+  <select id="findGuListBySidoIfDirect" parameterType="string" resultType="string">
+  SELECT DISTINCT SIGUNGU
+  FROM LOCATION
+  WHERE SIDO = #{sido}
+    AND REGEXP_LIKE(SIGUNGU, '^[^ ]+$')  <!-- 공백 없는 단일 구 -->
+  ORDER BY SIGUNGU
+</select>
+  
 
 </mapper>

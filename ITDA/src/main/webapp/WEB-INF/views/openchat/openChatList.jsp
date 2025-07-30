@@ -17,42 +17,78 @@
 	<div class="container">
 		<header class="header"></header>
 		<div class="layout">
+			<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+			<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 			<form id="filterForm" method="get"
 				action="${contextPath}/openchat/openChatList">
 				<aside class="filter-sidebar">
 
-					<%-- 1) 지역 검색창 --%>
-					<div class="gu-search">
-						<input type="text" id="regionSearch"
-							placeholder="시·도 시·군 입력 후 Enter" />
+					<!-- 1) 시·도 선택 -->
+					<div class="sido-select">
+						<select name="sido" id="sidoSelect">
+							<option value="">시·도 선택</option>
+							<c:forEach var="sd" items="${sidoList}">
+								<option value="${sd}" ${sd == selectedSido ? 'selected' : ''}>${sd}</option>
+							</c:forEach>
+						</select>
 					</div>
 
-					<%-- 2) 선택된 시·도·시·군(구) 표시 --%>
-					<c:if test="${not empty selectedSido and not empty selectedSigun}">
-						<div class="location-filter">
-							<h4>위치</h4>
-							<div class="sido-label">${selectedSido} ${selectedSigun}</div>
+					<!-- 2-1) 시·군 선택 (시군구가 있는 경우) -->
+					<c:if test="${fn:length(sigunList) > 0}">
+						<div class="sigun-select">
+							<select name="sigun" id="sigunSelect"
+								onchange="document.getElementById('filterForm').submit()">
+								<option value="">시·군 선택</option>
+								<c:forEach var="sg" items="${sigunList}">
+									<option value="${sg}" ${sg == selectedSigun ? 'selected' : ''}>${sg}</option>
+								</c:forEach>
+							</select>
 						</div>
+					</c:if>
 
-						<%-- 3) 구 리스트 (최대 6개만, 나머지는 .more-hidden 클래스) --%>
-						<div class="gu-list" id="guListContainer">
-							<c:forEach var="g" items="${guList}" varStatus="st">
-								<label class="gu-item ${st.index >= 6 ? 'more-hidden' : ''}">
-									<input type="radio" name="gu" value="${g}"
-									${g == selectedGu ? 'checked' : ''}
-									onchange="this.form.submit()" /> <span
+					<!-- 2-2) 시 바로 아래 구가 있는 경우: 라디오 버튼 출력 -->
+					<c:if test="${fn:length(sigunList) == 0 and not empty guList}">
+						<div class="gu-radio-group" style="max-height: 250px; overflow-y: auto;" >
+							<p>구 선택</p>
+							<c:forEach var="g" items="${guList}">
+								<label class="gu-item"> <input type="radio" name="sigun"
+									value="${g}"
+									${fn:trim(g) == fn:trim(selectedSigun) ? 'checked' : '' }
+									onchange="document.getElementById('filterForm').submit()" /> <span
 									class="gu-label">${g}</span>
 								</label>
 							</c:forEach>
 						</div>
-
-						<%-- 4) 토글 버튼 --%>
-						<button type="button" id="toggleMore">더보기</button>
 					</c:if>
 
+					<!-- 3) 위치 표시 -->
+					<c:if test="${not empty selectedSido}">
+						<div class="location-filter">
+							<h4>위치</h4>
+							<div class="sido-label">
+								${selectedSido}
+								<c:if test="${not empty selectedSigun}"> ${selectedSigungu}</c:if>
+							</div>
+						</div>
+					</c:if>
+
+					<!-- 4) 구 리스트 (시군 아래 구 리스트) -->
+					<c:if
+						test="${not empty guList and not empty selectedSigun and fn:length(sigunList) > 0}">
+						<div class="gu-list" id="guListContainer" style="max-height: 250px; overflow-y: auto;">
+							<c:forEach var="g" items="${guList}" varStatus="st">
+								<label class="gu-item">
+									<input type="radio" name="gu" value="${g}"
+									${g == selectedGu ? 'checked' : ''}
+									onchange="document.getElementById('filterForm').submit()" /> <span
+									class="gu-label">${g}</span>
+								</label>
+							</c:forEach>
+						</div>
+					</c:if>
 				</aside>
 			</form>
-
 
 			<main class="main-content">
 				<h1 class="main-title">오픈 채팅방 리스트</h1>
@@ -507,46 +543,36 @@ document.getElementById("editLocationBtn")
 </script>
 
 	<script>
-	document.addEventListener('DOMContentLoaded', function(){
-		  const regionInput = document.getElementById('regionSearch');
-		  if (!regionInput) return;
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("filterForm");
+  const sidoSelect = document.getElementById("sidoSelect");
 
-		  regionInput.placeholder = '시·도 시·군 입력 후 Enter';
+  if (!sidoSelect || !form) return;
 
-		  regionInput.addEventListener('keydown', function(e){
-		    if (e.key !== 'Enter') return;
-		    e.preventDefault();
+  // 1) 시도 변경 시 하위 필터 초기화 후 제출
+  sidoSelect.addEventListener("change", function () {
+    // 시군 select 초기화
+    const sigunSelect = document.getElementById("sigunSelect");
+    if (sigunSelect) sigunSelect.selectedIndex = 0;
 
-		    const form = document.getElementById('filterForm');
-		    const parts = this.value.trim().split(/\s+/);
-		    const sidoVal  = parts[0] || '';
-		    const sigunVal = parts[1] || '';
+    // sigun 라디오 초기화 (서울특별시처럼 시 밑에 구 있는 경우)
+    const sigunRadios = form.querySelectorAll('input[type="radio"][name="sigun"]');
+    sigunRadios.forEach(r => r.checked = false);
 
-		    // 기존 hidden[name="sido"/"sigun"/"gu"] 전부 제거
-		    form.querySelectorAll('input[name="sido"], input[name="sigun"], input[name="gu"]')
-		        .forEach(el => el.remove());
+    // gu 라디오 초기화
+    const guRadios = form.querySelectorAll('input[type="radio"][name="gu"]');
+    guRadios.forEach(r => r.checked = false);
 
-		    // 시도 hidden
-		    if (sidoVal) {
-		      const hSido = document.createElement('input');
-		      hSido.type  = 'hidden';
-		      hSido.name  = 'sido';
-		      hSido.value = sidoVal;
-		      form.appendChild(hSido);
-		    }
+    form.submit();
+  });
 
-		    // 시·군 hidden — 입력이 있을 때만 추가
-		    if (sigunVal) {
-		      const hSigun = document.createElement('input');
-		      hSigun.type  = 'hidden';
-		      hSigun.name  = 'sigun';
-		      hSigun.value = sigunVal;
-		      form.appendChild(hSigun);
-		    }
+  // 3) gu 라디오 (시군 하위 구) 자동 submit
+  const guRadios = form.querySelectorAll('input[type="radio"][name="gu"]');
+  
+const sigunRadios = form.querySelectorAll('input[type="radio"][name="sigun"]');
+});
 
-		    form.submit();
-		  });
-		});        
+// sigun 라디오 (시/군 선택없이 구만 보여줄때)
 </script>
 
 </body>

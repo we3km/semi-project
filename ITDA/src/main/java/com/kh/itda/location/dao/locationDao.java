@@ -40,4 +40,8 @@ public class locationDao {
 		return session.selectList("location.findSigunguBySido", sido);
 	}
 
+	public List<String> findGuListBySidoIfDirect(String sido) {
+		return session.selectList("findGuListBySidoIfDirect",sido);
+	}
+
 }
