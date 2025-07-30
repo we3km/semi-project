@@ -1,6 +1,5 @@
 package com.kh.itda.board.model.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -11,11 +10,13 @@ import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRental;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
+import com.kh.itda.board.model.vo.BoardSharing;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
-import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
@@ -57,13 +58,24 @@ public class BoardDaoImpl implements BoardDao {
 			for(int i = 0; i < tagList.size(); i++) {
 				Tag tag =new Tag();
 				BoardTag boardTag = new BoardTag();
-				tag.setTagContent(tagList.get(i));
-				session.insert("board.insertTag", tag);
 				
-				boardTag.setTagId(tag.getTagId());
-				boardTag.setBoardId(boardId);
-				boardTag.setBoardCategory(boardCommon.getTransactionCategory());
-				session.insert("board.insertBoardTag", boardTag);
+				String tagContent = tagList.get(i);
+				Tag tagExist = session.selectOne("board.selectTagExist", tagContent);
+				
+				if(tagExist == null) {
+					tag.setTagContent(tagContent);
+					session.insert("board.insertTag", tag);
+					
+					boardTag.setTagId(tag.getTagId());
+					boardTag.setBoardId(boardId);
+					boardTag.setBoardCategory(boardCommon.getTransactionCategory());
+					session.insert("board.insertBoardTag", boardTag);
+				} else {
+					boardTag.setTagId(tagExist.getTagId());
+					boardTag.setBoardId(boardId);
+					boardTag.setBoardCategory(boardCommon.getTransactionCategory());
+					session.insert("board.insertBoardTag", boardTag);
+				}
 			}
 			
 		}
@@ -101,12 +113,6 @@ public class BoardDaoImpl implements BoardDao {
 		return result;
 	}
 
-	
-	@Override
-	public int insertBoardShare(BoardShareWrapper board, List<FilePath> pathList, List<File> imgList) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	
 	@Override
 	public int insertBoardAuction(BoardAuctionWrapper board, List<FilePath> pathList, List<File> imgList) {
@@ -235,6 +241,113 @@ public class BoardDaoImpl implements BoardDao {
 	public String selectUserAddress(int userNum) {
 		return session.selectOne("board.selectUserAddress", userNum);
 	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectBoardShareList(Map<String, Object> filterMap) {
+		List<BoardShareFileWrapper> boardShareList = session.selectList("board.selectBoardShareList", filterMap);
+
+		return boardShareList;
+	}
+
+
+	@Override
+	public int insertBoardShare(BoardShareWrapper board, List<File> imgList) {
+		int result = 0;
+		
+		// 공통 정보 저장
+		BoardCommon boardCommon = board.getBoardCommon();
+		// 공통정보 저장 결과
+		int commonResult = session.insert("board.insertBoardCommon" , boardCommon);
+		
+		
+		int boardId = boardCommon.getBoardId(); // 지금 추가된 게시물 ID
+
+		// 나눔 정보 저장
+		BoardSharing boardSharing = board.getBoardSharing();
+		boardSharing.setBoardId(boardId); 
+		
+		// 나눔 정보 저장 결과
+		int shareResult = session.insert("board.insertBoardShare" , boardSharing);	
+		
+		// 태그 저장
+		List<String> tagList = boardCommon.getTagList();
+		
+		if(!tagList.isEmpty()) {
+			for(int i = 0; i < tagList.size(); i++) {
+				Tag tag =new Tag();
+				BoardTag boardTag = new BoardTag();
+				tag.setTagContent(tagList.get(i));
+				session.insert("board.insertTag", tag);
+				
+				boardTag.setTagId(tag.getTagId());
+				boardTag.setBoardId(boardId);
+				boardTag.setBoardCategory(boardCommon.getTransactionCategory());
+				session.insert("board.insertBoardTag", boardTag);
+			}
+			
+		}
+		
+		
+		
+		// 이미지 정보 저장
+		if(!imgList.isEmpty()) {
+			for(int i = 0; i < imgList.size();i++) {
+				File f = imgList.get(i);
+				
+				f.setRefNo(boardId);
+				switch(boardCommon.getTransactionCategory()) {
+				case "rental":
+					f.setCategoryId(6);
+					break;
+				case "share":
+					f.setCategoryId(7);
+					break;
+				case "auction":
+					f.setCategoryId(8);
+					break;
+				case "exchange":
+					f.setCategoryId(9);
+					break;
+				}
+				session.insert("board.insertImg", f);
+			}
+		}
+		
+		
+		if(commonResult > 0 && shareResult > 0) {
+			result = 1;
+		}
+		return result;
+	}
+
+
+	@Override
+	public BoardShareWrapper selectBoardShare(int boardId) {
+		BoardShareWrapper board = session.selectOne("board.selectBoardShare", boardId);
+
+		return board;
+	}
+
+
+	@Override
+	public List<FilePath> selectShareImgList(int boardId) {
+		return session.selectList("board.selectShareImgList", boardId);
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectWriterShareList(int writerUserNum) {
+		return session.selectList("board.selectWriterShareList", writerUserNum);
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory) {
+		return session.selectList("board.selectEqualsCategoryShareList", smallCategory);
+	}
+
+
 
 
 
