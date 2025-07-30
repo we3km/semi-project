@@ -8,9 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kh.itda.common.model.vo.Report;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.service.ReportService;
+import com.kh.itda.support.model.vo.Report;
 
 @Controller
 public class ReportController {
@@ -33,4 +33,5 @@ public class ReportController {
 
         return result > 0 ? "신고완료되었습니다" : "신고에 실패하였습니다.";
     }
+    
 }

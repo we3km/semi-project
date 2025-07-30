@@ -7,9 +7,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.kh.itda.common.model.vo.Category;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.support.model.vo.Inquiry;
+
 
 @Repository
 public class InquiryDao {

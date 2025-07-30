@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.itda.common.model.vo.Category;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.support.model.vo.Inquiry;
 

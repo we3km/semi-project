@@ -1,5 +1,6 @@
 package com.kh.itda;
 
+import java.util.Locale.Category;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -7,8 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+<<<<<<< Updated upstream
 
 import com.kh.itda.board.model.service.BoardService;
+=======
+>>>>>>> Stashed changes
 import com.kh.itda.common.model.vo.boardCategory;
 import com.kh.itda.common.service.MainService;
 import com.kh.itda.community.model.service.CommunityService;
