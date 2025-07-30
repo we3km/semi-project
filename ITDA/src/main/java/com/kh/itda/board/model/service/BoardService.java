@@ -59,6 +59,11 @@ public interface BoardService {
 
 	List<BoardShareFileWrapper> selectWriterShareList(int writerUserNum);
 	List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory);
+	
+	
+	
+
+	int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList);
 
 
 

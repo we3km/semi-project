@@ -74,6 +74,27 @@
 
 
 	</insert>
+	
+	<insert id="insertBoardAuction" parameterType="BoardAuction">
+
+		INSERT INTO BOARD_AUCTION
+		(
+		BOARD_ID,
+		AUCTION_STARTING_FEE,
+		BID_UNIT,
+		AUCTION_START_DATE,
+		AUCTION_END_DATE
+		) VALUES
+		(
+		#{boardId},
+		#{auctionStartingFee},
+		#{bidUnit},
+		#{auctionStartDate},
+		#{auctionEndDate}
+		)
+
+
+	</insert>
 
 
 	<insert id="insertImg" parameterType="File">

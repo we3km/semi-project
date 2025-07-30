@@ -345,19 +345,61 @@ public class BoardController {
 			// @PathVariable("boardCategory") String boardCategory,
 			Model model, RedirectAttributes ra,
 			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
-
-		return "redirect:/board/" + "auction";
-	}
-
-	// 교환 글쓰기 페이지 이동 매핑
-	// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
-	@PostMapping("/write/exchange")
-	public String boardExchangeInsert(@ModelAttribute BoardExchangeWrapper board,
-			// @PathVariable("boardCategory") String boardCategory,
-			Model model, RedirectAttributes ra,
-			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
-
-		return "redirect:/board/" + "exchange";
+				List<File> imgList = new ArrayList<>();
+		
+				System.out.println("이미지:" + upfiles);
+				for (MultipartFile upfile : upfiles) {
+		
+					System.out.println("현재 저장중인 이미지 : " + upfile);
+					if (upfile.isEmpty()) {
+						continue;// 업로드한 첨부파일이 존재한다면 저장 진행
+					}
+		
+					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/auctoin");
+					File f = new File();
+		
+					f.setFileName(imgPath);
+		
+					imgList.add(f);
+		
+					System.out.println("저장된이미지리스트:" + imgList);
+				}
+		
+				model.addAttribute("board", board);
+				// BoardCommon boardCommon = board.getBoardCommon();
+		
+				// BoardRental boardRental = board.getBoardRental();
+		
+				// User loginUser = (User) auth.getPrincipal();
+		//			boardCommon.setUserNum(1); // 테스트용 임의 지정
+		//			boardCommon.setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
+		//			boardCommon.setTransactionCategory(boardCategory);
+		
+				board.getBoardCommon().setUserNum(1);
+				board.getBoardCommon().setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
+				board.getBoardCommon().setTransactionCategory("auction");
+		
+				// System.out.println("태그:"+boardCommon.getTagList());
+				// System.out.println("저장된이미지리스트:"+imgList);
+				int result = boardService.insertBoardAuction(board, imgList);
+				if (result == 0) {
+					throw new RuntimeException("게시글 작성 실패");
+		
+				}
+				
+				ra.addFlashAttribute("alertMsg", "게시글 작성 성공");
+				return "redirect:/board/detail/auction/" +board.getBoardCommon().getBoardId();
+			}
+		
+			// 교환 글쓰기 페이지 이동 매핑
+			// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
+			@PostMapping("/write/exchange")
+			public String boardExchangeInsert(@ModelAttribute BoardExchangeWrapper board,
+					// @PathVariable("boardCategory") String boardCategory,
+					Model model, RedirectAttributes ra,
+					@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
+		
+				return "redirect:/board/" + "exchange";
 	}
 
 	// 대여 게시글 상세보기

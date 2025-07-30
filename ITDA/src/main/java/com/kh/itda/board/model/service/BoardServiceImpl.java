@@ -222,6 +222,19 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 
+	@Override
+	public int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
+		
+					
+		int result = boardDao.insertBoardAuction(board, imgList);
+
+		return result;
+	}
+
+
 
 
 

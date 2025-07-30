@@ -59,6 +59,8 @@ public interface BoardDao {
 
 	List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory);
 
+	int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList);
+
 
 
 }
