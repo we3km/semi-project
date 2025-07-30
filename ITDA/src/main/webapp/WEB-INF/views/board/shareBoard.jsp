@@ -9,7 +9,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>대여 게시판</title>
+<title>나눔 게시판</title>
 <style>
 
     * {
@@ -207,17 +207,14 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-<<<<<<< HEAD
 
-
-=======
 	<div class="wrapper">
 		<header class="header">
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
 	
->>>>>>> main
+
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/share/list">

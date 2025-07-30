@@ -99,6 +99,12 @@
 		)
 
 	</insert>
+	
+	<select id="selectTagExist" parameterType="string" resultType="Tag">
+		SELECT TAG_ID, TAG_CONTENT
+		FROM TAG
+		WHERE TAG_CONTENT= #{tagContent}
+	</select>
 
 	<insert id="insertTag" parameterType="Tag">
 

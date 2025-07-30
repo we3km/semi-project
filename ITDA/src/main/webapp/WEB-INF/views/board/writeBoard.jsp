@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<title>Insert title here</title>
+<title>거래 글쓰기</title>
 <style>
 body {
 	font-family: 'Noto Sans KR', sans-serif;
@@ -500,7 +500,7 @@ img {
 				                span.innerText = "#" + tag;
 				                tagContainer.appendChild(span);
 
-				                // hidden input 추가sde34
+				                // hidden input 추가
 				                const hidden = document.createElement("input");
 				                hidden.type = "hidden";
 				                hidden.name = "boardCommon.tagList"; 

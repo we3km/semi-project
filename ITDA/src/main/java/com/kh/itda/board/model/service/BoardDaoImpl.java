@@ -58,13 +58,24 @@ public class BoardDaoImpl implements BoardDao {
 			for(int i = 0; i < tagList.size(); i++) {
 				Tag tag =new Tag();
 				BoardTag boardTag = new BoardTag();
-				tag.setTagContent(tagList.get(i));
-				session.insert("board.insertTag", tag);
 				
-				boardTag.setTagId(tag.getTagId());
-				boardTag.setBoardId(boardId);
-				boardTag.setBoardCategory(boardCommon.getTransactionCategory());
-				session.insert("board.insertBoardTag", boardTag);
+				String tagContent = tagList.get(i);
+				Tag tagExist = session.selectOne("board.selectTagExist", tagContent);
+				
+				if(tagExist == null) {
+					tag.setTagContent(tagContent);
+					session.insert("board.insertTag", tag);
+					
+					boardTag.setTagId(tag.getTagId());
+					boardTag.setBoardId(boardId);
+					boardTag.setBoardCategory(boardCommon.getTransactionCategory());
+					session.insert("board.insertBoardTag", boardTag);
+				} else {
+					boardTag.setTagId(tagExist.getTagId());
+					boardTag.setBoardId(boardId);
+					boardTag.setBoardCategory(boardCommon.getTransactionCategory());
+					session.insert("board.insertBoardTag", boardTag);
+				}
 			}
 			
 		}
