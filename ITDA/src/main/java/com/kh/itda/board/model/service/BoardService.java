@@ -6,6 +6,7 @@ import java.util.Map;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
@@ -16,7 +17,7 @@ import com.kh.itda.common.model.vo.FilePath;
 public interface BoardService {
 
 	int insertBoardRental(BoardRentalWrapper board, List<File> imgList);
-	int insertBoardShare(BoardShareWrapper board, List<FilePath> pathList, List<File> imgList);
+	
 	int insertBoardExchange(BoardExchangeWrapper board, List<FilePath> pathList, List<File> imgList);
 	int insertBoardAuction(BoardAuctionWrapper board, List<FilePath> pathList, List<File> imgList);
 
@@ -43,6 +44,21 @@ public interface BoardService {
 	List<FilePath> selectImgList(int boardId);
 	List<Integer> getLikedBoardIdsByUser(int userNum);
 	String selectUserAddress(int userNum);
+	
+	
+	
+	
+	
+	
+	List<BoardShareFileWrapper> selectBoardShareList(Map<String, Object> filterMap);
+	int insertBoardShare(BoardShareWrapper board, List<File> imgList);
+	BoardShareWrapper selectBoardShare(int boardId);
+
+	List<FilePath> selectShareImgList(int boardId);
+
+	List<BoardShareFileWrapper> selectWriterShareList(int writerUserNum);
+	List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory);
+
 
 
 
