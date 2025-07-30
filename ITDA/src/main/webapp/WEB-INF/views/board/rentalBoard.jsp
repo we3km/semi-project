@@ -27,7 +27,7 @@
 
 	<div class="sidebar">
 		<form id="filterForm" method="get"
-			action="${pageContext.request.contextPath}/board/rental">
+			action="${pageContext.request.contextPath}/board/rental/list">
 			<div class="filter-section">
 				<h3>정렬 조건</h3>
 				<button type="submit" id="filter-btn">정렬</button>

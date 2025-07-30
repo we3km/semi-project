@@ -11,6 +11,7 @@ import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
+import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
 import com.kh.itda.board.model.vo.ProductCategory;
@@ -39,19 +40,6 @@ public class BoardServiceImpl implements BoardService{
 		return result;
 	}
 	
-
-	@Override
-	public int insertBoardShare(BoardShareWrapper board, List<FilePath> pathList, List<File> imgList) {
-		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
-		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
-		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
-		
-		int result = 0;
-	
-		result = boardDao.insertBoardShare(board, pathList, imgList);
-
-		return result;
-	}
 
 	@Override
 	public int insertBoardExchange(BoardExchangeWrapper board, List<FilePath> pathList, List<File> imgList) {
@@ -187,6 +175,54 @@ public class BoardServiceImpl implements BoardService{
 	public String selectUserAddress(int userNum) {
 		return boardDao.selectUserAddress(userNum);
 	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectBoardShareList(Map<String, Object> filterMap) {
+		return boardDao.selectBoardShareList(filterMap);
+	}
+
+
+	@Override
+	public int insertBoardShare(BoardShareWrapper board, List<File> imgList) {
+		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductComment(Utils.newLineHandling(board.getBoardCommon().getProductComment()));
+		board.getBoardCommon().setProductName(Utils.XSSHandling(board.getBoardCommon().getProductName()));
+		
+					
+		int result = boardDao.insertBoardShare(board, imgList);
+
+		return result;
+	}
+
+
+	@Override
+	public BoardShareWrapper selectBoardShare(int boardId) {
+		return boardDao.selectBoardShare(boardId);
+	}
+
+
+	@Override
+	public List<FilePath> selectShareImgList(int boardId) {
+		// TODO Auto-generated method stub
+		return boardDao.selectShareImgList(boardId);
+
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectWriterShareList(int writerUserNum) {
+		return boardDao.selectWriterShareList(writerUserNum);
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory) {
+		return boardDao.selectEqualsCategoryShareList(smallCategory);
+	}
+
+
+
 
 
 
