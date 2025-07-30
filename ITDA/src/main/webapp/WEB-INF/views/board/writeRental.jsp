@@ -9,6 +9,11 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	
 	<section class="price-date-category">
 		<div class="price-area">
