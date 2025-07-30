@@ -20,6 +20,7 @@
 		WHERE USER_NUM = #{userNum}
 	</select>
 
+	<!-- 회원 정보 조회(프로필 제외) -->
 	<select id="findUserById" parameterType="string"
 		resultType="User">
 		SELECT * FROM USER_TB WHERE USER_ID = #{userId}
@@ -30,6 +31,32 @@
 		SELECT
 		COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
 	</select>
+	
+	<insert id="insertToken">
+		INSERT 
+			INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN, LAST_USED) 
+			VALUES (#{series}, #{username}, #{token}, #{lastUsed})
+	</insert>
+	
+	<update id="updateToken">
+		UPDATE PERSISTENT_LOGINS
+		SET TOKEN = #{token}, LAST_USED = #{lastUsed}
+		WHERE SERIES = #{series}
+	</update>
+	
+	<select id="selectToken" resultType="org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken">
+		SELECT 
+			SERIES, 
+			USERNAME,
+			TOKEN,
+			LAST_USED
+		FROM PERSISTENT_LOGINS
+		WHERE SERIES = #{series}
+	</select>
+	
+	<delete id="deleteTokensByUserNum" parameterType="map">
+		DELETE FROM PERSISTENT_LOGINS WHERE USERNAME = #{username}
+	</delete>
 
 	<resultMap type="userExt" id="userResultMap">
 		<id column="USER_NUM" property="userNum" />

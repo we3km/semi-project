@@ -8,12 +8,12 @@ import com.kh.itda.user.model.vo.User;
 
 public interface SecurityDao {
 
-	public UserDetails loadUserByUsername(String username);
+	public UserDetails loadUserByUsername(String username); // 아이디로 조회(프로필 포함)
 
-	User findUserById(String userId);
+	User findUserById(String userId); // 아이디로 조회(프로필 미포함)
 	
-	User findUserByNum(int userNum);
+	User findUserByNum(int userNum); // 유저 번호로 조회
 	
-	List<String> findAuthoritiesByUserNum(int userNum);
+	List<String> findAuthoritiesByUserNum(int userNum); // 유저 권한 조회
 	
 }

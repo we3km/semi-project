@@ -35,11 +35,11 @@
             password-parameter="userPwd" />
 
         <logout 
-        	logout-url="/user/logout" 
+        	logout-url="/logout" 
         	logout-success-url="/"
         	invalidate-session="true"
         	delete-cookies="JSESSIONID, remember-me" />
-        <remember-me key="uniqueAndSecret" token-validity-seconds="1209600" />
+        <remember-me key="itdaUniqueSecurityKey" data-source-ref="dataSource" token-validity-seconds="1209600" />
         	
         <csrf disabled="true"/>
     </http>

@@ -163,7 +163,7 @@
 							//로그인 페이지로 이동
 							alert(`로그인창`);
 							location.href = contextPath
-									+ '/user/tempLogin';
+									+ '/user/login';
 							/* location.href = contextPath + '/user/login'; */
 
 							$('.unlogin').hide();

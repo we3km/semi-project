@@ -52,7 +52,7 @@ public class UserController {
 	
 	  // 임시 로그인 (하드코딩된 USER1 정보로 세션에 로그인 유저 저장)
 /*	  
-	  @GetMapping("/user/tempLogin") public String tempLogin(HttpServletRequest request) { 
+	  @GetMapping("/user/login") public String login(HttpServletRequest request) { 
 		  User tempUser = new User(); tempUser.setUserId("USER1");
 	 
 		  tempUser.setUserPwd("1234"); tempUser.setUserNo(1); // 적당한 사용자 번호

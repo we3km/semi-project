@@ -31,13 +31,7 @@
 			</div>
 			<div class="login">
 				<div class="btn" id="myPage">마이페이지</div>
-
-				<!-- <div class="btn" id="logoutBtn">로그아웃</div> -->
-				<form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post" style="display:inline;">
-			        <%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> --%>
-			        <button type="submit" class="btn" id="logoutBtn">로그아웃</button>
-			    </form>
-
+				<div class="btn" id="logoutBtn">로그아웃</div>
 			</div>
 		</div>
 		<c:choose>
@@ -197,7 +191,7 @@
 	    });
 	    $(window).on('click', () => $('.dropdown-content').removeClass('show'));
 	    
-
+	 //  '거래유형' 드롭다운 클릭 이벤트 분리
 	    $('#deal-type-dropdown').on('click', '.category', function () {
 	        const dropdown = $(this).closest('.dropdown');
 	        const name = $(this).data('name');
@@ -283,13 +277,8 @@
 	    
 	    // --- 나머지 이벤트 핸들러 (기존과 동일) ---
 	    $('#loginBtn').click(() => location.href = contextPath + '/user/login');
-	    /* $('#logoutBtn').click(() => location.href = contextPath + '/'); */
-	    $('#logoutBtn').click(function(e) { //로그아웃 부분 수정
-		    e.preventDefault();
-		    $('#logoutForm').submit();
-		});
-
-	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
+	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
+	    $('#joinMembership').click(() => location.href = contextPath + '/user/join/terms');
 	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
 	    $('.card').click(function () {
 	        const title = $(this).find('.card-title').text().trim();
