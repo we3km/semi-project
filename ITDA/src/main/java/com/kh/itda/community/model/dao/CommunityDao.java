@@ -3,6 +3,7 @@ package com.kh.itda.community.model.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.itda.common.model.vo.BoardComment;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
@@ -27,7 +28,7 @@ public interface CommunityDao {
 
 	CommunityExt selectCommunity(int communityNo);
 
-	CommunityReaction selectUserReaction(int userNo, int communityNo);
+	CommunityReaction selectUserReaction(int userNum, int communityNo);
 
 	int insertReaction(CommunityReaction reaction);
 
@@ -39,7 +40,7 @@ public interface CommunityDao {
 
 	int getDislikeCount(int communityNo);
 
-	CommunityReaction userReactionNo(int userNo, int communityNo);
+	CommunityReaction userReactionNo(int userNum, int communityNo);
 
 	communityTag selectTagByName(String tagName);
 
@@ -50,6 +51,10 @@ public interface CommunityDao {
 	List<communityTag> selectTagsByCommunityNo(int communityNo);
 
 	int deleteCommunity(int communityNo);
+
+	List<BoardComment> selectCommentList(int communityNo);
+
+	int insertComment(BoardComment comment);
 
 	
 

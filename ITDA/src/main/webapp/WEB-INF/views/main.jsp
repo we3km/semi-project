@@ -34,6 +34,24 @@
 				<div class="btn" id="logoutBtn">로그아웃</div>
 			</div>
 		</div>
+		
+		<%-- <div class="top-buttons">
+		    <!-- Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링 -->
+		    <sec:authorize access="isAnonymous()">
+		        <div class="unlogin">
+		            <div class="btn" id="loginBtn">로그인</div>
+		            <div class="btn" id="joinMembership">회원가입</div>
+		        </div>
+		    </sec:authorize>
+		
+		    <!-- 로그인했을 때만 이 div를 렌더링 -->
+		    <sec:authorize access="isAuthenticated()">
+		        <div class="login">
+		            <div class="btn" id="myPage">마이페이지</div>
+		            <div class="btn" id="logoutBtn">로그아웃</div>
+		        </div>
+		    </sec:authorize>
+		</div>  --%>
 		<c:choose>
 			<c:when test="${not empty sessionScope.loginUser}">
 				<script>
@@ -48,24 +66,6 @@
 				</script>
 			</c:otherwise>
 		</c:choose>
-		
-		<%-- <div class="top-buttons">
-		    Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링
-		    <sec:authorize access="isAnonymous()">
-		        <div class="unlogin">
-		            <div class="btn" id="loginBtn">로그인</div>
-		            <div class="btn" id="joinMembership">회원가입</div>
-		        </div>
-		    </sec:authorize>--%>
-		
-		    <%--로그인했을 때만 이 div를 렌더링
-		    <sec:authorize access="isAuthenticated()">
-		        <div class="login">
-		            <div class="btn" id="myPage">마이페이지</div>
-		            <div class="btn" id="logoutBtn">로그아웃</div>
-		        </div>
-		    </sec:authorize>
-		</div> --%>
 
 
 		<div class="headline">IT다</div>

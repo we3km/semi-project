@@ -32,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.common.Utils;
+import com.kh.itda.common.model.vo.BoardComment;
+import com.kh.itda.common.model.vo.BoardCommentExt;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.common.model.vo.template.Pagination;
 import com.kh.itda.community.model.service.CommunityService;
@@ -120,7 +122,7 @@ public class CommunityController {
 	    model.addAttribute("communityCode", communityCode);
 	    model.addAttribute("selectedCategories", cat);
 	    
-	    // [중요] 새로 만든 url과 searchParam을 model에 담아 전달
+	    // 새로 만든 url과 searchParam을 model에 담아 전달
 	    model.addAttribute("url", url);
 	    model.addAttribute("searchParam", searchParam);
 
@@ -170,7 +172,7 @@ public class CommunityController {
 		
 		//로그인 사용자 정보 등록
 //		User loginUser = (User) auth.getPrincipal();
-//		c.setCommunityWriter(String.valueOf(loginUser.getUserNo()));
+//		c.setCommunityWriter(String.valueOf(loginUser.getUserNum()));
 		
 		//임시로그인
 		c.setCommunityWriter(1);
@@ -227,15 +229,15 @@ public class CommunityController {
 		//	============================= 시큐리티 이후에 사용=========
 		//유져관련
 		//User loginUser = (User) auth.getPrincipal();
-		//int userNo = ((User) auth.getPrincipal()).getUserNo();
-		int userNo = 3;
+		//int userNum = ((User) auth.getPrincipal()).getUserNum();
+		int userNum = 3;
 	    
 
 		// 1. 본인 글이 아닐 경우에만 조회수 증가 로직 실행
-	    if (userNo != c.getCommunityWriter()) {
+	    if (userNum != c.getCommunityWriter()) {
 	        
 	        // 2. 현재 사용자에 맞는 쿠키 이름 생성 (예: "readCommunityNo_1")
-	        String cookieName = "readCommunityNo_" + userNo;
+	        String cookieName = "readCommunityNo_" + userNum;
 	        String readCommunityNoCookie = null; // 쿠키 값을 담을 변수
 
 	        // 3. request에 담겨온 모든 쿠키를 확인
@@ -279,21 +281,13 @@ public class CommunityController {
 	    
 	    
 		 // 현재 유저가 해당 게시글에 대해 좋아요/싫어요 한 상태 조회
-		CommunityReaction reaction = communityService.userReactionNo(userNo, communityNo);
+		CommunityReaction reaction = communityService.userReactionNo(userNum, communityNo);
 
 		String userReaction = "NONE"; 
 	    if(reaction != null && reaction.getType() != null) {
 	        userReaction = reaction.getType(); // "LIKE" 또는 "DISLIKE" 등
 	    }
-	    //로그확인
-	    System.out.println(">>> userNo: " + userNo);
-	    System.out.println(">>> communityNo: " + communityNo);
-
-	    System.out.println("===== 최종 userReaction 확인 =====");
-	    System.out.println("reaction 객체: " + reaction);
-	    System.out.println("reaction.getType(): " + (reaction != null ? reaction.getType() : "reaction is null"));
-	    System.out.println("userReaction: " + userReaction);
-		
+	   
 		model.addAttribute("community", c);
 		model.addAttribute("reactionForm", new CommunityReaction());
 		model.addAttribute("userReaction", userReaction);
@@ -306,10 +300,10 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, Object> react(@RequestBody CommunityReaction reaction, HttpSession session) {
 		// 임시 로그인 유저 번호 
-	    int userNo = 3;
-	//  int userNo = ((User) session.getAttribute("loginUser")).getUserNo();
+	    int userNum = 3;
+	//  int userNum = ((User) session.getAttribute("loginUser")).userNum();
 	    
-	    reaction.setUserNo(userNo);
+	    reaction.setUserNum(userNum);
 
 	    // 서비스 호출 → 반응 처리
 	    String userReaction = communityService.handleReaction(reaction);
@@ -333,11 +327,11 @@ public class CommunityController {
 									RedirectAttributes ra) {
 		//로그인 유저정보
 		//User loginUser = (User)auth.getPrincipal();
-		//int userNo = loginUser.getUserNo();
-		int userNo = 1;
+		//int userNum = loginUser.getUserNum();
+		int userNum = 1;
 		
 		//삭제 시도
-		int result = communityService.deleteCommunity(communityNo, userNo);
+		int result = communityService.deleteCommunity(communityNo, userNum);
 		
 		//결과
 		if(result>0) {
@@ -347,6 +341,34 @@ public class CommunityController {
 	     }
 
 		return "redirect:/community/list/all";
+	}
+	
+	// 댓글 목록 조회 (AJAX) - Service에서 계층형으로 처리된 데이터를 반환
+	@GetMapping(value="/comments/{communityNo}", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public List<BoardCommentExt> ajaxSelectCommentList(@PathVariable("communityNo") int communityNo) {
+	    return communityService.selectCommentList(communityNo);
+	}
+
+	// 댓글 등록 (AJAX)
+	@PostMapping(value="/comments", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment) {
+	    // 임시 유저 정보 (로그인 연동 후 수정)
+	    // User loginUser = (User) auth.getPrincipal();
+	    // comment.setCmtWriterUserNum(loginUser.getUserNum());
+	    comment.setCmtWriterUserNum(1); // 임시 작성자 NUM
+	    
+	    int result = communityService.insertComment(comment);
+	    
+	    Map<String, String> response = new HashMap<>();
+	    if (result > 0) {
+	        response.put("result", "success");
+	    } else {
+	        response.put("result", "fail");
+	    }
+	    
+	    return response;
 	}
 
 	

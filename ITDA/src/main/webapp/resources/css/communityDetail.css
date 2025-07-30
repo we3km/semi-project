@@ -302,11 +302,6 @@
             user-select: none;
         }
 
-        .comment .actions .reply-toggle {
-            color: #6a3ae4;
-            cursor: pointer;
-            font-weight: 600;
-        }
 
         .comment .options-btn {
             position: absolute;
@@ -315,6 +310,18 @@
             font-size: 18px;
             color: #aaa;
             cursor: pointer;
+        }
+        
+        .comment .reply {
+		    margin-left: 40px;
+		    padding-left: 15px;
+		    border-left: 2px solid #f0f0f0;
+		}
+		
+        .comment .actions .reply-toggle {
+            color: #6a3ae4;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         .reply-box {

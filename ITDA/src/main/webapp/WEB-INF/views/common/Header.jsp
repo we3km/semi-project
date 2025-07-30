@@ -116,6 +116,7 @@
 					alt="alarm icon" id="alarm-icon" />
 			</div>
 		</div>
+		</div>
 		<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
