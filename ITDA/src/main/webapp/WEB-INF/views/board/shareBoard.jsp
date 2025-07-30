@@ -20,6 +20,13 @@
     body {
       margin: 0;
       display: flex;
+      flex-direction:column;      
+      background-color: white;
+    }
+    
+    .container{
+    	margin: 0;
+      display: flex;
       background-color: white;
     }
 
@@ -213,7 +220,7 @@
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
-	
+	<div class = "container">
 
 	<div class="sidebar">
 		<form id="filterForm" method="get"
@@ -472,7 +479,7 @@
 
 		</div>
 	</div>
-
+</div>
 
 
 <script>
