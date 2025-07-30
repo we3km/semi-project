@@ -141,6 +141,11 @@ body {
 
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<div class="container">
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->

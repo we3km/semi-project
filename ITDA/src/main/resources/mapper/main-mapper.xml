@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.itda.common.dao.MainDao">
+	<!-- 카테고리 타입 목록 -->
+	<select id="getMainTypeMap" resultType="boardCategory">
+		SELECT 
+			CATEGORY_ID AS categoryId, 
+			CATEGORY AS category, 
+			CATEGORY_GUBUN AS categoryGubun
+		FROM CATEGORY
+		WHERE CATEGORY_ID BETWEEN 6 AND 10
+	</select>
+	
+	<!-- 상품 타입 목록 -->
+	<select id="getProductType" resultType="ProductCategory">
+		SELECT
+			PRODUCT_CATEGORY_NUM,
+			CATEGORY_NAME
+		FROM PRODUCT_CATEGORY
+		WHERE PARENT_NUM IS NULL
+	</select>
+	
+	
+	
+</mapper>

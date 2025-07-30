@@ -4,11 +4,11 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
-	
+
 	<!-- Root Context: defines shared resources visible to all other web components -->
-	<!--  DB연결 설정  -->
+	<!-- DB연결 설정 -->
 	<context:property-placeholder
-	location="classpath:driver.properties" />
+		location="classpath:driver.properties" />
 	<!-- 1단계 DB연결 -->
 	<bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -27,15 +27,27 @@
 		<property name="mapperLocations"
 			value="classpath:mapper/**/*.xml" />
 	</bean>
+	
 	<!-- 3단계 SqlsessionTemplate을 제공하는 bean 등록 -->
-	<bean class="org.mybatis.spring.SqlSessionTemplate"
-		id="sqlSession">
+	<bean class="org.mybatis.spring.SqlSessionTemplate"	id="sqlSession">
 		<constructor-arg ref="sqlSessionFactory" />
+		<!-- gpt가 추가하라함 -->
+		<!-- <property name="typeAliasesPackage" value="com.kh.community.model"/> -->
 	</bean>
+	
 	<!-- transactionManger - 데이터베이스 트랜잭션 처리를 담당하는 bean객체 - jdbc를 통해 커넥션을 얻어 
 		온 후, 트랜잭션을 시작/커밋/롤백 처리를 담당 - @Transactional어노테이션을 통해 트랜잭션을 선언적으로 처리 -->
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean>	
+	</bean>
+
+	 <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	  	<property name="defaultEncoding" value="UTF-8"></property>
+	  	<property name="maxUploadSize" value="10000000"></property>
+	  	<property name="maxInMemorySize" value="2000000"></property>
+	  	
+	  </bean>
+
+
 </beans>
