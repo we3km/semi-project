@@ -7,6 +7,12 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
+	
 	<section class="price-date-category">
 		<div class="price-area">
 			<label>경매 시작금</label> <input type="text"> 원 <label>입찰금
