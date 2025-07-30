@@ -116,7 +116,7 @@ public class OpenChatController {
 	}
 
 	@PostMapping("/createOpenChat")
-<<<<<<< Updated upstream
+
 	public String createChatList(
 	    @ModelAttribute OpenChatRoom room,
 	    @ModelAttribute Location loc,              
@@ -139,26 +139,6 @@ public class OpenChatController {
 	    // loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
 	    Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
 	    room.setLocationId(locId);
-=======
-	public String createChatList(@ModelAttribute OpenChatRoom room, @ModelAttribute Location loc,
-			@RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
-			@RequestParam(value = "tagContent", required = false) String tagContent, RedirectAttributes ra,
-			// 로그인되면 수정해야함
-			HttpSession session) {
-		USER u = (USER) session.getAttribute("loginUser");
-		if (u == null) {
-			ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
-			return "redirect:/member/login";
-		}
->>>>>>> Stashed changes
-
-		room.setUserNum(u.getUserNum());
-		room.setTagContent(tagContent);
-
-		log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());
-		// loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
-		Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
-		room.setLocationId(locId);
 
 		List<String> tags = tagContent != null
 				? Arrays.stream(tagContent.split("[\\s,#]+")).map(t -> t.replaceAll("^#+", ""))
@@ -170,28 +150,20 @@ public class OpenChatController {
 			throw new RuntimeException("채팅방 생성 실패");
 
 		ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
-		return "redirect:/openchat/openChatList";
+		return "redirect:/openchat/openChatlist";
 	}
+
 
 	@GetMapping("/enter")
 	public String enterChatRoom(@RequestParam("roomId") int roomId, HttpSession session, Model model,
 			RedirectAttributes ra) {
 
-<<<<<<< Updated upstream
         // 세션에서 로그인 유저 정보 가져오기
         User loginUser = (User) session.getAttribute("loginUser");
         if (loginUser == null) {
             ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
             return "redirect:/";
         }
-=======
-		// 세션에서 로그인 유저 정보 가져오기
-		USER loginUser = (USER) session.getAttribute("loginUser");
-		if (loginUser == null) {
-			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
-			return "redirect:/";
-		}
->>>>>>> Stashed changes
 
 		int userNum = loginUser.getUserNum();
 
