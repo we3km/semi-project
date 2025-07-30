@@ -18,10 +18,16 @@
 
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
+<div class="container" >
 
 	<div class="sidebar">
 		<form id="filterForm" method="get"
-			action="${pageContext.request.contextPath}/board/rental">
+			action="${pageContext.request.contextPath}/board/rental/list">
 			<div class="filter-section">
 				<h3>정렬 조건</h3>
 				<button type="submit" id="filter-btn">정렬</button>
@@ -76,6 +82,7 @@
 			    </div>
 			  </div>
 			</div>
+			
 			<script>
 			  // Helper 함수: 모든 대/중/소 항목에서 active 제거
 			  function clearActive(className) {
@@ -294,7 +301,7 @@
 
 		</div>
 	</div>
-
+</div>
 
 <script>
   window.addEventListener('DOMContentLoaded', () => {

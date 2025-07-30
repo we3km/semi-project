@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
 
 * {
 	margin: 0;
@@ -33,7 +34,7 @@ body {
 	padding: 10px;
 	align-items: center;
 	background-color: #fff;
-	box-shadow: 0 6px
+	box-shadow: 0 6px;
 }
 
 .logo {
@@ -110,72 +111,102 @@ body {
 	/* 줄바꿈 방지 */
 }
 
-.search {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	margin: 10px;
+/* Wrapper 아래 정렬 및 좌우 배치 */
+.search-filter-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;  
+    width:100%;  
+    flex-wrap: wrap; /* 반응형 대응 */
 }
 
-.search-category {
-	padding: 8px 14px;
-	border-radius: 20px;
-	border: 1px solid #ccc;
-	background-color: #fff;
-	cursor: pointer;
-	font-weight: 500;
-	position: relative;
-	display: flex;
-	align-items: center;
-	gap: 6px;
+/* 드롭다운 영역 */
+.filters {
+	fidth:100px;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    gap:4px;
 }
 
-.search-dropdown {
-	display: none;
-	position: absolute;
-	top: 40px;
-	left: 0;
-	background-color: #fff;
-	border: 1px solid #ddd;
-	border-radius: 10px;
-	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-	z-index: 10;
+.dropdown {
+    position: relative;
 }
 
-.search-dropdown div {
-	padding: 10px 20px;
-	cursor: pointer;
-	font-size: 14px;
+.dropbtn {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 4px;
 }
 
-.search-dropdown div:hover {
-	background-color: #F5F5FF;
+.dropbtn_content {
+    color: #333;
 }
 
+.dropdown-icon {
+    transition: transform 0.2s ease;
+}
+
+.dropdown-content {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+}
+
+.dropdown-content.show {
+    display: flex;
+}
+
+/* .dropdown:hover .search-dropdown {
+    display: flex;
+} */
+
+.category {
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.category:hover {
+    background-color: #f0f0f0;
+}
+
+/* 검색창 영역 */
 .search-bar {
-	flex: 1;
-	display: flex;
-	align-items: center;
-	background-color: #F2F3F5;
-	border-radius: 20px;
-	padding: 10px 20px;
-	font-size: 14px;
-	color: #555;
-	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+	flex-grow: 1;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 10px;
+    gap:4px;
 }
 
 .search-bar input {
-	border: none;
-	outline: none;
-	background: transparent;
-	flex: 1;
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
 }
 
-.search img {
-	width: 20px;
-	height: 20px;
-	cursor: pointer;
-	margin-left: 10px;
+.search-bar img {
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    cursor: pointer;
 }
 
 .login_effect {

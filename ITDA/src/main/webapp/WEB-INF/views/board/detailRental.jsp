@@ -129,18 +129,23 @@ body {
 }
 
 #dibsBtn.liked {
-	background-color:gray;
+	background-color:red;
   color: white; /* 좋아요 상태일 때 빨간색 하트 */
 }
 
 #dibsBtn.not-liked {
-  background-color:red;
+  background-color:gray;
   color: white; /* 찜 안한 상태일 때 회색 하트 */
 }
 </style>
 
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<div class="container">
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->
@@ -203,7 +208,7 @@ body {
 					<button>메시지 보내기</button>
 
 					
-					<button id="dibsBtn" class="not-liked">
+					<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
   						<i class="fa fa-heart"></i> 찜하기
 					</button>
 					<!-- 연결해야함 -->
@@ -233,7 +238,8 @@ body {
 	             $.ajax({
 	               type: 'GET',
 	               url: '${pageContext.request.contextPath}/board/dibsCount',
-	               data: { boardId: '${boardId}' },
+	               data: { boardId: '${boardId}',
+	            	   boardCategory: 'rental'},
 	               success: function (count) {
 	                 $('#dibCount').text(count);
 	               }

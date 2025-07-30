@@ -7,6 +7,12 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
+	
 	<section class="price-date-category">
 		<div class="price-area">
 			원하는 상품 <label>1순위</label> <input type="text"> <label>2순위</label>

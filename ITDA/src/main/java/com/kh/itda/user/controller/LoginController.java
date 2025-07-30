@@ -30,7 +30,7 @@ public class LoginController {
                         HttpSession session,
                         RedirectAttributes ra) {
 
-        User loginUser = userService.login(userId, userPwd);
+        User loginUser = null;
 
         if (loginUser == null) {
             ra.addFlashAttribute("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
