@@ -10,7 +10,10 @@ import javax.servlet.ServletContext;
 import org.springframework.web.multipart.MultipartFile;
 
 public class Utils {
+
     // 폴더 없으면 생성 (categoryName 폴더명)
+
+
     public static boolean createFolderIfNotExists(ServletContext application, String categoryName) {
         String webPath = "/resources/images/" + categoryName + "/";
         String serverFolderPath = application.getRealPath(webPath);
@@ -67,6 +70,7 @@ public class Utils {
 
         return changedName;
     }
+
 	/*
 	 *  XSS(크로스 사이트 스크립트)공격을 방지하기 위한 메서드
 	 *   - 스크립트 삽입 공격
@@ -98,3 +102,4 @@ public class Utils {
 	}
 	
 }
+

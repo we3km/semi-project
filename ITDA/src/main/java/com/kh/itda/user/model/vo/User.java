@@ -1,11 +1,12 @@
 package com.kh.itda.user.model.vo;
 
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class USER {
+public class User {
 	private int UserNum;
 	private String userId;
 	private String userPwd;

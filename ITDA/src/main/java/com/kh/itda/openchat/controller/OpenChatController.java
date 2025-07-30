@@ -27,7 +27,7 @@ import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.user.model.vo.USER;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -132,7 +132,7 @@ public class OpenChatController {
 	    //로그인되면 수정해야함
 	    HttpSession session
 	) {
-	    USER u = (USER) session.getAttribute("loginUser");
+		User u = (User) session.getAttribute("loginUser");
 	    if (u == null) {
 	        ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
 	        return "redirect:/member/login";
@@ -167,7 +167,7 @@ public class OpenChatController {
                                 RedirectAttributes ra) {
 
         // 세션에서 로그인 유저 정보 가져오기
-        USER loginUser = (USER) session.getAttribute("loginUser");
+        User loginUser = (User) session.getAttribute("loginUser");
         if (loginUser == null) {
             ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
             return "redirect:/";
