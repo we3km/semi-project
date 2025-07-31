@@ -4,7 +4,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -592,6 +591,49 @@
 				<!-- 데베에 있던 메세지 끝어옴 -->
 				<!-- <div class="chat-message received"></div> -->
 			</div>
+
+			<script>
+
+			  function sendMessage() {
+			    const input = document.querySelector('.chat-input');
+			    const message = input.value;
+			
+			    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
+			    console.log("보내는 메세지 : ", message);
+			
+			    fetch("${contextPath}/chat/sendMessage", {
+			      method: "POST",
+			      headers: {
+			        "Content-Type": "application/json"
+			      },
+			      body: JSON.stringify({
+			        chatContent: message,
+			        chatRoomId: window.chatRoomId
+			      })
+			    })
+			    .then(response => {
+				    if (!response.ok) throw new Error("서버 에러");
+				    return response.json();
+				})
+			    .then(data => {
+			      const chatContent = document.querySelector('.chat-content2');
+			
+			      const newMessage = document.createElement('div');
+			      newMessage.className = 'chat-message sent';
+			      newMessage.textContent = data.chatContent;
+			
+			      chatContent.appendChild(newMessage);
+			      chatContent.scrollTop = chatContent.scrollHeight;
+			
+			      input.value = ""; // 입력란 비워줌
+			    })
+			    .catch(error => {
+			      console.error("메시지 전송 실패:", error);
+			      alert("메시지 전송 실패");
+			    });
+			  }
+
+			</script>
 
 			<div class="chat-footer2">
 				<!-- 버튼 눌렀을 때 나올 메뉴 -->
