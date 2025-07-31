@@ -38,19 +38,6 @@ public class ChatServiceImpl implements ChatService {
 		map.put("boardId", boardId);
 		
 		return dao.openChatRoom(map); // 여기서 chatRoomId가 room에 세팅됨
-
-		/*
-		 * // 채팅방 번호 할당 int chatRoomId = room.getChatRoomId();
-		 * 
-		 * // TransactionChatRoom 세팅 TransactionChatRoom trRoom = new
-		 * TransactionChatRoom(); trRoom.setChatRoomId(chatRoomId);
-		 * trRoom.setBoardId(room.getRefNum());
-		 * 
-		 * // ChatRoomJoin 세팅 ChatRoomJoin join = new ChatRoomJoin();
-		 * join.setChatRoomId(chatRoomId); join.setUserNum(room.getUserNum());
-		 * 
-		 * // Dao 처리 dao.openTransactionChatRoom(trRoom); dao.openChatParticipant(join);
-		 */
 	}
 
 	// 각 채팅방 아이디 별로 메세지 받아옴

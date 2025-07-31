@@ -25,11 +25,6 @@ public class ChatStompController {
 
 	@MessageMapping("/chat/sendMessage")
 	public void sendMessage(@Payload HashMap<String, Object> messageMap) {
-		// 태형이 로그인 부문 필요
-//		User loginUser = (User) session.getAttribute("loginUser");
-//		if (loginUser == null) {
-//			log.info("로그인 유저 없음");
-//		}
 
 		String chatContent = (String) messageMap.get("chatContent");
 		String chatRoomIdStr = (String) messageMap.get("chatRoomId");
@@ -41,6 +36,7 @@ public class ChatStompController {
 		chatMessage.setChatRoomId(chatRoomId);
 		chatMessage.setChatContent(chatContent);
 
+		// 로그인한 회원 정보 authentication
 		// chatMessage.setUserNum(loginUser.getUserNum());
 		chatMessage.setUserNum(6);
 

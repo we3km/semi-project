@@ -36,7 +36,7 @@
 				AND CATEGORY_ID = 11
 			)
 		WHERE CR.STATUS = 'Y'
-			AND CR.USER_NUM = #{userNum}
+			AND CP.USER_NUM = #{userNum}
 	</select>
 	
 	
@@ -69,25 +69,6 @@
 
 
 <!-- ==================== 채팅방 생성 ==================== -->
-	<!-- 
-	CHAT_ROOM (채팅방 - 공통)
-		- CHATROOM_ID
-		- USER_NUM
-		- REF_NUM
-		- STATUS
-	
-	TRANSACTION_CHAT (CHAT_ROOM => 거래 채팅방)
-		- CHATROOM_ID
-		- BOARD_ID	
-	 -->
-	 
-	<!-- 오픈 채팅방 생성 -->
-		<!-- 오픈채팅방 용도
-		채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등), 채팅방 상태,
-		오픈 채팅방 이름, 오픈 채팅방 참여인원, 최대 참여 인원, 세부 사항
-		-->
-
-	<!-- 채팅방 생성 -->
 	<!-- 채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등) -->
 	<insert id="openChatRoom" parameterType="map">
 		<selectKey keyProperty="chatRoomId" resultType="int" order="BEFORE">
@@ -136,34 +117,38 @@
 <!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
 	<select id="getMessagesByChatRoomId" resultType="ChatMessage">
 		SELECT
-			MESSAGE_ID,
-			CHATROOM_ID,
+			CM.MESSAGE_ID,
+			CM.CHATROOM_ID,
 			TO_CHAR(SENT_AT, 'YYYY-MM-DD HH24:MI') AS SENT_AT,
-			CHAT_CONTENT,
-			USER_NUM
-		FROM CHAT_MESSAGE
-		WHERE CHATROOM_ID = #{chatRoomId}
-		ORDER BY SENT_AT
+			CM.CHAT_CONTENT,
+			CM.CHAT_IMG,
+			UT.NICK_NAME
+		FROM CHAT_MESSAGE CM 
+        LEFT JOIN USER_TB UT ON UT.USER_NUM = CM.USER_NUM
+            WHERE CHATROOM_ID = #{chatRoomId}        
+		ORDER BY CM.SENT_AT
 	</select>
 
 
 <!-- ==================== 메세지 DB 삽입 ==================== -->	
 	<insert id="insertMessage">
-    INSERT INTO CHAT_MESSAGE (
-        MESSAGE_ID,
-        CHATROOM_ID,
-        SENT_AT,
-        CHAT_CONTENT,
-        USER_NUM
-    )
-    VALUES (
-        CHATMESSAGE_SEQ.NEXTVAL,
-        #{chatRoomId},
-        TRUNC(SYSDATE, 'MI'),
-        #{chatContent},
-        #{userNum}        
-    )
-</insert>
+	    INSERT INTO CHAT_MESSAGE (
+	        MESSAGE_ID,
+	        CHATROOM_ID,
+	        SENT_AT,
+	        CHAT_CONTENT,
+	        USER_NUM,
+	        CHAT_IMG
+	    )
+	    VALUES (
+	        CHATMESSAGE_SEQ.NEXTVAL,
+	        #{chatRoomId},
+	        TRUNC(SYSDATE, 'MI'),
+	        #{chatContent},
+	        #{userNum},
+	        #{chatImg}        
+	    )
+	</insert>
 
 
 <!-- ==================== 거래 채팅방 나가기 ==================== -->	

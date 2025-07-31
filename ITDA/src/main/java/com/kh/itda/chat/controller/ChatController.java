@@ -1,9 +1,12 @@
 package com.kh.itda.chat.controller;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.itda.chat.model.service.ChatService;
 import com.kh.itda.chat.model.vo.ChatMessage;
@@ -33,18 +38,14 @@ import lombok.extern.slf4j.Slf4j;
 
 public class ChatController {
 
+	User loginUser = new User();
 	@Autowired
 	private ChatService chatService;
 
 	@GetMapping("/chatroomlist")
 	public String selectChatRoomList(Model model, HttpSession session) {
 
-		User loginUser = (User) session.getAttribute("loginUser");
-
-		if (loginUser == null) {
-			log.info("담긴 회원정보가 없습니다.");
-		}
-
+		loginUser.setUserNum(6);
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
 
@@ -75,10 +76,7 @@ public class ChatController {
 	@ResponseBody
 	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, HttpSession session) {
 		// 현재 로그인한 회원 정보 받아옴
-		User loginUser = (User) session.getAttribute("loginUser");
-		if (loginUser == null) {
-			log.info("로그인 유저 없음");
-		}
+		loginUser.setUserNum(6);
 
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
@@ -99,42 +97,6 @@ public class ChatController {
 
 		return "/chat/chatroomlist";
 	}
-
-	/*
-	 * @PostMapping("/sendMessage")
-	 * 
-	 * @ResponseBody // CHATROOM_ID, CHAT_CONTENT, USER_NUM public ChatMessage
-	 * sendMessage(@RequestBody Map<String, Object> messageMap, HttpSession session)
-	 * { User loginUser = (User) session.getAttribute("loginUser"); if (loginUser ==
-	 * null) { log.info("로그인 유저 없음"); }
-	 * 
-	 * 
-	 * System.out.println("loginUser: " + loginUser);
-	 * System.out.println("messageMap: " + messageMap);
-	 * 
-	 * 
-	 * String chatContent = (String) messageMap.get("chatContent"); String
-	 * chatRoomIdStr = (String) messageMap.get("chatRoomId"); int chatRoomId =
-	 * Integer.parseInt(chatRoomIdStr);
-	 * 
-	 * 
-	 * System.out.println("chatContent: " + chatContent);
-	 * System.out.println("chatRoomId: " + chatRoomId);
-	 * 
-	 * 
-	 * // 채팅방 번호, 채팅 내용, 로그인한 회원 번호 할당 ChatMessage chatMessage = new ChatMessage();
-	 * 
-	 * chatMessage.setChatRoomId(chatRoomId);
-	 * chatMessage.setChatContent(chatContent);
-	 * chatMessage.setUserNum(loginUser.getUserNum());
-	 * 
-	 * log.info("채팅방 정보 : {}", chatMessage);
-	 * 
-	 * int result = chatService.sendMessage(chatMessage);
-	 * 
-	 * if (result > 0) { log.info("채팅 정보 : {}", result); return chatMessage; } else
-	 * { log.info("채팅 보내기 실패"); throw new RuntimeException("채팅 저장 실패"); } }
-	 */
 
 	// 메세지 받아와서 채팅방 오른쪽에 출력하자이
 	@GetMapping("/messages/{chatRoomId}")
@@ -193,5 +155,55 @@ public class ChatController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("lastMessage", text);
 		return map;
+	}
+
+	// 서버에 사진 파일 저장하자
+	@PostMapping("/uploadImageMessage")
+	@ResponseBody
+	public Map<String, Object> uploadImageMessage(@RequestParam("image") MultipartFile image,
+			@RequestParam("chatRoomId") int chatRoomId, HttpServletRequest request) {
+		loginUser.setUserNum(6);
+		int userNum = loginUser.getUserNum();
+
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			// 파일 저장 경로 설정
+			String savePath = request.getServletContext().getRealPath("/resources/images/chattingImg/");
+			File dir = new File(savePath);
+			if (!dir.exists())
+				dir.mkdirs();
+
+			// 파일명 중복 방지를 위한 UUID
+			String originalFilename = image.getOriginalFilename();
+			String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String renamedFilename = UUID.randomUUID().toString() + ext;
+			
+			// 서버 직접 저장
+			File dest = new File(savePath + renamedFilename);
+			image.transferTo(dest);
+			String chatImgUrl = "/resources/images/chattingImg/" + renamedFilename;
+
+			// ChatMessage 새로운 객체 구성 -> 이미지 파일도 메세지로 치부
+			ChatMessage chatMessage = new ChatMessage();
+			chatMessage.setChatRoomId(chatRoomId);
+			chatMessage.setChatContent("");
+			chatMessage.setUserNum(userNum);
+			chatMessage.setChatImg(chatImgUrl);
+
+			int insertResult = chatService.sendMessage(chatMessage);
+
+			result.put("success", insertResult > 0);
+			result.put("chatMessage", chatMessage);
+			// 메세지 자체를 리턴 (이미지의 경우, chatContent : null, chatImg : 사진 경로 
+			
+			log.info("이미지 파일 : {}", chatMessage);
+			log.info("저장될 파일 전체 경로 : {}", savePath);			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("success", false);
+		}
+		return result;
 	}
 }

@@ -54,7 +54,6 @@
 </head>
 
 <body>
-
 	<div class="chat-wrapper">
 		<!-- 왼쪽 채팅창 -->
 		<div class="chatlist-container">
@@ -569,7 +568,7 @@
 
 
 
-			<!-- 오른쪽 창 메세지 -->
+			<!-- ===================== 오른쪽 창 메세지 ===================== -->
 			<div class="chat-content2">
 				<!-- 바디 부분 -->
 				<div class="chat-message" id="item-board">
@@ -641,21 +640,28 @@
 				<!-- 버튼 눌렀을 때 나올 메뉴 -->
 				<!-- 실제 파일 업로드용 input (숨김 처리) -->
 				<input type="file" id="imageInput" accept="image/*"
-					style="display: none;" />
+					style="display: none;" onchange="uploadImage(this)" />
 				<!-- 사용자가 누르게 될 버튼 -->
 				<button class="ellipse-button" onclick="insertImg()">
 					<b>+</b>
 				</button>
-				<input type="text" class="chat-input" placeholder="메시지를 입력하세요..." />
+				<input type="text" class="chat-input" placeholder="메시지를 입력하세요..."
+					onkeydown="handleKeyDown(event)" />
 				<button class="send-button" onclick="sendMessage()">
 					<b>전송</b>
 				</button>
 
 				<!-- =========================우측 채팅방 기능========================= -->
 				<script>
-                // 오른쪽 채팅창 헤더 +버튼 눌렀을 때 
-                // 주소요청, 운송장 입력 등 거래 유형에 맞게 보여줌
+                function handleKeyDown(event) {
+				if (event.key === "Enter") {
+					event.preventDefault(); // 폼 제출 막기 (폼이 있을 경우)
+					sendMessage(); // 전송 함수 호출
+					}
+				}
 
+                // 오른쪽 채팅창 헤더 +버튼 눌렀을 때 
+                // 주소요청, 운송장 입력 등 거래 유형에 맞게 보여줌                
                 function transactionService() {
                     const menu = document.getElementById("transMenu");
                     menu.classList.toggle("hidden");
@@ -665,6 +671,37 @@
                 function insertImg() {
                     document.getElementById('imageInput').click();
                     // 숨겨진 input을 클릭
+                }
+                
+                // 이미지 선택시, 이미지 서버 저장, DB삽입하자
+                function uploadImage(input) {
+                    const file = input.files[0];
+                    if (!file) return;
+                    
+                    console.log("사진 파일 : ", file);
+
+                    // 실제 사진 파일, 채룸 아이디
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('chatRoomId', window.chatRoomId); // 채팅방 id도 같이 전송
+
+                    fetch("${contextPath}/chat/uploadImageMessage", {                    	
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // 채팅창에 이미지 표시
+                            showMessage(data.chatMessage);
+                        } else {
+                            alert('이미지 업로드 실패');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('에러 발생');
+                    });
                 }
             </script>
 			</div>
@@ -745,21 +782,44 @@
                         })
                         .then(messages => {
                         	console.log("출력되는 메세지 : ", messages);
+                        	// 출력됐던 메세지 & 사진 모두 지우자
                             document.querySelectorAll(".chat-message-talk").forEach(element => {
+                                element.remove();
+                            });                           
+                            document.querySelectorAll(".img").forEach(element => {
                                 element.remove();
                             });
                             messages.forEach(msg => {
                                 const newMessage = document.createElement("div");
+                                
                                 newMessage.className = "chat-message-talk";
-                                newMessage.textContent = msg.chatContent;
                                 newMessage.sentAt = msg.sentAt;
-                                chatContent2.appendChild(newMessage);
+                                                                
+                                // 만약 메세지 내용이 null이라면 사진 메세지
+                            	if(msg.chatContent == null){
+                            		if(msg.chatImg){
+		                                console.log("사진 메세지 경로 : ", msg.chatImg);		                                
+                            			const img = document.createElement("img");
+                            			img.src = contextPath + msg.chatImg;
+                            			img.alt = "사진 메시지";
+                                        img.style.maxWidth = "200px";
+                                        img.style.borderRadius = "8px";
+                                        chatContent2.appendChild(img);
+                            		} else{
+                            			newMessage.textContent = "사진이 존재하지 않습니다.";
+                            		}
+                            	// 사진이 아니라면 일반 텍스트
+                            	} else{                            	
+                                	newMessage.textContent = msg.chatContent;
+                                	chatContent2.appendChild(newMessage);
+                                } 
                             });
                         })
                         .catch(err => {
                             console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
                         });
-                } else if(chatRoomType==="오픈채팅방") {
+
+                } else if(chatRoomType==="오픈채팅방") {	
                     // ===== 오픈채팅방인 경우, 게시물 없이 메세지만 가져오자 =====
                     chatHeader2.textContent = window.chatRightTitle;
 
@@ -774,31 +834,53 @@
                             if (!res.ok) throw new Error("메세지 가져오기 실패");
                             return res.json();
                         })
+                        // 출력됐던 메세지 & 사진 모두 지우자
                         .then(messages => {
                             console.log("출력되는 메세지 : ", messages);
                             document.querySelectorAll(".chat-message-talk").forEach(element => {
                                 element.remove();
                             });
+                            document.querySelectorAll(".img").forEach(element => {
+                                element.remove();
+                            });
                             messages.forEach(msg => {
                                 const newMessage = document.createElement("div");
                                 newMessage.className = "chat-message-talk";
-                                newMessage.textContent = msg.chatContent;
-                                chatContent2.appendChild(newMessage);
+                                newMessage.sentAt = msg.sentAt;
+                                                                
+                                // 만약 메세지 내용이 null이라면 사진 메세지
+                            	if(msg.chatContent == null){
+                            		if(msg.chatImg){
+		                                console.log("사진 메세지 경로 : ", msg.chatImg);		                                
+                            			const img = document.createElement("img");
+                            			img.src = contextPath + msg.chatImg;
+                            			img.alt = "사진 메시지";
+                                        img.style.maxWidth = "200px";
+                                        img.style.borderRadius = "8px";
+                                        chatContent2.appendChild(img);
+                            		} else{
+                            			newMessage.textContent = "사진이 존재하지 않습니다.";
+                            		}
+                            	// 사진이 아니라면 일반 텍스트
+                            	} else{                            	
+                                	newMessage.textContent = msg.chatContent;
+                                	chatContent2.appendChild(newMessage);
+                                } 
                             });
                         })
                         .catch(err => {
                             console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
                         });
-                }       
+                }   
+                
+                // 실시간으로 메세지 보여줌 -> chatStompController 호출
                 stompClient.subscribe("/topic/room/" + window.chatRoomId, function(message){
                     // message.body가 본문 
                     const chatMessage = JSON.parse(message.body);
-                    console.log(chatMessage)
-                    showMessage(chatMessage);
+                    console.log("발송하는 채팅 메세시 속성 : ", chatMessage)
+                    showMessage(chatMessage);                    
                 });
-
-                }
-
+                
             }); // addEventListener close
         }); // forEach close
     });
