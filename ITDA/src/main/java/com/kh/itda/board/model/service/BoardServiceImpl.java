@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
-import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
-import com.kh.itda.board.model.vo.BoardRental;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;

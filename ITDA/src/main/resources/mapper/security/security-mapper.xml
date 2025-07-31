@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="security">
+
+	<!-- 회원 정보 조회 -->
+	<select id="loadUserByUsername" resultMap="userResultMap">
+		SELECT U.*,
+		P.IMAGE_URL
+		FROM USER_TB U
+		LEFT JOIN PROFILE USING(USER_NUM)
+		WHERE
+		USER_ID = #{userId}
+	</select>
+
+	<!-- 권한 조회 -->
+	<select id="findAuthoritiesByUserNum" parameterType="int"
+		resultType="string">
+		SELECT AUTHORITY
+		FROM AUTHORITIES
+		WHERE USER_NUM = #{userNum}
+	</select>
+
+	<!-- 회원 정보 조회(프로필 제외) -->
+	<select id="findUserById" parameterType="string"
+		resultType="User">
+		SELECT * FROM USER_TB WHERE USER_ID = #{userId}
+	</select>
+
+	<!-- 아이디 중복 체크 -->
+	<select id="idCheck" resultType="int" parameterType="String">
+		SELECT
+		COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
+	</select>
+	
+	<insert id="insertToken">
+		INSERT 
+			INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN, LAST_USED) 
+			VALUES (#{series}, #{username}, #{token}, #{lastUsed})
+	</insert>
+	
+	<update id="updateToken">
+		UPDATE PERSISTENT_LOGINS
+		SET TOKEN = #{token}, LAST_USED = #{lastUsed}
+		WHERE SERIES = #{series}
+	</update>
+	
+	<select id="selectToken" resultType="org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken">
+		SELECT 
+			SERIES, 
+			USERNAME,
+			TOKEN,
+			LAST_USED
+		FROM PERSISTENT_LOGINS
+		WHERE SERIES = #{series}
+	</select>
+	
+	<delete id="deleteTokensByUserNum" parameterType="map">
+		DELETE FROM PERSISTENT_LOGINS WHERE USERNAME = #{username}
+	</delete>
+
+	<resultMap type="userExt" id="userResultMap">
+		<id column="USER_NUM" property="userNum" />
+		<result column="USER_ID" property="userId" />
+		<result column="USER_PWD" property="userPwd" />
+		<result column="NICK_NAME" property="nickName" />
+		<result column="EMAIL" property="email" />
+		<result column="PHONE" property="phone" />
+		<result column="BIRTH" property="birth" />
+		<result column="ADDRESS" property="address" />
+		<result column="CREATE_DATE" property="createDate" />
+		<result column="IMAGE_URL" property="imageUrl" />
+		<collection property="authorities" javaType="arraylist"
+			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
+			column="USER_NUM" select="user.findAuthoritiesByUserNum" />
+	</resultMap>
+
+</mapper>
