@@ -21,7 +21,6 @@ public class locationDao {
 
 	public int insertLocation(Location loc) {
 		return session.insert("location.insertLocation",loc);
-
 	}
 
 	public Location findBySidoSigungu(String sido, String sigungu) {

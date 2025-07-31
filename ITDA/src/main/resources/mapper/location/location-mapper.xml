@@ -54,7 +54,7 @@
   SELECT DISTINCT SIGUNGU
   FROM LOCATION
   WHERE SIDO = #{sido}
-    AND REGEXP_LIKE(SIGUNGU, '^[^ ]+$')  <!-- 공백 없는 단일 구 -->
+    AND REGEXP_LIKE(SIGUNGU, '^[^ ]+$')  <!-- 공백 없는 단일 구 ex)서울특별시 서초구,중랑구/부산광역시 남구/중구 등.. -->
   ORDER BY SIGUNGU
 </select>
   

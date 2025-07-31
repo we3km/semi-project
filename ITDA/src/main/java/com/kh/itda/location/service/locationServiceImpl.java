@@ -77,8 +77,8 @@ public class locationServiceImpl implements locationService {
 	public List<String> findGuListBySigun(String sido, String sigun) {
 		List<String> sigunguList = dao.findSigunguBySido(sido);
 
-		return sigunguList.stream().filter(s -> s.startsWith(sigun + " ")).map(s -> s.split(" ")[1]) // "수원시 팔달구" →
-																										// "팔달구"
+		return sigunguList.stream().filter(s -> s.startsWith(sigun + " ")).map(s -> s.split(" ")[1]) // "수원시 팔달구" →"팔달구"
+																										
 				.distinct().collect(Collectors.toList());
 	}
 

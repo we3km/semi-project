@@ -11,16 +11,17 @@
 	src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <meta charset="UTF-8">
 <title>오픈 채팅방 리스트</title>
-<link rel="stylesheet" href="${contextPath}/resources/css/openlist.css">
+<link rel="stylesheet" href="${contextPath}/resources/css/openchat/openlist.css">
 </head>
-<body>
-	<div class="container">
-		<header class="header"></header>
-		<div class="layout">
-			<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-			<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
+<body class="openlistbody">
+		<header class="header">
+		<jsp:include page="/WEB-INF/views/common/Header.jsp"></jsp:include>
+		</header>
+	<div class="openlist-container">
+		
+		<div class="openlist-layout">
 			<form id="filterForm" method="get"
+				<%-- 여기 액션 부분만 바꿔주세요 --%>
 				action="${contextPath}/openchat/openChatList">
 				<aside class="filter-sidebar">
 
@@ -49,7 +50,8 @@
 
 					<!-- 2-2) 시 바로 아래 구가 있는 경우: 라디오 버튼 출력 -->
 					<c:if test="${fn:length(sigunList) == 0 and not empty guList}">
-						<div class="gu-radio-group" style="max-height: 250px; overflow-y: auto;" >
+						<div class="gu-radio-group"
+							style="max-height: 250px; overflow-y: auto;">
 							<p>구 선택</p>
 							<c:forEach var="g" items="${guList}">
 								<label class="gu-item"> <input type="radio" name="sigun"
@@ -76,11 +78,11 @@
 					<!-- 4) 구 리스트 (시군 아래 구 리스트) -->
 					<c:if
 						test="${not empty guList and not empty selectedSigun and fn:length(sigunList) > 0}">
-						<div class="gu-list" id="guListContainer" style="max-height: 250px; overflow-y: auto;">
+						<div class="gu-list" id="guListContainer"
+							style="max-height: 250px; overflow-y: auto;">
 							<c:forEach var="g" items="${guList}" varStatus="st">
-								<label class="gu-item">
-									<input type="radio" name="gu" value="${g}"
-									${g == selectedGu ? 'checked' : ''}
+								<label class="gu-item"> <input type="radio" name="gu"
+									value="${g}" ${g == selectedGu ? 'checked' : ''}
 									onchange="document.getElementById('filterForm').submit()" /> <span
 									class="gu-label">${g}</span>
 								</label>
@@ -91,17 +93,17 @@
 			</form>
 
 			<main class="main-content">
-				<h1 class="main-title">오픈 채팅방 리스트</h1>
-				<h2 class="location"></h2>
 
 				<!-- 상단 바 -->
 				<div class="top-bar">
+				<h1 class="main-title">오픈 채팅방 리스트</h1>
+				<h2 class="location"></h2>
 					<form id="sortForm" method="get"
 						action="${contextPath}/openchat/openChatList">
-						<input type="hidden" name="sido" value="${selectedSido}" /> <input
+						<%-- <input type="hidden" name="sido" value="${selectedSido}" /> <input
 							type="hidden" name="sigungu" value="${selectedSigungu}" /> <input
 							type="text" name="keyword" class="search-bar" value="${keyword}"
-							placeholder="채팅방 검색" />
+							placeholder="채팅방 검색" /> --%>
 					</form>
 					<button type="button" class="create-chat-btn">채팅방 개설</button>
 				</div>
@@ -123,7 +125,7 @@
 											</c:when>
 											<c:otherwise>
 												<img
-													src="${contextPath}/resources/images/chat/openchat_default.jpg"
+													src="${contextPath}/resources/images/chat/openchat/openchat_default.jpg"
 													alt="기본 이미지" class="chat-img" />
 											</c:otherwise>
 										</c:choose>
@@ -161,24 +163,47 @@
 					</c:choose>
 				</div>
 
-				<!-- 이하 기존 코드(모달, 페이징, JS 등)는 그대로 유지 -->
 
 				<!-- 페이지네이션 -->
 				<div class="pagination">
-					<c:if test="${currentPage > 1}">
-						<a
-							href="${contextPath}/openchat/openChatList?page=${currentPage - 1}"
-							class="page-btn prev">&laquo;</a>
-					</c:if>
-					<c:forEach var="i" begin="${startPage}" end="${endPage}">
-						<a href="${contextPath}/openchat/openChatList?page=${i}"
-							class="page-btn ${i == currentPage ? 'active' : ''}">${i}</a>
-					</c:forEach>
-					<c:if test="${currentPage < totalPage}">
-						<a
-							href="${contextPath}/openchat/openChatList?page=${currentPage + 1}"
-							class="page-btn next">&raquo;</a>
-					</c:if>
+				  <!-- 이전 페이지 -->
+				  <c:if test="${currentPage > 1}">
+				    <c:url var="prevUrl" value="/openchat/openChatList">
+				      <c:param name="page" value="${currentPage - 1}" />
+				      <c:param name="sido" value="${fn:trim(selectedSido)}" />
+				      <c:param name="sigun" value="${fn:trim(selectedSigun)}" />
+				       <c:if test="${not empty selectedGu}">
+    					<c:param name="gu" value="${fn:trim(selectedGu)}" />
+  					   </c:if>
+				    </c:url>
+				    <a href="${prevUrl}" class="page-btn prev">&laquo;</a>
+				  </c:if>
+				
+				  <!-- 페이지 번호 반복 -->
+				  <c:forEach var="i" begin="${startPage}" end="${endPage}">
+				    <c:url var="pageUrl" value="/openchat/openChatList">
+				      <c:param name="page" value="${i}" />
+				      <c:param name="sido" value="${fn:trim(selectedSido)}" />
+				      <c:param name="sigun" value="${fn:trim(selectedSigun)}" />
+				      <c:if test="${not empty selectedGu}">
+    					<c:param name="gu" value="${fn:trim(selectedGu)}" />
+  					   </c:if>
+				    </c:url>
+				    <a href="${pageUrl}" class="page-btn ${i == currentPage ? 'active' : ''}">${i}</a>
+				  </c:forEach>
+				
+				  <!-- 다음 페이지 -->
+				  <c:if test="${currentPage < totalPage}">
+				    <c:url var="nextUrl" value="/openchat/openChatList">
+				      <c:param name="page" value="${currentPage + 1}" />
+				      <c:param name="sido" value="${fn:trim(selectedSido)}" />
+				      <c:param name="sigun" value="${fn:trim(selectedSigun)}" />
+				      <c:if test="${not empty selectedGu}">
+    					<c:param name="gu" value="${fn:trim(selectedGu)}" />
+  					  </c:if>
+				    </c:url>
+				    <a href="${nextUrl}" class="page-btn next">&raquo;</a>
+				  </c:if>
 				</div>
 
 				<!-- 상세 모달 -->
@@ -214,6 +239,7 @@
 							method="post" enctype="multipart/form-data"
 							onsubmit="return validateForm(this)">
 							<div class="image-upload-area">
+
 								<label class="image-label">대표 이미지</label>
 								<div class="image-preview-box">
 									<div id="previewContainer"></div>
@@ -223,11 +249,11 @@
 								</div>
 							</div>
 
-							<!-- 위도, 경도 숨김 -->
-							<input type="hidden" id="latitude" name="latitude" value="" /> <input
-								type="hidden" id="longitude" name="longitude" value="" /> <input
-								type="hidden" id="sido" name="sido" value="" /> <input
-								type="hidden" id="sigungu" name="sigungu" value="" />
+							<!-- 시도 / 시군구 데이터 -->
+							<input type="hidden" id="latitude" name="latitude" value="" /> 
+							<input type="hidden" id="longitude" name="longitude" value="" /> 
+							<input	type="hidden" id="sido" name="sido" value="" /> 
+							<input	type="hidden" id="sigungu" name="sigungu" value="" />
 
 							<!-- 위치 자동 입력 & 수정 -->
 							<div class="form-row">
@@ -362,7 +388,7 @@ function hideDetailModal() {
 
 document.addEventListener("DOMContentLoaded", function() {
 	getLocation();
-  // ◼ 개설 모달 열기
+  //  개설 모달 열기
   const createBtn = document.querySelector(".create-chat-btn");
   const createModal = document.getElementById("modal");
   createBtn.addEventListener("click", function() {
@@ -371,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function() {
     getLocation();
   });
 
-  // ◼ 개설 모달 닫기
+  //  개설 모달 닫기
   document.getElementById("closeModalBtn")
           .addEventListener("click", () => {
     createModal.classList.add("hidden");
@@ -391,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   
 
-  // ◼ 주소 검색/수정 버튼 (Daum 우편번호)
+  //  주소 검색/수정 버튼 (Daum 우편번호)
 document.getElementById("editLocationBtn")
   .addEventListener("click", () => {
     new daum.Postcode({
@@ -424,13 +450,13 @@ document.getElementById("editLocationBtn")
         // 4) 버튼 활성화
         document.getElementById("submitBtn").disabled = false;
 
-        // (선택) 디버그 로그
+        // 디버그 로그
         console.log("Daum postcode → 시:", sido, "구:", sigungu);
       }
     }).open();
   });
 
-  // ◼ 상세 모달 > 참여 버튼 클릭
+  //  상세 모달 > 참여 버튼 클릭
   document.querySelectorAll(".open-detail").forEach(btn => {
     btn.addEventListener("click", function() {
       const chatRoomID = this.dataset.roomId;
@@ -456,7 +482,7 @@ document.getElementById("editLocationBtn")
         rawTags.forEach(tag => {
           tag = tag.trim();
           if (tag.length > 0) {
-            const cleaned = '#' + tag.replace(/^#+/, ''); // # 여러 개 제거 후 하나만 붙임
+            const cleaned = '#' + tag.replace(/^#+/, ''); // # 여러 개 제거 하나만 붙임
 
             const span = document.createElement('span');
             span.className = 'tag';
@@ -484,7 +510,7 @@ document.getElementById("editLocationBtn")
 	  return true;
 	}
 
-  // ◼ 상세 모달 닫기
+  //  상세 모달 닫기
   document.getElementById("closeDetailBtn")
           .addEventListener("click", hideDetailModal);
 
@@ -497,7 +523,7 @@ document.getElementById("editLocationBtn")
 
   // 파일이 선택되면
   imageFileInput.addEventListener('change', function() {
-    const file = this.files[0];    // 첫 번째 파일만 꺼냄
+    const file = this.files[0];    
     if (!file) return;
 
     // 기존 미리보기 초기화
@@ -522,18 +548,19 @@ document.getElementById("editLocationBtn")
 	const toggleBtn = document.getElementById('toggleSidoSelect');
 	const container = document.getElementById('sidoSelectContainer');
 
-	// 초기 상태(숨김)가 필요하면 스타일시트나 여기서 명시적으로 처리
 	container.style.display = 'none';
 	toggleBtn.textContent    = '다른 지역 검색';
 
 	toggleBtn.addEventListener('click', function() {
-	  // block ↔ none 토글
+	  // block <--> none 
 	  const isHidden = container.style.display === 'none';
 	  
 	  container.style.display = isHidden ? 'block' : 'none';
 	  this.textContent        = isHidden ? '검색 영역 접기' : '다른 지역 검색';
 	});
   });
+ 	
+ 	//채팅방 최대 참여원원 설정
  	const maxCount = document.getElementById('maxchatCount');
  	maxCount.addEventListener('input', () => {
  	  let v = parseInt(maxCount.value, 10) || 0;
@@ -542,7 +569,9 @@ document.getElementById("editLocationBtn")
  	});
 </script>
 
+
 	<script>
+	//필터 옵션
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("filterForm");
   const sidoSelect = document.getElementById("sidoSelect");
@@ -571,8 +600,6 @@ document.addEventListener("DOMContentLoaded", function () {
   
 const sigunRadios = form.querySelectorAll('input[type="radio"][name="sigun"]');
 });
-
-// sigun 라디오 (시/군 선택없이 구만 보여줄때)
 </script>
 
 </body>

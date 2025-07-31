@@ -118,7 +118,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 	        }
 	    }
 
-	    // 최종 성공 로그 및 결과 리턴
+	    // 최종 성공 로그
 	    log.debug(">> [END] createOpenChat 성공");
 	    return result;
 	}
@@ -140,7 +140,7 @@ public class OpenChatServiceImpl implements OpenChatService {
 	    if (currentCount >= maxCount) {
 	    	log.warn(">> 채팅방 인원 초과: roomId={}", roomId);
 	    	log.warn("   현재인원={}, 최대인원={}", currentCount, maxCount);
-	    	return null; // 혹은 예외 던지기
+	    	return null;
 	    }
 	    
 	    // 2. 참여자 등록

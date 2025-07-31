@@ -147,9 +147,9 @@ public class OpenChatController {
 
 		room.setUserNum(u.getUserNum());
 		room.setTagContent(tagContent);
-
+		
+		//위치 저장
 		log.debug("▶︎ loc.sido = {}, loc.sigungu = {}", loc.getSido(), loc.getSigungu());
-		// loc.getSido(), loc.getSigungu() 에 이미 값 바인딩됨
 		Long locId = locationService.findOrCreate(loc.getSido(), loc.getSigungu());
 		room.setLocationId(locId);
 

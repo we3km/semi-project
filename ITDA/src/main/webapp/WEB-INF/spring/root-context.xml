@@ -7,11 +7,14 @@
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<!-- DB연결 설정 -->
+	
+	<!-- 카카오 api 사용할려면 sevlet,root-contxt.xml에도 있어야 되더라구요 이거 맞습니다  -->
 	<context:property-placeholder
-
     location="classpath:driver.properties,classpath:kakaoapi.properties"
     ignore-unresolvable="true"
     file-encoding="UTF-8" />
+    
+    
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" />
 
 	<!-- 1단계 DB연결 -->

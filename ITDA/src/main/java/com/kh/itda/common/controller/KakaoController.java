@@ -1,4 +1,4 @@
-package com.kh.itda.openchat.controller;
+package com.kh.itda.common.controller;
 
 import java.net.URI;
 import java.net.URLEncoder;
