@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserExt extends User implements UserDetails{
 
-	private List<SimpleGrantedAuthority> authorities;
+	private List<GrantedAuthority> authorities;
+
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -32,6 +33,14 @@ public class UserExt extends User implements UserDetails{
 	@Override
 	public String getUsername() {
 		return getUserId();
+	}
+
+	public int getUserNum() {
+	    return super.getUserNum();
+	}
+
+	public void setAuthorities(List<GrantedAuthority> authorities) {
+		this.authorities = authorities;
 	}
 
 	@Override
@@ -54,5 +63,4 @@ public class UserExt extends User implements UserDetails{
 		return true;
 	}
 
-	
 }

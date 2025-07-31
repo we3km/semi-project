@@ -1,4 +1,4 @@
-	package com.kh.itda.user.model.dao;
+package com.kh.itda.user.model.dao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public void insertUserAndAuthority(User user) {
-		// TODO Auto-generated method stub
 		
 	}
 
