@@ -17,5 +17,4 @@ public class User {
     private String address;
     private String imageUrl;
     private String validPeriod = "";
-
 }
