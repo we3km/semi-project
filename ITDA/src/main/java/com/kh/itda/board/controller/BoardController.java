@@ -20,6 +20,8 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -55,6 +57,7 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.user.model.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +70,7 @@ public class BoardController {
 
 	@Autowired
 	private final BoardService boardService;
+	private final UserService userService;
 
 	private final ServletContext application;
 
@@ -643,10 +647,20 @@ public class BoardController {
 		// 경매 게시글 상세보기
 		// 게시물 목록에서 게시물을 클릭하면 클릭한 게시물의 아이디가 boardId로 바인딩
 		@GetMapping("/detail/auction/{boardId}")
-		public String boardDetailAuction(@PathVariable("boardId") int boardId, Authentication auth, Model model,
+		public String boardDetailAuction(@PathVariable("boardId") int boardId, Model model,
 				@CookieValue(value = "readBoardShareNo", required = false) String readBoardShareNoCookie, HttpServletRequest req,
 				HttpServletResponse res) {
-					// 대여 게시글 정보 추출
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+					Object principal = auth.getPrincipal();
+					String userId = ((UserDetails) principal).getUsername();
+					String userNickname = userService.selectUserNickname(userId);
+					String userNum = userService.selectUserNum(userId);
+					System.out.println("회원번호"+userNum);
+					model.addAttribute("userNickname", userNickname);
+					model.addAttribute("userNum", userNum);
+					
+					
+					// 경매 게시글 정보 추출
 					BoardAuctionWrapper board = boardService.selectBoardAuction(boardId);
 					model.addAttribute("board", board);
 					if (board == null) {
@@ -700,25 +714,25 @@ public class BoardController {
 					model.addAttribute("writerAuctionWrapperList", writerAuctionWrapperList);
 					System.out.println("게시자의 다른 상품 : " + writerAuctionWrapperList);
 
-					// 조회한 게시글과 소분류 카테고리가 같은 대여 상품들
+					// 조회한 게시글과 소분류 카테고리가 같은 경매 상품들
 					String smallCategory = board.getBoardCommon().getProductCategoryS();
 					List<BoardAuctionFileWrapper> equalsCategoryList = boardService.selectEqualsCategoryAuctionList(smallCategory);
 					model.addAttribute("equalsCategoryList", equalsCategoryList);
 
-					// 선택한 대여 게시물의 게시자 닉네임 추출
+					// 선택한 경매 게시물의 게시자 닉네임 추출
 					String writer = boardService.selectWriterNickname(writerUserNum);
 					model.addAttribute("writer", writer);
 					System.out.println(writerUserNum);
 
-					// 선택한 대여 게시물의 게시자 매너점수 추출
+					// 선택한 경매 게시물의 게시자 매너점수 추출
 					int mannerScore = boardService.selectMannerScore(writerUserNum);
 					model.addAttribute("mannerScore", mannerScore);
 
-					// 선택한 대여 게시물의 태그 추출
+					// 선택한 경매 게시물의 태그 추출
 					List<String> tags = boardService.selectTags(boardId);
 					model.addAttribute("tags", tags);
 
-					// 선택한 대여 게시물의 찜 수 추출
+					// 선택한 경매 게시물의 찜 수 추출
 					Dibs dibs = new Dibs();
 					dibs.setBoardId(boardId);
 					dibs.setBoardCategory("auction");
@@ -786,9 +800,11 @@ public class BoardController {
 	@ResponseBody
 	public ResponseEntity<?> registerBid(@RequestBody AuctionBidding bid) {
 	    try {
+	    	System.out.println("입찰금:"+bid);
 	        boardService.saveBid(bid); // DB 저장 처리
 	        return ResponseEntity.ok().body("success");
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
 	    }
 	}

@@ -987,5 +987,9 @@
 		</association>
 	</resultMap>
 	
-	
+		
+	<insert id="saveBid" parameterType="AuctionBidding">
+		INSERT INTO AUCTION_BIDDING(BOARD_ID, BIDDING_USER_NUM, BID)
+		VALUES (#{boardId}, #{biddingUserNum}, #{bid})
+	</insert>
 </mapper>

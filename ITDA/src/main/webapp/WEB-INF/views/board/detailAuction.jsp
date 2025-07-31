@@ -279,50 +279,39 @@ body {
 	  }
 	
 	  function applyValue() {
-		  function applyValue() {
-			    const bidValue = document.getElementById("popupInput").value;
-			    const nickname = "홍길동"; // 실제 환경에서는 서버에서 넘겨받은 값
-
-			    // 1. 서버에 AJAX로 데이터 전송
-			    fetch('/auction/bid', {
-			        method: 'POST',
-			        headers: {
-			            'Content-Type': 'application/json'
-			        },
-			        body: JSON.stringify({
-			            boardId: board.boardCommon.boardId, // 게시글 ID - 서버에서 받아오거나 hidden으로 설정
-			            nickname: nickname,
-			            bidPrice: bidValue
-			        })
-			    })
-			    .then(response => {
-			        if (!response.ok) throw new Error('입찰 저장 실패');
-			        return response.json();
-			    })
-			    .then(data => {
+			    const bidValue = $("#popupInput").val();
+			    const userNum = ${userNum}; // 실제 환경에서는 서버에서 받아온 로그인 사용자 ID
+				const nickName = '${userNickname}';
+			    $.ajax({
+			      url: "${pageContext.request.contextPath}/board/auction/bid", // JSP에서 contextPath 처리
+			      type: "POST",
+			      contentType: "application/json",
+			      data: JSON.stringify({
+			        boardId: ${board.boardCommon.boardId}, // JSP 변수 그대로 사용
+			        biddingUserNum: userNum,
+			        bid: bidValue
+			      }),
+			      success: function(data) {
 			        console.log("서버 응답:", data);
 
-			        // 2. UI 반영
-			        const biddingList = document.getElementById("biddingList");
-			        const existingBid = document.querySelector(`.bid[data-nickname="${nickname}"]`);
-			        
-			        if (existingBid) {
-			            existingBid.innerText = nickname + " - " + bidValue;
+			        const existingBid = $(`.bid[data-nickname="${nickname}"]`);
+			        if (existingBid.length > 0) {
+			          existingBid.text(nickName + " - " + bidValue);
 			        } else {
-			            const bid = document.createElement("p");
-			            bid.className = "bid";
-			            bid.setAttribute("data-nickname", nickname);
-			            bid.innerText = nickname + " - " + bidValue;
-			            biddingList.appendChild(bid);
+			          const bid = $("<p></p>")
+			            .addClass("bid")
+			            .attr("data-nickname", nickName)
+			            .text(nickName + " - " + bidValue);
+			          $("#biddingList").append(bid);
 			        }
 
 			        closeModal();
-			    })
-			    .catch(error => {
-			        alert(error.message);
+			      },
+			      error: function(xhr) {
+			        alert("입찰 저장 실패: " + xhr.responseText);
+			      }
 			    });
-			}
-	  }
+			  }
 	</script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
