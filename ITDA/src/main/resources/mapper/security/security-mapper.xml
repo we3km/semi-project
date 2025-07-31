@@ -32,6 +32,12 @@
 		COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
 	</select>
 	
+	<!-- 닉네임 중복 체크 -->
+	<select id="nickNameCheck" resultType="int" parameterType="String">
+		SELECT
+		COUNT(*) FROM USER_TB WHERE NICK_NAME = #{nickName}
+	</select>
+	
 	<insert id="insertToken">
 		INSERT 
 			INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN, LAST_USED) 

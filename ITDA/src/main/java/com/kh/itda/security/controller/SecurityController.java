@@ -206,8 +206,11 @@ public class SecurityController {
         	
         	// 비밀번호 암호화 및 DB저장
         	String encodedPwd = passwordEncoder.encode(tempPwd);
+        	try { // 에러 확인용
         	uService.updatePassword(userId, encodedPwd);
-        	
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
         	// 임시 비밀번호 전송
         	emailService.sendEmail(email, "임시 비밀번호 발급", "회원님의 임시 비밀번호는: " + tempPwd);
             response.put("success", true);
@@ -242,7 +245,7 @@ public class SecurityController {
 
         // 인증번호 생성 및 전송
         String code = emailService.generateVerificationCode();
-        boolean mailSent = emailService.sendEmail(email, "아이디 찾기 인증번호", "인증번호는 " + code + "입니다.");
+        boolean mailSent = emailService.sendEmail(email, "비밀번호 찾기 인증번호", "인증번호는 " + code + "입니다.");
 
         if (mailSent) {
             session.setAttribute("findPwdAuthCode", code);

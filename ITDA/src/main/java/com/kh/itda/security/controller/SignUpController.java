@@ -149,6 +149,14 @@ public class SignUpController { //회원가입
     	return result+"";
     }
     
+    // 회원정보 입력 페이지서 닉네임 중복체크 담당
+    @ResponseBody
+    @GetMapping("/enroll/checkNickName")
+    public String nickNameCheck(String nickName) {
+    	int result = uService.nickNameCheck(nickName);
+    	return result+"";
+    }
+    
     // 3단계: 회원정보 입력 페이지
     @GetMapping("/enroll")
     public String showSignUpForm(Model model, HttpSession session) {

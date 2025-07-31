@@ -13,6 +13,8 @@ public interface UserDao {
 	
 	int idCheck(String userId);
 	
+	int nickNameCheck(String nickName);
+	
 	User findUserById(String userId);	// 로그인 시 유저 조회
 	
     User findUserByNum(int userNum);	// 로그인 외 다른 곳에서 조회
@@ -20,7 +22,5 @@ public interface UserDao {
     void updatePassword(String userId, String encodedPwd);
 
 	//void insertUserAndAuthority(User user);
-	
-
 
 }

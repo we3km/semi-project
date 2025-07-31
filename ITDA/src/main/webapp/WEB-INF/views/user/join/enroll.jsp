@@ -39,12 +39,12 @@ String email = (String) session.getAttribute("verifiedEmail");
 	font-size: 12px;
 }
 
-#id {
+#id, #nick-name {
 	width: 340px;
 	height: 30px;
 }
 
-#id-check {
+#id-check, #nick-name-check {
 	background-color: #5A54FF;
 	width: 80px;
 	height: 30px;
@@ -54,7 +54,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 	cursor: pointer;
 }
 
-#nick-name, #pwd, #pwd-check, #email, #phone, #birth {
+#pwd, #pwd-check, #email, #phone, #birth {
 	width: 426px;
 	height: 30px;
 }
@@ -150,7 +150,9 @@ String email = (String) session.getAttribute("verifiedEmail");
 				<!-- 닉네임 -->
 				<input type="text" id="nick-name" name="nickName"
 					value="${user.nickName}" required
-					pattern="^(([가-힣]{2,8})|([a-zA-Z]{4,16})|([가-힣a-zA-Z]{2,10}))$"><br>
+					pattern="^(([가-힣]{2,8})|([a-zA-Z]{4,16})|([가-힣a-zA-Z]{2,10}))$"> &nbsp;&nbsp;&nbsp; <input
+					type="button" id="nick-name-check" value="중복확인"> <span
+					id="nick-name-status"></span><br>
 				한글기준 2자~8자, 영문기준 4자~16자로 입력해주세요.<br> <br>
 
 				<!-- 비밀번호 -->
@@ -220,6 +222,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 	<script>
     	const contextPath = "${pageContext.request.contextPath}";
     	let idValid = false;
+    	let nickNameValid = false;
     	let pwdMatched = false;
     	
     	document.getElementById('id-check').addEventListener('click', function() {
@@ -256,6 +259,41 @@ String email = (String) session.getAttribute("verifiedEmail");
             })
             .catch(err => alert('오류 발생: ' + err));
         });
+    	
+    	// 닉네임 중복 체크
+    	document.getElementById('nick-name-check').addEventListener('click', function () {
+		    const nickName = document.getElementById('nick-name').value.trim();
+		    if (!nickName) {
+		        alert('닉네임을 입력해주세요.');
+		        return;
+		    } else if (nickName.length < 2 || nickName.length > 10) {
+		        alert('닉네임은 2자 이상 10자 이하로 입력해주세요.');
+		        return;
+		    }
+		
+		    const token = '${_csrf.token}';
+		
+		    fetch(contextPath + "/user/join/enroll/checkNickname?nickname=" + encodeURIComponent(nickName), {
+		        method: "GET",
+		        headers: {
+		            'X-CSRF-TOKEN': token
+		        }
+		    })
+		    .then(res => res.text())
+		    .then(data => {
+		        const nickNameStatus = document.getElementById('nick-name-status');
+		        if (data === "0") { // 사용 가능
+		            nickNameValid = true;
+		            nickNameStatus.textContent = '사용 가능한 닉네임입니다.';
+		            nickNameStatus.style.color = 'green';
+		        } else {
+		            nickNameValid = false;
+		            nickNameStatus.textContent = '이미 사용 중인 닉네임입니다.';
+		            nickNameStatus.style.color = 'red';
+		        }
+		    })
+		    .catch(err => alert('오류 발생: ' + err));
+		});
     	
     	document.getElementById('pwd-check').addEventListener('blur', function() {
     		const pwd = document.getElementById('pwd').value.trim();
@@ -349,6 +387,11 @@ String email = (String) session.getAttribute("verifiedEmail");
     	    }
     	    
     	    if (!setFullAddress()) {
+    	        return;
+    	    }
+    	    
+    	    if (!nickNameValid){
+    	    	alert("닉네임 중복 확인을 완료해주세요.");
     	        return;
     	    }
 

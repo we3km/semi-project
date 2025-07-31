@@ -96,7 +96,7 @@
 					ADDRESS = #{address},
 				</if>
 				<if test="userPwd != null and userPwd != ''">
-					USER_PWD = #{userPwd}
+					USER_PWD = #{encodedPwd}
 				</if>
 			</set>
 		WHERE USER_ID = #{userId}

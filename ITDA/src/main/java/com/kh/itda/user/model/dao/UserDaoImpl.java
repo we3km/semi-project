@@ -31,6 +31,11 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
+	public int nickNameCheck(String nickName) {
+		return session.selectOne("security.nickNameCheck", nickName);
+	}
+	
+	@Override
 	public void insertProfile(int userNum, String imageUrl) {
 		Map<String, Object> param = new HashMap<>();
 	    param.put("userNum", userNum);
@@ -54,11 +59,12 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("encodedPwd", encodedPwd);
 	    session.update("user.updatePassword", param);
+	}
+
 
 /*	public void insertUserAndAuthority(User user) {
 		// TODO Auto-generated method stub
 		
 
 	}*/
-	}
 }

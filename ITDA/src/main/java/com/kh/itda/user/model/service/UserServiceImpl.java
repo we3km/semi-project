@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService{
 	public int idCheck(String userId) {
 		return userDao.idCheck(userId);
 	}
+	
+	@Override
+	public int nickNameCheck(String nickName) {
+		return userDao.nickNameCheck(nickName);
+	}
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
