@@ -3,6 +3,8 @@ package com.kh.itda.board.model.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
@@ -59,6 +61,18 @@ public interface BoardDao {
 	List<BoardShareFileWrapper> selectEqualsCategoryShareList(String smallCategory);
 
 	int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList);
+
+	BoardAuctionWrapper selectBoardAuction(int boardId);
+
+	List<BoardAuctionFileWrapper> selectWriterAuctionList(int writerUserNum);
+
+	List<BoardAuctionFileWrapper> selectEqualsCategoryAuctionList(String smallCategory);
+
+	List<FilePath> selectAuctionImgList(int boardId);
+
+	List<BoardAuctionFileWrapper> selectBoardAuctionList(Map<String, Object> filterMap);
+
+	void saveBid(AuctionBidding bid);
 
 
 

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
 import com.kh.itda.board.model.vo.BoardRentalWrapper;
@@ -230,6 +232,44 @@ public class BoardServiceImpl implements BoardService{
 		int result = boardDao.insertBoardAuction(board, imgList);
 
 		return result;
+	}
+
+
+	@Override
+	public BoardAuctionWrapper selectBoardAuction(int boardId) {
+		return boardDao.selectBoardAuction(boardId);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectWriterAuctionList(int writerUserNum) {
+		return boardDao.selectWriterAuctionList(writerUserNum);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectEqualsCategoryAuctionList(String smallCategory) {
+		return boardDao.selectEqualsCategoryAuctionList(smallCategory);
+	}
+
+
+	@Override
+	public List<FilePath> selectAuctionImgList(int boardId) {
+		return boardDao.selectAuctionImgList(boardId);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectBoardAuctionList(Map<String, Object> filterMap) {
+		return boardDao.selectBoardAuctionList(filterMap);
+
+	}
+
+
+	@Override
+	public void saveBid(AuctionBidding bid) {
+		boardDao.saveBid(bid);
+		
 	}
 
 

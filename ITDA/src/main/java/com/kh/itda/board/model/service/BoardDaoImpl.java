@@ -6,7 +6,9 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.kh.itda.board.model.vo.AuctionBidding;
 import com.kh.itda.board.model.vo.BoardAuction;
+import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -362,7 +364,7 @@ public class BoardDaoImpl implements BoardDao {
 
 	@Override
 	public int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList) {
-int result = 0;
+		int result = 0;
 		
 		// 공통 정보 저장
 		BoardCommon boardCommon = board.getBoardCommon();
@@ -439,6 +441,47 @@ int result = 0;
 			result = 1;
 		}
 		return result;
+	}
+
+
+	@Override
+	public BoardAuctionWrapper selectBoardAuction(int boardId) {
+		BoardAuctionWrapper board = session.selectOne("board.selectBoardAuction", boardId);
+		System.out.println(board);
+
+		return board;
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectWriterAuctionList(int writerUserNum) {
+		return session.selectList("board.selectWriterAuctionList", writerUserNum);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectEqualsCategoryAuctionList(String smallCategory) {
+		return session.selectList("board.selectEqualsCategoryAuctionList", smallCategory);
+	}
+
+
+	@Override
+	public List<FilePath> selectAuctionImgList(int boardId) {
+		return session.selectList("board.selectAuctionImgList", boardId);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectBoardAuctionList(Map<String, Object> filterMap) {
+		List<BoardAuctionFileWrapper> boardShareList = session.selectList("board.selectBoardAuctionList", filterMap);
+
+		return boardShareList;
+	}
+
+
+	@Override
+	public void saveBid(AuctionBidding bid) {
+		session.insert("board.saveBid" , bid);	
 	}
 
 

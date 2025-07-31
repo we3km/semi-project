@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+<<<<<<< Updated upstream
+=======
+import org.springframework.http.HttpStatus;
+>>>>>>> Stashed changes
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +40,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.board.model.service.BoardService;
+import com.kh.itda.board.model.vo.AuctionBidding;
 import com.kh.itda.board.model.vo.BoardAuction;
+import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardCommon;
 import com.kh.itda.board.model.vo.BoardExchange;
@@ -150,10 +157,39 @@ public class BoardController {
 	}
 
 	// 경매게시판 매핑
-	@GetMapping("/auction/list")
-	public String auctionBoard() {
-		return "board/auctionBoard";
-	}
+	// 리스트를 정렬할 조건들을 선택해서 정렬버튼을 눌렀을 시 파라미터를 받아와서 해시맵에 저장
+		@GetMapping("/auction/list")
+		public String auctionBoard(Model model, @RequestParam(defaultValue = "date") String sort,
+				@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
+				@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
+				@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+				@RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
+			Map<String, Object> filterMap = new HashMap<>();
+			filterMap.put("sort", sort);
+			filterMap.put("productCategoryL", productCategoryL);
+			filterMap.put("productCategoryM", productCategoryM);
+			filterMap.put("productCategoryS", productCategoryS);
+			filterMap.put("startDate", startDate);
+			filterMap.put("endDate", endDate);
+			
+			// 선택한 정렬조건에 따른 리스트 출력
+			List<BoardAuctionFileWrapper> boardAuctionList = boardService.selectBoardAuctionList(filterMap);
+			System.out.println("경매글"+boardAuctionList);
+			model.addAttribute("list", boardAuctionList);
+
+			// 로그인한 회원이 찜한 게시글 목록
+			// userNum을 로그인 세션에서 받아올것임(지금은 임의 데이터)
+			List<Integer> likedBoardIds = boardService.getLikedBoardIdsByUser(1);
+			model.addAttribute("likedBoardIds", likedBoardIds);
+
+			// 상품카테고리 가져오기
+			List<ProductCategory> categoryList = boardService.selectCategoryList();
+
+			model.addAttribute("categoryList", categoryList);
+			System.out.println("필터링:" + categoryList);
+
+			return "board/auctionBoard";
+		}
 
 	
 	// 글쓰기들은 로그인된 사용자만 가능하도록 시큐리티 적용 해야함
@@ -356,7 +392,7 @@ public class BoardController {
 						continue;// 업로드한 첨부파일이 존재한다면 저장 진행
 					}
 		
-					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/auctoin");
+					String imgPath = Utils.saveFileToCategoryFolder(upfile, application, "board/auction");
 					File f = new File();
 		
 					f.setFileName(imgPath);
@@ -607,6 +643,107 @@ public class BoardController {
 				return "board/detailShare";
 			}
 
+		// 경매 게시글 상세보기
+		// 게시물 목록에서 게시물을 클릭하면 클릭한 게시물의 아이디가 boardId로 바인딩
+		@GetMapping("/detail/auction/{boardId}")
+		public String boardDetailAuction(@PathVariable("boardId") int boardId, Authentication auth, Model model,
+				@CookieValue(value = "readBoardShareNo", required = false) String readBoardShareNoCookie, HttpServletRequest req,
+				HttpServletResponse res) {
+					// 대여 게시글 정보 추출
+					BoardAuctionWrapper board = boardService.selectBoardAuction(boardId);
+					model.addAttribute("board", board);
+					if (board == null) {
+						throw new RuntimeException("게시글이 존재하지 않습니다.");
+					}
+					int writerUserNum = board.getBoardCommon().getUserNum();
+
+					// 조회수 증가
+					// int userNo = ((Member) auth.getPrincipal()).getUserNo();
+					int userNo = 1;
+					// if(userNo != board.getBoardCommon().getUserNum()) { <- 로그인/시큐리티 적용 후 추가
+					boolean increase = false; // 조회수 증가를 위한 체크변수
+
+					// readBoardNo라는 이름의 쿠키가 있는지 조사.
+					if (readBoardShareNoCookie == null) {
+						// 첫 조회
+						increase = true;
+						readBoardShareNoCookie = boardId + "";
+					} else {
+						// 쿠키가 있는 경우
+						List<String> list = Arrays.asList(readBoardShareNoCookie.split("/"));
+						// 기존 쿠키값들 중 게시글번호와 일치하는 값이 하나도 없는 경우
+						if (list.indexOf(boardId + "") == -1) {
+							increase = true;
+							readBoardShareNoCookie += "/" + boardId;
+						}
+					}
+					if (increase) {
+						int result = boardService.increaseViews(boardId);
+						if (result > 0) {
+							board.getBoardCommon().setViews(board.getBoardCommon().getViews() + 1);
+
+							// 새 쿠키 생성하여 클라이언트에게 전달
+							Cookie newCookie = new Cookie("readBoardShareNo", readBoardShareNoCookie);
+							System.out.println("쿠키"+readBoardShareNoCookie);
+							System.out.println("새쿠키"+newCookie);
+							newCookie.setPath("req.getContextPath()");
+							newCookie.setMaxAge(1 * 60 * 60); // 1시간
+							res.addCookie(newCookie);
+						}
+					}
+					// }
+
+					// 게시물의 이미지
+					List<FilePath> imgList = boardService.selectAuctionImgList(boardId);
+					System.out.println("경매이미지리스트"+imgList);
+					model.addAttribute("imgList", imgList);
+
+					// 조회한 게시글의 게시자가 올린 다른 대여 상품들
+					List<BoardAuctionFileWrapper> writerAuctionWrapperList = boardService.selectWriterAuctionList(writerUserNum);
+					model.addAttribute("writerAuctionWrapperList", writerAuctionWrapperList);
+					System.out.println("게시자의 다른 상품 : " + writerAuctionWrapperList);
+
+					// 조회한 게시글과 소분류 카테고리가 같은 대여 상품들
+					String smallCategory = board.getBoardCommon().getProductCategoryS();
+					List<BoardAuctionFileWrapper> equalsCategoryList = boardService.selectEqualsCategoryAuctionList(smallCategory);
+					model.addAttribute("equalsCategoryList", equalsCategoryList);
+
+					// 선택한 대여 게시물의 게시자 닉네임 추출
+					String writer = boardService.selectWriterNickname(writerUserNum);
+					model.addAttribute("writer", writer);
+					System.out.println(writerUserNum);
+
+					// 선택한 대여 게시물의 게시자 매너점수 추출
+					int mannerScore = boardService.selectMannerScore(writerUserNum);
+					model.addAttribute("mannerScore", mannerScore);
+
+					// 선택한 대여 게시물의 태그 추출
+					List<String> tags = boardService.selectTags(boardId);
+					model.addAttribute("tags", tags);
+
+					// 선택한 대여 게시물의 찜 수 추출
+					Dibs dibs = new Dibs();
+					dibs.setBoardId(boardId);
+					dibs.setBoardCategory("auction");
+					int dibsCount = boardService.countDibs(dibs);
+					model.addAttribute("dibsCount", dibsCount);
+					
+					// 접속한 회원아이디
+					dibs.setLikesUserId(1);
+					
+					boolean exists = boardService.isLiked(dibs);
+					System.out.println();
+					if (exists) {
+						model.addAttribute("isDibs", exists);
+					} else {
+						model.addAttribute("isDibs", exists);
+					}
+
+					return "board/detailAuction";
+				}
+
+	
+	
 
 
 	// 로그인한 사용자만 가능하게 시큐리티 적용 예정
@@ -647,5 +784,15 @@ public class BoardController {
 		return boardService.countDibs(dibs);
 	}
 
-
+	// 입력한 입찰 제시금 저장
+	@PostMapping("/auction/bid")
+	@ResponseBody
+	public ResponseEntity<?> registerBid(@RequestBody AuctionBidding bid) {
+	    try {
+	        boardService.saveBid(bid); // DB 저장 처리
+	        return ResponseEntity.ok().body("success");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
+	}
 }

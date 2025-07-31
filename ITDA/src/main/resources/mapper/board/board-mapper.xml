@@ -515,6 +515,19 @@
 		F.REF_NO = #{boardId} AND F.CATEGORY_ID = 7
 
 	</select>
+	
+		<select id="selectAuctionImgList" parameterType="int"
+		resultType="FilePath">
+		SELECT
+		C.CATEGORY_PATH,
+		F.FILE_NAME
+
+		FROM "FILE" F
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE
+		F.REF_NO = #{boardId} AND F.CATEGORY_ID = 8
+
+	</select>
 
 	<select id="selectLikedBoardIdsByUser" parameterType="int"
 		resultType="int">
@@ -740,4 +753,239 @@
 			<!-- BOARD_SHARING 컬럼들 추가 -->
 		</association>
 	</resultMap>
+	
+		<select id="selectBoardAuction" parameterType="int"
+		resultMap="boardAuctionResultMap">
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BA.AUCTION_STARTING_FEE,
+		BA.BID_UNIT,
+		BA.AUCTION_START_DATE,
+		BA.AUCTION_END_DATE
+		FROM BOARD_COMMON BC
+		JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
+		WHERE BC.BOARD_ID = #{boardId}
+
+	</select>
+	
+	
+	
+		<resultMap id="boardAuctionResultMap"
+		type="BoardAuctionWrapper">
+		<association property="boardCommon" javaType="BoardCommon">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="userNum" column="USER_NUM" />
+			<result property="productName" column="PRODUCT_NAME" />
+			<result property="productComment" column="PRODUCT_COMMENT" />
+			<result property="transactionAddress"
+				column="TRANSACTION_ADDRESS" />
+			<result property="transactionCategory"
+				column="TRANSACTION_CATEGORY" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="views" column="VIEWS" />
+			<result property="transactionStatus"
+				column="TRANSACTION_STATUS" />
+			<result property="productCategoryL"
+				column="PRODUCT_CATEGORY_L" />
+			<result property="productCategoryM"
+				column="PRODUCT_CATEGORY_M" />
+			<result property="productCategoryS"
+				column="PRODUCT_CATEGORY_S" />
+		</association>
+		<!-- BOARD_COMMON 컬럼들 추가 -->
+
+		<association property="boardAuction" javaType="BoardAuction">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="auctionStartingFee" column="AUCTION_STARTING_FEE" />
+			<result property="bidUnit" column="BID_UNIT" />
+			<result property="auctionStartDate" column="AUCTION_START_DATE" />
+			<result property="auctionEndDate" column="AUCTION_END_DATE" />
+			<!-- BOARD_AUCTION 컬럼들 추가 -->
+		</association>
+	</resultMap>
+	
+	<select id="selectWriterAuctionList" parameterType="int"
+		resultMap="BoardAuctionFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BA.AUCTION_STARTING_FEE,
+		BA.BID_UNIT,
+		BA.AUCTION_START_DATE,
+		BA.AUCTION_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 8 AND BC.USER_NUM = #{userNum}
+		)
+		WHERE RN = 1
+
+	</select>
+	
+		<select id="selectEqualsCategoryAuctionList" parameterType="String"
+		resultMap="BoardAuctionFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BA.AUCTION_STARTING_FEE,
+		BA.BID_UNIT,
+		BA.AUCTION_START_DATE,
+		BA.AUCTION_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 8 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
+		)
+		WHERE RN = 1
+
+	</select>
+	
+	<select id="selectBoardAuctionList" 
+		resultMap="BoardAuctionFileResultMap">
+		SELECT *
+		FROM (
+		SELECT
+		BC.BOARD_ID,
+		BC.USER_NUM,
+		BC.PRODUCT_NAME,
+		BC.PRODUCT_COMMENT,
+		BC.TRANSACTION_ADDRESS,
+		BC.TRANSACTION_CATEGORY,
+		BC.CREATE_DATE AS,
+		BC.VIEWS,
+		BC.TRANSACTION_STATUS,
+		BC.PRODUCT_CATEGORY_L,
+		BC.PRODUCT_CATEGORY_M,
+		BC.PRODUCT_CATEGORY_S,
+		BA.AUCTION_STARTING_FEE,
+		BA.BID_UNIT,
+		BA.AUCTION_START_DATE,
+		BA.AUCTION_END_DATE,
+		C.CATEGORY_PATH,
+		F.FILE_NAME,
+		ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
+		FROM BOARD_COMMON BC
+		JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
+		WHERE F.CATEGORY_ID = 8
+		)
+		WHERE RN = 1
+		<!-- <if test="location != null and location != ''">
+			 	AND BC.TRANSACTION_ADDRESS = #{location} </if>
+		-->	
+			<if test="startDate != null"> 
+				AND AUCTION_START_DATE &gt;= #{startDate} 
+			</if> 
+			<if test="endDate != null"> 	
+				AND AUCTION_END_DATE &lt;= #{endDate} 
+			</if>
+			<if test="productCategoryL != null and productCategoryL != ''"> 
+				AND PRODUCT_CATEGORY_L = #{productCategoryL} 
+			</if>
+			<if test="productCategoryM != null and productCategoryM != ''"> 
+				AND PRODUCT_CATEGORY_M = #{productCategoryM} 
+			</if>
+			<if test="productCategoryS != null and productCategoryS != ''"> 
+				AND PRODUCT_CATEGORY_S = #{productCategoryS} 
+			</if>
+		<choose>
+			<when test="sort == 'views'">
+				ORDER BY VIEWS DESC
+			</when>
+			<!-- <when test="#{sort} == 'dibs'"> ORDER BY b.dibs_count DESC </when> -->
+			<!-- <when test="sort == 'price'">
+				ORDER BY RENTAL_FEE DESC
+			</when> -->
+			<otherwise>
+				ORDER BY CREATE_DATE DESC
+			</otherwise>
+		</choose>
+
+	</select>
+	
+	<resultMap id="BoardAuctionFileResultMap"
+		type="BoardAuctionFileWrapper">
+		<association property="boardCommon" javaType="BoardCommon">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="userNum" column="USER_NUM" />
+			<result property="productName" column="PRODUCT_NAME" />
+			<result property="productComment" column="PRODUCT_COMMENT" />
+			<result property="transactionAddress"
+				column="TRANSACTION_ADDRESS" />
+			<result property="transactionCategory"
+				column="TRANSACTION_CATEGORY" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="views" column="VIEWS" />
+			<result property="transactionStatus"
+				column="TRANSACTION_STATUS" />
+			<result property="productCategoryL"
+				column="PRODUCT_CATEGORY_L" />
+			<result property="productCategoryM"
+				column="PRODUCT_CATEGORY_M" />
+			<result property="productCategoryS"
+				column="PRODUCT_CATEGORY_S" />
+			<!-- BOARD_RENTAL 컬럼들 추가 -->
+		</association>
+		<!-- BOARD_COMMON 컬럼들 추가 -->
+
+		<association property="boardAuction" javaType="BoardAuction">
+			<id property="boardId" column="BOARD_ID" />
+			<result property="auctionStartingFee" column="AUCTION_STARTING_FEE" />
+			<result property="bidUnit" column="BID_UNIT" />
+			<result property="auctionStartDate" column="AUCTION_START_DATE" />
+			<result property="auctionEndDate" column="AUCTION_END_DATE" />
+			<!-- BOARD_AUCTION 컬럼들 추가 -->
+		</association>
+
+		<association property="filePath" javaType="FilePath">
+			<result property="categoryPath" column="CATEGORY_PATH" />
+			<result property="fileName" column="FILE_NAME" />
+		</association>
+	</resultMap>
+	
+	
 </mapper>
