@@ -42,7 +42,7 @@ public class UserController {
 		  User tempUser = new User(); tempUser.setUserId("USER1");
 	 
 		  tempUser.setUserPwd("1234"); tempUser.setUserNum(1); // 적당한 사용자 번호
-		  tempUser.setUserName("USER1");
+		  tempUser.setNickName("USER1");
 	  
 		  // 세션에 loginUser 속성으로 저장 
 		  request.getSession().setAttribute("loginUser", tempUser);
