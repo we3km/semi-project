@@ -5,10 +5,12 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+
 <%-- 모바일 뷰 --%>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>IT다</title>
@@ -67,9 +69,6 @@
 		    </sec:authorize>
 		</div> --%>
 
-
-		<div class="headline">IT다</div>
-		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
 
 		<div class="search-filter-wrapper">
 			<div class="filters">

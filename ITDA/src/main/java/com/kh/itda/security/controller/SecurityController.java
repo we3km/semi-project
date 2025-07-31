@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.EmailService;
 import com.kh.itda.user.model.service.UserService;
-
 import lombok.extern.slf4j.Slf4j;
 
 //회원정보 수정, 로그인/로그아웃(페이지 이동), 이메일(인증번호 등)
