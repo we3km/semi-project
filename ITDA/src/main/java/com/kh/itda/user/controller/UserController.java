@@ -41,7 +41,6 @@ public class UserController {
 	public String tempLogin(HttpServletRequest request) {
 		User tempUser = new User();
 		tempUser.setUserId("USER1");
-
 		tempUser.setUserPwd("1234");
 		tempUser.setUserNum(1); // 적당한 사용자 번호
 		tempUser.setNickName("USER1");

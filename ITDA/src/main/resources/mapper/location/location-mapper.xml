@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="location">
+
+
+  <!-- 시도·시군구로 Location 조회 -->
+  <select id="findBySidoSigungu" parameterType="map" resultType="com.kh.itda.location.model.vo.Location">
+    SELECT LOCATION_ID as locationId,
+           SIDO as sido, 
+           SIGUNGU as sigungu
+      FROM LOCATION
+     WHERE SIDO    = #{sido}
+       AND SIGUNGU = #{sigungu}
+  </select>
+
+  <!-- Location 삽입 (자동생성키) -->
+  <insert id="insertLocation"
+          parameterType="com.kh.itda.location.model.vo.Location">
+    <selectKey keyProperty="locationId"
+               resultType="long"
+               order="BEFORE">
+      SELECT SEQ_LOCATION_ID.NEXTVAL FROM DUAL
+    </selectKey>
+
+    INSERT INTO LOCATION (
+      LOCATION_ID,
+      SIDO,
+      SIGUNGU
+    ) VALUES (
+      #{locationId},
+      #{sido},
+      #{sigungu}
+    )
+  </insert>
+  
+  <!-- 전체 시도 조회  -->
+  <select id="findAllSido" resultType="string">
+    SELECT DISTINCT SIDO
+    FROM LOCATION
+    ORDER BY SIDO
+  </select>
+
+  <!-- 특정 시·도에 속한 시·군·구 목록 -->
+  <select id="findSigunguBySido" parameterType="string" resultType="string">
+    SELECT DISTINCT SIGUNGU
+    FROM LOCATION
+    WHERE SIDO = #{sido}
+    ORDER BY SIGUNGU
+  </select>
+  
+  <select id="findGuListBySidoIfDirect" parameterType="string" resultType="string">
+  SELECT DISTINCT SIGUNGU
+  FROM LOCATION
+  WHERE SIDO = #{sido}
+    AND REGEXP_LIKE(SIGUNGU, '^[^ ]+$')  <!-- 공백 없는 단일 구 ex)서울특별시 서초구,중랑구/부산광역시 남구/중구 등.. -->
+  ORDER BY SIGUNGU
+</select>
+  
+
+</mapper>

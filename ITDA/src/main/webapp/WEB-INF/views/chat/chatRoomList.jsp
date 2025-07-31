@@ -595,7 +595,46 @@
 			</div>
 
 			<script>
-			  
+
+			  function sendMessage() {
+			    const input = document.querySelector('.chat-input');
+			    const message = input.value;
+			
+			    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
+			    console.log("보내는 메세지 : ", message);
+			
+			    fetch("${contextPath}/chat/sendMessage", {
+			      method: "POST",
+			      headers: {
+			        "Content-Type": "application/json"
+			      },
+			      body: JSON.stringify({
+			        chatContent: message,
+			        chatRoomId: window.chatRoomId
+			      })
+			    })
+			    .then(response => {
+				    if (!response.ok) throw new Error("서버 에러");
+				    return response.json();
+				})
+			    .then(data => {
+			      const chatContent = document.querySelector('.chat-content2');
+			
+			      const newMessage = document.createElement('div');
+			      newMessage.className = 'chat-message sent';
+			      newMessage.textContent = data.chatContent;
+			
+			      chatContent.appendChild(newMessage);
+			      chatContent.scrollTop = chatContent.scrollHeight;
+			
+			      input.value = ""; // 입력란 비워줌
+			    })
+			    .catch(error => {
+			      console.error("메시지 전송 실패:", error);
+			      alert("메시지 전송 실패");
+			    });
+			  }
+
 			</script>
 
 			<div class="chat-footer2">
@@ -720,9 +759,7 @@
                         .catch(err => {
                             console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
                         });
-
-
-                } else if(chatRoomType==="오픈채팅방") {	
+                } else if(chatRoomType==="오픈채팅방") {
                     // ===== 오픈채팅방인 경우, 게시물 없이 메세지만 가져오자 =====
                     chatHeader2.textContent = window.chatRightTitle;
 
@@ -759,6 +796,9 @@
                     console.log(chatMessage)
                     showMessage(chatMessage);
                 });
+
+                }
+
             }); // addEventListener close
         }); // forEach close
     });

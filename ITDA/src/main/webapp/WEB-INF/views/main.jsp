@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -68,7 +69,6 @@
 		    </sec:authorize>
 		</div> --%>
 
-	<h1>잇다 메인화면</h1>
 		<div class="search-filter-wrapper">
 			<div class="filters">
 				<!-- 거래유형 드롭다운 -->

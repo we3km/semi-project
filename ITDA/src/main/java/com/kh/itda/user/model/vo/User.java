@@ -1,16 +1,13 @@
 package com.kh.itda.user.model.vo;
 
+
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-@Builder
+@NoArgsConstructor
 public class User {
 	private int userNum;
 	private String userId;
