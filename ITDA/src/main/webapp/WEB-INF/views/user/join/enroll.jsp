@@ -125,9 +125,8 @@ String email = (String) session.getAttribute("verifiedEmail");
 <body>
 	<form id="enrollForm"
 		action="${pageContext.request.contextPath}/user/join/enroll"
-		method="post" enctype="multipart/form-data">
-		<input type="hidden" name="${_csrf.parameterName}"
-			value="${_csrf.token}" />
+		method="post" enctype="multipart/form-data" onsubmit="return setFullAddress();">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 		<div class="top">
 			<h1>회원정보 입력</h1>
 			<hr>
@@ -178,14 +177,14 @@ String email = (String) session.getAttribute("verifiedEmail");
 
 				<!-- 주소 -->
 				<div class="address">
-					<br> <input type="text" id="address1" name="address-line1"
+					<br> <input type="text" id="address1"
 						autocomplete="address-line1" required>&nbsp;&nbsp;&nbsp; <input
 						type="button" class="zip-btn" value="우편번호 검색"
 						onclick="execDaumPostcode()">
 				</div>
 				<br>
 				<div class="address">
-					<br> <input type="text" id="address2" name="address-line2"
+					<br> <input type="text" id="address2"
 						autocomplete="address-line2" required>
 				</div>
 				<br> &nbsp; <input type="hidden" id="address" name="address">
@@ -305,8 +304,8 @@ String email = (String) session.getAttribute("verifiedEmail");
             new daum.Postcode({
                 oncomplete: function(data) {
                     // 도로명 주소
+                    console.log( data.roadAddress);
                     document.getElementById('address1').value = data.roadAddress;
-                    
                     // 상세 주소
                     document.getElementById('address2').focus();
                 }
@@ -318,18 +317,22 @@ String email = (String) session.getAttribute("verifiedEmail");
     	    const addr1 = document.getElementById('address1').value.trim();
     	    const addr2 = document.getElementById('address2').value.trim();
 
-    	    if (!addr1) {
-    	        alert('도로명 주소를 입력해주세요.');
+    	    if (!addr1 || addr1.replace(/\s/g, '') === '') {
+    	        alert('도로명 주소를 정확히 입력해주세요.');
     	        return false; 	// 제출 막기
     	    }
     	    
-    	    if (!addr2) {
-    	        alert('상세 주소를 반드시 입력해주세요.');
+    	    if (!addr2 || addr2.replace(/\s/g, '') === '') {
+    	        alert('상세 주소를 정확히 입력해주세요.');
     	        return false;	// 제출 막기
     	    }
     	    
-    	    const fullAddress = `${addr1} ${addr2}`;
+    	    const fullAddress = `\${addr1} \${addr2}`.trim(); // 이스케이핑 처리
     	    document.getElementById('address').value = fullAddress;
+    	    
+    	    console.log("address1:", addr1);
+    	    console.log("address2:", addr2);
+    	    console.log("Full address:", fullAddress);
 
     	    return true;	// 폼 제출 계속 진행
     	}

@@ -66,7 +66,7 @@
 		<result column="EMAIL" property="email" />
 		<result column="PHONE" property="phone" />
 		<result column="BIRTH" property="birth" />
-		<result column="ADDRESS" property="adress" />
+		<result column="ADDRESS" property="address" />
 		<result column="CREATE_DATE" property="createDate" />
 		<result column="IMAGE_URL" property="imageUrl" />
 		<collection property="authorities" javaType="arraylist"

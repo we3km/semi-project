@@ -26,7 +26,7 @@
 </head>
 <body>
 	<div class="container">
-		<div class="top-buttons">
+		<%-- <div class="top-buttons">
 			<div class="unlogin">
 				<div class="btn" id="loginBtn">로그인</div>
 				<div class="btn" id="joinMembership">회원가입</div>
@@ -49,25 +49,25 @@
 					$('.unlogin').show();
 				</script>
 			</c:otherwise>
-		</c:choose>
+		</c:choose> --%>
 		
-		<%-- <div class="top-buttons">
-		    Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링
+		 <div class="top-buttons">
+		    <%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
 		    <sec:authorize access="isAnonymous()">
 		        <div class="unlogin">
 		            <div class="btn" id="loginBtn">로그인</div>
 		            <div class="btn" id="joinMembership">회원가입</div>
 		        </div>
-		    </sec:authorize>--%>
+		    </sec:authorize>
 		
-		    <%--로그인했을 때만 이 div를 렌더링
+		    <%--로그인했을 때만 이 div를 렌더링--%>
 		    <sec:authorize access="isAuthenticated()">
 		        <div class="login">
 		            <div class="btn" id="myPage">마이페이지</div>
 		            <div class="btn" id="logoutBtn">로그아웃</div>
 		        </div>
 		    </sec:authorize>
-		</div> --%>
+		</div> 
 
 
 		<div class="search-filter-wrapper">
@@ -275,8 +275,15 @@
 	    });
 	    
 	    // --- 나머지 이벤트 핸들러 (기존과 동일) ---
+	    function postToUrl(url) {
+		    const form = document.createElement('form');
+		    form.method = 'POST';
+		    form.action = url;
+		    document.body.appendChild(form);
+		    form.submit();
+		}
 	    $('#loginBtn').click(() => location.href = contextPath + '/user/login');
-	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
+	    $('#logoutBtn').click(() => postToUrl(contextPath + '/user/logout'));
 	    $('#joinMembership').click(() => location.href = contextPath + '/user/join/terms');
 	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
 	    $('.card').click(function () {

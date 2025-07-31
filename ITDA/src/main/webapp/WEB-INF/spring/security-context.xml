@@ -11,18 +11,15 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<http pattern="/css/**" security="none"/>
-	<http pattern="/js/**" security="none"/>
-	<http pattern="/images/**" security="none"/>
-	<http pattern="/profile/**" security="none"/>
+	<http pattern="/resources/**" security="none"/>
     <!-- 시큐리티 인증/인가 -->
     <http auto-config="true">
     	
     	<intercept-url pattern="/" access="permitAll"/>
-	    <intercept-url pattern="/user/login/**" access="permitAll" />
-	    <intercept-url pattern="/user/join/**" access="permitAll" />
-	    <intercept-url pattern="/user/findId/**" access="permitAll" />
-	    <intercept-url pattern="/user/findPwd/**" access="permitAll" />
+	    <intercept-url pattern="/user/login/**" access="isAnonymous()" />
+	    <intercept-url pattern="/user/join/**" access="isAnonymous()" />
+	    <intercept-url pattern="/user/findId/**" access="isAnonymous()" />
+	    <intercept-url pattern="/user/findPwd/**" access="isAnonymous()" />
 	    <intercept-url pattern="/admin/**" access="hasRole('ADMIN')" /> 
 	    <intercept-url pattern="/**" access="isAuthenticated()" />
 
@@ -30,12 +27,13 @@
             login-page="/user/login"
             login-processing-url="/user/loginprocess"
             default-target-url="/"
+            always-use-default-target="true"
             authentication-failure-url="/user/login?error=true"
             username-parameter="userId"
             password-parameter="userPwd" />
 
         <logout 
-        	logout-url="/logout" 
+        	logout-url="/user/logout" 
         	logout-success-url="/"
         	invalidate-session="true"
         	delete-cookies="JSESSIONID, remember-me" />
