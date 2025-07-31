@@ -18,25 +18,6 @@ function sendMessage() {
     }))
 
     input.value = ""; // 입력란 비워줌
-    // fetch("${contextPath}/chat/sendMessage", {
-    //     method: "POST",
-    //     headers: {
-    //     "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify({
-    //     chatContent: message,
-    //     chatRoomId: window.chatRoomId
-    //     })
-    // })
-    // .then(response => {
-    //     if (!response.ok) throw new Error("서버 에러");
-    //     return response.json();
-    // })
-    // .then(showMessage)
-    // .catch(error => {
-    //     console.error("메시지 전송 실패:", error);
-    //     alert("메시지 전송 실패");
-    // });
 }
 
 const showMessage = data => {
