@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
+<<<<<<< HEAD
 <mapper namespace="user">
 
 	<!-- 아이디 찾기 -->
@@ -90,5 +91,14 @@
 			</set>
 		WHERE USER_ID = #{userId}
 	</update>
+=======
+<mapper namespace="userMapper">
+<select id="login" resultType="user">
+    SELECT *
+    FROM USER_TB
+    WHERE USER_ID = #{userId}
+      AND USER_PWD = #{userPwd}
+  </select>
+>>>>>>> main
 
 </mapper>
