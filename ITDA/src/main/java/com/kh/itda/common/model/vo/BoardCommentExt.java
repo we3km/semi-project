@@ -10,5 +10,12 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class BoardCommentExt extends BoardComment{
 	private List<BoardCommentExt> replies = new ArrayList<>();
+	
+	public long getCmtWriteDateTimestamp() {
+        if (getCmtWriteDate() != null) {
+            return getCmtWriteDate().getTime();
+        }
+        return 0;
+    }
 
 }

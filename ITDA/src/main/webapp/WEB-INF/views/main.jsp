@@ -87,6 +87,10 @@
 		        </div>
 		    </sec:authorize>
 		</div> 
+		
+		<div class="headline">IT다</div>
+    	<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
+		
 
 
 		<div class="search-filter-wrapper">

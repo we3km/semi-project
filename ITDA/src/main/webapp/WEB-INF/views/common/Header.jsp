@@ -47,6 +47,9 @@
 				<div class="btn" id="customerService">고객센터</div>
 			</div>
 		</div>
+		
+		<!--  유저 권한 -->
+		<%-- <input type="hidden" id="userRole" value="${sessionScope.loginUser.role}" /> --%>
 		<c:choose>
 			<c:when test="${not empty sessionScope.loginUser}">
 				<script>
@@ -121,6 +124,68 @@
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
 
+
+				// 로그인-로그아웃 버튼 
+				// 로그인 상태 토글
+				$('#loginBtn').click(function() {
+					$('.unlogin').hide();
+					$('.login').show();
+				});
+				$('#logoutBtn').click(function() {
+					$('.login').hide();
+					$('.unlogin').show();
+				});
+				// 초기화 - 무조건 로그인된 상태 숨기기
+				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
+				$('.unlogin').show(); // 비로그인용 버튼 보이기
+				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
+				// 로그인 클릭 시
+
+				$('#loginBtn').click(function() {
+					//로그인 페이지로 이동
+					alert(`로그인창`);
+					location.href = contextPath
+							+ '/user/tempLogin';
+					/* location.href = contextPath + '/user/login'; */
+
+					$('.unlogin').hide();
+					$('.login').css('display', 'flex');
+					$('.login_effect').show();
+				});
+				// 로그아웃 클릭 시
+				$('#logoutBtn').click(function() {
+					//로그아웃
+					alert(`로그아웃 하였습니다`);
+					location.href = contextPath
+							+ '/user/logout';
+
+					$('.login').hide();
+					$('.login_effect').hide();
+					$('.unlogin').css('display', 'flex');
+				});
+
+				//회원가입 이동
+				$('#joinMembership').click(function() {
+					location.href = contextPath + '/user/join';
+				});
+
+				//마이페이지 이동
+				$('#myPage').click(function(){
+					 const userRole= $('#userRole').val();
+						if(userRole == 'admin'){
+							location.href = contextPath + '/admin/mypage';
+						}else{
+							location.href = contextPath + '/user/mypage';	
+						}					
+				});
+				
+
+				//고객센터이동
+				$('#customerService').click( function() {
+							location.href = contextPath
+									+ '/cs';
+				})
+
 				// 로고
 				$('.logo').click(function() {
 					location.href = contextPath;
@@ -143,71 +208,6 @@
 					        }
 					        window.location.href = targetUrl;
 						});
-
-				// 로그인-로그아웃 버튼 
-				// 로그인 상태 토글
-				$('#loginBtn').click(function() {
-					$('.unlogin').hide();
-					$('.login').show();
-				});
-				$('#logoutBtn').click(function() {
-					$('.login').hide();
-					$('.unlogin').show();
-				});
-				// 초기화 - 무조건 로그인된 상태 숨기기
-				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
-				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
-				// 로그인 클릭 시
-				$('#loginBtn').click(
-						function() {
-							//로그인 페이지로 이동
-							alert(`로그인창`);
-							location.href = contextPath
-									+ '/user/login';
-							location.href = contextPath + '/user/login'; 
-
-							$('.unlogin').hide();
-							$('.login').css('display', 'flex');
-							$('.login_effect').show();
-						});
-				// 로그아웃 클릭 시
-				$('#logoutBtn').click(
-						function() {
-							//로그아웃
-							alert(`로그아웃 하였습니다`);
-							const form = document.createElement('form');
-						    form.method = 'POST';
-						    form.action = contextPath + '/user/logout';
-
-						    document.body.appendChild(form);
-						    form.submit();
-						    
-							$('.login').hide();
-							$('.login_effect').hide();
-							$('.unlogin')
-									.css('display', 'flex');
-						});
-
-				//회원가입 이동
-				$('#joinMembership').click(function() {
-					location.href = contextPath + '/user/join';
-				});
-
-				//마이페이지 이동
-				$('#myPage').click(
-						function() {
-							location.href = contextPath
-									+ '/user/mypage';
-						});
-
-				//고객센터이동
-				$('#customerService').click(
-						function() {
-							location.href = contextPath
-									+ '/cs';
-						})
-
 				// 검색창
 				// 드롭다운 화살표 클릭 시 목록 열기
 			    $('.dropbtn_click').on('click', function (e) {
@@ -295,55 +295,7 @@
 			        location.href = url + (queryString ? '?' + queryString : '');
 			    });
 			        
-			        
-			        
-				/* // 검색 드롭다운 열기/닫기
-				$('.search-category').click(
-						function() {
-							$(this)
-									.siblings(
-											'.search-dropdown')
-									.toggle();
-						});
-				// 카테고리 선택 시 텍스트만 변경 (svg 유지)
-				$('.search-dropdown div')
-						.click(
-								function() {
-									const selectedText = $(this)
-											.text();
-									$(
-											'.search-category div:first-child')
-											.text(selectedText);
-									$('.search-dropdown')
-											.hide();
-								});
-				// 외부 클릭 시 드롭다운 닫기
-				$(document)
-						.click(
-								function(e) {
-									if (!$(e.target).closest(
-											'.search').length) {
-										$('.search-dropdown')
-												.hide();
-									}
-								});
-				// 검색 아이콘 클릭
-				$('.search img')
-						.click(
-								function() {
-									const query = $(
-											'.search-bar input')
-											.val(); //입력된 검색어
-									const category = $(
-											'.search-category div:first-child')
-											.text().trim(); // 선택된 카테고리
-
-									if (query === "") {
-										alert(`검색어를 입력하세요`);
-									} else {
-										alert(`카테고리: ${category}\n검색어: ${query}`);
-									}
-								}); */
+			    
 
 				//로그인 상태창
 				//채팅버튼

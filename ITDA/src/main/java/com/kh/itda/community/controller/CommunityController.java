@@ -369,6 +369,28 @@ public class CommunityController {
 	    
 	    return response;
 	}
+	
+	// 댓글 삭제 (AJAX)
+	@PostMapping(value="/comments/delete", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> ajaxDeleteComment(@RequestBody BoardComment comment) {
+	    
+	    // 임시 유저 정보 (로그인 연동 후 Authentication 객체에서 가져옵니다)
+		// User loginUser = (User) auth.getPrincipal();
+	    // comment.setCmtWriterUserNum(loginUser.getUserNum());
+		int userNo = 1;
+	    
+	    int result = communityService.deleteComment(comment.getBoardCmtId(), userNo);
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    if (result > 0) {
+	        response.put("result", "success");
+	    } else {
+	        response.put("result", "fail");
+	        response.put("message", "댓글을 삭제할 권한이 없습니다.");
+	    }
+	    return response;
+	}
 
 	
 

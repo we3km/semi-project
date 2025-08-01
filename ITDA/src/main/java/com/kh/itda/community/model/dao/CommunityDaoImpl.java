@@ -153,6 +153,16 @@ public class CommunityDaoImpl implements CommunityDao{
 		return session.insert("community.insertComment",comment);
 	}
 
+	@Override
+	public BoardComment selectComment(int commentNo) {
+		return session.selectOne("community.selectComment",commentNo);
+	}
+
+	@Override
+	public int deleteComment(int commentNo) {
+		return session.update("community.deleteComment",commentNo);
+	}
+
 	
 	
 

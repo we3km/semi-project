@@ -211,5 +211,20 @@ public class CommunityServiceImpl implements CommunityService{
 	    return communityDao.insertComment(comment);
 	}
 
+	@Override
+	public int deleteComment(int commentNo, int userNo) {
+		 // 1. 삭제할 댓글의 원본 정보를 먼저 조회합니다.
+	    BoardComment originalComment = communityDao.selectComment(commentNo);
+
+	    // 2. 댓글이 존재하고, 작성자와 삭제 요청자가 일치하는지 확인합니다.
+	    if (originalComment != null && originalComment.getCmtWriterUserNum() == userNo) {
+	        // 3. 권한이 있으면 삭제(상태 변경)를 진행합니다.
+	        return communityDao.deleteComment(commentNo);
+	    } else {
+	        // 4. 권한이 없으면 0을 반환하여 실패를 알립니다.
+	        return 0;
+	    }
+	}
+
 
 }

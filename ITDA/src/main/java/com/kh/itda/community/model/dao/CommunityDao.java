@@ -56,6 +56,10 @@ public interface CommunityDao {
 
 	int insertComment(BoardComment comment);
 
+	BoardComment selectComment(int commentNo);
+
+	int deleteComment(int commentNo);
+
 	
 
 

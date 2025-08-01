@@ -437,6 +437,7 @@
     JOIN USER_TB U ON BC.CMT_WRITER_USER_NUM = U.USER_NUM
     WHERE BC.REF_NO = #{communityNo}
       AND BC.BOARD_ASSORTMENT = 5
+      AND STATUS = 'Y'
     ORDER BY BC.CMT_WRITE_DATE ASC
 </select>
 
@@ -466,5 +467,20 @@
         
     )
 </insert>
+
+<select id="selectComment" parameterType="_int" resultType="boardComment">
+    SELECT
+        BOARD_CMT_ID AS boardCmtId,
+        CMT_WRITER_USER_NUM AS cmtWriterUserNum
+    FROM BOARD_COMMENT
+    WHERE BOARD_CMT_ID = #{commentNo}
+</select>
+
+<!-- 댓글 삭제 -->
+<update id="deleteComment" parameterType="_int">
+    UPDATE BOARD_COMMENT
+    SET STATUS = 'N'
+    WHERE BOARD_CMT_ID = #{commentNo}
+</update>
 
 </mapper>

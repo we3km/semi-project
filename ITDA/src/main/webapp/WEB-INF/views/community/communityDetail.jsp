@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -60,7 +61,10 @@
         <!-- 공유 + 신고하기 + 삭제 버튼-->
         <div class="post-actions">
             <button class="share-btn">공유</button>
-            <button class="report-btn">신고하기</button>
+            <button class="report-btn" data-id="${community.communityNo}" 
+			        data-title="${fn:escapeXml(community.communityTitle)}">
+			    신고하기
+			</button>
             <button class="sub-btn">︙</button>
             <div class="share-popup" id="sharePopup">
                 <input type="text" id="shareUrl" readonly >
@@ -171,8 +175,9 @@
 		        });
 			  //신고하기
 			   $('.report-btn').click(function(){
-				    /* openReportModal('community', ${communityNo}, "${community.communityTitle}"); */
-				    alert('신고 모달창');
+				   const id = $(this).data('id');
+				    const title = $(this).data('title');
+				    openReportModal('community', id, title);
 				});
 			 // 복사 버튼 클릭
 			 	$('#shareUrl').val(window.location.href);
@@ -267,53 +272,100 @@
 		            error: function() { console.log("댓글 목록 조회에 실패했습니다."); }
 		        });
 		    }
+			//댓글 시간 포멧
+		    function formatCommentDate(dateTimestamp) {
+		
+				
+			    const now = new Date();
+			    const writeDate = new Date(dateTimestamp);
+			    const diffMs = now - writeDate;
+			    const diffMinutes = Math.floor(diffMs / 1000 / 60);
+			    const diffHours = Math.floor(diffMinutes / 60);
+			    const diffDays = Math.floor(diffHours / 24);
+			
+			    if (diffMinutes < 1) {
+			        return '방금 전';
+			    } else if (diffMinutes < 60) {
+			        return diffMinutes + '분 전';
+			    } else if (diffHours < 24) {
+			        return diffHours + '시간 전';
+			    } else {
+			        return writeDate.toLocaleDateString('ko-KR', {
+			            year: '2-digit',
+			            month: '2-digit',
+			            day: '2-digit'
+			        });
+			    }
+			}
 		    
-		    // 댓글 객체를 받아 HTML 문자열을 생성하는 함수 (재귀 호출로 답글까지 처리)
-		    /* function createCommentHtml(comment) {
+		    // 댓글 객체를 받아 HTML 문자열을 생성하는 함수
+		     function createCommentHtml(comment) {
+
 		        let repliesHtml = '';
-		        // 답글(replies)이 있으면 재귀적으로 이 함수를 다시 호출하여 답글 HTML을 생성
 		        if (comment.replies && comment.replies.length > 0) {
 		            $.each(comment.replies, function(index, reply) {
 		                repliesHtml += createCommentHtml(reply);
 		            });
 		        }
 		        
-		        // 날짜 포맷 변경 (yyyy. MM. dd.)
-		        const writeDate = new Date(comment.cmtWriteDate).toLocaleDateString('ko-KR');
+		        const writeDate = formatCommentDate(comment.cmtWriteDateTimestamp);
 		        
 		        let replyBtnHtml = '';
-		        
 		        if (comment.refCommentId=== 0) {
-		            replyBtnHtml = `<span class="reply-toggle-btn" data-comment-no="${comment.boardCmtId }">답글</span>`;
+		            replyBtnHtml = '<span class="reply-toggle-btn" data-comment-no="' + comment.boardCmtId + '">답글</span>';
 		        }
-		        console.log(" 댓글 :", comment);
+		        
+		        let repliesToggleHtml = '';
+		        if (repliesHtml) {
+		            repliesToggleHtml = '<div class="replies-toggle-btn" data-comment-no="'+ comment.boardCmtId +'">답글 접기</div>';
+		        }
 
-		        // 각 댓글의 HTML 구조
-		        const commentHtml = `
-		        	 <div class="comment ${comment.refCommentId > 0 ? 'reply' : ''}">
-		            <div class="profile-icon"></div>
-		            <div class="content">
-		                <div class="author">${comment.nickName}</div>
-		                <div class="text">${comment.boardCmtContent}</div>
-		                <div class="actions">
-		                    <span>${writeDate}</span>
-		                    ${replyBtnHtml}  
-		                </div>
-		                <div class="reply-box" id="reply-box-${comment.commentNo}">
-		                    <input type="text" class="reply-input" placeholder="답글 추가...">
-		                    <button class="reply-submit-btn" data-parent-no="${comment.commentNo}">등록</button>
-		                </div>
-		                <div class="replies">${repliesHtml}</div>
-		            </div>
-		        </div>`;
+		        let commentHtml = '';
+		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
+		        commentHtml += '  <div class="profile-icon"></div>';
+		        commentHtml += '  <div class="content">';
+		        commentHtml += '    <div class="author">' + comment.nickName + '</div>';
+		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>';
+		        commentHtml += '    <div class="actions">';
+		        commentHtml += '      <span>' + writeDate + '</span>';
+		        commentHtml +=        replyBtnHtml;
+		        commentHtml +=        repliesToggleHtml;
+		        commentHtml += '    </div>';
+		        commentHtml += '    <div class="reply-section">';
+		        commentHtml += '      <div class="reply-box" id="reply-box-' + comment.boardCmtId + '" style="display:none;">';
+		        commentHtml += '        <input type="text" class="reply-input" placeholder="답글 추가...">';
+		        commentHtml += '        <button class="reply-submit-btn" data-parent-no="' + comment.boardCmtId + '">등록</button>';
+		        commentHtml += '      </div>';
+		        commentHtml += '      <div class="replies-container" id="replies-container-' + comment.boardCmtId + '">';
+		        commentHtml += '        <div class="replies">' + repliesHtml + '</div>';
+		        commentHtml += '      </div>';
+		        commentHtml += '    </div>';
+		        commentHtml += '  </div>';
+		        commentHtml += '  <div class="options-btn">︙</div>';
+		        commentHtml += '  <div class="options-popup">';
+		        commentHtml += '      <div class="report-comment-btn" data-comment-no="'+ comment.boardCmtId +'">신고하기</div>';
+		        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
+		        commentHtml += '  </div>';
+		        commentHtml += '</div>';
+			    
 		        return commentHtml;
-		    } */
+		    }
 		    
 
 		    // '답글' 버튼 클릭 시 입력창 토글
 		    $('#commentList').on('click', '.reply-toggle-btn', function() {
-		        const commentNo = $(this).data('comment-no');
-		        $('#reply-box-' + commentNo).toggle().find('input').focus();
+		    	const commentNo = $(this).data('comment-no');
+		    	  const $replyBox = $('#reply-box-'+commentNo);
+
+		    	  /* console.log('클릭된 댓글 번호:', commentNo);
+		    	  console.log('찾은 replyBox:', $replyBox);
+		    	  console.log('현재 display 상태:', $replyBox.css('display')); */
+
+		    	  $replyBox.toggle();
+
+		    	  setTimeout(() => {
+		    	    console.log('토글 후 display 상태:', $replyBox.css('display'));
+		    	  }, 100);
 		    });
 
 		    // 답글 '등록' 버튼 클릭 이벤트
@@ -323,6 +375,68 @@
 		        addComment(content, parentNo);
 		    });
 		    
+		    // 답글 접기/펼치기
+		    $('#commentList').on('click', '.replies-toggle-btn', function() {
+		        const commentNo = $(this).data('comment-no');
+		        /* const $repliesDiv = $(this).siblings('.replies'); */
+		        const $repliesDiv = $(this).closest('.content').find('.replies'); 
+		        const $button = $(this);
+
+		        $repliesDiv.slideToggle(200,function(){
+			        const buttonText = $repliesDiv.is(':visible') ? '답글 접기' 
+			        					: '답글 ' + $repliesDiv.children('.comment').length + '개 펼치기';
+		        	
+					$button.text(buttonText);
+		        });
+		    });
+		    
+		 	// 옵션(⋯) 버튼 클릭 이벤트
+		    $('#commentList').on('click', '.options-btn', function(e) {
+		        e.stopPropagation(); // 이벤트 버블링 방지
+		        $('.options-popup').not($(this).siblings('.options-popup')).hide(); // 다른 팝업 닫기
+		        $(this).siblings('.options-popup').toggle(); // 현재 팝업 토글
+		    });
+		 	
+		 	// 화면 다른 곳 클릭 시 모든 옵션 팝업 닫기
+		    $(window).on('click', function() {
+		        $('.options-popup').hide();
+		    });
+
+		    // 팝업 메뉴의 '신고하기' 클릭 이벤트
+		    $('#commentList').on('click', '.report-comment-btn', function() {
+		        const commentNo = $(this).data('comment-no');
+		        alert(commentNo + '번 댓글을 신고했습니다.');
+		        // 여기에 실제 신고 로직(AJAX)을 추가할 수 있습니다.
+		    });
+		    
+		 	// 	팝업 메뉴의 '삭제하기' 클릭 이벤트
+		    $('#commentList').on('click', '.delete-comment-btn', function() {
+		        const commentNo = $(this).data('comment-no');
+		        if (confirm(commentNo + '번 댓글을 정말 삭제하시겠습니까?')) {
+		        	$.ajax({
+		                url: "${pageContext.request.contextPath}/community/comments/delete",
+		                type: "POST", // 또는 "DELETE"
+		                contentType: "application/json",
+		                data: JSON.stringify({
+		                    boardCmtId: commentNo
+		                    // 로그인 연동 후에는 서버가 자동으로 사용자 번호를 알게 됩니다.
+		                }),
+		                success: function(response) {
+		                    if (response.result === "success") {
+		                        alert("댓글이 삭제되었습니다.");
+		                        selectCommentList(); // 댓글 목록 새로고침
+		                    } else {
+		                        alert(response.message || "댓글 삭제에 실패했습니다.");
+		                    }
+		                },
+		                error: function() {
+		                    alert("댓글 삭제 중 오류가 발생했습니다.");
+		                }
+		            });
+		        }
+		    });
+
+		    
 		    // 최상위 댓글 '등록' 버튼 클릭 이벤트
 		    $('#addComment').on('click', function() {
 		        const content = $('#commentText').val();
@@ -330,7 +444,7 @@
 		    });
 		    
 		    // 댓글/답글 등록 AJAX 공통 함수
-		    function addComment(content, refCommentId) {
+		    function addComment(content, refCommentId) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 		        if (!content.trim()) {
 		            alert("내용을 입력해주세요.");
 		            return;
@@ -344,9 +458,10 @@
 		                refNo: communityNo,
 		                refCommentId: refCommentId // 부모 댓글 번호 (최상위 댓글은 0)
 		            }),
-		            success: function(result) {
-		                if (result === "success") {
+		            success: function(map) {
+		                if (map.result === "success") {
 		                    selectCommentList(); // 성공 시 댓글 목록 전체 새로고침
+		                    $('#commentText').val('');
 		                } else {
 		                    alert("댓글 등록에 실패했습니다.");
 		                }
@@ -356,7 +471,6 @@
 		    }
 		    
 		</script>
-	 <script src="${pageContext.request.contextPath}/resources/js/test.js"></script>
 
 </body>
 </html>

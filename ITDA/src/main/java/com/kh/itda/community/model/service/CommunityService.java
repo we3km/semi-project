@@ -40,6 +40,8 @@ public interface CommunityService {
 
 	int insertComment(BoardComment comment);
 
+	int deleteComment(int commentNo, int userNo);
+
 	
 
 }

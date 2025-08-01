@@ -57,6 +57,14 @@
 				<p>
 					<strong>카테고리</strong>
 				</p>
+				
+				<label>
+					<input type="checkbox" name="category" value="all"
+					<c:if test="${empty param.category}">checked</c:if>
+					    <c:forEach var="c" items="${paramValues.category}">
+					        <c:if test="${c == ''}">checked</c:if>
+					    </c:forEach>> 전체
+				</label>
 				<label> 
 					<input type="checkbox" name="category" value="w" 
 						<c:forEach var="c" items="${paramValues.category}">
@@ -113,13 +121,7 @@
 					> 공포
 				</label> 
 				
-				<label>
-					<input type="checkbox" name="category" value=""
-					 <c:if test="${empty param.category}">checked</c:if>
-					    <c:forEach var="c" items="${paramValues.category}">
-					        <c:if test="${c == ''}">checked</c:if>
-					    </c:forEach>> 전체
-				</label>
+				
 
 				<button id="applyFilterBtn">적용</button>
 			</div>
@@ -243,31 +245,48 @@
     $(document).ready(function () {
     	const contextPath = "${pageContext.request.contextPath}";
 
-        // [핵심 수정] 현재 페이지의 URL 경로에서 직접 communityCode를 추출합니다.
+        // 현재 페이지의 URL 경로에서 직접 communityCode를 추출합니다.
         // 예: /itda/community/list/all -> 'all' 추출
         const pathParts = window.location.pathname.split('/');
         //const communityCode = pathParts[pathParts.length - 1];
         
         const listIndex = pathParts.indexOf("list");
         const communityCode = pathParts[listIndex + 1]; 
+        
+        //전체 체크
+         $('input[name="category"][value="all"]').on('change', function() {
+            const isChecked = $(this).is(':checked');
+            $('input[name="category"]').not('[value="all"]').prop('checked', isChecked);
+        });
+
+        // 전체 언체크
+        $('input[name="category"]').not('[value="all"]').on('change', function() {
+            const total = $('input[name="category"]').not('[value="all"]').length;
+            const checked = $('input[name="category"]:checked').not('[value="all"]').length;
+            $('input[name="category"][value="all"]').prop('checked', total === checked);
+        });
 
         // 필터 적용 버튼 클릭 이벤트
         $('#applyFilterBtn').on('click', function() {
             const sort = $('input[name="sort"]:checked').val() || 'latest';
-            
+            const $allCheckbox = $('input[name="category"][value="all"]');
+
+            // '전체'가 선택되었거나, 아무 카테고리도 선택되지 않았을 경우
+            if ($allCheckbox.is(':checked') || $('input[name="category"]:checked').length === 0) {
+                // [핵심 수정] sort 파라미터 없이 /community/list/all 로만 이동합니다.
+                location.href = contextPath + '/community/list/all';
+                return; // 함수 종료
+            }
+
+            // '전체'가 아닌 다른 카테고리들이 선택된 경우
             const searchParams = new URLSearchParams();
             searchParams.append("sort", sort);
 
-            $('input[name="category"]:checked').each(function() {
+            $('input[name="category"]:checked').not('[value="all"]').each(function() {
                 searchParams.append("category", $(this).val());
             });
 
-            $('input[name="region"]:checked').each(function() {
-                searchParams.append("region", $(this).val());
-            });
-
-            // 이제 communityCode는 항상 현재 URL에서 가져오므로 절대 사라지지 않습니다.
-            location.href = `${contextPath}/community/list/${communityCode}?` + searchParams.toString();
+            location.href = contextPath + '/community/list/all?' + searchParams.toString();
         });
 
         // 글쓰기 버튼 클릭 이벤트
