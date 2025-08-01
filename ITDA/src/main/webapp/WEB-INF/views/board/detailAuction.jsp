@@ -137,6 +137,17 @@ body {
   background-color:gray;
   color: white; /* 찜 안한 상태일 때 회색 하트 */
 }
+
+.top-bid {
+    background-color: #ffd700; /* 골드 느낌 배경 */
+    width:max-content;
+    font-weight: bold;
+    color: #b35900;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+
 </style>
 
 </head>
@@ -205,14 +216,38 @@ body {
 				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
 				<div class="buttons">
 					<!-- 연결해야함 -->
-					<button>메시지 보내기</button>
-
+					<!-- 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum ne board.boardCommon.userNum}">
+						<button>메시지 보내기</button>
+					</c:if>
+					<!-- 경매가 종료 되고 게시글 게시자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end'}">
+						<button>낙찰자에게 채팅 보내기</button>
+					</c:if>
+					<!-- 게시자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum eq board.boardCommon.userNum}">
+						<button>수정</button>
+						<button>삭제</button>
+					</c:if>
 					
-					<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-  						<i class="fa fa-heart"></i> 찜하기
-					</button>
+					<!-- 게시가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum ne board.boardCommon.userNum}">
+						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+	  						<i class="fa fa-heart"></i> 찜하기
+						</button>
+					</c:if>
 					
-					<button onclick="openModal()">입찰하기</button>
+						<!-- 경매가 종료되고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때   -->
+						<!-- 경매가 종료되지 않고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
+					<c:choose>
+						<c:when test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'end'}">
+							<button class="auctionEnd" style="cursor: default; background-color:gray; color: white;">
+							경매종료</button>
+						</c:when>
+						<c:when test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'doing'}">
+							<button onclick="openModal('${boardId}', '${userNum}')">입찰하기</button>
+						</c:when>
+					</c:choose>
 					
 					
 					<div id="bidModal" style="display:none; position:fixed; top:20%; left:30%; width:300px; height:200px; background:white; border:1px solid black; padding:20px;">
@@ -221,8 +256,15 @@ body {
 					  <button onclick="applyValue()">제시</button>
 					  <button onclick="closeModal()">닫기</button>
 					</div>
+					
 					<h3>입찰금 현황</h3>
-						<div id="biddingList">
+					<div id="biddingList">
+						<c:forEach var="bid" items="${bidList }" varStatus="status">
+							<p class="bid ${status.first ? 'top-bid' : ''}" data-nickname="${bid.nickName}">
+								${bid.nickName} - ${bid.bid }
+							</p>
+						
+						</c:forEach>
 					</div>
 					
 					<!-- 연결해야함 -->
@@ -270,9 +312,23 @@ body {
     
     <!-- 입찰금 제시 모달창 스크립트 -->
 	<script>
-	  function openModal() {
-	    document.getElementById("bidModal").style.display = "block";
-	  }
+	function openModal(userId, boardId) {
+		  fetch(`${pageContext.request.contextPath}/board/bidding/check?userNum=${userNum}&boardId=${boardId}`)
+		    .then(response => response.json())
+		    .then(data => {
+		      if (data.hasBid) {
+		        // 이전 입찰금 있으면 모달에 값 넣기
+		        document.getElementById("popupInput").value = data.bid;
+		        //document.getElementById("bidModalTitle").innerText = "입찰금 수정";
+		      } else {
+		        // 이전 입찰금 없으면 빈 입력창
+		        document.getElementById("popupInput").value = ${board.boardAuction.auctionStartingFee};
+		        //document.getElementById("bidModalTitle").innerText = "입찰금 제시";
+		      }
+		      document.getElementById("bidModal").style.display = "block";
+		    });
+		}
+
 	
 	  function closeModal() {
 	    document.getElementById("bidModal").style.display = "none";
@@ -280,7 +336,7 @@ body {
 	
 	  function applyValue() {
 			    const bidValue = $("#popupInput").val();
-			    const userNum = ${userNum}; // 실제 환경에서는 서버에서 받아온 로그인 사용자 ID
+			    const userNum = ${userNum}; 
 				const nickName = '${userNickname}';
 			    $.ajax({
 			      url: "${pageContext.request.contextPath}/board/auction/bid", // JSP에서 contextPath 처리
@@ -289,22 +345,51 @@ body {
 			      data: JSON.stringify({
 			        boardId: ${board.boardCommon.boardId}, // JSP 변수 그대로 사용
 			        biddingUserNum: userNum,
-			        bid: bidValue
+			        bid: bidValue,
+			        nickName: nickName
 			      }),
 			      success: function(data) {
 			        console.log("서버 응답:", data);
-
-			        const existingBid = $(`.bid[data-nickname="${nickname}"]`);
+					
+			        // 전에 제시를 했었는지 확인
+			        const existingBid = $(`.bid[data-nickname="${userNickname}"]`);
 			        if (existingBid.length > 0) {
+			        	// 이미 제시를 했으면 수정
 			          existingBid.text(nickName + " - " + bidValue);
 			        } else {
+			        	// 아직 제시를 안했으면 추가
 			          const bid = $("<p></p>")
 			            .addClass("bid")
 			            .attr("data-nickname", nickName)
 			            .text(nickName + " - " + bidValue);
 			          $("#biddingList").append(bid);
 			        }
+			     // 입찰금이 높은 순으로 정렬
+		            const bids = $("#biddingList .bid").get();
 
+		            bids.sort((a, b) => {
+		                const bidA = parseInt($(a).text().split(" - ")[1]);
+		                const bidB = parseInt($(b).text().split(" - ")[1]);
+		                return bidB - bidA; // 높은 금액이 앞으로 오도록 내림차순
+		            });
+		            
+		            $("#biddingList").empty();
+
+		            bids.forEach((el, index) => {
+		                const $el = $(el);
+		                $el.removeClass("top-bid");
+						
+		         
+		                if (index === 0) {
+		                    $el.addClass("top-bid");
+
+		                }
+
+		                $("#biddingList").append($el);
+		            });
+
+		            $("#biddingList").empty().append(bids);
+		            
 			        closeModal();
 			      },
 			      error: function(xhr) {

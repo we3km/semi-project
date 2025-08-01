@@ -986,10 +986,59 @@
 			<result property="fileName" column="FILE_NAME" />
 		</association>
 	</resultMap>
-	
-		
 	<insert id="saveBid" parameterType="AuctionBidding">
 		INSERT INTO AUCTION_BIDDING(BOARD_ID, BIDDING_USER_NUM, BID)
 		VALUES (#{boardId}, #{biddingUserNum}, #{bid})
+	</insert>
+		
+	<select id="selectBidList" parameterType="int" resultType="AuctionBidding"
+		>
+		SELECT
+			AB.BOARD_ID,
+			AB.BIDDING_USER_NUM,
+			AB.BID,
+			U.NICK_NAME
+		FROM AUCTION_BIDDING AB
+		JOIN USER_TB U ON AB.BIDDING_USER_NUM = U.USER_NUM
+		WHERE BOARD_ID = #{boardId}
+		ORDER BY AB.BID DESC
+
+	</select>
+	
+	<select id="findBidByUserAndBoard" parameterType="map" resultType="AuctionBidding"
+		>
+		SELECT
+			AB.BOARD_ID,
+			AB.BIDDING_USER_NUM,
+			AB.BID,
+			U.NICK_NAME
+		FROM AUCTION_BIDDING AB
+		JOIN USER_TB U ON AB.BIDDING_USER_NUM = U.USER_NUM
+		WHERE BOARD_ID = #{boardId} AND BIDDING_USER_NUM = #{userNum}
+
+	</select>
+	
+	<update id="updateBid" parameterType="AuctionBidding">
+		UPDATE AUCTION_BIDDING
+		SET BID = #{bid}
+		WHERE BIDDING_USER_NUM = #{biddingUserNum}
+			AND BOARD_ID = #{boardId}
+	</update>
+	
+	<select id="selectBiddingWinner" resultType="BiddingWinner">
+		SELECT BOARD_ID, BIDDING_USER_NUM, BID
+			FROM (
+			  SELECT B.BOARD_ID, AB.BIDDING_USER_NUM, AB.BID,
+			         RANK() OVER (PARTITION BY B.BOARD_ID ORDER BY AB.BID DESC) AS RANKING
+			  FROM BOARD_AUCTION B
+			  JOIN AUCTION_BIDDING AB ON B.BOARD_ID = AB.BOARD_ID
+			  WHERE B.AUCTION_END_DATE &lt;= SYSDATE
+			)
+		WHERE RANKING = 1
+	</select>
+	
+	<insert id="insertBiddingWinner" parameterType="BiddingWinner">
+		INSERT INTO BIDDING_WINNER(BOARD_ID, USER_NUM, BID)
+		VALUES (#{boardId}, #{userNum}, #{bid})
 	</insert>
 </mapper>

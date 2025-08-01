@@ -2,6 +2,7 @@ package com.kh.itda.board.model.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
@@ -77,6 +78,14 @@ public interface BoardService {
 	List<BoardAuctionFileWrapper> selectBoardAuctionList(Map<String, Object> filterMap);
 
 	void saveBid(AuctionBidding bid);
+
+	List<AuctionBidding> selectBidList(int boardId);
+
+	AuctionBidding findBidByUserAndBoard(int userNum, int boardId);
+
+	void updateBid(AuctionBidding bid);
+
+	void insertBiddingWinner();
 
 
 

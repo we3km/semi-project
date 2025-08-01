@@ -5,10 +5,12 @@ package com.kh.itda.board.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -383,6 +385,13 @@ public class BoardController {
 			// @PathVariable("boardCategory") String boardCategory,
 			Model model, RedirectAttributes ra,
 			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				Object principal = auth.getPrincipal();
+				String userId = ((UserDetails) principal).getUsername();
+				String userNickname = userService.selectUserNickname(userId);
+				String userNum = userService.selectUserNum(userId);
+		
+		
 				List<File> imgList = new ArrayList<>();
 		
 				System.out.println("이미지:" + upfiles);
@@ -413,7 +422,7 @@ public class BoardController {
 		//			boardCommon.setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
 		//			boardCommon.setTransactionCategory(boardCategory);
 		
-				board.getBoardCommon().setUserNum(1);
+				board.getBoardCommon().setUserNum(Integer.parseInt(userNum));
 				board.getBoardCommon().setTransactionAddress("서울특별시 강남구");// 테스트용 임의 지정
 				board.getBoardCommon().setTransactionCategory("auction");
 		
@@ -650,14 +659,21 @@ public class BoardController {
 		public String boardDetailAuction(@PathVariable("boardId") int boardId, Model model,
 				@CookieValue(value = "readBoardShareNo", required = false) String readBoardShareNoCookie, HttpServletRequest req,
 				HttpServletResponse res) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+					//boardService.insertBiddingWinner();
+					Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 					Object principal = auth.getPrincipal();
 					String userId = ((UserDetails) principal).getUsername();
 					String userNickname = userService.selectUserNickname(userId);
 					String userNum = userService.selectUserNum(userId);
+					
 					System.out.println("회원번호"+userNum);
 					model.addAttribute("userNickname", userNickname);
 					model.addAttribute("userNum", userNum);
+					
+					// 입찰금 목록 가져오기
+					List<AuctionBidding> bidList = boardService.selectBidList(boardId);
+					model.addAttribute("bidList", bidList);
+					
 					
 					
 					// 경매 게시글 정보 추출
@@ -703,7 +719,30 @@ public class BoardController {
 						}
 					}
 					// }
+					
+					// 경매 종료일자와 현재 날짜 비교해서 입찰 제시 버튼 활성화/비활성화
+					Date endDate = board.getBoardAuction().getAuctionEndDate();
+					
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(endDate);
+					cal.add(Calendar.DATE, 1); // DB에는 날짜만 저장되서 시간이 00시임 하루 더하기
+					Date endDatePlusOne = cal.getTime();
+					
+					Date today = new Date();
 
+					if(today.compareTo(endDatePlusOne) > 0) {
+						 // today가 endDate보다 나중임
+						// 경매끝
+						model.addAttribute("auctionEnd", "end");
+					} else if(today.compareTo(endDatePlusOne) < 0) {
+						 // today가 endDate보다 이전임
+						// 경매중
+						model.addAttribute("auctionEnd", "doing");
+					} else {
+						model.addAttribute("auctionEnd", "doing");
+						
+					}
+					
 					// 게시물의 이미지
 					List<FilePath> imgList = boardService.selectAuctionImgList(boardId);
 					System.out.println("경매이미지리스트"+imgList);
@@ -727,6 +766,8 @@ public class BoardController {
 					// 선택한 경매 게시물의 게시자 매너점수 추출
 					int mannerScore = boardService.selectMannerScore(writerUserNum);
 					model.addAttribute("mannerScore", mannerScore);
+					
+					
 
 					// 선택한 경매 게시물의 태그 추출
 					List<String> tags = boardService.selectTags(boardId);
@@ -795,17 +836,46 @@ public class BoardController {
 		return boardService.countDibs(dibs);
 	}
 
+	
 	// 입력한 입찰 제시금 저장
 	@PostMapping("/auction/bid")
 	@ResponseBody
 	public ResponseEntity<?> registerBid(@RequestBody AuctionBidding bid) {
 	    try {
 	    	System.out.println("입찰금:"+bid);
-	        boardService.saveBid(bid); // DB 저장 처리
-	        return ResponseEntity.ok().body("success");
+	    	
+	    	AuctionBidding existingBid = boardService.findBidByUserAndBoard(bid.getBiddingUserNum(), bid.getBoardId());
+	    	
+	    	if(existingBid !=null) {
+	    		boardService.updateBid(bid);
+	    	} else {
+	    		boardService.saveBid(bid); // DB 저장 처리
+	    	}
+	    	
+	    	return ResponseEntity.ok().body("success");
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
 	    }
+	}
+	
+	
+	@GetMapping("/bidding/check")
+	@ResponseBody
+	public Map<String, Object> checkBid(
+	        @RequestParam("userNum") int userNum,
+	        @RequestParam("boardId") int boardId) {
+
+	    AuctionBidding existingBid = boardService.findBidByUserAndBoard(userNum, boardId);
+	    
+	    Map<String, Object> result = new HashMap<>();
+	    if (existingBid != null) {
+	        result.put("hasBid", true);
+	        result.put("bid", existingBid.getBid());
+	    } else {
+	        result.put("hasBid", false);
+	    }
+	    
+	    return result;
 	}
 }

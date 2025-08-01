@@ -2,6 +2,7 @@ package com.kh.itda.board.model.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -269,6 +270,32 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public void saveBid(AuctionBidding bid) {
 		boardDao.saveBid(bid);
+		
+	}
+
+
+	@Override
+	public List<AuctionBidding> selectBidList(int boardId) {
+		return boardDao.selectBidList(boardId);
+	}
+
+
+	@Override
+	public AuctionBidding findBidByUserAndBoard(int userNum, int boardId) {
+		return boardDao.findBidByUserAndBoard(userNum, boardId);
+	}
+
+
+	@Override
+	public void updateBid(AuctionBidding bid) {
+		boardDao.updateBid(bid);
+		
+	}
+
+
+	@Override
+	public void insertBiddingWinner() {
+		boardDao.insertBiddingWinner();
 		
 	}
 

@@ -5,10 +5,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class AuctionBidding {
-	private int boardId;
-	private int biddingUserNum;
-	private int bid;
+public class BiddingWinner {
 	
-	private String nickName;
+	private int boardId;
+	private int userNum;
+	private int bid;
 }

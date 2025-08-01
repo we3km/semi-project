@@ -1,12 +1,15 @@
 package com.kh.itda.board.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BiddingWinner;
 import com.kh.itda.board.model.vo.BoardAuction;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
@@ -212,6 +215,11 @@ public class BoardDaoImpl implements BoardDao {
 	// 조회한 게시글의 게시자의 매너점수 반환	
 	@Override
 	public int selectMannerScore(int writerUserNum) {
+		
+		if(session.selectOne("board.selectMannerScore", writerUserNum) == null) {
+			return 80;
+			
+		}
 		return session.selectOne("board.selectMannerScore", writerUserNum);
 	}
 
@@ -482,6 +490,39 @@ public class BoardDaoImpl implements BoardDao {
 	@Override
 	public void saveBid(AuctionBidding bid) {
 		session.insert("board.saveBid" , bid);	
+	}
+
+
+	@Override
+	public List<AuctionBidding> selectBidList(int boardId) {
+		return session.selectList("board.selectBidList", boardId);
+
+		
+	}
+
+
+	@Override
+	public AuctionBidding findBidByUserAndBoard(int userNum, int boardId) {
+		Map<String, Integer> userNumBoardId = new HashMap<>();
+		userNumBoardId.put("userNum", userNum);
+		userNumBoardId.put("boardId", boardId);
+		return session.selectOne("board.findBidByUserAndBoard", userNumBoardId);
+	}
+
+
+	@Override
+	public void updateBid(AuctionBidding bid) {
+		session.update("board.updateBid", bid);
+	}
+
+
+	@Override
+	public void insertBiddingWinner() {
+		List<BiddingWinner> biddingWinner = session.selectList("board.selectBiddingWinner");
+		for(int i = 0; i < biddingWinner.size(); i++) {
+			session.insert("board.insertBiddingWinner", biddingWinner.get(i));
+		}
+		
 	}
 
 
