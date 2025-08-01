@@ -26,49 +26,7 @@
 </head>
 <body>
 	<div class="container">
-		<%-- <div class="top-buttons">
-			<div class="unlogin">
-				<div class="btn" id="loginBtn">로그인</div>
-				<div class="btn" id="joinMembership">회원가입</div>
-			</div>
-			<div class="login">
-				<div class="btn" id="myPage">마이페이지</div>
-				<div class="btn" id="logoutBtn">로그아웃</div>
-			</div>
-		</div>
 		
-		<%-- <div class="top-buttons">
-		    <!-- Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링 -->
-		    <sec:authorize access="isAnonymous()">
-		        <div class="unlogin">
-		            <div class="btn" id="loginBtn">로그인</div>
-		            <div class="btn" id="joinMembership">회원가입</div>
-		        </div>
-		    </sec:authorize>
-		
-		    <!-- 로그인했을 때만 이 div를 렌더링 -->
-		    <sec:authorize access="isAuthenticated()">
-		        <div class="login">
-		            <div class="btn" id="myPage">마이페이지</div>
-		            <div class="btn" id="logoutBtn">로그아웃</div>
-		        </div>
-		    </sec:authorize>
-		</div>  --%>
-		<%-- <c:choose>
-			<c:when test="${not empty sessionScope.loginUser}">
-				<script>
-					$('.unlogin').hide();
-					$('.login').show();
-				</script>
-			</c:when>
-			<c:otherwise>
-				<script>
-					$('.login').hide();
-					$('.unlogin').show();
-				</script>
-			</c:otherwise>
-
-		</c:choose> --%>
 		
 		 <div class="top-buttons">
 		    <%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
@@ -306,9 +264,19 @@
 		    form.submit();
 		}
 	    $('#loginBtn').click(() => location.href = contextPath + '/user/login');
-	    $('#logoutBtn').click(() => postToUrl(contextPath + '/user/logout'));
+	    $('#logoutBtn').click(function(){
+	    	alert(`로그아웃 하였습니다`);
+			location.href = contextPath + '/user/logout';
+	    });
 	    $('#joinMembership').click(() => location.href = contextPath + '/user/join/terms');
-	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
+	    $('#myPage').click(function(){
+			 const userRole= $('#userRole').val();
+				if(userRole == 'admin'){
+					location.href = contextPath + '/admin/mypage';
+				}else{
+					location.href = contextPath + '/user/mypage';	
+				}					
+		});
 	    $('.card').click(function () {
 	        const title = $(this).find('.card-title').text().trim();
 	        let targetUrl = '';

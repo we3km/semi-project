@@ -63,7 +63,8 @@
 					<c:if test="${empty param.category}">checked</c:if>
 					    <c:forEach var="c" items="${paramValues.category}">
 					        <c:if test="${c == ''}">checked</c:if>
-					    </c:forEach>> 전체
+					    </c:forEach>
+					> 전체
 				</label>
 				<label> 
 					<input type="checkbox" name="category" value="w" 

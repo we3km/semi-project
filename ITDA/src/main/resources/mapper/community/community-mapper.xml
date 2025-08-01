@@ -202,7 +202,7 @@
 	        #{communityContent},
 	        #{communityCd},
 	        #{communityWriter},
-	        SYSDATE
+	        #{writeDate}
 	    )
 	
 	    <selectKey keyProperty="communityNo" resultType="_int" order="AFTER">
@@ -448,6 +448,7 @@
         REF_NO,
         CMT_WRITER_USER_NUM,
         BOARD_ASSORTMENT,
+        CMT_WRITE_DATE,
         REF_COMMENT_ID
     ) VALUES (
         BOARD_COMMENT_SEQ.NEXTVAL,
@@ -455,6 +456,7 @@
         #{refNo},
         #{cmtWriterUserNum},
         5, -- 커뮤니티 게시글
+        #{cmtWriteDate},
         
          <choose>
             <when test="refCommentId > 0">

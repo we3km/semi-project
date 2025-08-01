@@ -1,6 +1,7 @@
 package com.kh.itda.community.model.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ public class CommunityServiceImpl implements CommunityService{
 		c.setCommunityContent(Utils.XSSHandling(c.getCommunityContent()));
 		c.setCommunityContent(Utils.newLineHandling(c.getCommunityContent()));
 		c.setCommunityTitle(Utils.XSSHandling(c.getCommunityTitle()));
+		c.setWriteDate(new Date());
+		
 		
 		// 게시글 저장
 		int result = communityDao.insertCommunity(c);
@@ -208,6 +211,7 @@ public class CommunityServiceImpl implements CommunityService{
 	public int insertComment(BoardComment comment) {
 		comment.setBoardCmtContent(Utils.XSSHandling(comment.getBoardCmtContent()));
 	    comment.setBoardCmtContent(Utils.newLineHandling(comment.getBoardCmtContent()));
+	    comment.setCmtWriteDate(new Date());
 	    return communityDao.insertComment(comment);
 	}
 

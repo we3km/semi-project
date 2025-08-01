@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -19,7 +18,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +40,7 @@ import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
 import com.kh.itda.community.model.vo.CommunityType;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,14 +86,8 @@ public class CommunityController {
 		// 2. 현재 요청한 게시판코드와 일치하면서, 현재 페이지에 해당하는게시글정보를 조회
 		// 3. 게시글 목록페이지로 게시글 정보, 페이징 정보, 검색정보를 담아서 forward
 		
-		System.out.println(cat);
-		//if (cat != null) {
-		//String category = cat.stream().map(c -> "'"+c+"'").collect(Collectors.joining(","));
 		paramMap.put("category", cat);
-		//}
-		
 		paramMap.put("communityCode", communityCode);
-		System.out.println(paramMap);
 		
 
 	    int listCount = communityService.selectListCount(paramMap);
@@ -120,8 +113,6 @@ public class CommunityController {
 	    model.addAttribute("param", paramMap);
 	    model.addAttribute("communityCode", communityCode);
 	    model.addAttribute("selectedCategories", cat);
-	    
-	    // 새로 만든 url과 searchParam을 model에 담아 전달
 	    model.addAttribute("url", url);
 	    model.addAttribute("searchParam", searchParam);
 
@@ -170,11 +161,11 @@ public class CommunityController {
 		}
 		
 		//로그인 사용자 정보 등록
-//		User loginUser = (User) auth.getPrincipal();
-//		c.setCommunityWriter(String.valueOf(loginUser.getUserNum()));
+		User loginUser = (User) auth.getPrincipal();
+		c.setCommunityWriter(loginUser.getUserNum());
 		
 		//임시로그인
-		c.setCommunityWriter(1);
+		//c.setCommunityWriter(1);
 		
 		c.setCommunityNickname(String.valueOf(1));
 		c.setWriteDate(new Date());
@@ -225,11 +216,10 @@ public class CommunityController {
 			
 		}
 		
-		//	============================= 시큐리티 이후에 사용=========
 		//유져관련
-		//User loginUser = (User) auth.getPrincipal();
-		//int userNum = ((User) auth.getPrincipal()).getUserNum();
-		int userNum = 3;
+		User loginUser = (User) auth.getPrincipal();
+		int userNum = ((User) auth.getPrincipal()).getUserNum();
+		//int userNum = 3;
 	    
 
 		// 1. 본인 글이 아닐 경우에만 조회수 증가 로직 실행
@@ -297,10 +287,12 @@ public class CommunityController {
 	
 	@PostMapping("/react")
 	@ResponseBody
-	public Map<String, Object> react(@RequestBody CommunityReaction reaction, HttpSession session) {
+	public Map<String, Object> react(@RequestBody CommunityReaction reaction,Authentication auth, HttpSession session) {
 		// 임시 로그인 유저 번호 
-	    int userNum = 3;
-	//  int userNum = ((User) session.getAttribute("loginUser")).userNum();
+	    //int userNum = 3;
+		User loginUser = (User) auth.getPrincipal();
+		int userNum = ((User) auth.getPrincipal()).getUserNum();
+	    //int userNum = ((User) session.getAttribute("loginUser")).userNum();
 	    
 	    reaction.setUserNum(userNum);
 
@@ -325,9 +317,9 @@ public class CommunityController {
 									Authentication auth,
 									RedirectAttributes ra) {
 		//로그인 유저정보
-		//User loginUser = (User)auth.getPrincipal();
-		//int userNum = loginUser.getUserNum();
-		int userNum = 1;
+		User loginUser = (User)auth.getPrincipal();
+		int userNum = loginUser.getUserNum();
+		//int userNum = 1;
 		
 		//삭제 시도
 		int result = communityService.deleteCommunity(communityNo, userNum);
@@ -352,11 +344,11 @@ public class CommunityController {
 	// 댓글 등록 (AJAX)
 	@PostMapping(value="/comments", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment) {
+	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment, Authentication auth) {
 	    // 임시 유저 정보 (로그인 연동 후 수정)
-	    // User loginUser = (User) auth.getPrincipal();
-	    // comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    comment.setCmtWriterUserNum(1); // 임시 작성자 NUM
+	    User loginUser = (User) auth.getPrincipal();
+	    comment.setCmtWriterUserNum(loginUser.getUserNum());
+	    //comment.setCmtWriterUserNum(1); // 임시 작성자 NUM
 	    
 	    int result = communityService.insertComment(comment);
 	    
@@ -373,14 +365,14 @@ public class CommunityController {
 	// 댓글 삭제 (AJAX)
 	@PostMapping(value="/comments/delete", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public Map<String, Object> ajaxDeleteComment(@RequestBody BoardComment comment) {
+	public Map<String, Object> ajaxDeleteComment(@RequestBody BoardComment comment, Authentication auth) {
 	    
 	    // 임시 유저 정보 (로그인 연동 후 Authentication 객체에서 가져옵니다)
-		// User loginUser = (User) auth.getPrincipal();
-	    // comment.setCmtWriterUserNum(loginUser.getUserNum());
-		int userNo = 1;
+		User loginUser = (User) auth.getPrincipal();
+	    comment.setCmtWriterUserNum(loginUser.getUserNum());
+	    int userNum = ((User) auth.getPrincipal()).getUserNum();
 	    
-	    int result = communityService.deleteComment(comment.getBoardCmtId(), userNo);
+	    int result = communityService.deleteComment(comment.getBoardCmtId(), userNum);
 	    
 	    Map<String, Object> response = new HashMap<>();
 	    if (result > 0) {

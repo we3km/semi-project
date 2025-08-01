@@ -30,6 +30,8 @@
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
+	
+	
 	<div class="container">
         <!-- 카테고리 + 제목 -->
         <div class="top-row">
@@ -66,11 +68,11 @@
 			    신고하기
 			</button>
             <button class="sub-btn">︙</button>
+            
             <div class="share-popup" id="sharePopup">
                 <input type="text" id="shareUrl" readonly >
                 <button onclick="copyUrl()" id="copy">복사</button>
             </div>
-            
             <div id="deleteToggleArea" class="delete-menu hidden">
 				<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/community/delete">
 			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
@@ -136,6 +138,8 @@
 
         <!-- 댓글 리스트 영역 추가-->
         <div id="commentList"></div> 
+        
+        <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
     </div>
     
     
@@ -143,6 +147,8 @@
 		const userReaction = "${userReaction}";
 	    const communityNo = "${community.communityNo}";
 	    const communityCd = "${communityCd}";
+	    const loginUserNum = "${loginUserNum}";
+		const communityWriter = "${community.communityWriter}";
 		
 	    $(document).ready(function(){
 	    	//댓글목록 불러오기
@@ -171,6 +177,7 @@
 			    
 			  //url 복사 함수
 			    $('.share-btn').click(function () {
+			    	$('#deleteToggleArea').hide();
 		            $('#sharePopup').toggle();         
 		        });
 			  //신고하기
@@ -193,14 +200,27 @@
 				// sub-btn 클릭 → 삭제 버튼 토글
 				$('.sub-btn').click(function () {
 					$('#deleteToggleArea').toggle();
+					$('#sharePopup').hide();   
 				});
 				$('#deleteForm').on('submit',function(e){
+					if(!loginUserNum || loginUserNum !== communityWriter){
+						e.preventDefault();
+						alert('삭제 권한이 없습니다.');
+						return;
+					}
 					if(!confirm('정말로 이 게시글을 삭제하시겠습니까?')){
 						e.preventDefault();
 					}
 				});
-		    
+				$(document).click(function (event) {
+				    if (!$(event.target).closest('.share-btn, #sharePopup, .sub-btn, #deleteToggleArea').length) {
+				        $('#sharePopup').hide();
+				        $('#deleteToggleArea').hide();
+				    }
+				});
+				
 	    });
+			 
 	    
 			// 좋아요·싫어요 보내기
 		    function sendReaction(type) {
@@ -244,7 +264,6 @@
 		            type: "GET",
 		            dataType: "json",
 		            success: function(commentTree) { // 서버로부터 계층형 댓글 목록(List<BoardCommentExt>)을 받음
-		            	 console.log("서버로부터 받은 댓글 목록:", commentTree);
 		            	
 		            	
 		                const $commentListDiv = $('#commentList');
@@ -282,7 +301,8 @@
 			    const diffMinutes = Math.floor(diffMs / 1000 / 60);
 			    const diffHours = Math.floor(diffMinutes / 60);
 			    const diffDays = Math.floor(diffHours / 24);
-			
+			    
+			    
 			    if (diffMinutes < 1) {
 			        return '방금 전';
 			    } else if (diffMinutes < 60) {
@@ -400,6 +420,7 @@
 		 	// 화면 다른 곳 클릭 시 모든 옵션 팝업 닫기
 		    $(window).on('click', function() {
 		        $('.options-popup').hide();
+		        
 		    });
 
 		    // 팝업 메뉴의 '신고하기' 클릭 이벤트

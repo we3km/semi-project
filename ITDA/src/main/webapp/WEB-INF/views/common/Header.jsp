@@ -2,6 +2,9 @@
 	pageEncoding="UTF-8"%>
 <%-- JSTL c태그를 사용하기 위한 태그 라이브러리 (c:url 등 사용 시 필요) --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +25,11 @@
 
 </head>
 <body>
+<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
+<script type="text/javascript">
+console.log("유저:",loginUser.userNum);
+</script>
 
 	<div class="container_header">
 		<!-- 좌측 로고 -->
@@ -37,20 +44,23 @@
 		</div>
 		<!-- 로그인 / 로그아웃 버튼 -->
 		<div class="top-buttons">
-			<div class="unlogin">
-				<div class="btn" id="loginBtn">로그인</div>
-				<div class="btn" id="joinMembership">회원가입</div>
-			</div>
-			<div class="login">
-				<div class="btn" id="myPage">마이페이지</div>
-				<div class="btn" id="logoutBtn">로그아웃</div>
-				<div class="btn" id="customerService">고객센터</div>
-			</div>
+			<sec:authorize access="isAnonymous()">
+				<div class="unlogin">
+					<div class="btn" id="loginBtn">로그인</div>
+					<div class="btn" id="joinMembership">회원가입</div>
+				</div>
+			</sec:authorize>
+			<sec:authorize access="isAuthenticated()">
+				<div class="login">
+					<div class="btn" id="myPage">마이페이지</div>
+					<div class="btn" id="logoutBtn">로그아웃</div>
+					<div class="btn" id="customerService">고객센터</div>
+				</div>
+			</sec:authorize>
 		</div>
 		
-		<!--  유저 권한 -->
-		<%-- <input type="hidden" id="userRole" value="${sessionScope.loginUser.role}" /> --%>
-		<c:choose>
+		<input type="hidden" id="userRole" value="${sessionScope.loginUser.role}" /> 
+		<%-- <c:choose>
 			<c:when test="${not empty sessionScope.loginUser}">
 				<script>
 					$('.unlogin').hide();
@@ -65,7 +75,7 @@
 					$('.login_effect').hide();
 				</script>
 			</c:otherwise>
-		</c:choose>
+		</c:choose> --%>
 
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
@@ -104,26 +114,29 @@
 		
 		
 		<!-- 유저 인사 + 알림 -->
-		<div class="login_effect"
-			style="<c:if test='${empty sessionScope.loginUser}'>display:none;</c:if>">
-			<!-- 회원 이름 바뀌기-->
-			<div class="user">
-				<strong>${sessionScope.loginUser.userName}</strong>님 반갑습니다!
+		<sec:authorize access="isAuthenticated()">
+			<div class="login_effect">
+				<!-- 회원 이름 바뀌기-->
+				<div class="user">
+					<strong>
+					<sec:authentication property="principal.nickName"/>
+					</strong>님 반갑습니다!
+				</div>
+			
+				<div id="icons">
+					<img
+						src="${pageContext.request.contextPath}/resources/images/message.png"
+						alt="message icon" id="message-icon" /> 
+					<img
+						src="${pageContext.request.contextPath}/resources/images/alam.png"
+						alt="alarm icon" id="alarm-icon" />
+				</div>
 			</div>
-			<div id="icons">
-				<img
-					src="${pageContext.request.contextPath}/resources/images/message.png"
-					alt="message icon" id="message-icon" /> 
-				<img
-					src="${pageContext.request.contextPath}/resources/images/alam.png"
-					alt="alarm icon" id="alarm-icon" />
-			</div>
-		</div>
+		</sec:authorize>
 		</div>
 		<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
-
 
 				// 로그인-로그아웃 버튼 
 				// 로그인 상태 토글
@@ -136,32 +149,21 @@
 					$('.unlogin').show();
 				});
 				// 초기화 - 무조건 로그인된 상태 숨기기
-				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
+			/* 	$('.login').hide(); // 로그인된 사용자용 버튼 숨김
 				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
+				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
 				// 로그인 클릭 시
 
 				$('#loginBtn').click(function() {
-					//로그인 페이지로 이동
-					alert(`로그인창`);
 					location.href = contextPath
 							+ '/user/tempLogin';
 					/* location.href = contextPath + '/user/login'; */
 
-					$('.unlogin').hide();
-					$('.login').css('display', 'flex');
-					$('.login_effect').show();
 				});
 				// 로그아웃 클릭 시
 				$('#logoutBtn').click(function() {
-					//로그아웃
 					alert(`로그아웃 하였습니다`);
-					location.href = contextPath
-							+ '/user/logout';
-
-					$('.login').hide();
-					$('.login_effect').hide();
-					$('.unlogin').css('display', 'flex');
+					location.href = contextPath	+ '/user/logout';
 				});
 
 				//회원가입 이동
