@@ -9,9 +9,13 @@ import lombok.NoArgsConstructor;
 public class SelectBoardInfo {
 	// 채팅방 생성할 때 필요한 거 셀렉트 해오자
 	/*
-	 * - 구매자 회원 프로필 경로 (회원 접속한) - 게시물사진 - 게시물 제목 - 거래 유형
+	 * - 구매자 회원 프로필 경로 (회원 접속한) 
+	 * - 게시물사진 
+	 * - 게시물 제목 
+	 * - 거래 유형
 	 */
 	private String imageUrl; // 회원 프로필 경로, FROM PROFILE
+	private String fileName; // 게시물 사진 url
 	private int boardId; // 게시물 번호, FROM BOARD_COMMON
 	private String productName = null; // 상품 이름, FROM BOARD_COMMON
 	private String transactionCategory = null; // 거래 유형, FROM BOARD_COMMON

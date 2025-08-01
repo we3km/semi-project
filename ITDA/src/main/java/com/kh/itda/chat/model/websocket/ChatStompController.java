@@ -2,11 +2,10 @@ package com.kh.itda.chat.model.websocket;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import com.kh.itda.chat.model.service.ChatService;
@@ -24,7 +23,7 @@ public class ChatStompController {
 	private final ChatService service;
 
 	@MessageMapping("/chat/sendMessage")
-	public void sendMessage(@Payload HashMap<String, Object> messageMap) {
+	public void sendMessage(@Payload HashMap<String, Object> messageMap, Authentication authentication) {
 
 		String chatContent = (String) messageMap.get("chatContent");
 		String chatRoomIdStr = (String) messageMap.get("chatRoomId");
@@ -36,12 +35,23 @@ public class ChatStompController {
 		chatMessage.setChatRoomId(chatRoomId);
 		chatMessage.setChatContent(chatContent);
 
-		// 로그인한 회원 정보 authentication
-		// chatMessage.setUserNum(loginUser.getUserNum());
-		chatMessage.setUserNum(6);
+		User loginUser = (User) authentication.getPrincipal();
+		chatMessage.setUserNum(loginUser.getUserNum());
 
-		log.info("채팅방 정보 : {}", chatMessage);
+		// 회원번호 줘서 정보 받아오자
+		 // 회원 닉네임, 이미지 받아오기
+	    ChatMessage senderInfo = service.getSenderInfo(loginUser.getUserNum());
+	    
+	    chatMessage.setNickName(senderInfo.getNickName());  
+	    chatMessage.setChatImg(senderInfo.getChatImg());   
 
+	    log.info("보내는 사람 닉네임: {}", chatMessage.getNickName());
+	    log.info("보내는 사람 이미지: {}", chatMessage.getChatImg());
+		
+		log.info("보내는 사람 정보 : {}", loginUser);
+		log.info("채팅 정보 : {}", chatMessage);
+
+		// DB에 메세지 저장
 		int result = service.sendMessage(chatMessage);
 
 		if (result > 0) {

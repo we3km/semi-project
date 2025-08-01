@@ -53,10 +53,24 @@
 
 
 <!-- ==================== 게시물 정보 및 회원 프로필 얻어오기 ==================== -->
-<!-- 보드 아이디 51번인 더미데이터 -->
+<!-- 
+	<공통적으로 가져오는 것>
+	- 회원 프로필 이미지
+	- 게시물 사진 url
+	- 게시물 번호
+	- 게시물 제목
+	- 거래 유형
+	- 게시물 주인 회원 ID
+	
+	추가
+	<대여>
+	<경매>
+	<나눔>
+ -->
 	<select id="selectBoardInfo" parameterType="int" resultType="SelectBoardInfo">
 		SELECT 
 		    P.IMAGE_URL,
+		    F.FILE_NAME,
 		    BC.BOARD_ID,
 		    BC.PRODUCT_NAME,
 		    BC.TRANSACTION_CATEGORY,
@@ -64,6 +78,15 @@
 		FROM BOARD_COMMON BC
 		LEFT JOIN USER_TB UT ON UT.USER_NUM = BC.USER_NUM
 		LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
+		LEFT JOIN "FILE" F
+		    ON F.REF_NO = BC.BOARD_ID
+		    AND F.CATEGORY_ID IN (6, 7, 8, 9)
+		    AND F.FILE_ID = (
+		        SELECT MIN(FILE_ID)
+		        FROM "FILE"
+		        WHERE REF_NO = BC.BOARD_ID
+		        AND CATEGORY_ID IN (6, 7, 8, 9)
+		    )
 		WHERE BC.BOARD_ID = #{boardId}
 	</select>	
 
@@ -114,15 +137,27 @@
 	</select>
 
 
+<!-- ==================== 메세지 보낸 사람의 정보 ==================== -->
+	<select id="getSenderInfo" resultType="ChatMessage">
+		SELECT
+		    UT.NICK_NAME,
+		    P.IMAGE_URL AS CHAT_IMG
+		FROM USER_TB UT
+		LEFT JOIN PROFILE P ON P.USER_NUM = UT.USER_NUM
+		WHERE UT.USER_NUM = #{userNum} 
+	</select>
+
+
 <!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
 	<select id="getMessagesByChatRoomId" resultType="ChatMessage">
 		SELECT
 			CM.MESSAGE_ID,
 			CM.CHATROOM_ID,
-			TO_CHAR(SENT_AT, 'YYYY-MM-DD HH24:MI') AS SENT_AT,
+			TO_CHAR(SENT_AT, 'HH24:MI') AS SENT_AT,
 			CM.CHAT_CONTENT,
 			CM.CHAT_IMG,
-			UT.NICK_NAME
+			UT.NICK_NAME,
+			CM.USER_NUM
 		FROM CHAT_MESSAGE CM 
         LEFT JOIN USER_TB UT ON UT.USER_NUM = CM.USER_NUM
             WHERE CHATROOM_ID = #{chatRoomId}        
@@ -143,7 +178,7 @@
 	    VALUES (
 	        CHATMESSAGE_SEQ.NEXTVAL,
 	        #{chatRoomId},
-	        TRUNC(SYSDATE, 'MI'),
+	        SYSDATE,
 	        #{chatContent},
 	        #{userNum},
 	        #{chatImg}        

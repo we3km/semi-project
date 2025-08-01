@@ -8,9 +8,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,14 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 
 public class ChatController {
 
-	User loginUser = new User();
 	@Autowired
 	private ChatService chatService;
 
-	@GetMapping("/chatroomlist")
-	public String selectChatRoomList(Model model, HttpSession session) {
+	@GetMapping("/chatRoomList")
+	public String selectChatRoomList(Model model, Authentication authentication) {
 
-		loginUser.setUserNum(6);
+		User loginUser = (User) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
 
@@ -67,19 +65,18 @@ public class ChatController {
 	public SelectBoardInfo selectBoardInfo(int boardId) {
 		SelectBoardInfo boardInfo = chatService.selectBoardInfo(boardId);
 
-		System.out.println("boardInfo: " + boardInfo);
+		System.out.println("끌고 오는 게시물 정보: " + boardInfo);
 		return boardInfo;
 	}
 
 	// 게시물 정보 받아와서 채팅방 생성
 	@PostMapping("/openChatRoom")
 	@ResponseBody
-	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, HttpSession session) {
+	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, Authentication authentication) {
 		// 현재 로그인한 회원 정보 받아옴
-		loginUser.setUserNum(6);
-
+		User loginUser = (User) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
-		log.info("로그인한 회원정보 아이디 : {}", userNum);
+		log.info("로그인한 회원정보 : {}", loginUser);
 
 		int refNum = boardInfo.getTransactionRefNum();
 		log.info("거래 유형 번호 : {}", refNum);
@@ -92,10 +89,9 @@ public class ChatController {
 		if (result > 0) {
 			log.info("채팅방 성공! : {}", result);
 		}
-
 		log.info("생성된 채팅방 정보 : {}", boardInfo);
 
-		return "/chat/chatroomlist";
+		return "success";
 	}
 
 	// 메세지 받아와서 채팅방 오른쪽에 출력하자이
@@ -118,16 +114,19 @@ public class ChatController {
 		}
 	}
 
+	// 게시물 정보 번호 맞춰서 revieweeUserNum 할당해주자!!!!!!!!!!!
 	@PostMapping("/insertManner")
 	@ResponseBody
 	// 매너 평가자, 매너 평가 받는 사람, 매너 점수(int), 후기 내용(String)
-	public void insertManner(@RequestBody Map<String, Object> data, HttpSession session) {
-		User loginUser = (User) session.getAttribute("loginUser");
+	public void insertManner(@RequestBody Map<String, Object> data, Authentication authentication) {
+		User loginUser = (User) authentication.getPrincipal();
+
+		int userNum = loginUser.getUserNum();
 
 		Integer mannerScore = (int) data.get("sliderValue");
 		String reviewText = (String) data.get("reviewText");
 		int boardId = (int) data.get("boardId");
-		int reviewerUserNum = loginUser.getUserNum(); // 리뷰하는 사람
+		int reviewerUserNum = userNum; // 리뷰하는 사람, 로그인한 회원
 		int revieweeUserNum = (int) data.get("userNum"); // 리뷰받는 사람
 
 		log.info("매너 평가 하는 사람 : {}", reviewerUserNum);
@@ -161,12 +160,12 @@ public class ChatController {
 	@PostMapping("/uploadImageMessage")
 	@ResponseBody
 	public Map<String, Object> uploadImageMessage(@RequestParam("image") MultipartFile image,
-			@RequestParam("chatRoomId") int chatRoomId, HttpServletRequest request) {
-		loginUser.setUserNum(6);
+			@RequestParam("chatRoomId") int chatRoomId, HttpServletRequest request, Authentication authentication) {
+
+		User loginUser = (User) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 
 		Map<String, Object> result = new HashMap<>();
-
 		try {
 			// 파일 저장 경로 설정
 			String savePath = request.getServletContext().getRealPath("/resources/images/chattingImg/");
@@ -178,7 +177,7 @@ public class ChatController {
 			String originalFilename = image.getOriginalFilename();
 			String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
 			String renamedFilename = UUID.randomUUID().toString() + ext;
-			
+
 			// 서버 직접 저장
 			File dest = new File(savePath + renamedFilename);
 			image.transferTo(dest);
@@ -195,11 +194,11 @@ public class ChatController {
 
 			result.put("success", insertResult > 0);
 			result.put("chatMessage", chatMessage);
-			// 메세지 자체를 리턴 (이미지의 경우, chatContent : null, chatImg : 사진 경로 
-			
+			// 메세지 자체를 리턴 (이미지의 경우, chatContent : null, chatImg : 사진 경로
+
 			log.info("이미지 파일 : {}", chatMessage);
-			log.info("저장될 파일 전체 경로 : {}", savePath);			
-			
+			log.info("저장될 파일 전체 경로 : {}", savePath);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("success", false);

@@ -143,7 +143,7 @@
 
 				// 로그인-로그아웃 버튼 
 				// 로그인 상태 토글
-				/* $('#loginBtn').click(function() {
+				$('#loginBtn').click(function() {
 					$('.unlogin').hide();
 					$('.login').show();
 				});
@@ -154,15 +154,15 @@
 				// 초기화 - 무조건 로그인된 상태 숨기기
 				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
 				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
+				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
 				// 로그인 클릭 시
 				$('#loginBtn').click(
 						function() {
 							//로그인 페이지로 이동
 							alert(`로그인창`);
 							location.href = contextPath
-									+ '/user/tempLogin';
-							/* location.href = contextPath + '/user/login'; */
+									+ '/user/login';
+							location.href = contextPath + '/user/login'; 
 
 							$('.unlogin').hide();
 							$('.login').css('display', 'flex');
@@ -173,9 +173,13 @@
 						function() {
 							//로그아웃
 							alert(`로그아웃 하였습니다`);
-							location.href = contextPath
-									+ '/user/logout';
+							const form = document.createElement('form');
+						    form.method = 'POST';
+						    form.action = contextPath + '/user/logout';
 
+						    document.body.appendChild(form);
+						    form.submit();
+						    
 							$('.login').hide();
 							$('.login_effect').hide();
 							$('.unlogin')

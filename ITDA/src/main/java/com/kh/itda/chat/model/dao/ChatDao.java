@@ -72,4 +72,8 @@ public class ChatDao {
 	public SelectBoardInfo selectBoardInfo(int boardId) {
 		return session.selectOne("chat.selectBoardInfo", boardId);
 	}
+
+	public ChatMessage getSenderInfo(int userNum) {
+		return session.selectOne("chat.getSenderInfo", userNum);
+	}
 }

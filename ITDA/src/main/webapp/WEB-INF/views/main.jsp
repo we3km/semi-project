@@ -19,14 +19,16 @@
 	rel="stylesheet">
 
 <%-- mainPage CSS 파일 --%>
-<link href="${pageContext.request.contextPath}/resources/css/mainPage.css" rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/resources/css/mainPage.css"
+	rel="stylesheet">
 
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 	<div class="container">
-		<div class="top-buttons">
+		<%-- <div class="top-buttons">
 			<div class="unlogin">
 				<div class="btn" id="loginBtn">로그인</div>
 				<div class="btn" id="joinMembership">회원가입</div>
@@ -49,85 +51,87 @@
 					$('.unlogin').show();
 				</script>
 			</c:otherwise>
-		</c:choose>
-		
-		<%-- <div class="top-buttons">
-		    Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링
-		    <sec:authorize access="isAnonymous()">
-		        <div class="unlogin">
-		            <div class="btn" id="loginBtn">로그인</div>
-		            <div class="btn" id="joinMembership">회원가입</div>
-		        </div>
-		    </sec:authorize>--%>
-		
-		    <%--로그인했을 때만 이 div를 렌더링
-		    <sec:authorize access="isAuthenticated()">
-		        <div class="login">
-		            <div class="btn" id="myPage">마이페이지</div>
-		            <div class="btn" id="logoutBtn">로그아웃</div>
-		        </div>
-		    </sec:authorize>
-		</div> --%>
+		</c:choose> --%>
 
+		<div class="top-buttons">
+			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
+			<sec:authorize access="isAnonymous()">
+				<div class="unlogin">
+					<div class="btn" id="loginBtn">로그인</div>
+					<div class="btn" id="joinMembership">회원가입</div>
+				</div>
+			</sec:authorize>
+
+			<%--로그인했을 때만 이 div를 렌더링--%>
+			<sec:authorize access="isAuthenticated()">
+				<div class="login">
+					<div class="btn" id="myChatRoom">나의 채팅방</div>
+					<div class="btn" id="myPage">마이페이지</div>
+					<div class="btn" id="logoutBtn">로그아웃</div>
+				</div>
+			</sec:authorize>
+		</div>
+
+		<!-- 채팅방 리스트 이동 -->
+		<script>
+		document.getElementById("myChatRoom").addEventListener("click", function() {
+		    location.href = "${contextpath}/itda/chat/chatRoomList";
+		});
+		</script>
+		
 		<div class="search-filter-wrapper">
 			<div class="filters">
 				<!-- 거래유형 드롭다운 -->
 				<div class="dropdown" id="deal-type-dropdown">
 					<button class="dropbtn">
-				        <span class="dropbtn_content">거래유형</span>
-				        <span class="dropbtn_click" aria-hidden="true">
-				            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-				                 width="16" height="16" viewBox="0 0 24 24">
+						<span class="dropbtn_content">거래유형</span> <span
+							class="dropbtn_click" aria-hidden="true"> <svg
+								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+								width="16" height="16" viewBox="0 0 24 24">
 				                  <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 				            </svg>
-				        </span>
-				    </button>
-					
+						</span>
+					</button>
+
 					<!-- 목록 -->
 					<div class="dropdown-content">
-				        <c:forEach var="entry" items="${mainCategoryType}">
-				            <div class="category"
-				                data-id="${entry.value.categoryId}"
-				                data-gubun="${entry.value.categoryGubun}"
-				                data-name="${entry.value.category}">
-				                ${entry.value.category}
-				            </div>
-				        </c:forEach>
-				    </div>
+						<c:forEach var="entry" items="${mainCategoryType}">
+							<div class="category" data-id="${entry.value.categoryId}"
+								data-gubun="${entry.value.categoryGubun}"
+								data-name="${entry.value.category}">
+								${entry.value.category}</div>
+						</c:forEach>
+					</div>
 
 				</div>
 
 				<!-- 상품유형 드롭다운 -->
 				<div class="dropdown" id="product-type-dropdown">
 					<button class="dropbtn">
-						<span class="dropbtn_content">상품유형</span> 
-						<span class="dropbtn_click" aria-hidden="true"> 
-							<svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-									width="16" height="16" viewBox="0 0 24 24">
+						<span class="dropbtn_content">상품유형</span> <span
+							class="dropbtn_click" aria-hidden="true"> <svg
+								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+								width="16" height="16" viewBox="0 0 24 24">
 	                			<path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 	              			</svg>
 						</span>
 					</button>
-				    
-					<div class="dropdown-content">
-						
-					</div>
+
+					<div class="dropdown-content"></div>
 				</div>
 			</div>
 
 			<!-- 검색창 -->
 			<div class="search-bar">
-				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" />
-			  	<img src="${pageContext.request.contextPath}/resources/images/search.png"
-			       alt="search icon"
-			       id="search-btn"
-			       style="cursor: pointer;" />
+				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
+					src="${pageContext.request.contextPath}/resources/images/search.png"
+					alt="search icon" id="search-btn" style="cursor: pointer;" />
 				<%-- <input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
 					src="${pageContext.request.contextPath}/resources/images/search.png" alt="search icon" id="search-btn"
 					style="cursor: pointer;" /> --%>
 			</div>
 		</div>
-	
+
 
 
 		<div class="cards">
@@ -274,9 +278,16 @@
 	    });
 	    
 	    // --- 나머지 이벤트 핸들러 (기존과 동일) ---
-	    $('#loginBtn').click(() => location.href = contextPath + '/user/tempLogin');
-	    $('#logoutBtn').click(() => location.href = contextPath + '/user/logout');
-	    $('#joinMembership').click(() => location.href = contextPath + '/user/join');
+	    function postToUrl(url) {
+		    const form = document.createElement('form');
+		    form.method = 'POST';
+		    form.action = url;
+		    document.body.appendChild(form);
+		    form.submit();
+		}
+	    $('#loginBtn').click(() => location.href = contextPath + '/user/login');
+	    $('#logoutBtn').click(() => postToUrl(contextPath + '/user/logout'));
+	    $('#joinMembership').click(() => location.href = contextPath + '/user/join/terms');
 	    $('#myPage').click(() => location.href = contextPath + '/user/mypage');
 	    $('.card').click(function () {
 	        const title = $(this).find('.card-title').text().trim();

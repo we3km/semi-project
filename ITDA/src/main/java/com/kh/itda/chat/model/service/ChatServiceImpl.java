@@ -93,4 +93,9 @@ public class ChatServiceImpl implements ChatService {
 	public SelectBoardInfo selectBoardInfo(int boardId) {
 		return dao.selectBoardInfo(boardId);
 	}
+
+	@Override
+	public ChatMessage getSenderInfo(int userNum) {
+		return dao.getSenderInfo(userNum);
+	}
 }

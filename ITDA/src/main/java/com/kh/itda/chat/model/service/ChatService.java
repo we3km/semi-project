@@ -23,8 +23,10 @@ public interface ChatService {
 	List<ChatMessage> getMessagesByChatRoomId(int chatRoomId);
 
 	int insertManner(Map<String, Object> map);
-	
+
 	String bringLastMessage(int chatRoomId);
-	
+
 	SelectBoardInfo selectBoardInfo(int boardId);
+
+	ChatMessage getSenderInfo(int userNum);
 }

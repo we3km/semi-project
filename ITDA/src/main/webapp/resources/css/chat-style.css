@@ -266,36 +266,32 @@ body {
 }
 
 /* 내가 보낸 메시지 (오른쪽) */
-.chat-message.sent {
-	align-self: flex-end;
-	background-color: white;
-	color: black;
-	border: 1px solid #ccc;
+.chat-message-sent {
 	text-align: right;
-}
-
-/* 새로운 메세지 클래스 (받는 거) */
-.chat-message-talk {
-	padding: 10px 15px;
-	border-radius: 20px;
+	background-color: #daf1ff;
 	margin: 5px 0;
-	max-width: 100%;
-	word-break: break-word;
+	border-radius: 20px;
+	max-width: 70%;
+	align-self: flex-end;
 	font-size: 14px;
+	word-break: break-word;
 	white-space: pre-line;
-	
-	align-self: flex-start;
-	background-color: #f1f1f1;
-	color: black;
+	padding: 10px 15px;
 }
 
 /* 상대방 메시지 (왼쪽) */
-.chat-message.received {
-	align-self: flex-start;
+.chat-message-received {
+	text-align: left;
 	background-color: #f1f1f1;
-	color: black;
+	margin: 5px 0;
+	border-radius: 20px;
+	max-width: 70%;
+	align-self: flex-start;
+	font-size: 14px;
+	word-break: break-word;
+	white-space: pre-line;
+	padding: 10px 15px;
 }
-
 
 .chat-footer2 {
 	padding: 25px;

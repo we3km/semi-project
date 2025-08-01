@@ -1,6 +1,6 @@
 // ============================ 각 모달 scipt구문 ============================
 
-// 배송 정보 저장
+// ============================ 배송 정보 저장 ============================
 document.getElementById('submitShippingInfo').addEventListener('click', function () {
     var deliveryCompany = document.getElementById('deliveryCompany').value;
     var trackingNumber = document.getElementById('trackingNumber').value.trim();
@@ -17,19 +17,17 @@ document.getElementById('submitShippingInfo').addEventListener('click', function
         return;
     }
 
+    // 배송메세지 저장하여 메세지 보냄
+    const deliever = `<배송 정보>\n\n택배사: ${deliveryCompany}\n운송장 번호: ${trackingNumber}`;
+    sendModalMessage(deliever);
+
     const chatContent = document.querySelector('.chat-content2');
-
-    const shippingMessage = document.createElement('div');
-    shippingMessage.className = 'chat-message sent';
-    shippingMessage.innerHTML = `<배송 정보><br><br>택배사: ${deliveryCompany}<br>운송장 번호: ${trackingNumber}`;
-
-    chatContent.appendChild(shippingMessage);
     chatContent.scrollTop = chatContent.scrollHeight;
-
     closeModal('shipping_Inform_Input');
 });
 
-// 주소 정보 입력
+
+// ============================ 주소 정보 입력 ============================
 function execDaumPostcode() {
     new daum.Postcode({
         oncomplete: function (data) {
@@ -59,21 +57,41 @@ document.getElementById("nextButton").addEventListener("click", function () {
         return;
     }
 
-    // 채팅창에 출력
+    const shippingAddress = `<배송지 정보>\n\n수령인: ${name}\n주소: ${address} ${detailAddress}\n우편번호: ${zipcode}\n연락처:
+    ${phone}
+    \n\n해당 주소로 상품 발송 바랍니다.`;
+
+    sendModalMessage(shippingAddress);
+
     const chatContent = document.querySelector('.chat-content2');
-
-    const message = document.createElement('div');
-
-    message.className = 'chat-message sent';
-    message.innerHTML = `<배송지 정보><br><br>수령인: ${name}<br>주소: ${address} ${detailAddress}<br>우편번호: ${zipcode}<br>연락처:
-		${phone}
-		<br><br>해당 주소로 상품 발송 바랍니다.`;
-    chatContent.appendChild(message);
     chatContent.scrollTop = chatContent.scrollHeight;
 
-    // 모달 닫기
     closeModal('shipping_Address_Modal');
 });
+
+
+// ============================ 계좌 정보 전송 ============================
+function submitAccountInfo() {
+    const price = document.getElementById("price").value.trim();
+    const account = document.getElementById("bank").value.trim();
+    const bank = document.getElementById("account").value.trim();
+    
+    const accountInfo = `<계좌 정보>\n\n계좌번호: ${bank}\n은행: ${account} \n가격: ${price}`;
+
+    sendModalMessage(accountInfo);
+
+    const chatContent = document.querySelector('.chat-content2');
+    chatContent.scrollTop = chatContent.scrollHeight;
+    
+    const confirmAccount = confirm(
+        `📄 계좌 정보 확인\n\n계좌번호: ${account}\n은행: ${bank}\n가격: ${price}\n\n해당 계좌정보가 맞습니까?`
+    );
+    if (confirmAccount) {
+        alert("계좌 정보가 제출되었습니다!");
+        closeModal('accountInfoModal');
+    }
+}
+
 
 // 모달 열고 닫기
 function closeModal(id) {
@@ -84,34 +102,6 @@ function openModal(id) {
     const modal = document.getElementById(id); // ← 이 줄 추가해야 함
     modal.style.display = "flex"; // 중앙 정렬 위해 flex
 }
-
-
-
-
-// 계좌 정보 전송
-function submitAccountInfo() {
-    const price = document.getElementById("price").value.trim();
-    const account = document.getElementById("bank").value.trim();
-    const bank = document.getElementById("account").value.trim();
-
-    const chatContent = document.querySelector('.chat-content2');
-
-    const accountMessage = document.createElement('div');
-    accountMessage.className = 'chat-message sent';
-    accountMessage.innerHTML = `<계좌 정보><br><br>계좌번호: ${bank}<br>은행: ${account} <br>가격: ${price}`;
-
-    chatContent.appendChild(accountMessage);
-    chatContent.scrollTop = chatContent.scrollHeight;
-
-    const confirmAccount = confirm(
-        `📄 계좌 정보 확인\n\n계좌번호: ${account}\n은행: ${bank}\n가격: ${price}\n\n해당 계좌정보가 맞습니까?`
-    );
-    if (confirmAccount) {
-        alert("계좌 정보가 제출되었습니다!");
-        closeModal('accountInfoModal');
-    }
-}
-
 
 // ============================ 모달 끝 ============================
 
