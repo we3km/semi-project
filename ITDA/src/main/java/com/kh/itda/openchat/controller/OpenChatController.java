@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.itda.common.LocationUtils;
 import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
@@ -45,9 +45,11 @@ public class OpenChatController {
 
 	@GetMapping("/openChatList")
 	public String selectOpenChatList(@RequestParam(required = false) String sido,
-			@RequestParam(required = false) String sigun, @RequestParam(required = false) String gu,
-			// @RequestParam(required = false) String sigungu, // ── 삭제됨
-			@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, Model model) {
+			@RequestParam(required = false) String sigun,
+			@RequestParam(required = false) String gu,
+			@RequestParam(required = false) String keyword, 
+			@RequestParam(defaultValue = "1") int page,
+			Model model) {
 
 		// ——— 시·도 리스트 준비 ———
 		List<String> sidoList = locationService.findAllSido();
@@ -133,13 +135,15 @@ public class OpenChatController {
 	}
 
 	@PostMapping("/createOpenChat")
-
-	public String createChatList(@ModelAttribute OpenChatRoom room, @ModelAttribute Location loc,
+	public String createChatList(@ModelAttribute OpenChatRoom room,
+			@ModelAttribute Location loc,
 			@RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
-			@RequestParam(value = "tagContent", required = false) String tagContent, RedirectAttributes ra,
-			// 로그인되면 수정해야함
-			HttpSession session) {
-		User u = (User) session.getAttribute("loginUser");
+			@RequestParam(value = "tagContent", required = false) String tagContent, 
+			RedirectAttributes ra,
+			HttpServletRequest request,
+			Authentication authentication) {
+		
+		User u = (User) authentication.getPrincipal();
 		if (u == null) {
 			ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
 			return "redirect:/member/login";
@@ -158,20 +162,22 @@ public class OpenChatController {
 						.filter(t -> !t.isEmpty()).collect(Collectors.toList())
 				: new ArrayList<>();
 
-		int result = openChatService.createOpenChat(room, openImages, tags, session.getServletContext());
+		int result = openChatService.createOpenChat(room, openImages, tags,request.getServletContext());
 		if (result == 0)
 			throw new RuntimeException("채팅방 생성 실패");
 
 		ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
-		return "redirect:/openchat/openChatlist";
+		return "redirect:/openchat/openChatList";
 	}
 
 	@GetMapping("/enter")
-	public String enterChatRoom(@RequestParam("roomId") int roomId, HttpSession session, Model model,
+	public String enterChatRoom(@RequestParam("roomId") int roomId, 
+			Authentication authentication, 
+			Model model,
 			RedirectAttributes ra) {
 
 		// 세션에서 로그인 유저 정보 가져오기
-		User loginUser = (User) session.getAttribute("loginUser");
+		User loginUser = (User) authentication.getPrincipal();
 		if (loginUser == null) {
 			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
 			return "redirect:/";
@@ -189,7 +195,7 @@ public class OpenChatController {
 
 		// 입장 성공 시 채팅방 정보 전달
 		model.addAttribute("chatRoom", room);
-		return "redirect:/chat/chatroomlist"; // → /WEB-INF/views/chat/chatRoomList.jsp
+		return "redirect:/chat/chatRoomList"; // → /WEB-INF/views/chat/chatroomList.jsp
 	}
 
 }

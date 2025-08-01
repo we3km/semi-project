@@ -51,6 +51,7 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -215,6 +216,7 @@ public class BoardController {
 	@PostMapping("/write/rental")
 	public String boardRentalInsert(@ModelAttribute BoardRentalWrapper board,
 			// @PathVariable("boardCategory") String boardCategory,
+			Authentication authentication,
 			Model model, RedirectAttributes ra,
 			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
 		/*
@@ -226,7 +228,7 @@ public class BoardController {
 		 * 3. 게시글 등록 결과에 따른 페이지 지정
 		 */
 		// boardCategory = "rental";
-
+		
 		List<File> imgList = new ArrayList<>();
 
 		System.out.println("이미지:" + upfiles);
