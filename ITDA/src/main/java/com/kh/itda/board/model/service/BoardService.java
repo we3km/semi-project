@@ -85,7 +85,7 @@ public interface BoardService {
 
 	void updateBid(AuctionBidding bid);
 
-	void insertBiddingWinner();
+	void insertBiddingWinner(int boardId);
 
 
 

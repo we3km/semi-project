@@ -221,9 +221,32 @@ body {
 						<button>메시지 보내기</button>
 					</c:if>
 					<!-- 경매가 종료 되고 게시글 게시자가 상세보기에 들어왔을 때 -->
-					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end'}">
-						<button>낙찰자에게 채팅 보내기</button>
+					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and not empty bidList}">
+						<button id="message-winner" onclick="messageWinner(${board.boardCommon.boardId})">낙찰자에게 채팅 보내기</button>
 					</c:if>
+					
+					<!-- 경매가 종료 되었지만 입찰자가 단 한명도 없을때 게시글 게시자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and empty bidList}">
+						<button id="message-winner">입찰자 없음</button>
+					</c:if>
+					
+					<script>
+						function messageWinner(boardId) {
+						    $.ajax({
+						      url: "${pageContext.request.contextPath}/board/auction/winner",
+						      method: "POST",
+						      data: { boardId: ${board.boardCommon.boardId} }, // JSP 변수 그대로 사용
+						      success: function(data) {
+						        console.log("서버 응답:", data);
+						        alert("성공: " + data);
+						        // 채팅방 이동로직 추가
+						      },
+						      error: function(xhr) {
+						        alert("입찰 저장 실패: " + xhr.responseText);
+						      }
+						    });
+						}
+					</script>
 					<!-- 게시자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum eq board.boardCommon.userNum}">
 						<button>수정</button>

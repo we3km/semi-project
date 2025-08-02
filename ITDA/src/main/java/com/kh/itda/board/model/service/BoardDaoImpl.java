@@ -517,11 +517,11 @@ public class BoardDaoImpl implements BoardDao {
 
 
 	@Override
-	public void insertBiddingWinner() {
-		List<BiddingWinner> biddingWinner = session.selectList("board.selectBiddingWinner");
-		for(int i = 0; i < biddingWinner.size(); i++) {
-			session.insert("board.insertBiddingWinner", biddingWinner.get(i));
-		}
+	public void insertBiddingWinner(int boardId) {
+		BiddingWinner biddingWinner = session.selectOne("board.selectBiddingWinner", boardId);
+		System.out.println(biddingWinner);
+		session.insert("board.insertBiddingWinner", biddingWinner);
+		
 		
 	}
 

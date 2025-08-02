@@ -672,6 +672,7 @@ public class BoardController {
 					
 					// 입찰금 목록 가져오기
 					List<AuctionBidding> bidList = boardService.selectBidList(boardId);
+				
 					model.addAttribute("bidList", bidList);
 					
 					
@@ -878,4 +879,19 @@ public class BoardController {
 	    
 	    return result;
 	}
+	
+	@PostMapping("/auction/winner")
+	@ResponseBody
+	public ResponseEntity<?> saveAuctionWinner(@RequestParam int boardId) {
+	    try {
+	    	
+	    	boardService.insertBiddingWinner(boardId);
+	    	
+	    	return ResponseEntity.ok().body("success");
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
+	}
+	
 }

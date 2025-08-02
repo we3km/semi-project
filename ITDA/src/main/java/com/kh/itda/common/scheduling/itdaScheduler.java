@@ -21,6 +21,6 @@ public class itdaScheduler {
 		// 최고 입찰금 제시자 추출
 		// 낙찰자 테이블에 저장
 		System.out.println("낙찰자 스케쥴러 작동");
-		boardService.insertBiddingWinner();
+		//boardService.insertBiddingWinner();
 	}
 }

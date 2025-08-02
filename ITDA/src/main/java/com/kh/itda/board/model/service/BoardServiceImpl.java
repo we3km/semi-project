@@ -294,8 +294,8 @@ public class BoardServiceImpl implements BoardService{
 
 
 	@Override
-	public void insertBiddingWinner() {
-		boardDao.insertBiddingWinner();
+	public void insertBiddingWinner(int boardId) {
+		boardDao.insertBiddingWinner(boardId);
 		
 	}
 

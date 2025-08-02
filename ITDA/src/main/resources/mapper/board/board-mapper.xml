@@ -1026,7 +1026,7 @@
 	</update>
 	
 	<select id="selectBiddingWinner" resultType="BiddingWinner">
-		SELECT BOARD_ID, BIDDING_USER_NUM, BID
+		SELECT BOARD_ID, BIDDING_USER_NUM AS USER_NUM, BID
 			FROM (
 			  SELECT B.BOARD_ID, AB.BIDDING_USER_NUM, AB.BID,
 			         RANK() OVER (PARTITION BY B.BOARD_ID ORDER BY AB.BID DESC) AS RANKING
@@ -1034,11 +1034,15 @@
 			  JOIN AUCTION_BIDDING AB ON B.BOARD_ID = AB.BOARD_ID
 			  WHERE B.AUCTION_END_DATE &lt;= SYSDATE
 			)
-		WHERE RANKING = 1
+		WHERE RANKING = 1 AND BOARD_ID = ${boardId}
 	</select>
 	
 	<insert id="insertBiddingWinner" parameterType="BiddingWinner">
-		INSERT INTO BIDDING_WINNER(BOARD_ID, USER_NUM, BID)
-		VALUES (#{boardId}, #{userNum}, #{bid})
+	    MERGE INTO BIDDING_WINNER BW
+	    USING (SELECT #{boardId} AS boardId, #{userNum} AS userNum FROM dual) src
+	    ON (BW.BOARD_ID = src.boardId AND BW.USER_NUM = src.userNum)
+	    WHEN NOT MATCHED THEN
+	        INSERT (BOARD_ID, USER_NUM, BID)
+	        VALUES (#{boardId}, #{userNum}, #{bid})
 	</insert>
 </mapper>
