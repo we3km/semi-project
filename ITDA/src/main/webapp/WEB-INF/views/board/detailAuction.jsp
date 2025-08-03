@@ -275,7 +275,10 @@ body {
 					
 					<div id="bidModal" style="display:none; position:fixed; top:20%; left:30%; width:300px; height:200px; background:white; border:1px solid black; padding:20px;">
 					  <h3>${board.boardCommon.productName}의 입찰금 제시</h3>
+					  <h4>입찰금 단위 : ${board.boardAuction.bidUnit}</h4>
+					  <button type="button" onclick="changeBid(-1)">-</button>
 					  <input type="text" id="popupInput" placeholder="제시할 입찰금"/>
+					  <button type="button" onclick="changeBid(1)">+</button>
 					  <button onclick="applyValue()">제시</button>
 					  <button onclick="closeModal()">닫기</button>
 					</div>
@@ -283,8 +286,13 @@ body {
 					<h3>입찰금 현황</h3>
 					<div id="biddingList">
 						<c:forEach var="bid" items="${bidList }" varStatus="status">
-							<p class="bid ${status.first ? 'top-bid' : ''}" data-nickname="${bid.nickName}">
+							<p class="bid ${status.first ? 'top-bid' : ''}" 
+  							data-nickname="${bid.nickName}">
 								${bid.nickName} - ${bid.bid }
+<%-- 								<c:if test="${bid.biddingUserNum == userNum}">
+							    	<button onclick="openModal('${board.boardCommon.boardId}', '${userNum}')">
+							    	수정</button>
+								</c:if> --%>
 							</p>
 						
 						</c:forEach>
@@ -302,7 +310,7 @@ body {
           	type: 'POST',
           	url: '${pageContext.request.contextPath}/board/addDibs',
           	data: {
-          	  userId: 1,
+          	  userId: '${userNum}',
           	  boardId: '${boardId}',
           	  boardCategory: 'auction'
          	 },
@@ -335,22 +343,46 @@ body {
     
     <!-- 입찰금 제시 모달창 스크립트 -->
 	<script>
-	function openModal(userId, boardId) {
+		const bidUnit = ${board.boardAuction.bidUnit}; // 입찰 단위 (서버에서 받아오는 값)
+		let previousBid = 0;        // 사용자의 이전 입찰 금액 (서버에서 받아오는 값)
+		let currentBid = 0;
+		
+		function openModal(userId, boardId) {
+		  
 		  fetch(`${pageContext.request.contextPath}/board/bidding/check?userNum=${userNum}&boardId=${boardId}`)
 		    .then(response => response.json())
 		    .then(data => {
 		      if (data.hasBid) {
 		        // 이전 입찰금 있으면 모달에 값 넣기
 		        document.getElementById("popupInput").value = data.bid;
+		        previousBid = data.bid;
 		        //document.getElementById("bidModalTitle").innerText = "입찰금 수정";
 		      } else {
-		        // 이전 입찰금 없으면 빈 입력창
+		        // 이전 입찰금 없으면 시작 입찰금
 		        document.getElementById("popupInput").value = ${board.boardAuction.auctionStartingFee};
+		        previousBid = ${board.boardAuction.auctionStartingFee}
 		        //document.getElementById("bidModalTitle").innerText = "입찰금 제시";
 		      }
+				currentBid = previousBid;
 		      document.getElementById("bidModal").style.display = "block";
 		    });
+		 
+			console.log("currentBid:"+currentBid);
+			console.log("previousBid:"+previousBid);
 		}
+		 function changeBid(direction) {
+			console.log("currentBid:"+currentBid);
+			console.log("previousBid:"+previousBid);
+			    const newBid = currentBid + direction * bidUnit;
+
+			    // 이전 입찰 금액보다 작아지는 것은 막음
+			    if (newBid < previousBid) {
+			      return; // 무시
+			    }
+
+			    currentBid = newBid;
+			    document.getElementById('popupInput').value = currentBid;
+		 }
 
 	
 	  function closeModal() {
@@ -361,6 +393,12 @@ body {
 			    const bidValue = $("#popupInput").val();
 			    const userNum = ${userNum}; 
 				const nickName = '${userNickname}';
+				
+				if (bidValue <= previousBid) {
+					  alert("이전에 제시한 금액보다 높게 입찰해야 합니다.");
+					  return;
+				}
+				
 			    $.ajax({
 			      url: "${pageContext.request.contextPath}/board/auction/bid", // JSP에서 contextPath 처리
 			      type: "POST",
@@ -378,13 +416,14 @@ body {
 			        const existingBid = $(`.bid[data-nickname="${userNickname}"]`);
 			        if (existingBid.length > 0) {
 			        	// 이미 제시를 했으면 수정
-			          existingBid.text(nickName + " - " + bidValue);
+			          existingBid.text(nickName + " - " + bidValue);			        							        			        	
 			        } else {
 			        	// 아직 제시를 안했으면 추가
 			          const bid = $("<p></p>")
 			            .addClass("bid")
 			            .attr("data-nickname", nickName)
 			            .text(nickName + " - " + bidValue);
+			
 			          $("#biddingList").append(bid);
 			        }
 			     // 입찰금이 높은 순으로 정렬
@@ -405,7 +444,6 @@ body {
 		         
 		                if (index === 0) {
 		                    $el.addClass("top-bid");
-
 		                }
 
 		                $("#biddingList").append($el);
@@ -438,6 +476,13 @@ body {
 							style="width: 90%; height: auto; border: 2px solid black;" />
 						<p>${writerAuctionWrapper.boardCommon.productName }</p>
 						<p class="price">경매시작금:${writerAuctionWrapper.boardAuction.auctionStartingFee }</p>
+						<c:if test="${writerAuctionWrapper.highestBid ne 0}">
+							<p id="highest-bid">최고입찰가 : ${writerAuctionWrapper.highestBid}</p>
+						</c:if>
+					
+						<c:if test="${writerAuctionWrapper.highestBid eq 0}">
+							<p id="highest-bid">최고입찰가 : ${writerAuctionWrapper.boardAuction.auctionStartingFee}</p>
+						</c:if>
 						<p>
 							<fmt:formatDate
 								value="${writerAuctionWrapper.boardAuction.auctionStartDate }"
@@ -481,6 +526,14 @@ body {
 							style="width: 90%; height: auto; border: 2px solid black;" />
 						<p>${equalsCategoryboard.boardCommon.productName }</p>
 						<p class="price">경매시작금:${equalsCategoryboard.boardAuction.auctionStartingFee }</p>
+						<c:if test="${equalsCategoryboard.highestBid ne 0}">
+							<p id="highest-bid">최고입찰가 : ${equalsCategoryboard.highestBid}</p>
+						</c:if>
+					
+						<c:if test="${equalsCategoryboard.highestBid eq 0}">
+							<p id="highest-bid">최고입찰가 : ${equalsCategoryboard.boardAuction.auctionStartingFee}</p>
+						</c:if>
+						
 						<p>
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardAuction.auctionStartDate }"

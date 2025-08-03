@@ -11,4 +11,6 @@ public class BoardAuctionFileWrapper {
 	private BoardCommon boardCommon;
 	private BoardAuction boardAuction;
 	private FilePath filePath;
+	
+	private int highestBid;
 }

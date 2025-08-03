@@ -237,7 +237,15 @@
 						alt="이미지" style="width: 90%; height: auto;" />
 					<p id="product-name">${board.boardCommon.productName }</p>
 
-					<p id="rental-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }</p>
+					<p id="auction-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }</p>
+					<c:if test="${board.highestBid ne 0}">
+						<p id="highest-bid">최고입찰가 : ${board.highestBid}</p>
+					</c:if>
+					
+					<c:if test="${board.highestBid eq 0}">
+						<p id="highest-bid">최고입찰가 : ${board.boardAuction.auctionStartingFee}</p>
+					</c:if>
+					
 					<p class="date">
 						<fmt:formatDate value="${board.boardAuction.auctionStartDate }"
 							pattern="yyyy/MM/dd" />
@@ -259,7 +267,7 @@
               	type: 'POST',
               	url: '${pageContext.request.contextPath}/board/addDibs',
               	data: {
-              	  userId: 1,
+              	  userId: '${userNum}',
               	  boardId: boardId,
               	  boardCategory: 'auction'
              	 },
