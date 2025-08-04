@@ -31,7 +31,14 @@
             authentication-failure-url="/user/login?error=true"
             username-parameter="userId"
             password-parameter="userPwd" />
-
+            
+            <!-- 로그인 설정 - 권한별 리다이렉트를 위해 success-handler 사용 -->
+		<form-login login-page="/user/login"
+			login-processing-url="/user/loginprocess"
+			authentication-success-handler-ref="customAuthenticationSuccessHandler"
+			authentication-failure-handler-ref="customAuthenticationFailureHandler"
+			username-parameter="userId" password-parameter="userPwd" />
+            
         <logout 
         	logout-url="/user/logout" 
         	logout-success-url="/"
@@ -41,7 +48,14 @@
         	
         <csrf disabled="true"/>
     </http>
-
+    
+    <!-- 로그인 성공 핸들러 - 권한에 따른 리다이렉트 -->
+	<beans:bean id="customAuthenticationSuccessHandler"
+		class="com.kh.itda.security.handler.CustomAuthenticationSuccessHandler" />
+	<!-- 로그인 실패 핸들러 -->
+	<beans:bean id="customAuthenticationFailureHandler"
+		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
+    
     <!-- com.kh.itda.security 패키지 스캔 -->   
     <context:component-scan base-package="com.kh.itda"/>
 

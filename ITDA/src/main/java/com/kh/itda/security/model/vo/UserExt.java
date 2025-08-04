@@ -11,11 +11,12 @@ import com.kh.itda.user.model.vo.User;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class UserExt extends User implements UserDetails{
-
 	private List<GrantedAuthority> authorities;
 
 	
@@ -28,6 +29,11 @@ public class UserExt extends User implements UserDetails{
 	@Override
 	public String getPassword() {
 		return getUserPwd();
+	}
+	
+	@Override
+	public String getNickName() {
+		return super.getNickName();
 	}
 
 	@Override

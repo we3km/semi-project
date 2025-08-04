@@ -1,10 +1,8 @@
 package com.kh.itda;
 
-import java.util.Locale.Category;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +14,6 @@ import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.common.model.vo.boardCategory;
 import com.kh.itda.common.service.MainService;
 import com.kh.itda.community.model.service.CommunityService;
-import com.kh.itda.user.model.vo.User;
 
 
 import lombok.RequiredArgsConstructor;

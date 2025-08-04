@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class CommunityExt extends Community{
 	private List<CommunityImg> imgList;
-	private String userName;
+	private String nickName;
 	private List<communityTag> tags;
 
 }

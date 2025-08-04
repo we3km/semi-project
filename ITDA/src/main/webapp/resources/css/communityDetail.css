@@ -162,8 +162,8 @@
         }
         
         .vote-buttons form{
-        display : inline-block;
-        marfin : 0 10px
+	        display : inline-block;
+	        marfin : 0 10px;
         }
 
         .vote-buttons button {
@@ -203,22 +203,30 @@
 
         .comment-input input {
             flex: 1;
-            height: 30px;
-            padding: 6px 12px;
-            font-family: inherit;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 15px;
+		    height: 30px;
+		    padding: 6px 12px;
+		    font-family: inherit;
+		    font-size: 14px;
+		    border: none; /* 테두리 제거 */
+		    border-bottom: 2px solid #6a3ae4; /* 보라색 밑줄 */
+		    outline: none; /* 클릭 시 테두리 제거 */
+		    background-color: transparent;
+		    color: #333;
+		    transition: border-color 0.3s;
         }
 
         .comment-input button {
             background: none;
             border: none;
-            color: #333;
+            color: #6a3ae4;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
         }
+        
+        .comment-input button:hover {
+		    background-color: #f3e8ff; /* hover 시 진한 보라 */
+		}
 
         .comment-list-header {
             display: flex;
@@ -256,12 +264,16 @@
             padding: 10px 0;
             border-bottom: 1px solid #eee;
             position: relative;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .comment.reply {
+        	width: 100%;
             margin-left: 40px;
             border-left: 2px solid #f0f0f0;
             padding-left: 12px;
+    		box-sizing: border-box;
         }
 
         .comment .profile-icon {
@@ -273,7 +285,8 @@
         }
 
         .comment .content {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .comment .author {
@@ -295,6 +308,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
         }
 
         .comment .actions span {
@@ -302,72 +317,121 @@
             user-select: none;
         }
 
+
+        .comment .options-btn {
+            position: absolute;
+		    right: 0;
+		    top: 12px;
+		    font-size: 18px;
+		    color: #aaa;
+		    cursor: pointer;
+		    padding: 0 10px;
+        }
+        
+        .comment .options-btn:hover {
+		    color: #333;
+		}
+        
+        .comment .reply {
+		    margin-left: 40px;
+		    padding-left: 15px;
+		    border-left: 2px solid #f0f0f0;
+		}
+		
         .comment .actions .reply-toggle {
             color: #6a3ae4;
             cursor: pointer;
             font-weight: 600;
         }
-
-        .comment .options-btn {
-            position: absolute;
-            right: 0;
-            top: 12px;
-            font-size: 18px;
-            color: #aaa;
+        
+        .comment .actions .reply-toggle-btn {
+            color: #6a3ae4;
             cursor: pointer;
+            font-weight: 600;
         }
 
+		
+		/* 대댓글 작성란과 리스트를 묶는 새로운 섹션 */
+        .reply-section {
+            width: 100%;
+        }
+        
         .reply-box {
+            display: none; /* 기본적으로 숨김 */
+            width: 100%;
             margin-top: 8px;
-            display: none;
             gap: 10px;
             align-items: center;
+            display: flex;
         }
 
         .reply-box input {
-            flex: 1;
-            height: 28px;
-            padding: 6px 12px;
-            font-size: 13px;
-            border: 1px solid #ccc;
-            border-radius: 15px;
+		    height: 30px;
+		    width : 80%;
+		    padding: 6px 12px;
+		    font-family: inherit;
+		    font-size: 14px;
+		    border: none;
+		    border-bottom: 2px solid #6a3ae4; /* 보라색 밑줄 */
+		    outline: none;
+		    background-color: transparent;
+		    color: #333;
+		    transition: border-color 0.3s;
         }
+        
+        .replies {
+		     margin-top: 10px;
+		}
+		
+        .replies-container {
+		    width: 100%;
+		}
+        
+        .replies-toggle-btn {
+		    font-size: 13px;
+            font-weight: 600;
+            color: #6a3ae4;
+            cursor: pointer;
+            display: inline-block; 
+		}
 
         .reply-box button {
             background: none;
             border: none;
-            color: #333;
+            color: #6a3ae4;
             font-weight: 600;
             cursor: pointer;
             font-size: 13px;
         }
 
         .options-popup {
-            position: absolute;
-            right: 0;
-            top: 30px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            width: 120px;
-            display: none;
-            /* 기본 숨김 */
-            z-index: 100;
-            padding: 8px 0;
-        }
-
-        .options-popup div {
-            padding: 8px 16px;
-            font-size: 14px;
-            color: #444;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .options-popup div:hover {
-            background-color: #f0f0f0;
-        }
+		    position: absolute;
+		    right: 0;
+		    top: 35px;
+		    background: white;
+		    border: 1px solid #ddd;
+		    border-radius: 6px;
+		    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		    width: 100px;
+		    display: none; 
+		    z-index: 100;
+		    padding: 5px 0;
+		}
+		
+		.options-popup div {
+		    padding: 8px 15px;
+		    font-size: 14px;
+		    color: #444;
+		    cursor: pointer;
+		}
+		
+		.options-popup div:hover {
+		    background-color: #f5f5f5;
+		}
+		
+		.options-popup .delete-comment {
+		    color: #d9534f; /* 삭제하기는 빨간색으로 강조 */
+		}
         .hidden {
 			display: none;
 		}
