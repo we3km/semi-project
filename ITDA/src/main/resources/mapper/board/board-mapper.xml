@@ -933,7 +933,7 @@ FROM (
         BA.AUCTION_END_DATE,
         C.CATEGORY_PATH,
         F.FILE_NAME,
-        MAX_BID.BID AS HIGHEST_BID,
+        NVL(MAX_BID.BID, BA.AUCTION_STARTING_FEE) AS HIGHEST_BID,
         ROW_NUMBER() OVER (PARTITION BY BC.BOARD_ID ORDER BY F.FILE_NAME) AS RN
     FROM BOARD_COMMON BC
     JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
@@ -976,10 +976,12 @@ WHERE RN = 1
 			<when test="sort == 'views'">
 				ORDER BY VIEWS DESC
 			</when>
-			<!-- <when test="#{sort} == 'dibs'"> ORDER BY b.dibs_count DESC </when> -->
-			<!-- <when test="sort == 'price'">
-				ORDER BY RENTAL_FEE DESC
-			</when> -->
+			<when test="sort == 'highestBid'">
+<!-- 				<choose>
+					<when test="HIGHEST_BID"
+				</choose> -->
+				ORDER BY HIGHEST_BID DESC
+			</when>
 			<otherwise>
 				ORDER BY CREATE_DATE DESC
 			</otherwise>

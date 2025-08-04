@@ -36,6 +36,7 @@
 			<select name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
+				<option value="highestBid">최고입찰가 순</option>
 				<!-- <option value="price">가격 순</option> -->
 			</select>
 
