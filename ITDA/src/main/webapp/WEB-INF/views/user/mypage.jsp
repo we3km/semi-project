@@ -82,7 +82,7 @@
         <!-- 정보 수정 -->
         <div class="text-wrapper-8">내 정보</div>
         <div class="text-wrapper-9">나의 it 점수</div>
-        <div class="update-pwd">비밀번호 변경</div>
+        <div class="update-pwd" onclick="openModal()">비밀번호 변경</div>
         <div class="update-nick">닉네임 변경</div>
         <div class="update-phone">휴대폰 번호 변경</div>
         <div class="update-address">주소 변경</div>
@@ -107,10 +107,17 @@
         </div>
         
         <!-- 회원 정보 수정 모달 -->
-        <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-overlay" class="modal hidden" autocomplete="off">
         	<div class="modal-content">
         		<h3>비밀번호 변경</h3>
-        		<input type="password" id="newPwd" placeholder="새 비밀번호 입력" />
+        		<form id="pwdForm" action="${pageContext.request.contextPath}/user/mypage/updatePwd" method="post">
+        			<input type="password" name="newPwd" id="newPwd" placeholder="새 비밀번호 입력" />
+        			<input type="password" name="confirmPwd" id="confirmPwd" placeholder="비밀번호 확인" />
+        			<div class="modal-buttons">
+        				<input type="button" value="취소" onclick="closeModal()" />
+						<input type="button" value="변경" onclick="submitPassword()" />
+        			</div>
+        		</form>
         	</div>
         </div>
 
@@ -148,10 +155,31 @@
 	// 초기값 설정
 	updateGauge(value);
 	
-	// 회원 정보 변경
-	// 비밀번호 변경
-	function updatePwd() {
-		const newPwd = 
+	// 회원 정보 변경 모달
+	// 비밀번호
+	function openModal() {
+		document.getElementById("modal-overlay").classList.remove("hidden");
+	}
+	
+	function closeModal() {
+		document.getElementById("modal-overlay").classList.add("hidden");
+	}
+	
+	function submitPassword() {
+		const newPwd = document.getElementById("newPwd").value;
+		const confirmPwd = document.getElementById("confirmPwd").value;
+	
+		if (!newPwd || !confirmPwd) {
+		    alert("비밀번호를 입력해주세요.");
+		    return;
+		}
+		if (newPwd !== confirmPwd) {
+	    	alert("비밀번호가 일치하지 않습니다.");
+	    	return;
+		}
+		document.getElementById("pwdForm").submit();
+		alert("비밀번호가 변경되었습니다.");
+	  	closeModal(); // 성공 후 닫기
 	}
 	
 </script>

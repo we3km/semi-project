@@ -55,10 +55,13 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
+		System.out.println("비밀번호 변경 시도: " + userId); // 디버그용
 		Map<String, Object> param = new HashMap<>();
 	    param.put("userId", userId);
 	    param.put("encodedPwd", encodedPwd);
-	    session.update("user.updatePassword", param);
+	    //session.update("user.updatePassword", param);
+	    int result = session.update("user.updatePassword", param);
+	    System.out.println("업데이트 결과: " + result + "행");
 	}
 
 

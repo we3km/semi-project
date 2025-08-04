@@ -2,29 +2,20 @@ package com.kh.itda.user.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import com.kh.itda.community.model.service.CommunityService;
-import com.kh.itda.user.model.service.UserService;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.RentalItem;
-import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 
-	@Autowired
-	private UserService uService;
-	
-	@Autowired
-	private BoardService bService;
+	private final UserService uService;
+	private final BoardService bService;
+	private final BCryptPasswordEncoder passwordEncoder;
 	
 	@GetMapping("/user/mypage")
 	public String myPage(@AuthenticationPrincipal UserExt loginUser, Model model) {
@@ -51,8 +40,31 @@ public class UserController {
 	    
 	    model.addAttribute("userId", userId);
 	    model.addAttribute("userNum", userNum);
-		return "user/myPage";
+		return "user/mypage";
 	}
+	
+	@PostMapping("/user/mypage/updatePwd")
+	public String updatePassword(@RequestParam String newPwd,
+	                             @RequestParam String confirmPwd,
+	                             Authentication auth,
+	                             RedirectAttributes ra) {
+	    if (!newPwd.equals(confirmPwd)) {
+	        ra.addFlashAttribute("error", "비밀번호가 일치하지 않습니다.");
+	        return "redirect:/user/mypage";
+	    }
+
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
+	    String userId = loginUser.getUserId();
+	    String encodedPwd = passwordEncoder.encode(newPwd);
+	    uService.updatePassword(userId, encodedPwd);
+	    //이하 두줄 디버그용
+	    System.out.println("encodedPwd = " + encodedPwd);
+	    System.out.println("encodedPwd.length = " + encodedPwd.length());
+
+	    ra.addFlashAttribute("message", "비밀번호가 변경되었습니다.");
+	    return "redirect:/user/mypage";
+	}
+	
 	
 
 	/*
@@ -78,18 +90,18 @@ public class UserController {
 	
 	
 	// 임시 로그인 (하드코딩된 USER1 정보로 세션에 로그인 유저 저장)
-	 @GetMapping("/user/tempLogin") 
-	 public String tempLogin(HttpServletRequest request) { 
-		  User tempUser = new User(); tempUser.setUserId("USER1");
-	 
-		  tempUser.setUserPwd("1234"); tempUser.setUserNum(1); // 적당한 사용자 번호
-		  tempUser.setNickName("USER1");
-	  
-		  // 세션에 loginUser 속성으로 저장 
-		  request.getSession().setAttribute("loginUser", tempUser);
-		  
-		  return "redirect:/"; // 로그인 후 메인 페이지로 이동 
-	  }
+//	 @GetMapping("/user/tempLogin") 
+//	 public String tempLogin(HttpServletRequest request) { 
+//		  User tempUser = new User(); tempUser.setUserId("USER1");
+//	 
+//		  tempUser.setUserPwd("1234"); tempUser.setUserNum(1); // 적당한 사용자 번호
+//		  tempUser.setNickName("USER1");
+//	  
+//		  // 세션에 loginUser 속성으로 저장 
+//		  request.getSession().setAttribute("loginUser", tempUser);
+//		  
+//		  return "redirect:/"; // 로그인 후 메인 페이지로 이동 
+//	  }
 	 
 //	 @GetMapping("/user/login") 
 //	 public String login(HttpServletRequest request) { 
@@ -103,10 +115,10 @@ public class UserController {
 //	  }
 	 
 	  
-	  // 로그아웃 (세션 무효화)
-	  @GetMapping("/user/logout") 
-	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
-	  }
+//	  // 로그아웃 (세션 무효화)
+//	  @GetMapping("/user/logout") 
+//	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
+//	  }
 }
 
 

@@ -205,7 +205,7 @@ public class SecurityController {
         	String tempPwd = generateTempPassword();
         	
         	// 비밀번호 암호화 및 DB저장
-        	if(tempPwd != null && tempPwd.isEmpty()) {
+        	if(tempPwd != null && !tempPwd.isEmpty()) {
 	        	String encodedPwd = passwordEncoder.encode(tempPwd);
 	        	try { // 에러 확인용
 	        	uService.updatePassword(userId, encodedPwd);
@@ -297,35 +297,35 @@ public class SecurityController {
         return tempPwd;
 	}
 
-	//회원정보 업데이트
-	@PostMapping("/user/update")
-	public String update(
-			@Validated @ModelAttribute UserExt loginUser,
-			BindingResult bindResult,
-			Authentication auth,
-			RedirectAttributes ra
-			) {
-		if(bindResult.hasErrors()) {
-			return "redirect:/user/mypage";
-		}
-		// 비밀번호 변경 시 암호화
-		if (loginUser.getUserPwd() != null && !loginUser.getUserPwd().isBlank()) {
-            loginUser.setUserPwd(passwordEncoder.encode(loginUser.getUserPwd()));
-        }
-		
-		// db의 user객체를 수정
-		int result = uService.updateUser(loginUser);
-		
-		// 변경된 회원정보를 DB에서 얻어온 후 새로운 인증정보 생성하여 스레드로컬에 저장
-		// 새로운 Authentication 객체생성
-		Authentication newAuth = new UsernamePasswordAuthenticationToken
-				(
-				loginUser, auth.getCredentials(), auth.getAuthorities()
-		);
-		SecurityContextHolder.getContext().setAuthentication(newAuth);
-		ra.addFlashAttribute("alertMsg", "내 정보 수정 성공");
-		
-		return "redirect:/user/mypage";
-	}
+//	//회원정보 업데이트
+//	@PostMapping("/user/update")
+//	public String update(
+//			@Validated @ModelAttribute UserExt loginUser,
+//			BindingResult bindResult,
+//			Authentication auth,
+//			RedirectAttributes ra
+//			) {
+//		if(bindResult.hasErrors()) {
+//			return "redirect:/user/mypage";
+//		}
+//		// 비밀번호 변경 시 암호화
+//		if (loginUser.getUserPwd() != null && !loginUser.getUserPwd().isBlank()) {
+//            loginUser.setUserPwd(passwordEncoder.encode(loginUser.getUserPwd()));
+//        }
+//		
+//		// db의 user객체를 수정
+//		int result = uService.updateUser(loginUser);
+//		
+//		// 변경된 회원정보를 DB에서 얻어온 후 새로운 인증정보 생성하여 스레드로컬에 저장
+//		// 새로운 Authentication 객체생성
+//		Authentication newAuth = new UsernamePasswordAuthenticationToken
+//				(
+//				loginUser, auth.getCredentials(), auth.getAuthorities()
+//		);
+//		SecurityContextHolder.getContext().setAuthentication(newAuth);
+//		ra.addFlashAttribute("alertMsg", "내 정보 수정 성공");
+//		
+//		return "redirect:/user/mypage";
+//	}
 
 }

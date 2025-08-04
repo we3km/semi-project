@@ -79,9 +79,6 @@
 				<if test="email != null">
 					EMAIL = #{email},
 				</if>
-				<if test="birth != null">
-					BIRTH = #{birth},
-				</if>
 				<if test="nickName != null">
 					NICK_NAME = #{nickName},
 				</if>
