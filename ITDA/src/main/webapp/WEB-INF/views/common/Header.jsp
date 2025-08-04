@@ -22,6 +22,9 @@
 
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script> const contextPath = "${pageContext.request.contextPath}"; </script>
 
 </head>
 <body>
@@ -115,6 +118,9 @@ console.log("유저:",loginUser.userNum);
 		
 		<!-- 유저 인사 + 알림 -->
 		<sec:authorize access="isAuthenticated()">
+		<script>
+		const loginUserNum = "<sec:authentication property='principal.userNum' />"
+		</script>
 			<div class="login_effect">
 				<!-- 회원 이름 바뀌기-->
 				<div class="user">
@@ -122,14 +128,22 @@ console.log("유저:",loginUser.userNum);
 					<sec:authentication property="principal.nickName"/>
 					</strong>님 반갑습니다!
 				</div>
-			
-				<div id="icons">
-					<img
-						src="${pageContext.request.contextPath}/resources/images/message.png"
-						alt="message icon" id="message-icon" /> 
-					<img
-						src="${pageContext.request.contextPath}/resources/images/alam.png"
-						alt="alarm icon" id="alarm-icon" />
+					<div id="icons" class="icons-container">
+						<img src="${pageContext.request.contextPath}/resources/images/message.png"
+						     alt="message icon" id="message-icon" />
+					
+						<div class="alarm-wrapper">
+							<img src="${pageContext.request.contextPath}/resources/images/alam.png"
+							     alt="alarm icon" id="alarm-icon" class="alarm-icon" />
+					
+							<!-- 빨간 점 -->
+							<span id="alarm-dot" class="alarm-dot"></span>
+						</div>
+					
+						<!-- 알림 리스트 박스 -->
+						<div id="alarm-dropdown" class="alarm-dropdown">
+							<ul id="alarm-list" class="alarm-list"></ul>
+						</div>
 				</div>
 			</div>
 		</sec:authorize>
@@ -304,12 +318,76 @@ console.log("유저:",loginUser.userNum);
 				$('#message-icon').click(function() {
 					alert(`채팅 페이지로 이동~`);
 				});
-				//알람버튼
+				/* //알람버튼
 				$('#alarm-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
-				});
+					
+				}); */
+				
+				let alarmList = [];
+				let unread = false;
 
+				function showAlarm(text) {
+				    const time = new Date().toLocaleTimeString();
+				    
+
+				    // 알림 저장
+				    alarmList.unshift({ text, time });
+
+				    // 빨간 점 표시
+				    document.getElementById('alarm-dot').style.display = 'block';
+				    unread = true;
+
+				    // 리스트에 추가
+				    renderAlarmList();
+				}
+
+				function renderAlarmList() {
+				    const ul = document.getElementById('alarm-list');
+				    ul.innerHTML = "";
+				    alarmList.forEach(alarm => {
+				        const li = document.createElement('li');
+				        li.innerHTML = `<div style="padding: 8px; border-bottom: 1px solid #eee;">
+				                            <strong>${alarm.text}</strong><br>
+				                            <small style="color:#888">${alarm.time}</small>
+				                        </div>`;
+				        ul.appendChild(li);
+				    });
+				}
+
+				// 알림 아이콘 클릭 시 드롭다운 토글
+				document.getElementById('alarm-icon').addEventListener('click', function () {
+				    const box = document.getElementById('alarm-dropdown');
+				    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+
+				    if (unread) {
+				        document.getElementById('alarm-dot').style.display = 'none';
+				        unread = false;
+				    }
+				});
+				
+				 showAlarm("테스트 알림입니다");
+				console.log
 			});
+		</script>
+		<script>
+		/* 알람 스톰프 스크립트 */
+		let stompClient = null;
+
+		function connectAlarmWebSocket(userId) {
+			const socket = new SockJS(contextPath + "/stomp");
+			stompClient = Stomp.over(socket);
+
+			stompClient.connect({}, function () {
+				stompClient.subscribe("/topic/alarm/" + userId, function (message) {
+					showAlarm(message.body);
+				});
+			});
+		}
+
+		// 로그인한 사용자 번호로 연결
+		if (loginUserNum) {
+			connectAlarmWebSocket(loginUserNum);
+		}
 		</script>
 		</div>
 </body>

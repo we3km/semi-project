@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 3) gu 라디오 (시군 하위 구) 자동 submit
   const guRadios = form.querySelectorAll('input[type="radio"][name="gu"]');
   
-const sigunRadios = form.querySelectorAll('input[type="radio"][name="sigun"]'); 1
+const sigunRadios = form.querySelectorAll('input[type="radio"][name="sigun"]'); 
 });
 </script>
 

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,10 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.itda.alarm.model.service.AlarmService;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.BoardComment;
 import com.kh.itda.common.model.vo.BoardCommentExt;
 import com.kh.itda.common.model.vo.PageInfo;
+import com.kh.itda.alarm.model.vo.AlarmMessage;
 import com.kh.itda.common.model.vo.template.Pagination;
 import com.kh.itda.community.model.service.CommunityService;
 import com.kh.itda.community.model.vo.Community;
@@ -59,6 +62,8 @@ public class CommunityController {
 	// ResourceLoader : 스프링에서 제공하는 자원 로딩클래스
 	// classpath, file시스템, url등 다양한 경로의 자원을 동일한 인터페이스로 로드하는 메서드를 제공
 	private final ResourceLoader resourceLoader;
+	
+	private final AlarmService alarmService; 
 
 	// communityType 전역객체 설정
 	@PostConstruct
@@ -354,14 +359,25 @@ public class CommunityController {
 	    
 	    Map<String, String> response = new HashMap<>();
 	    if (result > 0) {
+	        // 댓글 작성 성공 시 → 알림 전송
+	    	CommunityExt c = communityService.selectCommunity(comment.getBoardId());
+	    	
+	    	// 4) 게시글 정보가 있고, 작성자(userNum)가 내(userNum)와 다르면 알림 전송
+	        if (c != null && loginUser.getUserNum() != c.getCommunityWriter()) {
+	            alarmService.sendBoardCommentAlarm(
+	                c.getCommunityWriter(),    // 알림 수신자
+	                c.getCommunityNo(),        // 게시글 ID
+	                c.getCommunityTitle()      // 게시글 제목
+	            );
+	        }
+
 	        response.put("result", "success");
 	    } else {
 	        response.put("result", "fail");
 	    }
-	    
+
 	    return response;
 	}
-	
 	// 댓글 삭제 (AJAX)
 	@PostMapping(value="/comments/delete", produces="application/json; charset=UTF-8")
 	@ResponseBody
