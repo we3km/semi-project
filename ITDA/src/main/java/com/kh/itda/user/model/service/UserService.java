@@ -16,12 +16,17 @@ public interface UserService {
 
 	int updateUser(User user);
 
-	void updatePassword(String id, String encodedPwd);
+	void updatePassword(String userId, String encodedPwd);
+	
+	void updateNickname(String userId, String newNickname);
+	
+	void updatePhone(String userId, String newPhone);
+	
+	void updateAddress(String userId, String newAddress);
 
 	boolean emailExists(String email);
 
-
-	int nickNameCheck(String nickName);
+	int checkNickname(String nickName);
 
 	String selectUserNickname(String userId);
 

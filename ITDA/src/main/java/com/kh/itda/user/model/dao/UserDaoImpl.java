@@ -31,8 +31,8 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public int nickNameCheck(String nickName) {
-		return session.selectOne("security.nickNameCheck", nickName);
+	public int checkNickname(String nickName) {
+		return session.selectOne("security.checkNickname", nickName);
 	}
 	
 	@Override
@@ -55,15 +55,41 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
-		System.out.println("비밀번호 변경 시도: " + userId); // 디버그용
+		// System.out.println("비밀번호 변경 시도: " + userId); // 디버그용
 		Map<String, Object> param = new HashMap<>();
 	    param.put("userId", userId);
 	    param.put("encodedPwd", encodedPwd);
-	    //session.update("user.updatePassword", param);
+	    
 	    int result = session.update("user.updatePassword", param);
-	    System.out.println("업데이트 결과: " + result + "행");
+	    // System.out.println("업데이트 결과: " + result + "행");
 	}
 
+	@Override
+	public void updateNickname(String userId, String newNickname) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newNickname", newNickname);
+	    
+	    int result = session.update("user.updateNickname", param);
+	}
+	
+	@Override
+	public void updatePhone(String userId, String newPhone) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newPhone", newPhone);
+	    
+	    int result = session.update("user.updatePhone", param);
+	}
+	
+	@Override
+	public void updateAddress(String userId, String newAddress) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newAddress", newAddress);
+	    
+	    int result = session.update("user.updateAddress", param);
+	}
 
 /*	public void insertUserAndAuthority(User user) {
 		// TODO Auto-generated method stub
@@ -75,6 +101,7 @@ public class UserDaoImpl implements UserDao {
 	public String selectUserNickname(String userId) {
 		return session.selectOne("user.selectUserNickname", userId); 
 	}
+	
 
 	@Override
 	public String selectUserNum(String userId) {

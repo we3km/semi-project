@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kh.itda.user.model.service.EmailService;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.User;
+import com.kh.itda.validator.UserValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -145,16 +146,22 @@ public class SignUpController { //회원가입
     @ResponseBody
     @GetMapping("/enroll/checkId")
     public String idCheck(String userId) {
+    	if (!UserValidator.isValidId(userId)) {
+            return "-1"; // 유효하지 않은 형식
+        }
     	int result = uService.idCheck(userId);
     	return result+"";
     }
     
     // 회원정보 입력 페이지서 닉네임 중복체크 담당
     @ResponseBody
-    @GetMapping("/enroll/checkNickName")
-    public String nickNameCheck(String nickName) {
-    	int result = uService.nickNameCheck(nickName);
-    	return result+"";
+    @GetMapping("/enroll/checkNickname")
+    public String checkNickname(String nickName) {
+    	if(!UserValidator.isValidNickName(nickName)) {
+    		return "-1";
+    	}
+    	int result = uService.checkNickname(nickName);
+    	return String.valueOf(result);
     }
     
     // 3단계: 회원정보 입력 페이지

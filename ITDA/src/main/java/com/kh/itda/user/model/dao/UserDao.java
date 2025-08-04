@@ -13,7 +13,7 @@ public interface UserDao {
 	
 	int idCheck(String userId);
 	
-	int nickNameCheck(String nickName);
+	int checkNickname(String nickName);
 	
 	User findUserById(String userId);	// 로그인 시 유저 조회
 	
@@ -21,11 +21,15 @@ public interface UserDao {
     
     void updatePassword(String userId, String encodedPwd);
 
+    void updateNickname(String userId, String newNickname);
 
 	String selectUserNickname(String userId);
 
-
 	String selectUserNum(String userId);
+
+	void updatePhone(String userId, String newPhone);
+
+	void updateAddress(String userId, String newAddress);
 
 	//void insertUserAndAuthority(User user);
 

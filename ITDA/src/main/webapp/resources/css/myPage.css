@@ -894,7 +894,7 @@
   line-height: normal;
 }
 
-.element .text-wrapper-37 {
+.element .mainPage {
   top: 42px;
   left: 1153px;
   font-family: "Inter-ExtraBold", Helvetica;
@@ -935,8 +935,8 @@
 
 .element .profile-image {
   position: absolute;
-  width: 318px;
-  height: 309px;
+  width: 300px;
+  height: 300px;
   border: 1px solid green;
   top: 457px;
   left: 661px;

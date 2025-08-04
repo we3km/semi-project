@@ -16,6 +16,7 @@ import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.RentalItem;
+import com.kh.itda.validator.UserValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class UserController {
 		return "user/mypage";
 	}
 	
+	// 비밀번호 변경
 	@PostMapping("/user/mypage/updatePwd")
 	public String updatePassword(@RequestParam String newPwd,
 	                             @RequestParam String confirmPwd,
@@ -52,20 +54,84 @@ public class UserController {
 	        ra.addFlashAttribute("error", "비밀번호가 일치하지 않습니다.");
 	        return "redirect:/user/mypage";
 	    }
+	    
+	    if (!UserValidator.isValidPassword(newPwd)) {
+	    	ra.addFlashAttribute("error", "비밀번호 형식이 유효하지 않습니다.");
+	    	return "redirect:/user/mypage";
+	    }
 
 	    UserExt loginUser = (UserExt) auth.getPrincipal();
 	    String userId = loginUser.getUserId();
 	    String encodedPwd = passwordEncoder.encode(newPwd);
 	    uService.updatePassword(userId, encodedPwd);
-	    //이하 두줄 디버그용
-	    System.out.println("encodedPwd = " + encodedPwd);
-	    System.out.println("encodedPwd.length = " + encodedPwd.length());
 
 	    ra.addFlashAttribute("message", "비밀번호가 변경되었습니다.");
 	    return "redirect:/user/mypage";
 	}
 	
+	// 닉네임 변경
+	@PostMapping("/user/mypage/updateNickname")
+	public String updateNickname(@RequestParam String newNickname,
+	                             Authentication auth,
+	                             RedirectAttributes ra) {
+	    if (newNickname.isEmpty()) {
+	        ra.addFlashAttribute("error", "닉네임을 입력해주세요.");
+	        return "redirect:/user/mypage";
+	    }
+	    
+	    if (!UserValidator.isValidNickName(newNickname)) {
+	    	ra.addFlashAttribute("error", "닉네임 형식이 유효하지 않습니다.");
+	    	return "redirect:/user/mypage";
+	    }
+
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
+	    String userId = loginUser.getUserId();
+	    uService.updateNickname(userId, newNickname);
+
+	    ra.addFlashAttribute("message", "닉네임이 변경되었습니다.");
+	    return "redirect:/user/mypage";
+	}
 	
+	// 폰번호 변경
+	@PostMapping("/user/mypage/updatePhone")
+	public String updatePhone(@RequestParam String newPhone,
+	                             Authentication auth,
+	                             RedirectAttributes ra) {
+	    if (newPhone.isEmpty()) {
+	        ra.addFlashAttribute("error", "휴대폰 번호를 입력해주세요..");
+	        return "redirect:/user/mypage";
+	    }
+	    
+	    if (!UserValidator.isValidPhone(newPhone)) {
+	    	ra.addFlashAttribute("error", "휴대폰 번호 형식이 유효하지 않습니다.");
+	    	return "redirect:/user/mypage";
+	    }
+
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
+	    String userId = loginUser.getUserId();
+	    uService.updatePhone(userId, newPhone);
+
+	    ra.addFlashAttribute("message", "휴대폰 번호가 변경되었습니다.");
+	    return "redirect:/user/mypage";
+	}
+	
+	// 주소 변경
+	@PostMapping("/user/mypage/updateAddress")
+	public String updateAddress(@RequestParam String newAddress,
+	                             Authentication auth,
+	                             RedirectAttributes ra) {
+	    if (newAddress.isEmpty()) {
+	        ra.addFlashAttribute("error", "주소를 입력해주세요.");
+	        return "redirect:/user/mypage";
+	    }
+	    
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
+	    String userId = loginUser.getUserId();
+	    uService.updateAddress(userId, newAddress);
+
+	    ra.addFlashAttribute("message", "주소가 변경되었습니다.");
+	    return "redirect:/user/mypage";
+	}
 
 	/*
 	 * @Autowired private UserService uService;

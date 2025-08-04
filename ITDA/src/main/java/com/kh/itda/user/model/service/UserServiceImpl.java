@@ -60,13 +60,28 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
-	public int nickNameCheck(String nickName) {
-		return userDao.nickNameCheck(nickName);
+	public int checkNickname(String nickName) {
+		return userDao.checkNickname(nickName);
 	}
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
 		userDao.updatePassword(userId, encodedPwd);
+	}
+		
+	@Override
+	public void updateNickname(String userId, String newNickname) {
+		userDao.updateNickname(userId, newNickname);		
+	}
+	
+	@Override
+	public void updatePhone(String userId, String newPhone) {
+		userDao.updatePhone(userId, newPhone);
+	}
+	
+	@Override
+	public void updateAddress(String userId, String newAddress) {
+		userDao.updateAddress(userId, newAddress);
 	}
 
 	@Override
@@ -84,6 +99,5 @@ public class UserServiceImpl implements UserService{
 	public String selectUserNum(String userId) {
 		return userDao.selectUserNum(userId);
 	}
-
 
 }
