@@ -20,6 +20,10 @@ public interface UserService {
 
 	boolean emailExists(String email);
 
+	String selectUserNickname(String userId);
+
+	String selectUserNum(String userId);
+
 
 
 }

@@ -100,10 +100,10 @@
 				<h2 class="location"></h2>
 					<form id="sortForm" method="get"
 						action="${contextPath}/openchat/openChatList">
-						<%-- <input type="hidden" name="sido" value="${selectedSido}" /> <input
+						 <input type="hidden" name="sido" value="${selectedSido}" /> <input
 							type="hidden" name="sigungu" value="${selectedSigungu}" /> <input
 							type="text" name="keyword" class="search-bar" value="${keyword}"
-							placeholder="채팅방 검색" /> --%>
+							placeholder="채팅방 검색" /> 
 					</form>
 					<button type="button" class="create-chat-btn">채팅방 개설</button>
 				</div>

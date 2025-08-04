@@ -1,124 +1,21 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <!DOCTYPE html>
 <html>
 
 <head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link
+	href="${pageContext.request.contextPath}/resources/css/board/rentalBoard.css"
+	rel="stylesheet">
 <meta charset="UTF-8">
 <title>경매 게시판</title>
-<style>
-* {
-	box-sizing: border-box;
-	font-family: 'Arial', sans-serif;
-}
 
-body {
-	margin: 0;
-	display: flex;
-	background-color: #f9f9f9;
-}
-
-.sidebar {
-	width: 250px;
-	background-color: white;
-	padding: 20px;
-	border-right: 1px solid #ddd;
-}
-
-.sidebar h3 {
-	margin-bottom: 10px;
-	font-size: 16px;
-}
-
-.filter-section {
-	margin-bottom: 25px;
-}
-
-.filter-section label {
-	display: block;
-	margin-bottom: 5px;
-}
-
-.main {
-	flex: 1;
-	padding: 30px;
-	position: relative;
-}
-
-.header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
-}
-
-.header h2 {
-	font-size: 28px;
-	margin: 0;
-}
-
-.header .location {
-	color: #9d83ff;
-	font-weight: bold;
-	margin-left: 10px;
-}
-
-.write-btn {
-	background-color: #6657ff;
-	color: white;
-	padding: 10px 18px;
-	border: none;
-	border-radius: 12px;
-	font-weight: bold;
-	cursor: pointer;
-}
-
-.grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 20px;
-}
-
-.card {
-	background-color: white;
-	padding: 15px;
-	border-radius: 12px;
-	text-align: center;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-	position: relative;
-}
-
-.card img {
-	width: 100%;
-	max-width: 180px;
-	height: auto;
-}
-
-.card .heart {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	font-size: 20px;
-	cursor: pointer;
-}
-
-.card p {
-	margin: 5px 0;
-}
-
-.price {
-	font-weight: bold;
-}
-
-input[type="range"] {
-	width: 100%;
-}
-
-input[type="date"] {
-	width: 100%;
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-</style>
 </head>
 <body>
 	<div class="wrapper">
@@ -126,114 +23,302 @@ input[type="date"] {
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
+<div class="container" >
 
 	<div class="sidebar">
-		<div class="filter-section">
-			<h3>정렬 조건</h3>
-		</div>
+		<form id="filterForm" method="get"
+			action="${pageContext.request.contextPath}/board/auction/list">
+			<div class="filter-section">
+				<h3>정렬 조건</h3>
+				<button type="submit" id="filter-btn">정렬</button>
+			</div>
 
-		<div class="filter-section">
-			<h4>지역</h4>
-			<label><input type="checkbox"> 강남</label> <label><input
-				type="checkbox"> 강서</label> <label><input type="checkbox">
-				강동</label> <label><input type="checkbox"> 강북</label>
-		</div>
+			<select name="sort">
+				<option value="date">게시일 순</option>
+				<option value="views">조회수 순</option>
+				<option value="highestBid">최고입찰가 순</option>
+				<!-- <option value="price">가격 순</option> -->
+			</select>
 
-		<div class="filter-section">
-			<h4>상품유형</h4>
-			<label><input type="checkbox"> 의류</label> <label><input
-				type="checkbox"> 전자기기</label> <label><input type="checkbox">
-				생활가전</label> <label><input type="checkbox"> 가구</label> <label><input
-				type="checkbox"> 도서</label> <label><input type="checkbox">
-				뷰티</label> <label><input type="checkbox"> 식품</label> <label><input
-				type="checkbox"> 스포츠</label>
-		</div>
+<!-- 			<div class="filter-section">
+				<h4>지역</h4>
+				<label><input type="checkbox"> 강남</label> <label><input
+					type="checkbox"> 강서</label> <label><input type="checkbox">
+					강동</label> <label><input type="checkbox"> 강북</label>
+			</div> -->
 
-		<div class="filter-section">
-			<h4>가격</h4>
-			<label>5,000원 ~ 30,000원</label> <input type="range" min="5000"
-				max="30000" value="15000">
-		</div>
+			<div class="filter-section">
+			  <div class="category-area">
+			    <label>상품 카테고리</label>
+			
+			    <div class="category-wrapper">
+			      <!-- 대분류 -->
+			      <div class="category-column">
+			        <h5>대분류</h5>
+			        <div class="category-list-large">
+			          <c:forEach items="${categoryList}" var="productCategory">
+			            <c:if test="${productCategory.parentNum == 0}">
+			              <div class="category-large" data-id="${productCategory.productCategoryNum}">
+			                ${productCategory.categoryName}
+			              </div>
+			            </c:if>
+			          </c:forEach>
+			        </div>
+			        <input type="hidden" id="categoryLargeHiddenInput" name="boardCommon.productCategoryL" />
+			      </div>
+			
+			      <!-- 중분류 -->
+			      <div class="category-column" id="middle" style="display: none;">
+			        <h5>중분류</h5>
+			        <div id="category-list-middle"></div>
+			        <input type="hidden" id="categoryMiddleHiddenInput" name="boardCommon.productCategoryM" />
+			      </div>
+			
+			      <!-- 소분류 -->
+			      <div class="category-column" id="small" style="display: none;">
+			        <h5>소분류</h5>
+			        <div id="category-list-small" ></div>
+			        <input type="hidden" id="categorySmallHiddenInput" name="boardCommon.productCategoryS" />
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+			<script>
+			  // Helper 함수: 모든 대/중/소 항목에서 active 제거
+			  function clearActive(className) {
+			    document.querySelectorAll("." + className).forEach(el => el.classList.remove("active"));
+			  }
+			  const middleCol = document.getElementById("middle");
+			  const smallCol = document.getElementById("small");
+			  // 대분류 클릭 이벤트
+			  document.querySelectorAll('.category-large').forEach(item => {
+			    item.addEventListener('click', () => {
+			      const parentId = item.dataset.id;
+			      const isActive = item.classList.contains("active");
+			
+			      // 기존 선택 초기화
+			      clearActive("category-large");
+			      clearActive("category-middle");
+			      clearActive("category-small");
+			      document.getElementById("category-list-middle").innerHTML = "";
+			      document.getElementById("category-list-small").innerHTML = "";
+			      document.getElementById("categoryMiddleHiddenInput").value = "";
+			      document.getElementById("categorySmallHiddenInput").value = "";
+			
+			      if (!isActive) {
+			        // 활성화
+			        item.classList.add("active");
+			        document.getElementById("categoryLargeHiddenInput").value = item.textContent.trim();
+			        console.log("선택된 대분류: " + item.textContent.trim());
+			        middleCol.style.display = "block";     // 중분류 보이기
+			        smallCol.style.display = "none";       // 소분류 숨기기
+			
+			        // 중분류 불러오기
+			        fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+			          .then(response => response.json())
+			          .then(data => {
+			            const middleContainer = document.getElementById("category-list-middle");
+			            data.forEach(sub => {
+			              const div = document.createElement("div");
+			              div.textContent = sub.categoryName;
+			              div.classList.add("category-middle");
+			              div.setAttribute("data-id", sub.productCategoryNum);
+			              middleContainer.appendChild(div);
+			            });
+			          });
+			      } else {
+			        // 다시 클릭하면 닫기 (초기화)
+			        document.getElementById("categoryLargeHiddenInput").value = "";
+			        middleCol.style.display = "none";  // 중분류 숨기기
+			        smallCol.style.display = "none";   // 소분류 숨기기
+			      }
+			    });
+			  });
+			
+			  // 중분류 클릭 이벤트
+			  document.getElementById("category-list-middle").addEventListener("click", (e) => {
+			    const clicked = e.target;
+			    if (!clicked.classList.contains("category-middle")) return;
+			
+			    const parentId = clicked.dataset.id;
+			    const isActive = clicked.classList.contains("active");
+			
+			    clearActive("category-middle");
+			    clearActive("category-small");
+			    document.getElementById("category-list-small").innerHTML = "";
+			    document.getElementById("categorySmallHiddenInput").value = "";
+			
+			    if (!isActive) {
+			      clicked.classList.add("active");
+			      document.getElementById("categoryMiddleHiddenInput").value = clicked.textContent.trim();
+			      console.log("선택된 중분류: " + clicked.textContent.trim());
+			      smallCol.style.display = "block"; // 소분류 보여주기
+			
+			      // 소분류 불러오기
+			      fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+			        .then(response => response.json())
+			        .then(data => {
+			          const smallContainer = document.getElementById("category-list-small");
+			          data.forEach(sub => {
+			            const div = document.createElement("div");
+			            div.textContent = sub.categoryName;
+			            div.classList.add("category-small");
+			            smallContainer.appendChild(div);
+			          });
+			        });
+			    } else {
+			      document.getElementById("categoryMiddleHiddenInput").value = "";
+			      smallCol.style.display = "none"; // 소분류 숨기기
+			    }
+			  });
+			
+			  // 소분류 클릭 이벤트
+			  document.getElementById("category-list-small").addEventListener("click", (e) => {
+			    const clicked = e.target;
+			    if (!clicked.classList.contains("category-small")) return;
+			
+			    clearActive("category-small");
+			
+			    clicked.classList.add("active");
+			    document.getElementById("categorySmallHiddenInput").value = clicked.textContent.trim();
+			    console.log("선택된 소분류: " + clicked.textContent.trim());
+			  });
+			</script>
 
-		<div class="filter-section">
-			<h4>대여 기간</h4>
-			<input type="date" value="2025-07-01"> <input type="date"
-				value="2025-07-10">
-		</div>
+<!-- 			<div class="filter-section">
+			  <h4>가격</h4>
+			  <label>최소 가격:</label>
+			  <input type="number" name="minRentalFee" min="0">
+			
+			  <label>최대 가격:</label>
+			  <input type="number" name="maxRentalFee" min="0">
+			</div> -->
+			
+			<div class="filter-section">
+				<h4>경매 기간</h4>
+				<input type="date" name="startDate"> <input type="date" name="endDate">
+			</div>
+		</form>
 	</div>
 
 	<div class="main">
-		<div class="header">
+		<div class="top">
 			<div>
 				<h2>경매 게시판</h2>
 				<span class="location">서울특별시 강남구 📍</span>
+				<!-- 로그인한 회원의 주소 -->
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
-			<button class="write-btn">
-				<a href="${pageContext.request.contextPath}/board/write/auction">거래 글 쓰기</a>
-			</button>
+			<button id="write-btn">거래 글 쓰기</button>
 		</div>
-
+		<script>
+		  document.getElementById('write-btn').addEventListener('click', function() {
+		    window.location.href = '${pageContext.request.contextPath}/board/write/auction';
+		  });
+	</script>
 		<div class="grid">
 			<!-- 카드 반복 -->
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+			<c:forEach var="board" items="${list }">
 
-			<!-- 동일한 카드 복사 -->
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+				<div class="card"
+					onclick="moveDetail(${board.boardCommon.boardId});">
+					<c:set var="boardId" value="${board.boardCommon.boardId}" />
+					<c:if test="${fn:contains(likedBoardIds, boardId)}">
+						<div class="heart liked"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
+					</c:if>
+					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
+						<div class="heart"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
+					</c:if>
 
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+					<img
+						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
+						alt="이미지" style="width: 90%; height: auto;" />
+					<p id="product-name">${board.boardCommon.productName }</p>
 
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+					<p id="auction-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }</p>
+					<c:if test="${board.highestBid ne 0}">
+						<p id="highest-bid">최고입찰가 : ${board.highestBid}</p>
+					</c:if>
+					
+					<c:if test="${board.highestBid eq 0}">
+						<p id="highest-bid">최고입찰가 : ${board.boardAuction.auctionStartingFee}</p>
+					</c:if>
+					
+					<p class="date">
+						<fmt:formatDate value="${board.boardAuction.auctionStartDate }"
+							pattern="yyyy/MM/dd" />
+						~
+						<fmt:formatDate value="${board.boardAuction.auctionEndDate }"
+							pattern="yyyy/MM/dd" />
+					</p>
+				</div>
+			</c:forEach>
+			<script>
+	  	function moveDetail(bid){
+	  		location.href = "${pageContext.request.contextPath}/board/detail/auction/"+bid;
+	  	}
+	  </script>
 
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+			<script>
+		function toggleLike(heartEl, boardId) {
+        	$.ajax({
+              	type: 'POST',
+              	url: '${pageContext.request.contextPath}/board/addDibs',
+              	data: {
+              	  userId: '${userNum}',
+              	  boardId: boardId,
+              	  boardCategory: 'auction'
+             	 },
+             	 success: function (res) {
+             		 console.log(res);
+    	       		  const liked = heartEl.classList.contains('liked');
+    	      		
+    	    		  if (liked) {
+    	    		    // 찜 취소
+    	    		    heartEl.textContent = '♡';
+    	    		    heartEl.classList.remove('liked');
+    	    		
+    	    		    // TODO: 서버로 찜 취소 요청 (Ajax)
+    	    		    console.log(`찜 취소: ${boardId}`);
+    	    		  } else {
+    	    		    // 찜 등록
+    	    		    heartEl.textContent = '♥';
+    	    		    heartEl.classList.add('liked');
+    	    		
+    	    		    // TODO: 서버로 찜 등록 요청 (Ajax)
+    	    		    console.log(`찜 등록: ${boardId}`);
+    	    		  }
+             	 },
+             	 error: function (err) {   
+             	    console.error(err);
+             	  }
+               
+             	 
+               });
+		}
+		
+    	
 
-			<div class="card">
-				<div class="heart">♡</div>
-				<img src="https://via.placeholder.com/180x120.png?text=DSLR"
-					alt="DSLR">
-				<p>DSLR 대여해드립니다</p>
-				<p class="price">보증금 : 40,000원</p>
-				<p>2025/07/05~2025/08/06</p>
-			</div>
+    	
+		
+		
+		
+		</script>
+
 		</div>
 	</div>
-
-
-
+</div>
+<!-- 새로고침했을때 필터정렬 초기화 -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.history.replaceState) {
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.replaceState(null, null, cleanUrl);
+    }
+  });
+</script>
 </body>
 </html>

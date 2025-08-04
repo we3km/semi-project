@@ -1,7 +1,5 @@
 package com.kh.itda.location.model.vo;
 
-import com.kh.itda.openchat.model.vo.OpenChatRoom;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,4 +11,7 @@ public class Location {
 	 private String sigungu;
 	 private Double lat;
 	 private Double lng;
+	 
+	 private String sigun;
+	 private String gu;
 }
