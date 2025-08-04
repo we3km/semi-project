@@ -100,9 +100,6 @@
 			</set>
 		WHERE USER_ID = #{userId}
 	</update>
-
-<<<<<<< HEAD
-=======
 	
 	<select id="selectUserNickname" resultType="String">
 		SELECT NICK_NAME FROM USER_TB WHERE USER_ID = #{userId}
@@ -110,5 +107,4 @@
 	<select id="selectUserNum" resultType="String">
 		SELECT USER_NUM FROM USER_TB WHERE USER_ID = #{userId}
 	</select>
->>>>>>> main
 </mapper>

@@ -57,4 +57,12 @@ public class UserDaoImpl implements UserDao {
 	public String selectUserNum(String userId) {
 		return session.selectOne("user.selectUserNum", userId); 
 	}
+	
+	@Override
+	public void updatePassword(String userId, String encodedPwd) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("userId", userId);
+		param.put("encodedPwd", encodedPwd);
+		session.update("user.updatePassword", param);
+	}
 }

@@ -20,8 +20,6 @@ public interface UserService {
 
 	boolean emailExists(String email);
 	
-	User findByUserId(String username);
-
 	String selectUserNickname(String userId);
 
 	String selectUserNum(String userId);

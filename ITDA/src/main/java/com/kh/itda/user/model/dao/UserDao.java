@@ -14,19 +14,16 @@ public interface UserDao {
 	
 	int idCheck(String userId);
 
-<<<<<<< HEAD
-	void insertProfile(int userNum, String imageUrl);
-=======
-
 	String selectUserNickname(String userId);
 
 
 	String selectUserNum(String userId);
 
-	//void insertUserAndAuthority(User user);
-	
->>>>>>> main
 
 	HashMap<String, Object> selectOne(String userId);
+
+	void updatePassword(String userId, String encodedPwd);
+
+	void insertProfile(int userNum, String imageUrl);
 
 }
