@@ -136,6 +136,7 @@
 		</div>
 	</div>
 	<script>
+	//============================== 카테고리 ==============================
 	$(document).ready(function () {
 	    // JSP에서 contextPath 변수 선언
 	    const contextPath = '${pageContext.request.contextPath}';
