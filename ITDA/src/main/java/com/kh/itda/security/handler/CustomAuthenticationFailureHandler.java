@@ -30,4 +30,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 			e.printStackTrace();
 		}
 	}
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

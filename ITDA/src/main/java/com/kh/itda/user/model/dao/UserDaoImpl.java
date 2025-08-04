@@ -21,11 +21,6 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public HashMap<String, Object> selectOne(String userId) {
-		return session.selectOne("member.selectOne",userId);
-	}
-	
-	@Override
 	public void insertAuthority(User user) {
 		session.insert("user.insertAuthority", user);
 	}
@@ -44,11 +39,12 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public void insertUserAndAuthority(User user) {
-		
+	public User findUserById(String userId) {
+		return session.selectOne("user.findUserById", userId);
 	}
 
 	@Override
+<<<<<<< Updated upstream
 	public String selectUserNickname(String userId) {
 		return session.selectOne("user.selectUserNickname", userId); 
 	}
@@ -64,5 +60,23 @@ public class UserDaoImpl implements UserDao {
 		param.put("userId", userId);
 		param.put("encodedPwd", encodedPwd);
 		session.update("user.updatePassword", param);
+=======
+	public User findUserByNum(int userNum) {
+		return session.selectOne("user.findUserByNum", userNum);
+	}
+
+	@Override
+	public void updatePassword(String userId, String encodedPwd) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("encodedPwd", encodedPwd);
+	    session.update("user.updatePassword", param);
+
+/*	public void insertUserAndAuthority(User user) {
+		// TODO Auto-generated method stub
+		
+
+	}*/
+>>>>>>> Stashed changes
 	}
 }

@@ -63,5 +63,4 @@
 		<property name="maxUploadSize" value="10000000"></property>
 		<property name="maxInMemorySize" value="2000000"></property>
 	</bean>
-
 </beans>

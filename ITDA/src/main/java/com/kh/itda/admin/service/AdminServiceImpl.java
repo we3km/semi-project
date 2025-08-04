@@ -1,6 +1,7 @@
 package com.kh.itda.admin.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -20,12 +21,17 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public List<User> searchUsers(String keyword) {
-		return securityDao.searchUsers(keyword);
+	    return securityDao.searchUsers(keyword);
 	}
 
 	@Override
 	public List<Report> getAllReports() {
 		return securityDao.getAllReports();
+	}
+
+	@Override
+	public User findUserById(String userId) {
+		return securityDao.findUserById(userId);
 	}
 
 	@Override

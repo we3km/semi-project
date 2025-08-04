@@ -10,4 +10,5 @@ public interface AdminService {
 	List<Report> getAllReports();
 	Report getReportById(int reportNum);
 	void updateReportStatus(int reportNum, String status);
+	User findUserById(String userId);
 }

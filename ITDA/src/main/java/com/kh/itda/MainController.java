@@ -31,6 +31,9 @@ public class MainController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model,Authentication auth) {
 		// 거래유형 목록 드롭다운
+		//if(((User)auth.getPrincipal()).getUserId()!=null)
+			//log.info("user info : {}",((User)auth.getPrincipal()).getPhone());
+		
 		Map<Integer, boardCategory> mainTypeMap = mainService.getMainTypeMap();
 	     model.addAttribute("mainCategoryType", mainTypeMap);
 	     
@@ -50,3 +53,5 @@ public class MainController {
 	
 	
 }
+
+

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kh.itda.user.model.vo.User;
@@ -26,6 +25,7 @@ public class UserExt extends User implements UserDetails{
 	}
 
 	// 스프링 시큐리티에서 비밃번호, 아이디를 가져올때 사용할 메서드
+
 	@Override
 	public String getPassword() {
 		return getUserPwd();

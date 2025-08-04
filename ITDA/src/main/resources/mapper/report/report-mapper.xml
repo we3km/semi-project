@@ -44,7 +44,8 @@
 		parameterType="com.kh.itda.support.model.vo.Report">
 		UPDATE report
 		SET status = #{status}
-		WHERE report_num = #{reportNum}
+		WHERE report_num =
+		#{reportNum}
 	</update>
 
 </mapper>

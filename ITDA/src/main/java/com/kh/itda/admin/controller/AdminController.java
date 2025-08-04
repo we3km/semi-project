@@ -2,6 +2,8 @@ package com.kh.itda.admin.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,40 +26,52 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 
-	@GetMapping("/myPage")
-	public String adminMyPage(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	/**
+	 * 관리자 마이페이지 ROLE_ADMIN 권한 필요
+	 */
+	@GetMapping("/mypage")
+	public String adminMypage(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String userId = authentication.getName();
 
-		boolean isAdmin = auth.getAuthorities().stream()
-				.anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+		User user = adminService.findUserById(userId);
+		model.addAttribute("loginuser", user);
 
-		if (!isAdmin) {
-			return "redirect:/";
-		}
-
-		
 		return "adminPage/adminMyPage";
 	}
 
-
-	@GetMapping("/memberSearch")
-	@ResponseBody
-	public List<User> memberSearch(@RequestParam("keyword") String keyword) {
-	    return adminService.searchUsers(keyword);   
-	}
-	
+	/**
+	 * 신고 관리 페이지
+	 */
 	@GetMapping("/reports")
 	public String reportManagement(Model model) {
-	    List<Report> reportList = adminService.getAllReports();
-	    model.addAttribute("reportList", reportList);
-	    return "adminPage/reportList";
+		List<Report> reportList = adminService.getAllReports();
+		model.addAttribute("reportList", reportList);
+		return "adminPage/reportList";
 	}
-	
+
+	/**
+	 * 회원 검색
+	 */
+	@ResponseBody
+	@GetMapping("/memberSearch")
+	public List<User> searchUsers(@RequestParam("keyword") String keyword) {
+		try {
+			List<User> users = adminService.searchUsers(keyword);
+			return users;
+		} catch (Exception e) {
+			// 예외 처리 로직 추가 가능
+			return null; // 필요 시 Collections.emptyList()로 변경 가능
+		}
+	}
+
+	/**
+	 * 신고 상세 조회
+	 */
 	@GetMapping("/reports/Detail/{reportNum}")
 	public String reportDetail(@PathVariable("reportNum") int reportNum, Model model) {
 		Report report = adminService.getReportById(reportNum);
-		model.addAttribute("report",report);
+		model.addAttribute("report", report);
 		return "adminPage/reportDetail";
 	}
-	
 }

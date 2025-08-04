@@ -25,11 +25,16 @@
 
 </head>
 <body>
+<<<<<<< Updated upstream
 <c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 <script type="text/javascript">
 console.log("유저:",loginUser.userNum);
 </script>
+=======
+	<input type="hidden" id="userRole"
+		value="${sessionScope.loginUser.role}" />
+>>>>>>> Stashed changes
 
 	<div class="container_header">
 		<!-- 좌측 로고 -->
@@ -79,41 +84,40 @@ console.log("유저:",loginUser.userNum);
 
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
-		    <div class="filters">
-		        <!-- 드롭다운 -->
-		        <div class="dropdown" id="deal-type-dropdown">
-		            <button class="dropbtn">
-		                <span class="dropbtn_content">전체</span>
-		                <span class="dropbtn_click" aria-hidden="true">
-		                    <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-		                         width="16" height="16" viewBox="0 0 24 24">
+			<div class="filters">
+				<!-- 드롭다운 -->
+				<div class="dropdown" id="deal-type-dropdown">
+					<button class="dropbtn">
+						<span class="dropbtn_content">전체</span> <span
+							class="dropbtn_click" aria-hidden="true"> <svg
+								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+								width="16" height="16" viewBox="0 0 24 24">
 		                        <path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
 		                    </svg>
-		                </span>
-		            </button>
-		            <div class="dropdown-content">
-		                <c:forEach var="entry" items="${CategoryType}">
-		                    <div class="category"
-		                         data-id="${entry.value.categoryId}"
-		                         data-gubun="${entry.value.categoryGubun}"
-		                         data-name="${entry.value.category}">
-		                        ${entry.value.category}
-		                    </div>
-		                </c:forEach>
-		            </div>
-		        </div>
-		    </div>
-		
-		    <!-- 검색창 -->
-		    <div class="search-bar">
-		        <input type="text" placeholder="무엇을 찾으시나요?" id="search-input" />
-		        <img src="${pageContext.request.contextPath}/resources/images/search.png"
-		             alt="search icon" id="search-btn" style="cursor: pointer;" />
-		    </div>
+						</span>
+					</button>
+					<div class="dropdown-content">
+						<c:forEach var="entry" items="${CategoryType}">
+							<div class="category" data-id="${entry.value.categoryId}"
+								data-gubun="${entry.value.categoryGubun}"
+								data-name="${entry.value.category}">
+								${entry.value.category}</div>
+						</c:forEach>
+					</div>
+				</div>
+			</div>
+
+			<!-- 검색창 -->
+			<div class="search-bar">
+				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
+					src="${pageContext.request.contextPath}/resources/images/search.png"
+					alt="search icon" id="search-btn" style="cursor: pointer;" />
+			</div>
 		</div>
-		
-		
+
+
 		<!-- 유저 인사 + 알림 -->
+<<<<<<< Updated upstream
 		<sec:authorize access="isAuthenticated()">
 			<div class="login_effect">
 				<!-- 회원 이름 바뀌기-->
@@ -131,6 +135,20 @@ console.log("유저:",loginUser.userNum);
 						src="${pageContext.request.contextPath}/resources/images/alam.png"
 						alt="alarm icon" id="alarm-icon" />
 				</div>
+=======
+		<div class="login_effect"
+			style="<c:if test='${empty sessionScope.loginUser}'>display:none;</c:if>">
+			<!-- 회원 이름 바뀌기-->
+			<div class="user">
+				<strong>${sessionScope.loginUser.userName}</strong>님 반갑습니다!
+			</div>
+			<div id="icons">
+				<img
+					src="${pageContext.request.contextPath}/resources/images/message.png"
+					alt="message icon" id="message-icon" /> <img
+					src="${pageContext.request.contextPath}/resources/images/alam.png"
+					alt="alarm icon" id="alarm-icon" />
+>>>>>>> Stashed changes
 			</div>
 		</sec:authorize>
 		</div>
@@ -210,6 +228,79 @@ console.log("유저:",loginUser.userNum);
 					        }
 					        window.location.href = targetUrl;
 						});
+<<<<<<< Updated upstream
+=======
+
+				// 로그인-로그아웃 버튼 
+				// 로그인 상태 토글
+				$('#loginBtn').click(function() {
+					$('.unlogin').hide();
+					$('.login').show();
+				});
+				$('#logoutBtn').click(function() {
+					$('.login').hide();
+					$('.unlogin').show();
+				});
+				// 초기화 - 무조건 로그인된 상태 숨기기
+				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
+				$('.unlogin').show(); // 비로그인용 버튼 보이기
+				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
+				// 로그인 클릭 시
+				$('#loginBtn').click(
+						function() {
+							//로그인 페이지로 이동
+							alert(`로그인창`);
+							location.href = contextPath
+									+ '/user/login';
+							location.href = contextPath + '/user/login'; 
+
+							$('.unlogin').hide();
+							$('.login').css('display', 'flex');
+							$('.login_effect').show();
+						});
+				// 로그아웃 클릭 시
+				$('#logoutBtn').click(
+						function() {
+							//로그아웃
+							alert(`로그아웃 하였습니다`);
+							const form = document.createElement('form');
+						    form.method = 'POST';
+						    form.action = contextPath + '/user/logout';
+
+						    document.body.appendChild(form);
+						    form.submit();
+						    
+							$('.login').hide();
+							$('.login_effect').hide();
+							$('.unlogin')
+									.css('display', 'flex');
+						});
+
+				//회원가입 이동
+				$('#joinMembership').click(function() {
+					location.href = contextPath + '/user/join';
+				});
+
+				//마이페이지 이동
+				const userRole = $('#userRole').val();
+
+				$('#myPage').click(function() {
+				if (userRole === 'ROLE_ADMIN') {
+					location.href = contextPath + '/admin/mypage';
+					} else {
+						location.href = contextPath + '/user/mypage';
+					}
+});
+				
+
+				//고객센터이동
+				$('#customerService').click(
+						function() {
+							location.href = contextPath
+									+ '/cs';
+						})
+
+>>>>>>> Stashed changes
 				// 검색창
 				// 드롭다운 화살표 클릭 시 목록 열기
 			    $('.dropbtn_click').on('click', function (e) {

@@ -7,29 +7,37 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.kh.itda.security.handler.CustomAuthenticationSuccessHandler;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    public SecurityConfig(CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/css/**", "/js/**", "/images/**").permitAll() // 정적 리소스 허용
-                .antMatchers("/", "/user/insert", "/user/login").permitAll() // 비회원 가능
-                .anyRequest().authenticated() // 나머지는 인증 필요
+                .antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .antMatchers("/", "/user/insert", "/user/login").permitAll()
+                .anyRequest().authenticated()
             .and()
             .formLogin()
                 .loginPage("/user/login")
                 .loginProcessingUrl("/user/login")
-                .defaultSuccessUrl("/", true)
+                .successHandler(authenticationSuccessHandler)
                 .permitAll()
             .and()
             .logout()
                 .logoutUrl("/user/logout")
                 .logoutSuccessUrl("/")
             .and()
-            .csrf().disable(); // 개발 중에는 CSRF 끄는 경우도 많음
+            .csrf().disable();
 
         return http.build();
     }

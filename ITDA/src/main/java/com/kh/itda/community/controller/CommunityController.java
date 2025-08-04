@@ -289,12 +289,19 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, Object> react(@RequestBody CommunityReaction reaction,Authentication auth, HttpSession session) {
 		// 임시 로그인 유저 번호 
+<<<<<<< Updated upstream
 	    //int userNum = 3;
 		User loginUser = (User) auth.getPrincipal();
 		int userNum = ((User) auth.getPrincipal()).getUserNum();
 	    //int userNum = ((User) session.getAttribute("loginUser")).userNum();
 	    
 	    reaction.setUserNum(userNum);
+=======
+	    int userNo = 3;
+	//  int userNo = ((User) session.getAttribute("loginUser")).getUserNo();
+	    	
+	    reaction.setUserNo(userNo);
+>>>>>>> Stashed changes
 
 	    // 서비스 호출 → 반응 처리
 	    String userReaction = communityService.handleReaction(reaction);
