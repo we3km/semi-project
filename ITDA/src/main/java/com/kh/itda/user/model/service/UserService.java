@@ -20,7 +20,12 @@ public interface UserService {
 
 	boolean emailExists(String email);
 
+
 	int nickNameCheck(String nickName);
+
+	String selectUserNickname(String userId);
+
+	String selectUserNum(String userId);
 
 
 

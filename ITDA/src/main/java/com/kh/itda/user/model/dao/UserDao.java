@@ -21,6 +21,12 @@ public interface UserDao {
     
     void updatePassword(String userId, String encodedPwd);
 
+
+	String selectUserNickname(String userId);
+
+
+	String selectUserNum(String userId);
+
 	//void insertUserAndAuthority(User user);
 
 }

@@ -75,5 +75,15 @@ public class UserServiceImpl implements UserService{
 		return false;
 	}
 
+	@Override
+	public String selectUserNickname(String userId) {
+		return userDao.selectUserNickname(userId);
+	}
+
+	@Override
+	public String selectUserNum(String userId) {
+		return userDao.selectUserNum(userId);
+	}
+
 
 }

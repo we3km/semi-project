@@ -67,4 +67,14 @@ public class UserDaoImpl implements UserDao {
 		
 
 	}*/
+
+	@Override
+	public String selectUserNickname(String userId) {
+		return session.selectOne("user.selectUserNickname", userId); 
+	}
+
+	@Override
+	public String selectUserNum(String userId) {
+		return session.selectOne("user.selectUserNum", userId); 
+	}
 }
