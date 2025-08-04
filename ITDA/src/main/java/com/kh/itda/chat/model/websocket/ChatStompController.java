@@ -47,7 +47,7 @@ public class ChatStompController {
 //	    chatMessage.setChatImg(senderInfo.getChatImg());   	
 //
 //	    log.info("보내는 사람 닉네임: {}", chatMessage.getNickName());
-//	    log.info("보내는 사람 이미지: {}", chatMessage.getChatImg());
+//	    log.info("보내는 사람 이미지: {}", chatMessage.getChatImg()); 1
 		
 		log.info("보내는 사람 정보 : {}", loginUser);
 		log.info("채팅 정보 : {}", chatMessage);
