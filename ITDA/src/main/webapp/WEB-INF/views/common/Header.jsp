@@ -27,10 +27,6 @@
 <body>
 <c:set var="loginUser" value="${sessionScope.loginUser}" />
 
-<script type="text/javascript">
-console.log("유저:",loginUser.userNum);
-</script>
-
 	<div class="container_header">
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>

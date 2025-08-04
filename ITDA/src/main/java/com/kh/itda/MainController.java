@@ -33,8 +33,9 @@ public class MainController {
 	     model.addAttribute("mainCategoryType", mainTypeMap);
 	     
 	    //상품유형 목록 (categoryId 6~9일 때 사용)
-       // model.addAttribute("productCategories", boardService.getProductType());
-
+	    System.out.println( boardService.getProductType());
+        model.addAttribute("productCategories", boardService.getProductType());
+        
         //커뮤니티 타입 목록 (categoryId 10일 때 사용)
         model.addAttribute("communityTypes", communityService.getCommunityTypeMap());
 	       

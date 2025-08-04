@@ -22,7 +22,8 @@
 		VIEWS,
 		TRANSACTION_STATUS,
 		PRODUCT_CATEGORY_M,
-		PRODUCT_CATEGORY_S
+		PRODUCT_CATEGORY_S,
+		STATUS
 		) VALUES
 		(
 		#{boardId} ,
@@ -36,7 +37,8 @@
 		DEFAULT,
 		DEFAULT,
 		#{productCategoryM},
-		#{productCategoryS}
+		#{productCategoryS},
+		DEFAULT
 		)
 	</insert>
 
@@ -204,6 +206,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BR.RENTAL_FEE,
 		BR.DEPOSIT,
 		BR.RENTAL_START_DATE,
@@ -217,10 +220,8 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 6
 		)
-		WHERE RN = 1
-		<!-- <if test="location != null and location != ''">
-			 	AND BC.TRANSACTION_ADDRESS = #{location} </if>
-		-->	<if test="minRentalFee != null">
+		WHERE RN = 1 AND STATUS = 'Y'
+			<if test="minRentalFee != null">
 				AND RENTAL_FEE >= #{minRentalFee} 
 			</if> 
 			<if test="maxRentalFee != null">
@@ -240,6 +241,18 @@
 			</if>
 			<if test="productCategoryS != null and productCategoryS != ''"> 
 				AND PRODUCT_CATEGORY_S = #{productCategoryS} 
+			</if>
+			<if test="searchProductCategoryL != null and searchProductCategoryL != ''"> 
+				AND PRODUCT_CATEGORY_L = #{searchProductCategoryL} 
+			</if>
+			<if test="keyword != null and keword != ''"> 
+				AND (
+						PRODUCT_NAME LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_COMMENT LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_L LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_M LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_S LIKE '%' || #{keyword} || '%'
+					)
 			</if>
 		<choose>
 			<when test="sort == 'views'">
@@ -271,6 +284,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BR.RENTAL_FEE,
 		BR.DEPOSIT,
 		BR.RENTAL_START_DATE,
@@ -303,7 +317,8 @@
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
-			<!-- BOARD_RENTAL 컬럼들 추가 -->
+			<result property="status"
+				column="STATUS" />
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
 
@@ -334,6 +349,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BR.RENTAL_FEE,
 		BR.DEPOSIT,
 		BR.RENTAL_START_DATE,
@@ -347,7 +363,7 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 6 AND BC.USER_NUM = #{userNum}
 		)
-		WHERE RN = 1
+		WHERE RN = 1 AND STATUS = 'Y'
 
 	</select>
 
@@ -368,6 +384,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BR.RENTAL_FEE,
 		BR.DEPOSIT,
 		BR.RENTAL_START_DATE,
@@ -381,7 +398,7 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 6 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
 		)
-		WHERE RN = 1
+		WHERE RN = 1 AND STATUS = 'Y'
 
 	</select>
 
@@ -407,7 +424,8 @@
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
-			<!-- BOARD_RENTAL 컬럼들 추가 -->
+			<result property="status"
+				column="STATUS" />
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
 
@@ -565,6 +583,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BS.SHARING_COUNT,
 		C.CATEGORY_PATH,
 		F.FILE_NAME,
@@ -575,7 +594,7 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 7
 		)
-		WHERE RN = 1
+		WHERE RN = 1 AND STATUS = 'Y'
 		<!-- <if test="location != null and location != ''">
 			 	AND BC.TRANSACTION_ADDRESS = #{location} </if>
 		-->	
@@ -587,6 +606,18 @@
 			</if>
 			<if test="productCategoryS != null and productCategoryS != ''"> 
 				AND PRODUCT_CATEGORY_S = #{productCategoryS} 
+			</if>
+			<if test="searchProductCategoryL != null and searchProductCategoryL != ''"> 
+				AND PRODUCT_CATEGORY_L = #{searchProductCategoryL} 
+			</if>
+			<if test="keyword != null and keword != ''"> 
+				AND (
+						PRODUCT_NAME LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_COMMENT LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_L LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_M LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_S LIKE '%' || #{keyword} || '%'
+					)
 			</if>
 		<choose>
 			<when test="sort == 'views'">
@@ -601,7 +632,7 @@
 
 	</select>
 	
-		<select id="selectBoardShare" parameterType="int"
+	<select id="selectBoardShare" parameterType="int"
 		resultMap="boardShareResultMap">
 		SELECT
 		BC.BOARD_ID,
@@ -616,6 +647,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BS.SHARING_COUNT
 
 		FROM BOARD_COMMON BC
@@ -624,7 +656,7 @@
 
 	</select>
 	
-		<select id="selectWriterShareList" parameterType="int"
+	<select id="selectWriterShareList" parameterType="int"
 		resultMap="BoardShareFileResultMap">
 		SELECT *
 		FROM (
@@ -641,6 +673,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BS.SHARING_COUNT,
 		C.CATEGORY_PATH,
 		F.FILE_NAME,
@@ -651,7 +684,7 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 7 AND BC.USER_NUM = #{userNum}
 		)
-		WHERE RN = 1
+		WHERE RN = 1 AND STATUS = 'Y'
 
 	</select>
 	
@@ -672,6 +705,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BS.SHARING_COUNT,
 		C.CATEGORY_PATH,
 		F.FILE_NAME,
@@ -682,10 +716,11 @@
 		JOIN CATEGORY C ON F.CATEGORY_ID = C.CATEGORY_ID
 		WHERE F.CATEGORY_ID = 7 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
 		)
-		WHERE RN = 1
+		WHERE RN = 1 AND STATUS = 'Y'
 
 	</select>
-		<resultMap id="BoardShareFileResultMap"
+	
+	<resultMap id="BoardShareFileResultMap"
 		type="BoardShareFileWrapper">
 		<association property="boardCommon" javaType="BoardCommon">
 			<id property="boardId" column="BOARD_ID" />
@@ -706,6 +741,8 @@
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
+			<result property="status"
+				column="STATUS" />
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
 
@@ -722,7 +759,7 @@
 		</association>
 	</resultMap>
 	
-		<resultMap id="boardShareResultMap"
+	<resultMap id="boardShareResultMap"
 		type="BoardShareWrapper">
 		<association property="boardCommon" javaType="BoardCommon">
 			<id property="boardId" column="BOARD_ID" />
@@ -743,6 +780,9 @@
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
+			<result property="status"
+				column="STATUS" />
+				
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
 
@@ -754,7 +794,7 @@
 		</association>
 	</resultMap>
 	
-		<select id="selectBoardAuction" parameterType="int"
+	<select id="selectBoardAuction" parameterType="int"
 		resultMap="boardAuctionResultMap">
 		SELECT
 		BC.BOARD_ID,
@@ -769,6 +809,7 @@
 		BC.PRODUCT_CATEGORY_L,
 		BC.PRODUCT_CATEGORY_M,
 		BC.PRODUCT_CATEGORY_S,
+		BC.STATUS,
 		BA.AUCTION_STARTING_FEE,
 		BA.BID_UNIT,
 		BA.AUCTION_START_DATE,
@@ -802,6 +843,8 @@
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
+			<result property="status"
+				column="STATUS" />
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
 
@@ -832,6 +875,7 @@ FROM (
         BC.PRODUCT_CATEGORY_L,
         BC.PRODUCT_CATEGORY_M,
         BC.PRODUCT_CATEGORY_S,
+        BC.STATUS,
         BA.AUCTION_STARTING_FEE,
         BA.BID_UNIT,
         BA.AUCTION_START_DATE,
@@ -859,7 +903,7 @@ FROM (
     ) MAX_BID ON MAX_BID.BOARD_ID = BC.BOARD_ID
     WHERE F.CATEGORY_ID = 8 AND BC.USER_NUM = #{userNum}
 )
-WHERE RN = 1
+WHERE RN = 1 AND STATUS = 'Y'
 
 
 	</select>
@@ -881,6 +925,7 @@ FROM (
         BC.PRODUCT_CATEGORY_L,
         BC.PRODUCT_CATEGORY_M,
         BC.PRODUCT_CATEGORY_S,
+        BC.STATUS,
         BA.AUCTION_STARTING_FEE,
         BA.BID_UNIT,
         BA.AUCTION_START_DATE,
@@ -907,7 +952,7 @@ FROM (
     ) MAX_BID ON MAX_BID.BOARD_ID = BC.BOARD_ID
     WHERE F.CATEGORY_ID = 8 AND BC.PRODUCT_CATEGORY_S = #{smallCategory}
 )
-WHERE RN = 1
+WHERE RN = 1 AND STATUS = 'Y'
 	</select>
 	
 	<select id="selectBoardAuctionList" 
@@ -927,6 +972,7 @@ FROM (
         BC.PRODUCT_CATEGORY_L,
         BC.PRODUCT_CATEGORY_M,
         BC.PRODUCT_CATEGORY_S,
+        BC.STATUS,
         BA.AUCTION_STARTING_FEE,
         BA.BID_UNIT,
         BA.AUCTION_START_DATE,
@@ -953,10 +999,13 @@ FROM (
     ) MAX_BID ON MAX_BID.BOARD_ID = BC.BOARD_ID
     WHERE F.CATEGORY_ID = 8
 )
-WHERE RN = 1
-		<!-- <if test="location != null and location != ''">
-			 	AND BC.TRANSACTION_ADDRESS = #{location} </if>
-		-->	
+WHERE RN = 1 AND STATUS = 'Y'
+			<if test="minBid != null">
+				AND HIGHEST_BID >= #{minBid} 
+			</if> 
+			<if test="maxBid != null">
+				AND HIGHEST_BID &lt;= #{maxBid} 
+			</if> 
 			<if test="startDate != null"> 
 				AND AUCTION_START_DATE &gt;= #{startDate} 
 			</if> 
@@ -972,14 +1021,23 @@ WHERE RN = 1
 			<if test="productCategoryS != null and productCategoryS != ''"> 
 				AND PRODUCT_CATEGORY_S = #{productCategoryS} 
 			</if>
+			<if test="searchProductCategoryL != null and searchProductCategoryL != ''"> 
+				AND PRODUCT_CATEGORY_L = #{searchProductCategoryL} 
+			</if>
+			<if test="keyword != null and keword != ''"> 
+				AND (
+						PRODUCT_NAME LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_COMMENT LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_L LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_M LIKE '%' || #{keyword} || '%' OR
+						PRODUCT_CATEGORY_S LIKE '%' || #{keyword} || '%'
+					)
+			</if>
 		<choose>
 			<when test="sort == 'views'">
 				ORDER BY VIEWS DESC
 			</when>
 			<when test="sort == 'highestBid'">
-<!-- 				<choose>
-					<when test="HIGHEST_BID"
-				</choose> -->
 				ORDER BY HIGHEST_BID DESC
 			</when>
 			<otherwise>
@@ -1012,6 +1070,8 @@ WHERE RN = 1
 				column="PRODUCT_CATEGORY_M" />
 			<result property="productCategoryS"
 				column="PRODUCT_CATEGORY_S" />
+			<result property="status"
+				column="STATUS" />
 			<!-- BOARD_RENTAL 컬럼들 추가 -->
 		</association>
 		<!-- BOARD_COMMON 컬럼들 추가 -->
@@ -1091,4 +1151,17 @@ WHERE RN = 1
 	        INSERT (BOARD_ID, USER_NUM, BID)
 	        VALUES (#{boardId}, #{userNum}, #{bid})
 	</insert>
+	
+	<update id="deleteBoard" parameterType="int">
+		UPDATE BOARD_COMMON
+		SET STATUS = 'N'
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	<select id="getProductType" resultType="ProductCategories">
+		SELECT MIN(PRODUCT_CATEGORY_NUM) AS "productCategoryNum", CATEGORY_NAME AS categoryName
+		FROM PRODUCT_CATEGORY
+		WHERE CATEGORY_TIER = 0
+		GROUP BY CATEGORY_NAME
+	</select>
 </mapper>

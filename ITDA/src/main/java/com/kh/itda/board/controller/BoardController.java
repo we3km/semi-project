@@ -90,6 +90,8 @@ public class BoardController {
 			@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 			@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
 			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+			@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+			@RequestParam(value = "keyword", required = false) String keyword,			
 			@RequestParam(required = false) Integer minRentalFee, @RequestParam(required = false) Integer maxRentalFee,
 			@RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
 		Map<String, Object> filterMap = new HashMap<>();
@@ -97,11 +99,15 @@ public class BoardController {
 		filterMap.put("productCategoryL", productCategoryL);
 		filterMap.put("productCategoryM", productCategoryM);
 		filterMap.put("productCategoryS", productCategoryS);
+		filterMap.put("searchProductCategoryL", searchProductCategoryL);
+		filterMap.put("keyword", keyword);
 		filterMap.put("minRentalFee", minRentalFee);
 		filterMap.put("maxRentalFee", maxRentalFee);
 		filterMap.put("startDate", startDate);
 		filterMap.put("endDate", endDate);
-		
+		System.out.println("searchProductCategoryL파라미터 잘 받아왔나?"+searchProductCategoryL);
+		System.out.println("keyword키워드 잘 받아왔나?"+keyword);
+		System.out.println("filterMapㅍ필터맵?"+filterMap);
 		// 로그인한 유저 정보
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = auth.getPrincipal();
@@ -122,7 +128,6 @@ public class BoardController {
 		List<ProductCategory> categoryList = boardService.selectCategoryList();
 
 		model.addAttribute("categoryList", categoryList);
-		System.out.println("필터링:" + categoryList);
 
 		return "board/rentalBoard";
 	}
@@ -133,13 +138,17 @@ public class BoardController {
 			Model model, @RequestParam(defaultValue = "date") String sort,
 			@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 			@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
-			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS
+			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+			@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+			@RequestParam(value = "keyword", required = false) String keyword		
 			) {
 				Map<String, Object> filterMap = new HashMap<>();
 				filterMap.put("sort", sort);
 				filterMap.put("productCategoryL", productCategoryL);
 				filterMap.put("productCategoryM", productCategoryM);
 				filterMap.put("productCategoryS", productCategoryS);
+				filterMap.put("searchProductCategoryL", searchProductCategoryL);
+				filterMap.put("keyword", keyword);
 				
 				// 로그인한 유저 정보
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -180,12 +189,19 @@ public class BoardController {
 				@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 				@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
 				@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+				@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+				@RequestParam(value = "keyword", required = false) String keyword,		
+				@RequestParam(required = false) Integer minBid, @RequestParam(required = false) Integer maxBid,
 				@RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
 			Map<String, Object> filterMap = new HashMap<>();
 			filterMap.put("sort", sort);
 			filterMap.put("productCategoryL", productCategoryL);
 			filterMap.put("productCategoryM", productCategoryM);
 			filterMap.put("productCategoryS", productCategoryS);
+			filterMap.put("searchProductCategoryL", searchProductCategoryL);
+			filterMap.put("keyword", keyword);
+			filterMap.put("minBid", minBid);
+			filterMap.put("maxBid", maxBid);
 			filterMap.put("startDate", startDate);
 			filterMap.put("endDate", endDate);
 			
@@ -948,6 +964,22 @@ public class BoardController {
 	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
 	    }
+	}
+	
+	
+	@PostMapping("delete/{boardCategory}/{boardId}")
+	public String deleteBoard(
+			@PathVariable int boardId,
+			@PathVariable String boardCategory,
+			RedirectAttributes redirectAttributes
+			) {
+	    try {
+	        boardService.deleteBoard(boardId);
+	        redirectAttributes.addFlashAttribute("message", "게시물이 삭제되었습니다.");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("message", "삭제 중 오류가 발생했습니다.");
+	    }
+	    return "redirect:/board/"+boardCategory+"/list";
 	}
 	
 }

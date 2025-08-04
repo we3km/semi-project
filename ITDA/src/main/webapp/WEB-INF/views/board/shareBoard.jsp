@@ -235,13 +235,6 @@
 				<option value="views">조회수 순</option>
 			</select>
 
-<!-- 			<div class="filter-section">
-				<h4>지역</h4>
-				<label><input type="checkbox"> 강남</label> <label><input
-					type="checkbox"> 강서</label> <label><input type="checkbox">
-					강동</label> <label><input type="checkbox"> 강북</label>
-			</div> -->
-
 			<div class="filter-section">
 			  <div class="category-area">
 			    <label>상품 카테고리</label>
@@ -388,8 +381,6 @@
 		<div class="top">
 			<div>
 				<h2>나눔 게시판</h2>
-				<span class="location">서울특별시 강남구 📍</span>
-				<!-- 로그인한 회원의 주소 -->
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
 			<button id="write-btn">거래 글 쓰기</button>

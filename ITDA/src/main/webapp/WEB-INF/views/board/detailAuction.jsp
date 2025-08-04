@@ -200,8 +200,6 @@ body {
 					<fmt:formatDate value="${board.boardAuction.auctionEndDate }"
 						pattern="yyyy/MM/dd" />
 				</div>
-				<div class="location">지역 :
-					${board.boardCommon.transactionAddress}</div>
 				<div class="keywords">
 					<c:forEach var="tag" items="${tags}">
 						<span>#${tag}</span>
@@ -249,8 +247,9 @@ body {
 					</script>
 					<!-- 게시자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum eq board.boardCommon.userNum}">
-						<button>수정</button>
-						<button>삭제</button>
+						<form action="${pageContext.request.contextPath}/board/delete/auction/${board.boardCommon.boardId}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+						    <button type="submit">삭제</button>
+						</form>
 					</c:if>
 					
 					<!-- 게시가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->

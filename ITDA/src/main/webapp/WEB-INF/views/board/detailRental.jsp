@@ -189,8 +189,6 @@ body {
 					<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 						pattern="yyyy/MM/dd" />
 				</div>
-				<div class="location">지역 :
-					${board.boardCommon.transactionAddress}</div>
 				<div class="keywords">
 					<c:forEach var="tag" items="${tags}">
 						<span>#${tag}</span>
@@ -214,8 +212,9 @@ body {
 					
 					<!-- 게시자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum eq board.boardCommon.userNum}">
-						<button>수정</button>
-						<button>삭제</button>
+						<form action="${pageContext.request.contextPath}/board/delete/rental/${board.boardCommon.boardId}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+						    <button type="submit">삭제</button>
+						</form>
 					</c:if>
 
 					

@@ -305,11 +305,6 @@ img {
 					<option value="share" ${boardCategory == 'share' ? 'selected' : ''}>나눔</option>
 				</select>
 				
-				<!-- 위치 서비스 추가후 추가할 기능 -->
-				<div class="region">
-					거래지역 &gt; <span class="region-name">${userAddress}</span>
-				</div>
-
 				<!-- 작성 취소와 작성 완료 버튼 -->
 				<div class="buttons">
 					<button id="cancel-btn" type="button" class="cancel"

@@ -15,6 +15,7 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
+import com.kh.itda.board.model.vo.ProductCategories;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
@@ -297,6 +298,19 @@ public class BoardServiceImpl implements BoardService{
 	public void insertBiddingWinner(int boardId) {
 		boardDao.insertBiddingWinner(boardId);
 		
+	}
+
+
+	@Override
+	public void deleteBoard(int boardId) {
+		boardDao.deleteBoard(boardId);
+		
+	}
+
+
+	@Override
+	public Map<String, ProductCategories> getProductType() {
+		return boardDao.getProductType();
 	}
 
 
