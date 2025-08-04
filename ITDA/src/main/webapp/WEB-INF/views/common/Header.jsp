@@ -354,5 +354,6 @@
 
 			});
 		</script>
+		</div>
 </body>
 </html>

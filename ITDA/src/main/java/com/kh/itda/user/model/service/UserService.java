@@ -19,4 +19,8 @@ public interface UserService {
 	void updatePassword(String id, String encodedPwd);
 
 	boolean emailExists(String email);
+
+	String selectUserNickname(String userId);
+
+	String selectUserNum(String userId);
 }

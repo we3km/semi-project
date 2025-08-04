@@ -45,6 +45,7 @@ function sendMessage() {
         chatContent: message,
         chatRoomId: window.chatRoomId
     }));
+
     input.value = ""; // 입력란 비워줌
 }
 
@@ -58,12 +59,19 @@ const showMessage = msg => {
 
     const loginUserNum = Number(document.body.dataset.usernum); // 로그인 유저 번호
 
+    // 회원 정보 받아서 보내주자
+    fetch("${contextPath}/chat/getSenderInfo?userNum=" + loginUserNum)
+        .then(response => {
+            if (!response.ok) throw new Error("메세지 발신자 정보 확인 불가");
+            return response.json();
+        })
+        .then()
+
     if (msg.userNum === loginUserNum) {
         newMessage.className = 'chat-message-sent';  // 내가 보낸 메시지 (오른쪽)
     } else {
         newMessage.className = 'chat-message-received'; // 상대방 메시지 (왼쪽)
     }
-    // const contentDiv = document.createElement('div');
 
     // 텍스트 형식이 아닌 이미지 형식일 경우
     if (msg.chatImg) {
@@ -73,6 +81,7 @@ const showMessage = msg => {
         chatImg.style.maxWidth = "200px";
         chatImg.style.borderRadius = "8px";
 
+        newMessage.textContent = msg.sentAt;
         newMessage.appendChild(chatImg);
     } else {
         msg.sentAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -80,25 +89,6 @@ const showMessage = msg => {
 
         console.log("메세지 발신자 정보 : ", msg);
     }
-
-    // newMessage.appendChild(contentDiv);
-
-    // [공통] 시간
-    // if (msg.sentAt) {
-    //     const timeDiv = document.createElement('div');
-    //     timeDiv.className = 'message-time';
-    //     timeDiv.textContent = msg.sentAt;
-    //     timeDiv.style.fontSize = '12px';
-    //     timeDiv.style.color = '#888';
-    //     timeDiv.style.marginTop = '4px';
-
-    //     newMessage.appendChild(contentDiv);
-    //     newMessage.appendChild(timeDiv);
-    //     console.log("보여질 메세지 속성 : ", msg);
-    // } else {
-    //     newMessage.appendChild(contentDiv);
-    //     console.log("보여질 메세지 속성 : ", msg);
-    // }
 
     chatContent.appendChild(newMessage);
     chatContent.scrollTop = chatContent.scrollHeight;

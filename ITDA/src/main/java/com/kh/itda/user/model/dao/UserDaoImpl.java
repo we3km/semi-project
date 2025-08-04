@@ -39,11 +39,6 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public User findUserById(String userId) {
-		return session.selectOne("user.findUserById", userId);
-	}
-
-	@Override
 	public User findUserByNum(int userNum) {
 		return session.selectOne("user.findUserByNum", userNum);
 	}
@@ -54,5 +49,15 @@ public class UserDaoImpl implements UserDao {
 		param.put("userId", userId);
 		param.put("encodedPwd", encodedPwd);
 		session.update("user.updatePassword", param);
+	}
+
+	@Override
+	public String selectUserNickname(String userId) {
+		return session.selectOne("user.selectUserNickname", userId); 
+	}
+
+	@Override
+	public String selectUserNum(String userId) {
+		return session.selectOne("user.selectUserNum", userId); 
 	}
 }

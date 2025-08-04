@@ -12,12 +12,15 @@ public interface UserDao {
 
 	int idCheck(String userId);
 
-	User findUserById(String userId); // 로그인 시 유저 조회
+	String selectUserNickname(String userId);
+
+	String selectUserNum(String userId);
+
+	// void insertUserAndAuthority(User user);
 
 	User findUserByNum(int userNum); // 로그인 외 다른 곳에서 조회
 
 	void updatePassword(String userId, String encodedPwd);
 
 	// void insertUserAndAuthority(User user);
-
 }

@@ -38,15 +38,16 @@ public class ChatStompController {
 		User loginUser = (User) authentication.getPrincipal();
 		chatMessage.setUserNum(loginUser.getUserNum());
 
-		// 회원번호 줘서 정보 받아오자
-		 // 회원 닉네임, 이미지 받아오기
-	    ChatMessage senderInfo = service.getSenderInfo(loginUser.getUserNum());
+		// 회원번호 줘서 정보 받아오자	
+		// 회원 닉네임, 이미지 받아오기
+//	    ChatMessage senderInfo = service.getSenderInfo(loginUser.getUserNum());
 	    
-	    chatMessage.setNickName(senderInfo.getNickName());  
-	    chatMessage.setChatImg(senderInfo.getChatImg());   
-
-	    log.info("보내는 사람 닉네임: {}", chatMessage.getNickName());
-	    log.info("보내는 사람 이미지: {}", chatMessage.getChatImg());
+	    // 이미지 속성 할당
+//	    chatMessage.setNickName(senderInfo.getNickName());  
+//	    chatMessage.setChatImg(senderInfo.getChatImg());   	
+//
+//	    log.info("보내는 사람 닉네임: {}", chatMessage.getNickName());
+//	    log.info("보내는 사람 이미지: {}", chatMessage.getChatImg());
 		
 		log.info("보내는 사람 정보 : {}", loginUser);
 		log.info("채팅 정보 : {}", chatMessage);

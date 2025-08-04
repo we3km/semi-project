@@ -205,6 +205,8 @@ body {
 				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
 				<div class="buttons">
 					<!-- 연결해야함 -->
+<<<<<<< HEAD
+=======
 					<c:if test="${userNum ne board.boardCommon.userNum}">
 						<button>메시지 보내기</button>
 						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
@@ -217,7 +219,9 @@ body {
 						<button>수정</button>
 						<button>삭제</button>
 					</c:if>
-					
+>>>>>>> main
+
+
 					<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
 						보내기</button>
 					<!-- 채팅방 리스트 이동 -->
@@ -230,6 +234,7 @@ body {
 					        console.log("contextPath: ", contextPath);
 					        console.log("현재 게시판 번호 : ", boardId);
 					
+<<<<<<< HEAD
 					        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
 					            method: "GET"
 					        })
@@ -260,6 +265,8 @@ body {
 					<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
 						<i class="fa fa-heart"></i> 찜하기
 					</button>
+=======
+>>>>>>> main
 					<!-- 연결해야함 -->
 					<button>신고하기</button>
 				</div>

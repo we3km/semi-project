@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -40,6 +41,7 @@ public class ChatController {
 	@Autowired
 	private ChatService chatService;
 
+	// 로그인 한 회원이 접속중인 채팅방 보여줌
 	@GetMapping("/chatRoomList")
 	public String selectChatRoomList(Model model, Authentication authentication) {
 
@@ -59,6 +61,18 @@ public class ChatController {
 		return "chat/chatRoomList"; // /WEB-INF/views/chat/chatRoomList.jsp
 	}
 
+	// 현재 로그인한 회원 번호 보내서 회원 정보 가져오기
+	@GetMapping("/getSenderInfo")
+	@ResponseBody
+	public Map<String, Object> getSenderInfo(int userNum, Authentication authentication) {		
+		ChatMessage senderInfo = chatService.getSenderInfo(userNum);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nickName", senderInfo.getNickName());
+		map.put("chaImg", senderInfo.getChatImg());
+		return map;
+	}
+	
 	// 게시판 정보 불러오기
 	@GetMapping("/selectBoardInfo")
 	@ResponseBody

@@ -239,6 +239,40 @@ body {
 					        .catch(err => console.error("오류 발생:", err));
 					    } 
 					</script>
+	
+				</div>
+				<div class="location">지역 :
+					${board.boardCommon.transactionAddress}</div>
+				<div class="keywords">
+					<c:forEach var="tag" items="${tags}">
+						<span>#${tag}</span>
+					</c:forEach>
+				</div>
+				
+				<!-- 게시자의 매너 정보 -->
+				<div class="seller-info">
+					<strong>${writer} </strong>
+					<p>매너점수 : ${mannerScore }</p>
+				</div>
+				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
+				<div class="buttons">
+					<!-- 연결해야함 -->
+					<c:if test="${userNum ne board.boardCommon.userNum}">
+						<button>메시지 보내기</button>
+						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+  							<i class="fa fa-heart"></i> 찜하기
+						</button>
+					</c:if>
+					
+					<!-- 게시자가 상세보기에 들어왔을 때 -->
+					<c:if test="${userNum eq board.boardCommon.userNum}">
+						<button>수정</button>
+						<button>삭제</button>
+					</c:if>
+					
+					<!-- 연결해야함 -->
+					<button>신고하기</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -249,7 +283,7 @@ body {
           	type: 'POST',
           	url: '${pageContext.request.contextPath}/board/addDibs',
           	data: {
-          	  userId: 1,
+          	  userId: '${userNum}',
           	  boardId: '${boardId}',
           	  boardCategory: 'share'
          	 },
@@ -340,7 +374,11 @@ body {
 				  	}
 				 </script>
 		</div>
+<<<<<<< HEAD
 	</div>
 	</div>
+=======
+	
+>>>>>>> main
 </body>
 </html>
