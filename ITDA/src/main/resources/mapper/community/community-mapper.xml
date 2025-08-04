@@ -202,7 +202,7 @@
 	        #{communityContent},
 	        #{communityCd},
 	        #{communityWriter},
-	        SYSDATE
+	        #{writeDate}
 	    )
 	
 	    <selectKey keyProperty="communityNo" resultType="_int" order="AFTER">
@@ -363,10 +363,10 @@
 <select id="selectUserReaction" resultType="communityReaction">
     SELECT 
     	REACTION_NUM as reactionNo,
-        REACTION_USER_NUM as userNo,
+        REACTION_USER_NUM as userNum,
         REACTION_TYPE as type
     FROM REACTION 
-    WHERE REACTION_USER_NUM = #{userNo} 
+    WHERE REACTION_USER_NUM = #{userNum} 
       AND TARGET_ID = #{communityNo}
       AND TARGET_TYPE = 'CONTENT'
 </select>
@@ -377,7 +377,7 @@
         REACTION_NUM, REACTION_USER_NUM, TARGET_TYPE, TARGET_ID, REACTION_TYPE
     ) VALUES (
         REACTION_SEQ.NEXTVAL,
-        #{userNo},
+        #{userNum},
         'CONTENT',
         #{communityNo},
         #{type}
@@ -388,7 +388,7 @@
 <update id="updateReaction" parameterType="communityReaction">
     UPDATE REACTION
     SET REACTION_TYPE = #{type}
-    WHERE REACTION_USER_NUM = #{userNo}
+    WHERE REACTION_USER_NUM = #{userNum}
       AND TARGET_ID = #{communityNo}
        AND TARGET_TYPE = 'CONTENT'
 </update>
@@ -396,7 +396,7 @@
 <!-- 반응 삭제 -->
 <delete id="deleteReaction" parameterType="communityReaction">
     DELETE FROM REACTION
-    WHERE REACTION_USER_NUM = #{userNo}
+    WHERE REACTION_USER_NUM = #{userNum}
       AND TARGET_ID = #{communityNo}
        AND TARGET_TYPE = 'CONTENT'
 </delete>
@@ -423,7 +423,66 @@
 	WHERE COMMUNITY_BOARD_ID = #{communityNo}
 </delete>
 
+<!-- 댓글 -->
+<select id="selectCommentList" parameterType="_int" resultType="boardComment">
+    SELECT
+        BC.BOARD_CMT_ID         AS boardCmtId,
+        BC.BOARD_CMT_CONTENT    AS boardCmtContent,
+        BC.CMT_WRITE_DATE       AS cmtWriteDate,
+        BC.REF_NO               AS refNo,
+        BC.CMT_WRITER_USER_NUM  AS cmtWriterUserNum,
+        U.NICK_NAME             AS nickName,        
+        BC.REF_COMMENT_ID       AS refCommentId
+    FROM BOARD_COMMENT BC
+    JOIN USER_TB U ON BC.CMT_WRITER_USER_NUM = U.USER_NUM
+    WHERE BC.REF_NO = #{communityNo}
+      AND BC.BOARD_ASSORTMENT = 5
+      AND STATUS = 'Y'
+    ORDER BY BC.CMT_WRITE_DATE ASC
+</select>
 
+<insert id="insertComment" parameterType="boardComment">
+    INSERT INTO BOARD_COMMENT (
+        BOARD_CMT_ID,
+        BOARD_CMT_CONTENT,
+        REF_NO,
+        CMT_WRITER_USER_NUM,
+        BOARD_ASSORTMENT,
+        CMT_WRITE_DATE,
+        REF_COMMENT_ID
+    ) VALUES (
+        BOARD_COMMENT_SEQ.NEXTVAL,
+        #{boardCmtContent},
+        #{refNo},
+        #{cmtWriterUserNum},
+        5, -- 커뮤니티 게시글
+        #{cmtWriteDate},
+        
+         <choose>
+            <when test="refCommentId > 0">
+                #{refCommentId}
+            </when>
+            <otherwise>
+               	NULL
+            </otherwise>
+        </choose>
+        
+    )
+</insert>
 
+<select id="selectComment" parameterType="_int" resultType="boardComment">
+    SELECT
+        BOARD_CMT_ID AS boardCmtId,
+        CMT_WRITER_USER_NUM AS cmtWriterUserNum
+    FROM BOARD_COMMENT
+    WHERE BOARD_CMT_ID = #{commentNo}
+</select>
+
+<!-- 댓글 삭제 -->
+<update id="deleteComment" parameterType="_int">
+    UPDATE BOARD_COMMENT
+    SET STATUS = 'N'
+    WHERE BOARD_CMT_ID = #{commentNo}
+</update>
 
 </mapper>

@@ -3,6 +3,8 @@ package com.kh.itda.community.model.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.itda.common.model.vo.BoardComment;
+import com.kh.itda.common.model.vo.BoardCommentExt;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
@@ -30,9 +32,15 @@ public interface CommunityService {
 
 	int getDislikeCount(int communityNo);
 
-	CommunityReaction userReactionNo(int userNo, int communityNo);
+	CommunityReaction userReactionNo(int userNum, int communityNo);
 
-	int deleteCommunity(int communityNo, int userNo);
+	int deleteCommunity(int communityNo, int userNum);
+
+	List<BoardCommentExt> selectCommentList(int communityNo);
+
+	int insertComment(BoardComment comment);
+
+	int deleteComment(int commentNo, int userNo);
 
 	
 
