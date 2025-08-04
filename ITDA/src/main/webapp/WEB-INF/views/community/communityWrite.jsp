@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
+	<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,18 +40,26 @@
 		<!-- 상단 타이틀 / 위치 영역 -->
 		<div class="top-title">
 			<span class="community-title"><strong style="color: #7f8cff;">커뮤니티</strong>
-				글쓰기</span> | <span class="location">활동지역 &gt; <span
-				class="highlight">서울특별시 강남구</span> 📍
-			</span>
+				${c.communityNo > 0 ? '글수정' : '글작성'} </span>
 		</div>
 		<hr>
 
 		<div class="form-container">
-			<form:form modelAttribute="c" action="${pageContext.request.contextPath}/community/insert"
+			<c:set var="isUpdate" value="${c.communityNo > 0}" />
+	    	<c:set var="formAction" value="${isUpdate ? 'update' : 'insert'}" />
+			
+			<form:form modelAttribute="c" action="${pageContext.request.contextPath}/community/${formAction}"
 				id="enrollForm" method="post" enctype="multipart/form-data">
+				
+				<c:if test="${isUpdate}">
+		            <form:hidden path="communityNo"/>
+		        </c:if>
+		        
 				<div class="write-buttons">
 					<button type="button" class="btn-cancel" id="cancelBtn">작성 취소</button>
-					<button type="submit" class="btn-submit" id="submitBtn">작성 완료</button>
+					<button type="submit" class="btn-submit" id="submitBtn">
+		               ${isUpdate ? '수정 완료' : '작성 완료'}
+		            </button>
 				</div>
 
 				<!-- 카테고리 -->
@@ -58,9 +67,7 @@
 			    <label>카테고리 선택</label>
 			    <form:select path="communityCd" cssClass="select-category" id="category" required="required">
 				  <form:option value="">카테고리 선택</form:option>
-				  <%-- <c:forEach var="entry" items="${communityTypeMap}">
-				    <form:option value="${entry.key}">${entry.value.communityName}</form:option>
-				  </c:forEach> --%>
+				  
 				  <c:forEach var="entry" items="${applicationScope.communityTypeMap}">
             			<c:if test="${entry.key ne 'all'}">
             				<form:option value="${entry.key}">${entry.value.communityName}</form:option>
@@ -99,10 +106,19 @@
 				<!-- 첨부파일 -->
 				<div class="form-group file-group">
 				    <label>첨부파일</label>
-				    
+				   
 				    <div class="file-attach-area">
 				        <div id="file-list-display" class="file-list-display">
-				            </div>
+				        	 <c:if test="${isUpdate and not empty c.imgList}">
+		                        <c:forEach items="${c.imgList}" var="img">
+		                            <div class="file-preview-item existing">
+		                                <img src="${pageContext.request.contextPath}${img.changeName}">
+		                                <span class="file-name">${img.originName}</span>
+		                                <span class="remove-existing-file" data-img-no="${img.communityImgNo}">&times;</span>
+		                            </div>
+		                        </c:forEach>
+		                    </c:if>
+				        </div>
 				
 				        <label for="fileInput" class="file-label">파일선택</label>
 				        <input type="file" id="fileInput" name="upfile" multiple accept="image/*" style="display: none;">
@@ -113,158 +129,113 @@
 
 	</div>
 
-	<%-- communityWrite JavaScript 파일 불러오기--%>
-	<%-- <script src="${pageContext.request.contextPath}/resources/js/communityWrite.js"></script> --%>
 	<script>
 	$(document).ready(function () {
+		const contextPath = "${pageContext.request.contextPath}";
+		const form = $('#enrollForm');
 	
-	    const $cancelBtn = $('#cancelBtn');
-	    const $submitBtn = $('#submitBtn');
-	
+	    const isUpdate = ${not empty c.communityNo};
+	    
+	    //=========================================태그=========================================
 	    //태그 관련 변수
 	    let tags = [];
 	    const $tagInput = $('#tagInput');
 	    const $tagList = $('#tagList');
 	    
-	    const $fileInput = $('#fileInput');
-	    const $fileNameSpan = $('#fileName');
-	
-	
-	    // 작성 취소
-	    $cancelBtn.on('click', function () {
-	        if (confirm('작성을 취소하시겠습니까? 변경사항이 저장되지 않습니다.')) {
-	        	location.href = '${pageContext.request.contextPath}/community/list/all';
-	        }
-	    });
-	
-	    // 작성 완료 → 그냥 form 전송
-	    $submitBtn.on('click', function () {
-	        $('#enrollForm').submit();
-	    });
-	
-	    // 태그 입력
+	 	// 수정 모드
+	    if (isUpdate) {
+	        <c:if test="${not empty c.tags}">
+	            <c:forEach var="tag" items="${c.tags}">
+	                // 1) JavaScript 배열에 태그 이름을 추가합니다.
+	                tags.push("${fn:escapeXml(tag.tagContent)}");
+
+	                // 2) 화면에 태그 요소를 만들어서 보여줍니다.
+	                const $tag = $('<span class="tag"></span>');
+	                const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', "${fn:escapeXml(tag.tagContent)}");
+	                $tag.text('#' + "${fn:escapeXml(tag.tagContent)}").append($removeBtn);
+	                $tagList.append($tag);
+	            </c:forEach>
+	        </c:if>
+	    }
+	    
+	 	// 태그 입력 (엔터 키)
 	    $tagInput.on('keypress', function (e) {
 	        if (e.which === 13) {
-	            e.preventDefault();	// 폼 전송 막기
-	            
+	            e.preventDefault();
 	            const newTag = $(this).val().trim();
+	            if (newTag === '') { return alert('태그 내용을 입력해주세요.'); }
+	            if (tags.includes(newTag)) { return alert('이미 추가된 태그입니다.'); }
+	            if (tags.length >= 5) { return alert("태그는 최대 5개까지 추가할 수 있습니다."); }
 	            
-	            
-	            
-	         	// 유효성 검사
-	            if (newTag === '') {
-	                alert('태그 내용을 입력해주세요.');
-	                return;
-	            }
-	            if (tags.includes(newTag)) {
-	                alert('이미 추가된 태그입니다.');
-	                $(this).val('');	//중복시 지우기
-	                return;
-	            }
-	            if (tags.length >= 5) { // 태그는 최대 5개까지로 제한 (원하시면 숫자 변경)
-	                alert("태그는 최대 5개까지 추가할 수 있습니다.");
-	                return;
-	            }
-	            
-	         	// 태그 배열 및 화면에 추가
 	            tags.push(newTag);
-	         	
-	            /* const tagElement = `
-	                <span class="tag">
-	                    #
-	                    ${newTag}
-	                    <span class="remove-tag" data-tag="${newTag}">&times;</span>
-	                </span>
-	            `;
-	            $tagList.append(tagElement); */
-	         	// 1. <span> 태그를 jQuery 객체로 직접 생성합니다.
 	            const $tag = $('<span class="tag"></span>');
-	
-	            // 2. 'X' 버튼(span)을 만들고, data-tag 속성에 newTag 값을 넣습니다.
 	            const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', newTag);
-	
-	            // 3. <span> 태그의 텍스트를 '#[태그내용]' 으로 설정하고, 그 뒤에 X 버튼을 추가합니다.
 	            $tag.text('#' + newTag).append($removeBtn);
-	
-	            // 4. 완성된 태그 요소를 화면에 추가합니다.
 	            $tagList.append($tag);
-	            
-	            // 입력창 비우기
 	            $(this).val('');
 	        }
 	    });
-	
-	 	// 2. 태그 삭제 (X 버튼 클릭)
+	 	
+	 	// 태그 삭제 (X 버튼 클릭)
 	    $(document).on('click', '.remove-tag', function () {
 	        const tagToRemove = $(this).data('tag');
-	        
-	        // 배열에서 해당 태그 제거
 	        tags = tags.filter(t => t !== tagToRemove);
-	        
-	        // 화면에서 해당 태그 요소 제거
 	        $(this).parent().remove();
 	    });
-	 	
-	 	// 3. 폼 전송 시 태그 데이터 넘기기 (작성 완료 버튼 클릭)
-	    $('#submitBtn').on('click', function (e) {
-	        e.preventDefault(); // 폼의 자동 전송을 일단 막음
-	
-	        // tags 배열을 쉼표(,)로 구분된 하나의 문자열로 변환합니다.
-	        const tagString = tags.join(',');
-	        
-	        
-	    	 // hidden input 필드가 form 안에 있는지 확인해주세요.
-	        if ($('#tagHiddenInput').length === 0) {
-	            // form 안에 hidden input이 없으면 동적으로 추가
-	             $('#enrollForm').append('<input type="hidden" id="tagHiddenInput" name="tagStr">');
-	        }
-	        
-	        
-	        // 이전에 추가했던 hidden input에 합쳐진 태그 문자열을 값으로 설정합니다.
-	        $('#tagHiddenInput').val(tagString);
-	
-	        // 이제 폼을 전송합니다.
-	        $('#enrollForm').submit();
-	    })
 	    
-	    // 작성 취소 버튼
-	    $('#cancelBtn').on('click', function () {
-	        if (confirm('작성을 취소하시겠습니까? 변경사항이 저장되지 않습니다.')) {
-	            location.href = contextPath + '/community/list/all';
-	        }
-	    });
 	 	
-		//이미지 미리보기
+	 	//===============================이미지=====================================
+	 	// 기존 이미지 삭제 (수정 모드일 때만)
+	    $('#file-list-display').on('click', '.remove-existing-file', function() {
+	        const imgNo = $(this).data('img-no');
+	        $(this).parent('.file-preview-item').remove();
+	        // 삭제할 이미지 번호를 form에 hidden input으로 추가
+	        form.append(`<input type="hidden" name="deleteImgNos" value="${imgNo}">`);
+	    });
+	
+	    // 새 파일 선택 시 미리보기
 	    $('#fileInput').on('change', function(event) {
 	        const files = event.target.files;
 	        const fileListDisplay = $('#file-list-display');
-
-	        // 목록 초기화
-	        fileListDisplay.empty();
-
+	        
+	        // 이전에 추가됐던 '새로운' 파일 미리보기만 삭제 (기존 파일은 유지)
+	        fileListDisplay.find('.file-preview-item:not(.existing)').remove();
+	
 	        if (files.length > 0) {
 	            Array.from(files).forEach(file => {
 	                const reader = new FileReader();
-
 	                reader.onload = function(e) {
-	                    // 각 파일을 감싸는 div 생성
 	                    const fileItem = $('<div class="file-preview-item"></div>');
-	                    
-	                    // 이미지 미리보기 생성
 	                    const img = $('<img>').attr('src', e.target.result);
-	                    
-	                    // 파일명 span 생성
 	                    const fileName = $('<span class="file-name"></span>').text(file.name);
-	                    
-	                    // div 안에 이미지와 파일명을 추가하고, 최종적으로 화면에 추가
 	                    fileItem.append(img).append(fileName);
 	                    fileListDisplay.append(fileItem);
 	                };
-
 	                reader.readAsDataURL(file);
 	            });
 	        }
 	    });
+	 	
+	    
+	    //================================= 폼 전송 & 취소 ===========================================
+	    // 폼 전송 시, 태그 데이터를 hidden input에 담아 함께 보냄
+	    $('#enrollForm').on('submit', function() {
+	        const tagString = tags.join(',');
+	        if ($('#tagHiddenInput').length === 0) {
+	            form.append('<input type="hidden" id="tagHiddenInput" name="tagStr">');
+	        }
+	        $('#tagHiddenInput').val(tagString);
+	    });
+	    
+	    // 작성 취소 버튼
+	    $('#cancelBtn').on('click', function () {
+	        if (confirm('작성을 취소하시겠습니까?')) {
+	            history.back(); // 이전 페이지(목록 또는 상세보기)로 이동
+	        }
+	    });	
+	 	
+	 	
+	    
 	});
 </script>
 

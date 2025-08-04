@@ -41,13 +41,6 @@
 			<h3>정렬 조건</h3>
 			<div class="filter">
 				<p>
-					<strong>지역</strong>
-				</p>
-				<label><input type="checkbox" name="region" value="서울특별시"> 서울특별시</label> 
-				<label><input type="checkbox" name="region" value="경기도"> 경기도</label> 
-				<label><input type="checkbox" name="region" value="인천"> 인천</label>
-
-				<p>
 					<strong>정렬순</strong>
 				</p>
 				<label><input type="radio" name="sort" value="latest" ${empty param.sort || param.sort == 'latest' ? 'checked' : ''}> 최신순</label> 

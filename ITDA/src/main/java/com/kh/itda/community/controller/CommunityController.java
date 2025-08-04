@@ -123,10 +123,10 @@ public class CommunityController {
 	// 게시판 등록폼 이동 서비스
 	@GetMapping("/insert")
 	public String enrollForm(
-			@ModelAttribute Community c, /* @PathVariable("communityCode") String communityCode, */
+			@ModelAttribute("c") CommunityExt c, /* @PathVariable("communityCode") String communityCode, */
 			Model model) {
-		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
-	    model.addAttribute("communityTypeMap", communityTypeMap);
+//		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
+//	    model.addAttribute("communityTypeMap", communityTypeMap);
 		model.addAttribute("c", c);
 		return "community/communityWrite";
 	}
@@ -334,11 +334,67 @@ public class CommunityController {
 		return "redirect:/community/list/all";
 	}
 	
+	//게시글 수정
+	@GetMapping("/update/{communityNo}")
+	public String updateForm(
+							@PathVariable("communityNo") int communityNo,
+							Model model
+							) {
+		CommunityExt community = communityService.selectCommunity(communityNo);
+		
+		community.setCommunityContent(Utils.newLineClear(community.getCommunityContent()));
+		
+		model.addAttribute("c",community);
+		
+		return "community/communityWrite";
+	}
+	
+	//게시글 수정 반영
+	@PostMapping("/update")
+	public String updateCommunity(
+									@ModelAttribute("c") CommunityExt c,
+									@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles,
+									@RequestParam(value="deleteImgNos", required=false) List<Integer> deleteImgNos,
+									RedirectAttributes ra
+								) {
+		
+		System.out.println("### [디버깅] updateCommunity 메소드 시작. 전달받은 communityNo: " + c.getCommunityNo());
+		
+		List<CommunityImg> imgList = new ArrayList<>();
+		if(upfiles != null) {
+			for (MultipartFile upfile : upfiles) {
+				if (upfile != null && !upfile.isEmpty()) {
+					// 파일을 서버에 저장하고, CommunityImg 객체로 만들어 리스트에 추가
+					String folderName = "community/" + c.getCommunityCd();
+					String changeName = Utils.saveFileToCategoryFolder(upfile, application, folderName);
+					
+					CommunityImg ci = new CommunityImg();
+					ci.setChangeName(changeName);
+					ci.setOriginName(upfile.getOriginalFilename());
+					// 이미지 레벨이나 참조 게시글 번호는 서비스에서 설정
+					imgList.add(ci);
+				}
+			}
+		}
+		
+		int result = communityService.updateCommunity(c, imgList, deleteImgNos);
+		
+		if(result > 0) {
+			ra.addFlashAttribute("alertMsg","게시글이 성공적으로 수정되었습니다.");
+		}else {
+			ra.addFlashAttribute("alertMsg","게시글 수정에 실패했습니다.");
+		}
+		return "redirect:/community/detail/" + c.getCommunityCd() + "/" + c.getCommunityNo();
+	}
+	
 	// 댓글 목록 조회 (AJAX) - Service에서 계층형으로 처리된 데이터를 반환
 	@GetMapping(value="/comments/{communityNo}", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public List<BoardCommentExt> ajaxSelectCommentList(@PathVariable("communityNo") int communityNo) {
-	    return communityService.selectCommentList(communityNo);
+	public List<BoardCommentExt> ajaxSelectCommentList( @PathVariable("communityNo") int communityNo,
+														@RequestParam(value="sort", defaultValue="asc") String sort
+													  ) {
+		System.out.println("정렬 : "+ sort +" communityNo : " + communityNo);
+	    return communityService.selectCommentList(communityNo, sort);
 	}
 
 	// 댓글 등록 (AJAX)

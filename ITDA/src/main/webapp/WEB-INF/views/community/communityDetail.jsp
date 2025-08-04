@@ -5,6 +5,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,7 +53,11 @@
         <!-- 게시글 정보 -->
         <!--작성자, 작성일, 조회수, 추천수, 댓글수-->
         <div class="meta-row">
-            <div class="left">작성자 ${community.communityNickname} · 작성일 <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" /></div>
+            <div class="left">작성자 : ${community.communityNickname} | 작성일 : <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" />
+            	<c:if test="${not empty community.editDate}">
+		            <span class="edit-date">| 수정일: <fmt:formatDate value="${community.editDate}" pattern="yyyy-MM-dd HH:mm" /></span>
+		        </c:if>
+            </div>
             <div class="right">
                 <span>조회수 <span id="views">${community.views}</span> </span>
                 <span>추천 <span id="recommendCount"> ${community.recommendCount} </span></span>
@@ -77,6 +83,10 @@
 				<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/community/delete">
 			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
 			        <button type="submit" class="delete-btn">삭제하기</button>
+			    </form>
+			    <form id="editForm" method="get" action="${pageContext.request.contextPath}/community/update/${community.communityNo}">
+			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
+			        <button type="submit" class="edit-btn">수정하기</button>
 			    </form>
 			</div>
         </div>
@@ -139,20 +149,42 @@
         <!-- 댓글 리스트 영역 추가-->
         <div id="commentList"></div> 
         
-        <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
+         <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
+       
+        
     </div>
     
     
 		<script>
 		const userReaction = "${userReaction}";
-	    const communityNo = "${community.communityNo}";
-	    const communityCd = "${communityCd}";
-	    const loginUserNum = "${loginUserNum}";
+		const communityNo = "${community.communityNo}";
+	    const communityCd = "${community.communityCd}";
+	    const loginUserNum = '<sec:authentication property="principal.userNum" />';
 		const communityWriter = "${community.communityWriter}";
+		
+		let currentSort = 'asc';
 		
 	    $(document).ready(function(){
 	    	//댓글목록 불러오기
 	    	selectCommentList();
+	    	
+	    	// 댓글 정렬
+	    	$('.tabs div').on('click',function(){
+				$('.tabs div').removeClass('active');
+				$(this).addClass('active');
+				
+				const sortType= $(this).text();
+				if(sortType === '최신순'){
+					currentSort = 'desc';
+				}else if(sortType === '답글순'){
+					currentSort = 'reply';
+				}else{
+					currentSort = 'asc';
+				}
+				
+				selectCommentList();
+			});
+			
 	    	
 	    	//이미지 초기설정
 	    	 if (userReaction === 'LIKE') {
@@ -197,21 +229,38 @@
 					$urlInput.prop('readonly', true); // 다시 readonly로 복구
 					alert('URL이 복사되었습니다!');
 				});
-				// sub-btn 클릭 → 삭제 버튼 토글
+				// sub-btn 클릭 → 삭제/수정 버튼 토글
 				$('.sub-btn').click(function () {
 					$('#deleteToggleArea').toggle();
 					$('#sharePopup').hide();   
 				});
+				
+				// 게시글 삭제
 				$('#deleteForm').on('submit',function(e){
 					if(!loginUserNum || loginUserNum !== communityWriter){
 						e.preventDefault();
 						alert('삭제 권한이 없습니다.');
+						console.log("로그인 유저 : "+ loginUserNum +", 게시글 작성자 : "+communityWriter);
 						return;
 					}
 					if(!confirm('정말로 이 게시글을 삭제하시겠습니까?')){
 						e.preventDefault();
 					}
 				});
+				
+				//게시글 수정
+				$('#editForm').on('submit',function(e){
+					if(!loginUserNum || loginUserNum !== communityWriter){
+						e.preventDefault();
+						console.log("로그인 유저 : "+ loginUserNum +", 게시글 작성자 : "+communityWriter);
+						alert('수정 권한이 없습니다.');
+						return;
+					}
+					if(!confirm('정말로 이 게시글을 수정하시겠습니까?')){
+						e.preventDefault();
+					}
+				});
+				
 				$(document).click(function (event) {
 				    if (!$(event.target).closest('.share-btn, #sharePopup, .sub-btn, #deleteToggleArea').length) {
 				        $('#sharePopup').hide();
@@ -219,18 +268,24 @@
 				    }
 				});
 				
+				
 	    });
 			 
 	    
 			// 좋아요·싫어요 보내기
 		    function sendReaction(type) {
+		    	const dataToSend = {
+		    	        communityNo: communityNo, 
+		    	        communityCd: communityCd, 
+		    	        type: type
+		    	    };
 		        $.ajax({
 		            type: "POST",
 		            url: "${pageContext.request.contextPath}/community/react",
 		            contentType: "application/json",
 		            data: JSON.stringify({
-		                communityNo: ${community.communityNo},
-		                communityCd: "${communityCd}",
+		            	communityNo: parseInt(communityNo), 
+		                communityCd: communityCd,
 		                type: type
 		            }),
 		            success: function (res) {
@@ -259,12 +314,18 @@
 			
 			//댓글 목록 조회
 		    function selectCommentList() {
+				console.log("현재 정렬 타입"
+						+currentSort);
 		        $.ajax({
 		            url: "${pageContext.request.contextPath}/community/comments/" + communityNo,
 		            type: "GET",
 		            dataType: "json",
+		            data : {
+		            	sort : currentSort
+		            },
 		            success: function(commentTree) { // 서버로부터 계층형 댓글 목록(List<BoardCommentExt>)을 받음
 		            	
+		            	 console.log("'" + currentSort + "' 기준으로 서버로부터 받은 댓글:", commentTree);
 		            	
 		                const $commentListDiv = $('#commentList');
 		                $commentListDiv.empty(); // 기존 목록을 비움

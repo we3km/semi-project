@@ -27,9 +27,7 @@
 <body>
 <c:set var="loginUser" value="${sessionScope.loginUser}" />
 
-<script type="text/javascript">
-console.log("유저:",loginUser.userNum);
-</script>
+
 
 	<div class="container_header">
 		<!-- 좌측 로고 -->
@@ -302,7 +300,7 @@ console.log("유저:",loginUser.userNum);
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
+					location.href = "${contextpath}/itda/chat/chatRoomList";
 				});
 				//알람버튼
 				$('#alarm-icon').click(function() {

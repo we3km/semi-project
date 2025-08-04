@@ -117,39 +117,6 @@
 	
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
-	<!-- <select id="selectList" parameterType="map" resultType="community">
-	    SELECT 
-	        C.COMMUNITY_BOARD_ID AS communityNo, 
-	        C.TITLE AS communityTitle,
-	        C.COMMUNITY_CD AS communityCd,
-	        U.NICK_NAME AS communityNickname,
-	        C.WRITE_DATE AS writeDate, 
-	        C.VIEWS AS views,
-	        (
-	            SELECT COUNT(*)
-	            FROM REACTION R
-	            WHERE R.TARGET_ID = C.COMMUNITY_BOARD_ID
-	            AND R.REACTION_TYPE = 'LIKE'
-	        ) AS recommendCount
-	    FROM BOARD_COMMUNITY C
-	    LEFT JOIN USER_TB U ON C.USER_NUM = U.USER_NUM
-	    <where>
-	        </where>
-	
-	    ORDER BY
-	    <choose>
-	        <when test="sort == 'views'">
-	            VIEWS DESC
-	        </when>
-	        <when test="sort == 'likes'">
-	            recommendCount DESC
-	        </when>
-	        <otherwise>
-	            COMMUNITY_BOARD_ID DESC </otherwise>
-	    </choose>
-	
-	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
-	</select> -->
 	
 	<!-- 태그기능 -->
 	<select id="selectTagByName" parameterType="string" resultType="CommunityTag">
@@ -240,6 +207,7 @@
 			C.USER_NUM AS communityWriter,
 			U.NICK_NAME AS communityNickname,
 			C.WRITE_DATE AS writeDate,
+			C.EDIT_DATE AS editDate,
 			T.COMMUNITY_NAME AS communityCdName,
 			C.COMMUNITY_CD AS communityCd,
 			C.VIEWS AS views,
@@ -292,20 +260,28 @@
 	</select>
 
 	<!-- 게시글 조회수(Count)를 1 증가시키는 쿼리 -->
-	<update id="increaseCount">
-		UPDATE BOARD_COMMUNITY 
-		SET	VIEWS = VIEWS + 1
+	<update id="increaseCount" parameterType="community">
+		UPDATE BOARD_COMMUNITY
+		<set>
+			TITLE = #{communityTitle},
+			CONTENT = #{communityContent},
+			COMMUNITY_CD = #{communityCd},
+			EDIT_DATE = #{editDate}
+		</set>
 		WHERE COMMUNITY_BOARD_ID = #{communityNo}
 	</update>
 
-<!-- 아직안쓰는 부분 수정 쿼리-->
-	<!-- 게시글 제목과 내용을 수정할 때 사용하는 쿼리 -->
-	<update id="updateCommunity">
-		UPDATE COMMUNITY SET
-		TITLE = #{communityTitle},
-		CONTENT = #{communityContent}
-		WHERE COMMUNITY_BOARD_ID = #{communityNo}
+	<!-- 게시글 수정 -->
+	<update id="updateCommunity" parameterType="community">
+	    UPDATE BOARD_COMMUNITY
+	    <set>
+	        TITLE = #{communityTitle},
+	        CONTENT = #{communityContent}, COMMUNITY_CD = #{communityCd},
+	        EDIT_DATE = #{editDate}
+	    </set>
+	    WHERE COMMUNITY_BOARD_ID = #{communityNo}
 	</update>
+	
 	<!-- 첨부 이미지의 원본 이름과 변경 이름을 수정할 때 사용하는 쿼리 -->
 	<update id="updateCommunityImg">
 		UPDATE COMMUNITY_IMG SET
@@ -313,6 +289,23 @@
 		CHANGE_NAME = #{changeName}
 		WHERE COMMUNITY_IMG_NO = #{communityImgNo}
 	</update>
+	
+	<select id="selectChangeNamesByIds" parameterType="java.util.List" resultType="string">
+		SELECT CHANGE_NAME
+		FROM COMMUNITY_IMG
+		WHERE COMMUNITY_IMG_NO IN
+		<foreach collection="list" item="imgNo" open="(" separator="," close=")">
+			#{imgNo}
+		</foreach>
+	</select>
+	
+	<delete id="deleteImgsByIds" parameterType="java.util.List">
+		DELETE FROM COMMUNITY_IMG
+		WHERE COMMUNITY_IMG_NO IN
+		<foreach collection="list" item="imgNo" open="(" separator="," close=")">
+			#{imgNo}
+		</foreach>
+	</delete>
 
 	<!-- 게시글 첨부 이미지 한 건을 등록할 때 사용하는 INSERT 구문 -->
 	<!-- 단일 이미지 등록용 -->
@@ -424,7 +417,7 @@
 </delete>
 
 <!-- 댓글 -->
-<select id="selectCommentList" parameterType="_int" resultType="boardComment">
+<select id="selectCommentList" parameterType="map" resultType="boardComment">
     SELECT
         BC.BOARD_CMT_ID         AS boardCmtId,
         BC.BOARD_CMT_CONTENT    AS boardCmtContent,
@@ -432,13 +425,33 @@
         BC.REF_NO               AS refNo,
         BC.CMT_WRITER_USER_NUM  AS cmtWriterUserNum,
         U.NICK_NAME             AS nickName,        
-        BC.REF_COMMENT_ID       AS refCommentId
+        BC.REF_COMMENT_ID       AS refCommentId,
+        (
+            SELECT COUNT(*)
+            FROM BOARD_COMMENT R
+            WHERE R.REF_COMMENT_ID = BC.BOARD_CMT_ID
+        ) AS replyCount
     FROM BOARD_COMMENT BC
     JOIN USER_TB U ON BC.CMT_WRITER_USER_NUM = U.USER_NUM
     WHERE BC.REF_NO = #{communityNo}
       AND BC.BOARD_ASSORTMENT = 5
       AND STATUS = 'Y'
-    ORDER BY BC.CMT_WRITE_DATE ASC
+      
+    START WITH REF_COMMENT_ID IS NULL 
+    CONNECT BY PRIOR BOARD_CMT_ID = REF_COMMENT_ID
+    
+    ORDER SIBLINGS BY 
+		<choose>
+			<when test="sort.equals('desc')">
+				CMT_WRITE_DATE DESC
+			</when>
+			<when test="sort.equals('reply')">
+				 replyCount DESC, CMT_WRITE_DATE ASC
+			</when>
+			<otherwise>
+				CMT_WRITE_DATE ASC
+			</otherwise>
+		</choose>
 </select>
 
 <insert id="insertComment" parameterType="boardComment">
@@ -484,5 +497,13 @@
     SET STATUS = 'N'
     WHERE BOARD_CMT_ID = #{commentNo}
 </update>
+
+<!-- 태그 삭제  -->
+<delete id="deleteCommunityTags" parameterType="_int">
+    DELETE FROM BOARD_COMMUNITY_TAG
+    WHERE COMMUNITY_BOARD_ID = #{communityNo}
+</delete>
+
+
 
 </mapper>

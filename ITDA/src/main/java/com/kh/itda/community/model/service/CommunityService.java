@@ -36,11 +36,15 @@ public interface CommunityService {
 
 	int deleteCommunity(int communityNo, int userNum);
 
-	List<BoardCommentExt> selectCommentList(int communityNo);
+	List<BoardCommentExt> selectCommentList(int communityNo, String sort);
 
 	int insertComment(BoardComment comment);
 
 	int deleteComment(int commentNo, int userNo);
+
+	int updateCommunity(CommunityExt c);
+	
+	int updateCommunity(CommunityExt c, List<CommunityImg> newImgList, List<Integer> deleteImgNos);
 
 	
 
