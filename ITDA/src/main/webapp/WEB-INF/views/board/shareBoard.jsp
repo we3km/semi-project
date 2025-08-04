@@ -437,7 +437,7 @@
               	type: 'POST',
               	url: '${pageContext.request.contextPath}/board/addDibs',
               	data: {
-              	  userId: 1,
+              	  userId: '${userNum}',
               	  boardId: boardId,
               	  boardCategory: 'share'
              	 },

@@ -311,5 +311,6 @@ console.log("유저:",loginUser.userNum);
 
 			});
 		</script>
+		</div>
 </body>
 </html>

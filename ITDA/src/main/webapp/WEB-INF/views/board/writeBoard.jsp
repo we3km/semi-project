@@ -329,13 +329,35 @@ img {
 					  const startDate = document.getElementById('start-date').value;
 					  const endDate = document.getElementById('end-date').value;
 					  const categorySmall = document.getElementById('categorySmallHiddenInput').value;
-					  if (!productName || !productComment || !rentalFee || !deposit
+					  	if (!productName || !productComment || !rentalFee || !deposit
 							  || !startDate || !endDate || !categorySmall ) {
 					    event.preventDefault(); // 폼 제출 막기
 					    alert("모든 항목을 입력해 주세요.");
-						}	
+						} 
+					}else if(${boardCategory eq 'share'}){
+						const productName = document.getElementById('product-name').value.trim();
+						const productComment = document.getElementById('product-comment').value.trim();
+						const sharingCount = document.getElementById('sharing-count').value.trim();
+						const categorySmall = document.getElementById('categorySmallHiddenInput').value;
+						  if (!productName || !productComment || !sharingCount || !categorySmall ) {
+						    event.preventDefault(); // 폼 제출 막기
+						    alert("모든 항목을 입력해 주세요.");
+							}	
 					
-					  }
+					  }else if(${boardCategory eq 'auction'}){
+							const productName = document.getElementById('product-name').value.trim();
+							const productComment = document.getElementById('product-comment').value.trim();
+							const auctionStartingFee = document.getElementById('auction-starting-fee').value.trim();
+							const bidUnit = document.getElementById('bid-unit').value.trim();
+							const auctionStartDate = document.getElementById('start-date').value.trim();
+							const auctionEndDate = document.getElementById('end-date').value.trim();
+							const categorySmall = document.getElementById('categorySmallHiddenInput').value;
+							  if (!productName || !productComment || !sharingCount || !categorySmall ) {
+							    event.preventDefault(); // 폼 제출 막기
+							    alert("모든 항목을 입력해 주세요.");
+								}	
+						
+						  }
 					});
 				</script>
 
@@ -723,12 +745,206 @@ img {
 			</section>
 					
 				</c:when>
+				
 				<c:when test="${boardCategory eq 'auction'}">
-					<jsp:include page="/WEB-INF/views/board/writeAuction.jsp"></jsp:include>
+					<section class="price-date-category">
+						<div class="price-area">
+							<label>경매 시작금</label>
+							<form:input id="auction-starting-fee" path="boardAuction.auctionStartingFee"
+								type="text" />
+							원 <label>입찰금 단위</label>
+							<form:input id="bid-unit" path="boardAuction.bidUnit" type="text" />
+							원
+						</div>
+
+						<div class="date-area">
+							<label>경매 기간</label>
+							<div class="dates">
+								<form:input id="start-date" path="boardAuction.auctionStartDate"
+									type="date" />
+								부터
+								<form:input id="end-date" path="boardAuction.auctionEndDate"
+									type="date" />
+								까지
+							</div>
+						</div>
+						
+						<script>
+							const startInput = document.getElementById('start-date');
+							const endInput = document.getElementById('end-date');
+							
+							// 시작일 선택 시 → 종료일 최소값 설정
+							startInput.addEventListener('change', function () {
+							  const startDate = new Date(this.value);
+							  if (startDate.toString() !== "Invalid Date") {
+							    // 종료일은 시작일 +1일부터 가능
+							    const minEndDate = new Date(startDate);
+							    minEndDate.setDate(minEndDate.getDate() + 1);
+							
+							    // yyyy-mm-dd 형식으로 설정
+							    endInput.min = minEndDate.toISOString().split("T")[0];
+							  }
+							});
+							
+							// 종료일 선택 시 → 시작일 최대값 설정
+							endInput.addEventListener('change', function () {
+							  const endDate = new Date(this.value);
+							  if (endDate.toString() !== "Invalid Date") {
+							    const maxStartDate = new Date(endDate);
+							    maxStartDate.setDate(maxStartDate.getDate() - 1);
+							
+							    startInput.max = maxStartDate.toISOString().split("T")[0];
+							  }
+							});
+							
+			
+						</script>
+
+					
+				
+				<div class="category-area">
+			    <label>상품 카테고리</label>
+			
+			    <div class="category-wrapper">
+			      <!-- 대분류 -->
+			      <div class="category-column">
+			        <h5>대분류</h5>
+			        <div class="category-list-large">
+			          <c:forEach items="${list}" var="productCategory">
+			            <c:if test="${productCategory.parentNum == 0}">
+			              <div class="category-large" data-id="${productCategory.productCategoryNum}">
+			                ${productCategory.categoryName}
+			              </div>
+			            </c:if>
+			          </c:forEach>
+			        </div>
+			        <input type="hidden" id="categoryLargeHiddenInput" name="boardCommon.productCategoryL" />
+			      </div>
+			
+			      
+			      <div class="category-column" id="middle" style="display: none;">
+			        <h5>중분류</h5>
+			        <div id="category-list-middle"></div>
+			        <input type="hidden" id="categoryMiddleHiddenInput" name="boardCommon.productCategoryM" />
+			      </div>
+			
+			      
+			      <div class="category-column" id="small" style="display: none;">
+			        <h5>소분류</h5>
+			        <div id="category-list-small" ></div>
+			        <input type="hidden" id="categorySmallHiddenInput" name="boardCommon.productCategoryS" />
+			      </div>
+			    </div>
+			  </div>
+			
+			<script>
+			  // Helper 함수: 모든 대/중/소 항목에서 active 제거
+			  function clearActive(className) {
+			    document.querySelectorAll("." + className).forEach(el => el.classList.remove("active"));
+			  }
+			  const middleCol = document.getElementById("middle");
+			  const smallCol = document.getElementById("small");
+			  // 대분류 클릭 이벤트
+			  document.querySelectorAll('.category-large').forEach(item => {
+			    item.addEventListener('click', () => {
+			      const parentId = item.dataset.id;
+			      const isActive = item.classList.contains("active");
+			
+			      // 기존 선택 초기화
+			      clearActive("category-large");
+			      clearActive("category-middle");
+			      clearActive("category-small");
+			      document.getElementById("category-list-middle").innerHTML = "";
+			      document.getElementById("category-list-small").innerHTML = "";
+			      document.getElementById("categoryMiddleHiddenInput").value = "";
+			      document.getElementById("categorySmallHiddenInput").value = "";
+			
+			      if (!isActive) {
+			        // 활성화
+			        item.classList.add("active");
+			        document.getElementById("categoryLargeHiddenInput").value = item.textContent.trim();
+			        console.log("선택된 대분류: " + item.textContent.trim());
+			        middleCol.style.display = "block";     // 중분류 보이기
+			        smallCol.style.display = "none";       // 소분류 숨기기
+			
+			        // 중분류 불러오기
+			        fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+			          .then(response => response.json())
+			          .then(data => {
+			            const middleContainer = document.getElementById("category-list-middle");
+			            data.forEach(sub => {
+			              const div = document.createElement("div");
+			              div.textContent = sub.categoryName;
+			              div.classList.add("category-middle");
+			              div.setAttribute("data-id", sub.productCategoryNum);
+			              middleContainer.appendChild(div);
+			            });
+			          });
+			      } else {
+			        // 다시 클릭하면 닫기 (초기화)
+			        document.getElementById("categoryLargeHiddenInput").value = "";
+			        middleCol.style.display = "none";  // 중분류 숨기기
+			        smallCol.style.display = "none";   // 소분류 숨기기
+			      }
+			    });
+			  });
+			
+			  // 중분류 클릭 이벤트
+			  document.getElementById("category-list-middle").addEventListener("click", (e) => {
+			    const clicked = e.target;
+			    if (!clicked.classList.contains("category-middle")) return;
+			
+			    const parentId = clicked.dataset.id;
+			    const isActive = clicked.classList.contains("active");
+			
+			    clearActive("category-middle");
+			    clearActive("category-small");
+			    document.getElementById("category-list-small").innerHTML = "";
+			    document.getElementById("categorySmallHiddenInput").value = "";
+			
+			    if (!isActive) {
+			      clicked.classList.add("active");
+			      document.getElementById("categoryMiddleHiddenInput").value = clicked.textContent.trim();
+			      console.log("선택된 중분류: " + clicked.textContent.trim());
+			      smallCol.style.display = "block"; // 소분류 보여주기
+			
+			      // 소분류 불러오기
+			      fetch("${pageContext.request.contextPath}/board/getSubCategories?parentNum=" + parentId)
+			        .then(response => response.json())
+			        .then(data => {
+			          const smallContainer = document.getElementById("category-list-small");
+			          data.forEach(sub => {
+			            const div = document.createElement("div");
+			            div.textContent = sub.categoryName;
+			            div.classList.add("category-small");
+			            smallContainer.appendChild(div);
+			          });
+			        });
+			    } else {
+			      document.getElementById("categoryMiddleHiddenInput").value = "";
+			      smallCol.style.display = "none"; // 소분류 숨기기
+			    }
+			  });
+			
+			  // 소분류 클릭 이벤트
+			  document.getElementById("category-list-small").addEventListener("click", (e) => {
+			    const clicked = e.target;
+			    if (!clicked.classList.contains("category-small")) return;
+			
+			    clearActive("category-small");
+			
+			    clicked.classList.add("active");
+			    document.getElementById("categorySmallHiddenInput").value = clicked.textContent.trim();
+			    console.log("선택된 소분류: " + clicked.textContent.trim());
+			  });
+			</script>
+			</section>
 				</c:when>
+				
 				<c:when test="${boardCategory eq 'exchange'}">
 					<jsp:include page="/WEB-INF/views/board/writeExchange.jsp"></jsp:include>
 				</c:when>
+				
 				<c:when test="${boardCategory eq 'share'}">
 					<section class="counting-category">
 						<div class="counting-area">
