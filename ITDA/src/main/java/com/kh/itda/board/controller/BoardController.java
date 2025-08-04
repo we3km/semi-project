@@ -266,14 +266,17 @@ public class BoardController {
 		
 		String userAddress = boardService.selectUserAddress(userNum);
 		
+		System.out.println("사용자의 주소"+userAddress);
 		String[] userAddressParts = userAddress.split("\\s+");
+		System.out.println("사용자의 주소"+userAddressParts);
+
 		String address;
 		if(userAddressParts.length >=2 ) {
 			address = userAddressParts[0] + " " + userAddressParts[1];
 		} else {
 			address = userAddress;
 		}
-		
+		System.out.println("사용자의 주소"+address);
 		model.addAttribute("userAddress", address);
 		return "board/writeBoard";
 	}
