@@ -45,15 +45,15 @@
                 </div>
             </div>
             <div class="navbar">
-                <div class="text-wrapper-31">대여</div>
-                <div class="text-wrapper-32">경매</div>
-                <div class="text-wrapper-33">교환</div>
-                <div class="text-wrapper-34">나눔</div>
-                <div class="text-wrapper-35">커뮤니티</div>
+                <div class="go-to-rental">대여</div>
+                <div class="go-to-auction">경매</div>
+                <div class="go-to-exchange">교환</div>
+                <div class="go-to-sharing">나눔</div>
+                <div class="go-to-community">커뮤니티</div>
             </div>
-            <div class="text-wrapper-36">로그아웃</div>
+            <div class="logout">로그아웃</div>
             <div class="mainPage">마이페이지</div>
-            <div class="text-wrapper-38">고객센터</div>
+            <div class="customer-service">고객센터</div>
         </div>
 
         <!-- 대여 목록: 반복이 필요한 영역은 JSTL 사용 -->
@@ -121,23 +121,35 @@
         </div>
 
         <!-- 관심글 및 내가 쓴 글 등 반복 영역은 JSTL로 -->
-        <div class="group-20">
-            <c:forEach var="board" items="${boardList}">
-                <div class="group-21">
-                    <div class="red"><img class="likes" src="resources/EmptyHeart.png" /></div>
-                    <div class="overlap-3"><div class="board-title">${board.title}</div></div>
-                    <div class="overlap-4"><div class="board-terms">보증금 : ${board.deposit}원</div></div>
-                    <div class="overlap-group-2"><div class="board-period">${board.period}</div></div>
-                </div>
-            </c:forEach>
-
-            <div class="text-wrapper-22">내가 등록한 게시글</div>
-            <div class="text-wrapper-23">거래 기록</div>
-            <div class="text-wrapper-24">찜 목록</div>
-            <div class="see-more1">더보기 &gt;</div>
-            <div class="see-more2">더보기 &gt;</div>
-            <div class="see-more3">더보기 &gt;</div>
-        </div>
+        <div class="group-20 element">
+		    <c:forEach var="board" items="${boardList}" varStatus="status">
+		        <c:if test="${status.index < 4}">
+		            <div class="group-box group-${24 + status.index}">
+		                <div class="red">
+		                    <img class="likes" src="resources/EmptyHeart.png" />
+		                </div>
+		                <div class="overlap-3">
+		                    <div class="board-title">${board.title}</div>
+		                </div>
+		                <div class="overlap-4">
+		                    <div class="board-terms">보증금 : ${board.deposit}원</div>
+		                </div>
+		                <div class="overlap-group-2">
+		                    <div class="board-period">${board.period}</div>
+		                </div>
+		            </div>
+		        </c:if>
+		    </c:forEach>
+		
+		    <div class="text-wrapper-22">내가 등록한 게시글</div>
+		    <div class="text-wrapper-23">거래 기록</div>
+		    <div class="text-wrapper-24">찜 목록</div>
+		
+		    <!-- 더보기는 나중 구현 -->
+		    <div class="see-more1">더보기 &gt;</div>
+		    <div class="see-more2">더보기 &gt;</div>
+		    <div class="see-more3">더보기 &gt;</div>
+		</div>
     </div>
 </div>
 
@@ -167,7 +179,7 @@
 		
 		// 비밀번호
 		if(type === "password"){
-			form.action = "${pageContext.request.contextPath}/user/mypage/updatePwd";
+			form.action = contextPath + "/user/mypage/updatePwd";
 			form.method = "post";
 			title.innerText = "비밀번호 변경";
 			body.innerHTML = 
@@ -178,7 +190,7 @@
 		
 		//닉네임
 		if(type === "nickName"){
-			form.action = "${pageContext.request.contextPath}/user/mypage/updateNickName";
+			form.action = contextPath + "/user/mypage/updateNickname";
 			form.method = "post";
 			title.innerText = "닉네임 변경";
 			body.innerHTML = 
@@ -189,7 +201,7 @@
 		
 		// 폰 번호
 		if(type === "phone"){
-			form.action = "${pageContext.request.contextPath}/user/mypage/updatePhone";
+			form.action = contextPath + "/user/mypage/updatePhone";
 			form.method = "post";
 			title.innerText = "휴대폰 번호 변경";
 			body.innerHTML = 
@@ -200,7 +212,7 @@
 		
 		// 주소
 		if(type === "address"){
-			form.action = "${pageContext.request.contextPath}/user/mypage/updateAddress";
+			form.action = contextPath + "/user/mypage/updateAddress";
 			form.method = "post";
 			title.innerText = "주소 변경";
 			body.innerHTML = 

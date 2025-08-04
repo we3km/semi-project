@@ -117,7 +117,7 @@ public class UserController {
 	
 	// 주소 변경
 	@PostMapping("/user/mypage/updateAddress")
-	public String updateAddress(@RequestParam String newAddress,
+	public String updateAddress(@RequestParam("fullAddress") String newAddress,
 	                             Authentication auth,
 	                             RedirectAttributes ra) {
 	    if (newAddress.isEmpty()) {

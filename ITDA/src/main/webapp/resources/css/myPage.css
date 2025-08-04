@@ -436,36 +436,16 @@
 }
 
 /*거래기록*/
-.element .group-24 {
-  position: absolute;
-  width: 212px;
-  height: 259px;
-  top: 395px;
-  left: 0px;
-}
+.element .group-24 { left: 0px; }
+.element .group-25 { left: 240px; }
+.element .group-26 { left: 480px; }
+.element .group-27 { left: 720px; }
 
-.element .group-25 {
+.group-box {
   position: absolute;
   width: 212px;
   height: 259px;
   top: 395px;
-  left: 240px;
-}
-
-.element .group-26 {
-  position: absolute;
-  width: 212px;
-  height: 259px;
-  top: 395px;
-  left: 480px;
-}
-
-.element .group-27 {
-  position: absolute;
-  width: 212px;
-  height: 259px;
-  top: 395px;
-  left: 720px;
 }
 
 .element .group-28 {
@@ -816,7 +796,7 @@
   left: 355px;
 }
 
-.element .text-wrapper-31 {
+.element .go-to-rental {
   left: 0;
   position: absolute;
   top: 0;
@@ -829,7 +809,7 @@
   white-space: nowrap;
 }
 
-.element .text-wrapper-32 {
+.element .go-to-auction {
   left: 158px;
   position: absolute;
   top: 0;
@@ -842,7 +822,7 @@
   white-space: nowrap;
 }
 
-.element .text-wrapper-33 {
+.element .go-to-exchange {
   left: 316px;
   position: absolute;
   top: 0;
@@ -855,7 +835,7 @@
   white-space: nowrap;
 }
 
-.element .text-wrapper-34 {
+.element .go-to-sharing {
   left: 474px;
   position: absolute;
   top: 0;
@@ -868,7 +848,7 @@
   white-space: nowrap;
 }
 
-.element .text-wrapper-35 {
+.element .go-to-community {
   left: 632px;
   position: absolute;
   top: 0;
@@ -881,7 +861,7 @@
   white-space: nowrap;
 }
 
-.element .text-wrapper-36 {
+.element .logout {
   top: 42px;
   left: 1254px;
   font-family: "Inter-ExtraBold", Helvetica;
@@ -907,7 +887,7 @@
   line-height: normal;
 }
 
-.element .text-wrapper-38 {
+.element .customer-service {
   top: 42px;
   left: 1339px;
   font-family: "Inter-ExtraBold", Helvetica;
