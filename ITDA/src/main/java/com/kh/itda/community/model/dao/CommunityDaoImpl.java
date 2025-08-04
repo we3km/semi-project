@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.kh.itda.common.model.vo.BoardComment;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.community.model.vo.Community;
 import com.kh.itda.community.model.vo.CommunityExt;
@@ -74,9 +75,9 @@ public class CommunityDaoImpl implements CommunityDao{
 
 	//댓글
 	@Override
-	public CommunityReaction selectUserReaction(int userNo, int communityNo) {
+	public CommunityReaction selectUserReaction(int userNum, int communityNo) {
 		Map<String,Object> param = new HashMap<>();
-		param.put("userNo", userNo);
+		param.put("userNum", userNum);
 		param.put("communityNo", communityNo);
 		return session.selectOne("community.selectUserReaction",param);
 	}
@@ -109,9 +110,9 @@ public class CommunityDaoImpl implements CommunityDao{
 	}
 
 	@Override
-	public CommunityReaction userReactionNo(int userNo, int communityNo) {
+	public CommunityReaction userReactionNo(int userNum, int communityNo) {
 		Map<String, Object> param = new HashMap<>();
-		param.put("userNo", userNo);
+		param.put("userNum", userNum);
 		param.put("communityNo", communityNo);
 		return session.selectOne("community.selectUserReaction", param);
 	}
@@ -140,6 +141,26 @@ public class CommunityDaoImpl implements CommunityDao{
 	@Override
 	public int deleteCommunity(int communityNo) {
 		return session.delete("community.deleteCommunity",communityNo);
+	}
+
+	@Override
+	public List<BoardComment> selectCommentList(int communityNo) {
+		return session.selectList("community.selectCommentList",communityNo);
+	}
+
+	@Override
+	public int insertComment(BoardComment comment) {
+		return session.insert("community.insertComment",comment);
+	}
+
+	@Override
+	public BoardComment selectComment(int commentNo) {
+		return session.selectOne("community.selectComment",commentNo);
+	}
+
+	@Override
+	public int deleteComment(int commentNo) {
+		return session.update("community.deleteComment",commentNo);
 	}
 
 	

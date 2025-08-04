@@ -4,12 +4,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.kh.itda.common.model.vo.boardCategory;
 import com.kh.itda.common.service.HeaderService;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class HeaderController {
 	private final HeaderService headerService;
 	
 	@ModelAttribute
-    public void addCommonHeaderData(Model model, HttpSession session) {
+    public void addCommonHeaderData(Model model, HttpSession session,Authentication auth) {
 		/*
 		 * // 로그인 유저 정보 User loginUser = (User) session.getAttribute("loginUser");
 		 * 
@@ -46,6 +48,8 @@ public class HeaderController {
 	    model.addAttribute("CategoryType", TypeMap);
 	    
 	    log.debug("categoryType:{}",TypeMap);
+//	    User loginUser = (User) auth.getPrincipal();
+//	    String userNickname = ((User) auth.getPrincipal()).getNickName();
     }
 
 }
