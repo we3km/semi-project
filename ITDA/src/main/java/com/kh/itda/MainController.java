@@ -44,8 +44,10 @@ public class MainController {
         model.addAttribute("communityTypes", communityService.getCommunityTypeMap());
 	       
         
-//        String username = auth.getName(); // 로그인한 사용자 ID
-//        System.out.println(username);
+		
+		  // 로그인한 사용자 ID
+		  //System.out.println((User) auth.getPrincipal());
+		 
 		return "main";
 	}
 	

@@ -22,4 +22,9 @@ public interface UserService {
 	
 	User findByUserId(String username);
 
+	String selectUserNickname(String userId);
+
+	String selectUserNum(String userId);
+
+
 }

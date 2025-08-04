@@ -356,5 +356,6 @@
 
 			});
 		</script>
+		</div>
 </body>
 </html>
