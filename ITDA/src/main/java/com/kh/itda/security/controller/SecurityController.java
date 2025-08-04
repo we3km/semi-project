@@ -205,11 +205,13 @@ public class SecurityController {
         	String tempPwd = generateTempPassword();
         	
         	// 비밀번호 암호화 및 DB저장
-        	String encodedPwd = passwordEncoder.encode(tempPwd);
-        	try { // 에러 확인용
-        	uService.updatePassword(userId, encodedPwd);
-        	} catch (Exception e) {
-        		e.printStackTrace();
+        	if(tempPwd != null && tempPwd.isEmpty()) {
+	        	String encodedPwd = passwordEncoder.encode(tempPwd);
+	        	try { // 에러 확인용
+	        	uService.updatePassword(userId, encodedPwd);
+	        	} catch (Exception e) {
+	        		e.printStackTrace();
+	        	}
         	}
         	// 임시 비밀번호 전송
         	emailService.sendEmail(email, "임시 비밀번호 발급", "회원님의 임시 비밀번호는: " + tempPwd);
@@ -304,7 +306,7 @@ public class SecurityController {
 			RedirectAttributes ra
 			) {
 		if(bindResult.hasErrors()) {
-			return "redirect:/user/myPage";
+			return "redirect:/user/mypage";
 		}
 		// 비밀번호 변경 시 암호화
 		if (loginUser.getUserPwd() != null && !loginUser.getUserPwd().isBlank()) {
@@ -323,7 +325,7 @@ public class SecurityController {
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
 		ra.addFlashAttribute("alertMsg", "내 정보 수정 성공");
 		
-		return "redirect:/user/myPage";
+		return "redirect:/user/mypage";
 	}
 
 }

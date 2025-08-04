@@ -27,6 +27,7 @@ import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
 import com.kh.itda.common.model.vo.Tag;
+import com.kh.itda.user.model.vo.RentalItem;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -523,6 +524,11 @@ public class BoardDaoImpl implements BoardDao {
 		session.insert("board.insertBiddingWinner", biddingWinner);
 		
 		
+	}
+
+
+	public List<RentalItem> getRentalItemByUserNum(int userNum) {
+		return session.selectList("user.getRentalItemByUserNum", userNum);
 	}
 
 

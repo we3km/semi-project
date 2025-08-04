@@ -20,6 +20,7 @@ import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.user.model.vo.RentalItem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -222,7 +223,6 @@ public class BoardServiceImpl implements BoardService{
 		return boardDao.selectEqualsCategoryShareList(smallCategory);
 	}
 
-
 	@Override
 	public int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList) {
 		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
@@ -296,19 +296,14 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public void insertBiddingWinner(int boardId) {
 		boardDao.insertBiddingWinner(boardId);
-		
 	}
 
+	// 마이페이지 > 대여 중인 물품
+	@Override
+	public List<RentalItem> getRentalItemByUserNum(int userNum) {
+		return boardDao.getRentalItemByUserNum(userNum);
 
-
-
-
-
-
-
-
-
-
+	}
 
 
 }

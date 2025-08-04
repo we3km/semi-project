@@ -1,14 +1,17 @@
 package com.kh.itda.user.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import com.kh.itda.user.model.service.UserService;
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import com.kh.itda.user.model.vo.User;
+
+import com.kh.itda.board.model.service.BoardService;
+import com.kh.itda.security.model.vo.UserExt;
+import com.kh.itda.user.model.service.UserService;
+import com.kh.itda.user.model.vo.RentalItem;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +23,23 @@ public class UserController {
 	@Autowired
 	private UserService uService;
 	
-	@GetMapping("/user/myPage")
-	public String myPage() {
+	@Autowired
+	private BoardService bService;
+	
+	@GetMapping("/user/mypage")
+	public String myPage(@AuthenticationPrincipal UserExt loginUser, Model model) {
+		String userId = loginUser.getUserId();
+	    int userNum = loginUser.getUserNum();
+	    
+	    List<RentalItem> rentalList = bService.getRentalItemByUserNum(userNum);
+	    
+	    
+	    model.addAttribute("userId", userId);
+	    model.addAttribute("userNum", userNum);
 		return "user/myPage";
 	}
+	
+	
 	
 }
 

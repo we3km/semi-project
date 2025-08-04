@@ -16,6 +16,7 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.user.model.vo.RentalItem;
 
 public interface BoardService {
 
@@ -86,6 +87,11 @@ public interface BoardService {
 	void updateBid(AuctionBidding bid);
 
 	void insertBiddingWinner(int boardId);
+
+	
+	
+	
+	List<RentalItem> getRentalItemByUserNum(int userNum);
 
 
 
