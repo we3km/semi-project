@@ -124,7 +124,7 @@ input[type="text"], input[type="password"] {
 <body>
 	<c:if test="${param.error == 'true'}">
 		<script>
-			alert("${param.message}");
+			alert("${param.message != null ? param.message : '아이디 또는 비밀번호가 틀렸습니다.'}");
 		</script>
 	</c:if>
 	<div class="login-container">

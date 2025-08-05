@@ -14,18 +14,7 @@
 
 	<http pattern="/resources/**" security="none" />
 
-<<<<<<< Updated upstream
-        <form-login
-            login-page="/user/login"
-            login-processing-url="/user/loginprocess"
-            default-target-url="/"
-            always-use-default-target="true"
-            authentication-failure-url="/user/login?error=true"
-            username-parameter="userId"
-            password-parameter="userPwd" />
-            
-            <!-- 로그인 설정 - 권한별 리다이렉트를 위해 success-handler 사용 -->
-=======
+
 	<!-- 시큐리티 인증/인가 -->
 	<http auto-config="true"
 		access-decision-manager-ref="accessDecisionManager">
@@ -39,6 +28,12 @@
 		<intercept-url pattern="/user/findPwd/**"
 			access="isAnonymous()" />
 
+		<form-login login-page="/user/login"
+			login-processing-url="/user/loginprocess"
+			authentication-success-handler-ref="customAuthenticationSuccessHandler"
+			authentication-failure-handler-ref="customAuthenticationFailureHandler"
+			username-parameter="userId" password-parameter="userPwd" />
+
 		<!-- 권한별 접근 제어 -->
 		<intercept-url pattern="/admin/**"
 			access="hasRole('ROLE_ADMIN')" />
@@ -46,44 +41,17 @@
 			access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/**" access="isAuthenticated()" />
 
-		<!-- 로그인 설정 - 권한별 리다이렉트를 위해 success-handler 사용 -->
->>>>>>> Stashed changes
-		<form-login login-page="/user/login"
-			login-processing-url="/user/loginprocess"
-			authentication-success-handler-ref="customAuthenticationSuccessHandler"
-			authentication-failure-handler-ref="customAuthenticationFailureHandler"
-			username-parameter="userId" password-parameter="userPwd" />
-<<<<<<< Updated upstream
-            
-        <logout 
-        	logout-url="/user/logout" 
-        	logout-success-url="/"
-        	invalidate-session="true"
-        	delete-cookies="JSESSIONID, remember-me" />
-        <remember-me key="itdaUniqueSecurityKey" data-source-ref="dataSource" token-validity-seconds="1209600" />
-        	
-        <csrf disabled="true"/>
-    </http>
-    
-    <!-- 로그인 성공 핸들러 - 권한에 따른 리다이렉트 -->
-	<beans:bean id="customAuthenticationSuccessHandler"
-		class="com.kh.itda.security.handler.CustomAuthenticationSuccessHandler" />
-	<!-- 로그인 실패 핸들러 -->
-	<beans:bean id="customAuthenticationFailureHandler"
-		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
-    
-    <!-- com.kh.itda.security 패키지 스캔 -->   
-    <context:component-scan base-package="com.kh.itda"/>
-=======
->>>>>>> Stashed changes
-
 		<logout logout-url="/user/logout" logout-success-url="/"
 			invalidate-session="true" delete-cookies="JSESSIONID, remember-me" />
-
 		<remember-me key="itdaUniqueSecurityKey"
 			data-source-ref="dataSource" token-validity-seconds="1209600" />
+
 		<csrf disabled="true" />
 	</http>
+	<!-- com.kh.itda.security 패키지 스캔 -->
+	<context:component-scan
+		base-package="com.kh.itda" />
+
 
 	<!-- 권한 계층 설정: ADMIN이 USER 권한도 포함 -->
 	<beans:bean id="roleHierarchy"

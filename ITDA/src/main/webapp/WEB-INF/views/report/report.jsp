@@ -1,12 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<title>신고하기</title>
-	<link rel="stylesheet" href="/resources/css/reports.css" />
+<meta charset="UTF-8">
+<title>신고하기</title>
+<link rel="stylesheet" href="/resources/css/reports.css" />
 </head>
 <body>
 
@@ -18,11 +18,15 @@
 			<p id="targetInfo" style="font-weight: bold; margin-bottom: 10px;"></p>
 
 			<!-- Spring form:form 시작 -->
-			<form:form id="reportForm" method="post" modelAttribute="report" action="/report/submit">
+			<form:form id="reportForm" method="post" modelAttribute="report"
+				action="/report/submit">
 
 				<!-- 신고 타입 및 대상 ID -->
 				<form:hidden path="reportType" id="reportType" />
 				<form:hidden path="targetId" id="targetId" />
+
+				<!-- 신고 대상 작성자 userNum 추가 -->
+				<form:hidden path="userNum" id="targetUserNum" />
 
 				<!-- 신고 사유 카테고리 -->
 				<label for="category">신고 사유</label>
@@ -34,7 +38,8 @@
 					<form:option value="기타">기타</form:option>
 				</form:select>
 
-				<br><br>
+				<br>
+				<br>
 
 				<!-- 상세 사유 -->
 				<div class="form-group">

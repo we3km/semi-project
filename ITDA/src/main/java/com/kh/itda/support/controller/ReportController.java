@@ -1,6 +1,6 @@
 package com.kh.itda.support.controller;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +26,7 @@ public class ReportController {
         }
         
         report.setUserNum(loginUser.getUserNum());
-        report.setCreatedAt(LocalDateTime.now());
+        report.setCreatedAt(new Date());
         report.setStatus("대기중");
 
         int result = reportService.insertReport(report);

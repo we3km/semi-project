@@ -9,6 +9,6 @@ public interface AdminService {
 	List<User> searchUsers(String keyword);
 	List<Report> getAllReports();
 	Report getReportById(int reportNum);
-	void updateReportStatus(int reportNum, String status);
+	boolean updateReportStatus(int reportNum, String status);
 	User findUserById(String userId);
 }

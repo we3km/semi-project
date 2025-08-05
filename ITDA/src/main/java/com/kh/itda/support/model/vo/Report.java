@@ -1,6 +1,6 @@
 package com.kh.itda.support.model.vo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +11,11 @@ public class Report {
 	    private int reportNum;
 	    private int userNum;
 	    private String type;
-	    private int targetId;
+	    private String targetName;
 	    private String reason;
 	    private String detailReason;
 	    private String status;
-	    private LocalDateTime createdAt;
-	    private LocalDateTime processedAt;
+	    private Date createdAt;
+	    private Date processedAt;
 
 }

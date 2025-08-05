@@ -20,14 +20,9 @@
 		U.USER_PWD as userPwd,
 		U.NICK_NAME as nickName,
 		U.EMAIL as email,
-		U.PHONE as phone,
-		U.BIRTH as birth,
-		U.ADDRESS as address,
 		U.CREATE_DATE as createDate
 		FROM USER_TB U
-		WHERE U.USER_ID LIKE '%' || #{keyword} || '%'
-		OR U.NICK_NAME LIKE '%' || #{keyword} || '%'
-		OR U.EMAIL LIKE '%' || #{keyword} || '%'
+		WHERE U.NICK_NAME LIKE #{keyword}
 		ORDER BY U.USER_NUM
 	</select>
 
@@ -38,7 +33,7 @@
 		USER_NUM AS userNum,
 		TYPE AS
 		type,
-		TARGET_ID AS targetId,
+		TARGET_NAME AS targetName,
 		REASON AS reason,
 		DETAIL_REASON AS
 		detailReason,
@@ -46,7 +41,7 @@
 		CREATED_AT AS createdAt,
 		PROCESSED_AT AS
 		processedAt
-		FROM REPORT
+		FROM REPORTS
 		ORDER BY REPORT_NUM DESC
 	</select>
 

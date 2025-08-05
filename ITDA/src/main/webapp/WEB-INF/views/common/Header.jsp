@@ -25,16 +25,11 @@
 
 </head>
 <body>
-<<<<<<< Updated upstream
-<c:set var="loginUser" value="${sessionScope.loginUser}" />
+	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
-<script type="text/javascript">
-console.log("유저:",loginUser.userNum);
+	<script type="text/javascript">
+console.log("유저:",${loginUser.userNum});
 </script>
-=======
-	<input type="hidden" id="userRole"
-		value="${sessionScope.loginUser.role}" />
->>>>>>> Stashed changes
 
 	<div class="container_header">
 		<!-- 좌측 로고 -->
@@ -63,8 +58,9 @@ console.log("유저:",loginUser.userNum);
 				</div>
 			</sec:authorize>
 		</div>
-		
-		<input type="hidden" id="userRole" value="${sessionScope.loginUser.role}" /> 
+
+		<input type="hidden" id="userRole"
+			value="${sessionScope.loginUser.role}" />
 		<%-- <c:choose>
 			<c:when test="${not empty sessionScope.loginUser}">
 				<script>
@@ -117,42 +113,25 @@ console.log("유저:",loginUser.userNum);
 
 
 		<!-- 유저 인사 + 알림 -->
-<<<<<<< Updated upstream
 		<sec:authorize access="isAuthenticated()">
 			<div class="login_effect">
 				<!-- 회원 이름 바뀌기-->
 				<div class="user">
-					<strong>
-					<sec:authentication property="principal.nickName"/>
+					<strong> <sec:authentication property="principal.nickName" />
 					</strong>님 반갑습니다!
 				</div>
-			
+
 				<div id="icons">
 					<img
 						src="${pageContext.request.contextPath}/resources/images/message.png"
-						alt="message icon" id="message-icon" /> 
-					<img
+						alt="message icon" id="message-icon" /> <img
 						src="${pageContext.request.contextPath}/resources/images/alam.png"
 						alt="alarm icon" id="alarm-icon" />
 				</div>
-=======
-		<div class="login_effect"
-			style="<c:if test='${empty sessionScope.loginUser}'>display:none;</c:if>">
-			<!-- 회원 이름 바뀌기-->
-			<div class="user">
-				<strong>${sessionScope.loginUser.userName}</strong>님 반갑습니다!
-			</div>
-			<div id="icons">
-				<img
-					src="${pageContext.request.contextPath}/resources/images/message.png"
-					alt="message icon" id="message-icon" /> <img
-					src="${pageContext.request.contextPath}/resources/images/alam.png"
-					alt="alarm icon" id="alarm-icon" />
->>>>>>> Stashed changes
 			</div>
 		</sec:authorize>
-		</div>
-		<script>
+	</div>
+	<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
 
@@ -228,8 +207,6 @@ console.log("유저:",loginUser.userNum);
 					        }
 					        window.location.href = targetUrl;
 						});
-<<<<<<< Updated upstream
-=======
 
 				// 로그인-로그아웃 버튼 
 				// 로그인 상태 토글
@@ -300,7 +277,6 @@ console.log("유저:",loginUser.userNum);
 									+ '/cs';
 						})
 
->>>>>>> Stashed changes
 				// 검색창
 				// 드롭다운 화살표 클릭 시 목록 열기
 			    $('.dropbtn_click').on('click', function (e) {
@@ -402,6 +378,6 @@ console.log("유저:",loginUser.userNum);
 
 			});
 		</script>
-		</div>
+	</div>
 </body>
 </html>

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
- 
+
 <mapper namespace="user">
 
 	<!-- 아이디 찾기 -->
 	<select id="findId" resultType="String">
 		SELECT USER_ID
 		FROM USER_TB
-		WHERE NICK_NAME = #{nickName}
-			AND EMAIL = #{email}
+		WHERE
+		NICK_NAME = #{nickName}
+		AND EMAIL = #{email}
 	</select>
 
 	<!-- 비밀번호 찾기 -->
@@ -17,94 +18,104 @@
 		SELECT USER_PWD
 		FROM USER_TB
 		WHERE USER_ID = #{userId}
-			AND EMAIL = #{email}
+		AND EMAIL = #{email}
 	</select>
 
 	<!-- 유저 고유 번호 생성 -->
 	<select id="selectNextUserNo" resultType="int">
-		SELECT USER_TB_SEQ.NEXTVAL FROM DUAL
+		SELECT
+		USER_TB_SEQ.NEXTVAL FROM DUAL
 	</select>
-	
+
 	<!-- 회원 정보 주입 -->
 	<insert id="insertUser" parameterType="user">
 		INSERT INTO USER_TB (
-			USER_NUM,
-			USER_ID,
-			USER_PWD,
-			NICK_NAME,
-			EMAIL,
-			PHONE,
-			BIRTH,
-			ADDRESS,
-			CREATE_DATE,
-			USER_INF_VALIDITY_PERIOD,
-			IS_QUIT
+		USER_NUM,
+		USER_ID,
+		USER_PWD,
+		NICK_NAME,
+		EMAIL,
+		PHONE,
+		BIRTH,
+		ADDRESS,
+		CREATE_DATE,
+		USER_INF_VALIDITY_PERIOD,
+		IS_QUIT
 		) VALUES (
-			#{userNum},
-			#{userId},
-			#{userPwd},
-			#{nickName},
-			#{email},
-			#{phone},
-			TO_DATE(#{birth}, 'YYYY-MM-DD'),
-			#{address},
-			SYSDATE,
-			#{validPeriod},
-			DEFAULT
+		#{userNum},
+		#{userId},
+		#{userPwd},
+		#{nickName},
+		#{email},
+		#{phone},
+		TO_DATE(#{birth}, 'YYYY-MM-DD'),
+		#{address},
+		SYSDATE,
+		#{validPeriod},
+		DEFAULT
 		)
 	</insert>
-	
+
 	<!-- 프로필 추가 -->
 	<insert id="insertProfile" parameterType="user">
-		INSERT INTO PROFILE (USER_NUM, IMAGE_URL)
+		INSERT INTO PROFILE
+		(USER_NUM, IMAGE_URL)
 		VALUES (#{userNum}, #{imageUrl})
 	</insert>
-	
+
+	<select id="findAuthoritiesByUserNum" resultType="String">
+		SELECT AUTHORITY FROM AUTHORITIES WHERE USER_NUM = #{userNum}
+	</select>
+
+
 	<!-- 권한 부여 -->
 	<insert id="insertAuthority" parameterType="int">
-		INSERT INTO AUTHORITIES (USER_NUM, AUTHORITY) VALUES (#{userNum}, 'ROLE_USER')
+		INSERT INTO
+		AUTHORITIES (USER_NUM, AUTHORITY) VALUES (#{userNum}, 'ROLE_USER')
 	</insert>
 	<!-- 비밀번호 변경 -->
 	<update id="updatePassword" parameterType="map">
 		UPDATE USER_TB
-			<set>
-				<if test="userPwd != null and userPwd != ''">
-					USER_PWD = #{encodedPwd}
-				</if>
-			</set>
+		<set>
+			<if test="userPwd != null and userPwd != ''">
+				USER_PWD = #{encodedPwd}
+			</if>
+		</set>
 		WHERE USER_ID = #{userId}
 	</update>
 
 	<!-- 회원정보 수정 -->
 	<update id="updateUser">
 		UPDATE USER_TB
-			<set>
-				<if test="email != null">
-					EMAIL = #{email},
-				</if>
-				<if test="birth != null">
-					BIRTH = #{birth},
-				</if>
-				<if test="nickName != null">
-					NICK_NAME = #{nickName},
-				</if>
-				<if test="phone != null">
-					PHONE = #{phone},
-				</if>
-				<if test="address != null">
-					ADDRESS = #{address},
-				</if>
-				<if test="userPwd != null and userPwd != ''">
-					USER_PWD = #{userPwd}
-				</if>
-			</set>
+		<set>
+			<if test="email != null">
+				EMAIL = #{email},
+			</if>
+			<if test="birth != null">
+				BIRTH = #{birth},
+			</if>
+			<if test="nickName != null">
+				NICK_NAME = #{nickName},
+			</if>
+			<if test="phone != null">
+				PHONE = #{phone},
+			</if>
+			<if test="address != null">
+				ADDRESS = #{address},
+			</if>
+			<if test="userPwd != null and userPwd != ''">
+				USER_PWD = #{userPwd}
+			</if>
+		</set>
 		WHERE USER_ID = #{userId}
 	</update>
-	
+
 	<select id="selectUserNickname" resultType="String">
-		SELECT NICK_NAME FROM USER_TB WHERE USER_ID = #{userId}
+		SELECT NICK_NAME FROM
+		USER_TB WHERE USER_ID = #{userId}
 	</select>
 	<select id="selectUserNum" resultType="String">
-		SELECT USER_NUM FROM USER_TB WHERE USER_ID = #{userId}
+		SELECT USER_NUM FROM
+		USER_TB WHERE USER_ID = #{userId}
 	</select>
 </mapper>

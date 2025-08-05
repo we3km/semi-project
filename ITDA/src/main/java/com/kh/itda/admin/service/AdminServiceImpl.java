@@ -1,7 +1,6 @@
 package com.kh.itda.admin.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,11 @@ public class AdminServiceImpl implements AdminService {
 
 	private final SecurityDao securityDao;
 	private final ReportDao reportDao;
+	
 
 	@Override
 	public List<User> searchUsers(String keyword) {
-	    return securityDao.searchUsers(keyword);
+		return securityDao.searchUsers(keyword);
 	}
 
 	@Override
@@ -40,10 +40,13 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public void updateReportStatus(int reportNum, String status) {
+	public boolean updateReportStatus(int reportNum, String status) {
 		Report report = new Report();
 		report.setReportNum(reportNum);
 		report.setStatus(status);
-		reportDao.updateReportStatus(report);
+		int result = reportDao.updateReportStatus(report);
+		return result > 0;
 	}
+	
+
 }

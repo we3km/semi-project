@@ -1,0 +1,86 @@
+
+.report-detail-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.report-detail-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.report-info p {
+    font-size: 17px;
+    margin: 12px 0;
+    color: #444;
+}
+
+.report-info strong {
+    color: #222;
+    width: 140px;
+    display: inline-block;
+}
+
+form {
+    margin-top: 30px;
+    text-align: center;
+}
+
+form label {
+    font-weight: 600;
+    margin-right: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+form select {
+    padding: 6px 12px;
+    font-size: 15px;
+    border: 1.8px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.25s ease-in-out;
+}
+
+form select:focus {
+    border-color: #007bff;
+}
+
+form button {
+    margin-left: 15px;
+    padding: 8px 18px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.25s ease-in-out;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+a {
+    display: inline-block;
+    margin-top: 35px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

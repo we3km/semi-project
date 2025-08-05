@@ -139,28 +139,28 @@ section {
 		<div class="user-info">
 			<sec:authorize access="isAuthenticated()">
 				<p>
-					<strong>아이디:</strong> ${loginuser.userId}
+					<strong>아이디:</strong> ${loginUser.userId}
 				</p>
 				<p>
-					<strong>닉네임:</strong> ${loginuser.nickName}
+					<strong>닉네임:</strong> ${loginUser.nickName}
 				</p>
 				<p>
-					<strong>이메일:</strong> ${loginuser.email}
+					<strong>이메일:</strong> ${loginUser.email}
 				</p>
 			</sec:authorize>
 		</div>
 
 		<nav>
 			<ul>
-				<li><a href="${pageContext.request.contextPath}/admin/reports">신고
-						관리 페이지</a></li>
+				<li><a href="${pageContext.request.contextPath}/admin/reports">신고 관리 페이지</a></li>
+				<li><a href="${pageContext.request.contextPath}/admin/inquriry">문의하기 관리 페이지</a></li>
 			</ul>
 		</nav>
 
 		<!-- 회원 검색 영역 -->
 		<section>
 			<h3>회원 검색</h3>
-			<input type="text" id="searchKeyword" placeholder="회원 아이디 또는 닉네임 입력" />
+			<input type="text" id="searchKeyword" placeholder="회원 닉네임 입력" />
 			<button id="searchBtn">검색</button>
 			<div id="searchResults"></div>
 		</section>
@@ -181,7 +181,7 @@ section {
 	            performSearch();
 	        }
 	    });
-	    
+	});	    
 	    function performSearch() {
 	        let keyword = $('#searchKeyword').val().trim();
 	        console.log('검색 키워드:', keyword);
@@ -217,35 +217,35 @@ section {
 	                $('#searchResults').html('<div class="error-message">' + errorMsg + '</div>');
 	            }
 	        });
+	    }	
+	    
+	    function formatDate(dateString) {
+	        const date = new Date(dateString);
+	        const yy = String(date.getFullYear()).slice(2);
+	        const mm = String(date.getMonth() + 1).padStart(2, '0');
+	        const dd = String(date.getDate()).padStart(2, '0');
+	        return `\${yy}-\${mm}-\${dd}`;
 	    }
 	    
-	    function displaySearchResults(data) {
-	        $('#searchResults').empty();
-
-	        if (!data || data.length === 0) {
-	            $('#searchResults').html('<p style="color: #666; font-style: italic;">검색 결과가 없습니다.</p>');
+	    function displaySearchResults(users) {
+	        if (!users || users.length === 0) {
+	            $('#searchResults').html('<p>검색 결과가 없습니다.</p>');
 	            return;
 	        }
-
-	        let $ul = $('<ul></ul>');
-
-	        data.forEach((user, index) => {
-	            console.log(`사용자 ${index + 1}:`, user);
-
-	            let userId = user.userId;
-	            let nickName = user.nickName;
-	            let email = user.email;
-
-	            let $li = $('<li></li>');
-	            $li.html(`<strong>${userId}</strong> (${nickName}) - ${email}`);
-	            $ul.append($li);
+	        let html = '<ul>';
+	        users.forEach(function(user) {
+	            html += `<li>
+	                <strong>회원 번호:</strong> \${user.userNum} <br/>
+	                <strong>아이디:</strong> \${user.userId} <br/>
+	                <strong>닉네임:</strong> \${user.nickName} <br/>
+	                <strong>이메일:</strong> \${user.email} <br/>
+	                <strong>가입일:</strong> \${formatDate(user.createDate)}
+	            </li>`;
 	        });
-
-	        $('#searchResults').append($ul);
+	        html += '</ul>';
+	        $('#searchResults').html(html);
 	    }
 	    
-	    console.log('DOM 업데이트 완료');
-	});
 	</script>
 </body>
 </html>

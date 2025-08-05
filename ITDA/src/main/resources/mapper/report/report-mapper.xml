@@ -8,15 +8,17 @@
 	<!-- 1. 신고 등록 -->
 	<insert id="insertReport"
 		parameterType="com.kh.itda.support.model.vo.Report">
-		INSERT INTO report (
+		INSERT INTO reports (
 		report_num,
+		user_num,
 		reason,
 		type,
-		target_id,
+		target_name,
 		status,
 		created_at
 		) VALUES (
 		#{reportNum},
+		#{userNum},
 		#{reason},
 		#{type},
 		#{targetId},
@@ -30,22 +32,24 @@
 		resultType="com.kh.itda.support.model.vo.Report">
 		SELECT
 		report_num,
+		user_num,
 		reason,
 		type,
-		target_id,
+		target_name,
 		status,
 		created_at
-		FROM report
+		FROM reports
 		WHERE report_num = #{reportNum}
 	</select>
 
 	<!-- 3. 신고 상태 업데이트 -->
 	<update id="updateReportStatus"
 		parameterType="com.kh.itda.support.model.vo.Report">
-		UPDATE report
+		UPDATE reports
 		SET status = #{status}
 		WHERE report_num =
 		#{reportNum}
 	</update>
+
 
 </mapper>

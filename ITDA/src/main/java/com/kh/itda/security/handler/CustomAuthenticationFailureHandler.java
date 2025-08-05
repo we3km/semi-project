@@ -1,7 +1,9 @@
 package com.kh.itda.security.handler;
 
 import java.net.URLEncoder;
+import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +16,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException exception) {
+			AuthenticationException exception) throws IOException, ServletException {
 
 		try {
 			String errorMessage = "아이디 또는 비밀번호가 틀렸습니다.";
@@ -24,14 +26,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 			setDefaultFailureUrl("/user/login?error=true");
 		}
 
-		try {
-			super.onAuthenticationFailure(request, response, exception);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		super.onAuthenticationFailure(request, response, exception);
 	}
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

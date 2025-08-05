@@ -1,6 +1,7 @@
 package com.kh.itda.user.model.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -14,7 +15,7 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	private SqlSessionTemplate session;
-	
+
 	@Override
 	public int insertUser(User user) {
 		return session.insert("user.insertUser", user);
@@ -33,8 +34,8 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void insertProfile(int userNum, String imageUrl) {
 		Map<String, Object> param = new HashMap<>();
-	    param.put("userNum", userNum);
-	    param.put("imageUrl", imageUrl);
+		param.put("userNum", userNum);
+		param.put("imageUrl", imageUrl);
 		session.insert("user.insertProfile", param);
 	}
 
@@ -44,23 +45,6 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-<<<<<<< Updated upstream
-	public String selectUserNickname(String userId) {
-		return session.selectOne("user.selectUserNickname", userId); 
-	}
-
-	@Override
-	public String selectUserNum(String userId) {
-		return session.selectOne("user.selectUserNum", userId); 
-	}
-	
-	@Override
-	public void updatePassword(String userId, String encodedPwd) {
-		Map<String, Object> param = new HashMap<>();
-		param.put("userId", userId);
-		param.put("encodedPwd", encodedPwd);
-		session.update("user.updatePassword", param);
-=======
 	public User findUserByNum(int userNum) {
 		return session.selectOne("user.findUserByNum", userNum);
 	}
@@ -68,15 +52,32 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
 		Map<String, Object> param = new HashMap<>();
-	    param.put("userId", userId);
-	    param.put("encodedPwd", encodedPwd);
-	    session.update("user.updatePassword", param);
+		param.put("userId", userId);
+		param.put("encodedPwd", encodedPwd);
+		session.update("user.updatePassword", param);
 
-/*	public void insertUserAndAuthority(User user) {
-		// TODO Auto-generated method stub
-		
-
-	}*/
->>>>>>> Stashed changes
+		/*
+		 * public void insertUserAndAuthority(User user) { // TODO Auto-generated method
+		 * stub
+		 * 
+		 * 
+		 * }
+		 */
 	}
+
+	@Override
+	public String selectUserNickname(String userId) {
+		return session.selectOne("user.selectUserNickname", userId);
+	}
+
+	@Override
+	public String selectUserNum(String userId) {
+		return session.selectOne("user.selectUserNum", userId);
+	}
+
+	@Override
+	public List<String> findAuthoritiesByUserNum(int userNum) {
+		return session.selectList("user.findAuthoritiesByUserNum", userNum);
+	}
+
 }

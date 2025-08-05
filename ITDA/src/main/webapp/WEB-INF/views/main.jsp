@@ -23,35 +23,32 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<input type="hidden" id="userRole"
-		value="${sessionScope.role}" />
+	<input type="hidden" id="userRole" value="${sessionScope.role}" />
 	<div class="container">
-<<<<<<< Updated upstream
-		
-		
-		 <div class="top-buttons">
-		    <%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
-		    <sec:authorize access="isAnonymous()">
-		        <div class="unlogin">
-		            <div class="btn" id="loginBtn">로그인</div>
-		            <div class="btn" id="joinMembership">회원가입</div>
-		        </div>
-		    </sec:authorize>
-		
-		    <%--로그인했을 때만 이 div를 렌더링--%>
-		    <sec:authorize access="isAuthenticated()">
-		        <div class="login">
-		            <div class="btn" id="myPage">마이페이지</div>
-		            <div class="btn" id="logoutBtn">로그아웃</div>
-		        </div>
-		    </sec:authorize>
-		</div> 
-		
-		<div class="headline">IT다</div>
-    	<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
-		
 
-=======
+
+		<div class="top-buttons">
+			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
+			<sec:authorize access="isAnonymous()">
+				<div class="unlogin">
+					<div class="btn" id="loginBtn">로그인</div>
+					<div class="btn" id="joinMembership">회원가입</div>
+				</div>
+			</sec:authorize>
+
+			<%--로그인했을 때만 이 div를 렌더링--%>
+			<sec:authorize access="isAuthenticated()">
+				<div class="login">
+					<div class="btn" id="myPage">마이페이지</div>
+					<div class="btn" id="logoutBtn">로그아웃</div>
+				</div>
+			</sec:authorize>
+		</div>
+
+		<div class="headline">IT다</div>
+		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
+
+
 		<%-- <div class="top-buttons">
 			<div class="unlogin">
 				<div class="btn" id="loginBtn">로그인</div>
@@ -76,30 +73,12 @@
 				</script>
 			</c:otherwise>
 		</c:choose> --%>
-		<div class="top-buttons">
-			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
-			<sec:authorize access="isAnonymous()">
-				<div class="unlogin">
-					<div class="btn" id="loginBtn">로그인</div>
-					<div class="btn" id="joinMembership">회원가입</div>
-				</div>
-			</sec:authorize>
-			<%--로그인했을 때만 이 div를 렌더링--%>
-			<sec:authorize access="isAuthenticated()">
-				<div class="login">
-					<div class="btn" id="myChatRoom">나의 채팅방</div>
-					<div class="btn" id="myPage">마이페이지</div>
-					<div class="btn" id="logoutBtn">로그아웃</div>
-				</div>
-			</sec:authorize>
-		</div>
 		<!-- 채팅방 이동 -->
-		<script>
+		<!-- 		<script>
 		document.getElementById("myChatRoom").addEventListener("click", function() {
 		    location.href = "${contextpath}/itda/chat/chatRoomList";
 		});
-		</script>
->>>>>>> Stashed changes
+		</script> -->
 
 		<div class="search-filter-wrapper">
 			<div class="filters">
@@ -294,16 +273,6 @@
 			location.href = contextPath + '/user/logout';
 	    });
 	    $('#joinMembership').click(() => location.href = contextPath + '/user/join/terms');
-<<<<<<< Updated upstream
-	    $('#myPage').click(function(){
-			 const userRole= $('#userRole').val();
-				if(userRole == 'admin'){
-					location.href = contextPath + '/admin/mypage';
-				}else{
-					location.href = contextPath + '/user/mypage';	
-				}					
-		});
-=======
 	    $('#myPage').click(function() {
 	        const userRole = $('#userRole').val();
 	        if (userRole === 'ROLE_ADMIN') {
@@ -312,8 +281,6 @@
 	            location.href = contextPath + '/user/mypage';
 	        }
 	    });
-
->>>>>>> Stashed changes
 	    $('.card').click(function () {
 	        const title = $(this).find('.card-title').text().trim();
 	        let targetUrl = '';
