@@ -272,7 +272,7 @@ h2.location {
 .chat-explanation{
   font-size: 0.9rem;
   color: #555;
-  text-align: center;
+  text-align: left;
   margin-bottom: 12px;
 }
 .join-btn-box {

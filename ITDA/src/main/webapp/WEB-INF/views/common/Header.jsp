@@ -318,12 +318,12 @@ console.log("유저:",loginUser.userNum);
 				$('#message-icon').click(function() {
 					alert(`채팅 페이지로 이동~`);
 				});
-				/* //알람버튼
+				 //알람버튼
 				$('#alarm-icon').click(function() {
 					
-				}); */
+				}); 
 				
-				let alarmList = [];
+			/* 	<!-- let alarmList = [];
 				let unread = false;
 
 				function showAlarm(text) {
@@ -367,9 +367,9 @@ console.log("유저:",loginUser.userNum);
 				
 				 showAlarm("테스트 알림입니다");
 				console.log
-			});
+			}); */
 		</script>
-		<script>
+	<!-- 	<script>
 		/* 알람 스톰프 스크립트 */
 		let stompClient = null;
 
@@ -388,7 +388,7 @@ console.log("유저:",loginUser.userNum);
 		if (loginUserNum) {
 			connectAlarmWebSocket(loginUserNum);
 		}
-		</script>
-		</div>
+		</script> -->
+		</div> -->
 </body>
 </html>
