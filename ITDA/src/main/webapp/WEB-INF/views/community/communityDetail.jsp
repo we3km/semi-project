@@ -79,6 +79,7 @@
                 <input type="text" id="shareUrl" readonly >
                 <button onclick="copyUrl()" id="copy">복사</button>
             </div>
+            
             <div id="deleteToggleArea" class="delete-menu hidden">
 				<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/community/delete">
 			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
@@ -89,6 +90,7 @@
 			        <button type="submit" class="edit-btn">수정하기</button>
 			    </form>
 			</div>
+            	
         </div>
 
         <!-- 게시글 내용 -->
@@ -161,6 +163,7 @@
 	    const communityCd = "${community.communityCd}";
 	    const loginUserNum = '<sec:authentication property="principal.userNum" />';
 		const communityWriter = "${community.communityWriter}";
+		const contextPath = '${pageContext.request.contextPath}';
 		
 		let currentSort = 'asc';
 		
@@ -184,7 +187,23 @@
 				
 				selectCommentList();
 			});
-			
+	    	
+	    	console.log("loginUserNum:", loginUserNum);
+	    	console.log("communityWriter:", communityWriter);
+	    	 setTimeout(() => {
+	    	        if (!loginUserNum || parseInt(loginUserNum) !== parseInt(communityWriter)) {
+	    	            console.log("숨김 처리됨");
+	    	            $('.sub-btn').hide(); 
+	    	        } else {
+	    	            console.log("표시됨");
+	    	            $('.sub-btn').show(); 
+	    	        }
+	    	    }, 200);
+	    	/* // 수정 버튼 숨기기
+	    	if (!loginUserNum || parseInt(loginUserNum) !== communityWriter) {
+	            $('.sub-btn').hide(); 
+	        }
+	    	 */
 	    	
 	    	//이미지 초기설정
 	    	 if (userReaction === 'LIKE') {
@@ -237,7 +256,7 @@
 				
 				// 게시글 삭제
 				$('#deleteForm').on('submit',function(e){
-					if(!loginUserNum || loginUserNum !== communityWriter){
+					if(!loginUserNum /* || loginUserNum !== communityWriter */){
 						e.preventDefault();
 						alert('삭제 권한이 없습니다.');
 						console.log("로그인 유저 : "+ loginUserNum +", 게시글 작성자 : "+communityWriter);
@@ -250,12 +269,7 @@
 				
 				//게시글 수정
 				$('#editForm').on('submit',function(e){
-					if(!loginUserNum || loginUserNum !== communityWriter){
-						e.preventDefault();
-						console.log("로그인 유저 : "+ loginUserNum +", 게시글 작성자 : "+communityWriter);
-						alert('수정 권한이 없습니다.');
-						return;
-					}
+					
 					if(!confirm('정말로 이 게시글을 수정하시겠습니까?')){
 						e.preventDefault();
 					}
@@ -382,6 +396,7 @@
 		    // 댓글 객체를 받아 HTML 문자열을 생성하는 함수
 		     function createCommentHtml(comment) {
 
+		 		const contextPath = '${pageContext.request.contextPath}';
 		        let repliesHtml = '';
 		        if (comment.replies && comment.replies.length > 0) {
 		            $.each(comment.replies, function(index, reply) {
@@ -400,13 +415,13 @@
 		        if (repliesHtml) {
 		            repliesToggleHtml = '<div class="replies-toggle-btn" data-comment-no="'+ comment.boardCmtId +'">답글 접기</div>';
 		        }
-
+		       
 		        let commentHtml = '';
 		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
-		        commentHtml += '  <div class="profile-icon"></div>';
+		        commentHtml += '  <div class="profile-icon"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></div>';
 		        commentHtml += '  <div class="content">';
 		        commentHtml += '    <div class="author">' + comment.nickName + '</div>';
-		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>';
+		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>'; 
 		        commentHtml += '    <div class="actions">';
 		        commentHtml += '      <span>' + writeDate + '</span>';
 		        commentHtml +=        replyBtnHtml;
@@ -425,10 +440,17 @@
 		        commentHtml += '  <div class="options-btn">︙</div>';
 		        commentHtml += '  <div class="options-popup">';
 		        commentHtml += '      <div class="report-comment-btn" data-comment-no="'+ comment.boardCmtId +'">신고하기</div>';
-		        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
+		        if(loginUserNum && parseInt(loginUserNum) === comment.cmtWriterUserNum) {
+			        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
+		        }
+		        
 		        commentHtml += '  </div>';
 		        commentHtml += '</div>';
 			    
+		        
+		        
+		        
+		        
 		        return commentHtml;
 		    }
 		    
@@ -494,6 +516,7 @@
 		 	// 	팝업 메뉴의 '삭제하기' 클릭 이벤트
 		    $('#commentList').on('click', '.delete-comment-btn', function() {
 		        const commentNo = $(this).data('comment-no');
+		        
 		        if (confirm(commentNo + '번 댓글을 정말 삭제하시겠습니까?')) {
 		        	$.ajax({
 		                url: "${pageContext.request.contextPath}/community/comments/delete",

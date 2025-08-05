@@ -139,6 +139,10 @@ public class CommunityController {
 								/* Model model, */ RedirectAttributes ra,
 								@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles
 								) {
+		if (upfiles != null && upfiles.size() > 5) {
+	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
+	        return "redirect:/community/insert"; // 글쓰기 폼으로 다시 돌려보냄
+	    }
 		
 		List<CommunityImg> imgList = new ArrayList<>();
 		int level = 0; // 첨부파일의 레벨
@@ -358,8 +362,27 @@ public class CommunityController {
 									RedirectAttributes ra
 								) {
 		
-		System.out.println("### [디버깅] updateCommunity 메소드 시작. 전달받은 communityNo: " + c.getCommunityNo());
 		
+		
+	    // 1. DB에서 현재 게시글의 이미지 정보를 가져옴
+	    CommunityExt originalCommunity = communityService.selectCommunity(c.getCommunityNo());
+	    int existingImgCount = originalCommunity.getImgList().size();
+	    
+	    // 2. 삭제될 이미지 개수를 반영
+	    int deleteCount = (deleteImgNos != null) ? deleteImgNos.size() : 0;
+	    
+	    // 3. 새로 추가될 이미지 개수를 반영
+	    int newImgCount = (upfiles != null && !upfiles.get(0).isEmpty()) ? upfiles.size() : 0;
+	    
+	    // 4. 최종 개수 계산 및 검사
+	    if (existingImgCount - deleteCount + newImgCount > 5) {
+	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
+	        return "redirect:/community/update/" + c.getCommunityNo(); // 수정 폼으로 다시 돌려보냄
+	    }
+	   
+
+	    System.out.println("### [디버깅] updateCommunity 메소드 시작. 전달받은 communityNo: " + c.getCommunityNo());
+	   
 		List<CommunityImg> imgList = new ArrayList<>();
 		if(upfiles != null) {
 			for (MultipartFile upfile : upfiles) {

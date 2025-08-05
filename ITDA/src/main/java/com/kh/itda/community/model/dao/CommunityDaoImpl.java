@@ -59,8 +59,8 @@ public class CommunityDaoImpl implements CommunityDao{
 	}
 
 	@Override
-	public int insertCommunityImgList(List<CommunityImg> imgList) {
-		return session.insert("community.insertCommunityImgList",imgList);
+	public int insertCommunityImg(CommunityImg ci) {
+		return session.insert("community.insertCommunityImg", ci);
 	}
 
 	@Override

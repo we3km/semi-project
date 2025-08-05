@@ -22,7 +22,7 @@ public interface CommunityDao {
 
 	int insertCommunity(Community c);
 
-	int insertCommunityImgList(List<CommunityImg> imgList);
+	int insertCommunityImg(CommunityImg ci);
 
 	int increaseCount(int communityNo);
 

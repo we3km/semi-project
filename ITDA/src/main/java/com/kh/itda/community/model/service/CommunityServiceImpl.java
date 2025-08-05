@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
 
 import javax.servlet.ServletContext;
 
@@ -68,17 +65,23 @@ public class CommunityServiceImpl implements CommunityService{
 		}
 		
 		//첨부파일 등록
-		if(!imgList.isEmpty()) {
-			for(CommunityImg ci : imgList) {
-				ci.setRefCno(c.getCommunityNo());
-			}
-			//다중 인서트문 실행
-			int imgResult = communityDao.insertCommunityImgList(imgList);
-			
-			if(imgResult != imgList.size()) {
-				throw new RuntimeException("첨부파일 등록 실패");
-			}
-		}
+		if (imgList != null && !imgList.isEmpty()) {
+	        int imgResult = 0;
+	        
+	        // 반복문을 통해 이미지 하나씩 INSERT
+	        for (CommunityImg ci : imgList) {
+	            // 새로 생성된 게시글 번호를 각 이미지 객체에 설정
+	            ci.setRefCno(c.getCommunityNo());
+	            // 한 건씩 추가하는 DAO 메소드 호출
+	            imgResult += communityDao.insertCommunityImg(ci);
+	        }
+
+	        // 모든 이미지가 성공적으로 삽입되었는지 확인
+	        if (imgResult != imgList.size()) {
+	            // 실패 시 @Transactional에 의해 모든 DB 작업이 롤백됨
+	            throw new RuntimeException("첨부파일 등록에 실패했습니다.");
+	        }
+	    }
 		
 		// 태그 저장 로직
         String tagStr = c.getTagStr();
@@ -197,6 +200,8 @@ public class CommunityServiceImpl implements CommunityService{
 	        cExt.setRefCommentId(c.getRefCommentId());
 	        cExt.setCmtWriterUserNum(c.getCmtWriterUserNum());
 	        cExt.setNickName(c.getNickName());
+	        cExt.setImageUrl(c.getImageUrl()); 
+	        
 	        commentMap.put(cExt.getBoardCmtId(), cExt);
 
 	        if (cExt.getRefCommentId() > 0) {
@@ -214,21 +219,7 @@ public class CommunityServiceImpl implements CommunityService{
 	            topLevelComments.add(cExt);
 	        }
 	    }
-//	    }
-//	    
-//	    
-//	    //원래는 최상위 댓글 정렬하는 곳
-//	    for (Entry<Integer, BoardCommentExt> entry : commentMap.entrySet() ) {
-//	    	BoardCommentExt cExt = entry.getValue();
-//	        if (cExt.getRefCommentId() > 0) { // 답글인 경우
-//	            BoardCommentExt parent = commentMap.get(cExt.getRefCommentId());
-//	            if (parent != null) {
-//	                parent.getReplies().add(cExt);
-//	            }
-//	        } else { // 최상위 댓글인 경우
-//	            topLevelComments.add(cExt);
-//	        }
-//	    }
+
 	    System.out.println("최종 : "+topLevelComments);
 	    return topLevelComments;
 	}
@@ -292,15 +283,23 @@ public class CommunityServiceImpl implements CommunityService{
 		}
 		
 		// 3. 새로운 이미지 추가
-		if(newImgList != null && !newImgList.isEmpty()) {
-			for(CommunityImg ci : newImgList) {
-				ci.setRefCno(c.getCommunityNo()); // 게시글 번호 참조 설정
-				// imgLevel은 필요 시 설정 (예: 기존 이미지 개수 + index)
-			}
-			int insertImgResult = communityDao.insertCommunityImgList(newImgList);
-			if(insertImgResult != newImgList.size()) {
-				throw new RuntimeException("첨부파일 등록 실패");
-			}
+		if (newImgList != null && !newImgList.isEmpty()) {
+		    int imgResult = 0;
+
+		    // [핵심] 반복문을 통해 newImgList의 각 객체를 하나씩 DB에 INSERT
+		    for (CommunityImg ci : newImgList) { // <--- imgList를 newImgList로 수정
+		        // ci 객체에는 refCno(게시글 번호)가 설정되어 있어야 합니다.
+		        // Controller에서 미리 c.getCommunityNo() 값을 ci.setRefCno()로 설정해줘야 합니다.
+		        ci.setRefCno(c.getCommunityNo()); // 게시글 번호를 설정해주는 코드 추가
+		        
+		        imgResult += communityDao.insertCommunityImg(ci); // 수정된 DAO 메소드 호출
+		    }
+
+		    // 모든 이미지가 성공적으로 삽입되었는지 확인
+		    if (imgResult != newImgList.size()) { // <--- imgList.size()를 newImgList.size()로 수정
+		        // 일부 이미지 삽입 실패 시 예외 처리 또는 롤백 로직
+		        throw new RuntimeException("이미지 파일 업로드에 실패했습니다.");
+		    }
 		}
 		
 		// 4. 게시글 텍스트 정보 업데이트

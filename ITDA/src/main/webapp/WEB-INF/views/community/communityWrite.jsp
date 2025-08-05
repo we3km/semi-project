@@ -112,7 +112,7 @@
 				        	 <c:if test="${isUpdate and not empty c.imgList}">
 		                        <c:forEach items="${c.imgList}" var="img">
 		                            <div class="file-preview-item existing">
-		                                <img src="${pageContext.request.contextPath}${img.changeName}">
+		                                <img src="${pageContext.request.contextPath}/resources/images/community/${c.communityCd}/${img.changeName}">
 		                                <span class="file-name">${img.originName}</span>
 		                                <span class="remove-existing-file" data-img-no="${img.communityImgNo}">&times;</span>
 		                            </div>
@@ -144,18 +144,15 @@
 	    
 	 	// 수정 모드
 	    if (isUpdate) {
-	        <c:if test="${not empty c.tags}">
-	            <c:forEach var="tag" items="${c.tags}">
-	                // 1) JavaScript 배열에 태그 이름을 추가합니다.
-	                tags.push("${fn:escapeXml(tag.tagContent)}");
-
-	                // 2) 화면에 태그 요소를 만들어서 보여줍니다.
-	                const $tag = $('<span class="tag"></span>');
-	                const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', "${fn:escapeXml(tag.tagContent)}");
-	                $tag.text('#' + "${fn:escapeXml(tag.tagContent)}").append($removeBtn);
-	                $tagList.append($tag);
-	            </c:forEach>
-	        </c:if>
+	    	<c:forEach var="tag" items="${c.tags}">
+		        (function() {
+		            tags.push("${fn:escapeXml(tag.tagContent)}");
+		            const tagName = "${fn:escapeXml(tag.tagContent)}";
+		            const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', tagName);
+		            const $tag = $('<span class="tag"></span>').text('#' + tagName).append($removeBtn);
+		            $tagList.append($tag);
+		        })();
+		    </c:forEach>
 	    }
 	    
 	 	// 태그 입력 (엔터 키)
@@ -168,10 +165,10 @@
 	            if (tags.length >= 5) { return alert("태그는 최대 5개까지 추가할 수 있습니다."); }
 	            
 	            tags.push(newTag);
-	            const $tag = $('<span class="tag"></span>');
+	            const $newTagElement = $('<span class="tag"></span>');
 	            const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', newTag);
-	            $tag.text('#' + newTag).append($removeBtn);
-	            $tagList.append($tag);
+	            $newTagElement.text('#' + newTag).append($removeBtn);
+	            $tagList.append($newTagElement);
 	            $(this).val('');
 	        }
 	    });
@@ -185,46 +182,129 @@
 	    
 	 	
 	 	//===============================이미지=====================================
-	 	// 기존 이미지 삭제 (수정 모드일 때만)
-	    $('#file-list-display').on('click', '.remove-existing-file', function() {
-	        const imgNo = $(this).data('img-no');
-	        $(this).parent('.file-preview-item').remove();
-	        // 삭제할 이미지 번호를 form에 hidden input으로 추가
-	        form.append(`<input type="hidden" name="deleteImgNos" value="${imgNo}">`);
+	 		
+ 		const MAX_FILES = 5;
+	 	
+		let newFiles = []; // 새로 추가된 파일들을 관리하는 배열
+		const fileListDisplay = $('#file-list-display');
+		const fileInput = $('#fileInput');
+		
+		//파일 선택시 파일 개수 체트
+		 $('.file-label').on('click', function(e) {
+	        const existingImgCount = $('.file-preview-item.existing').length;
+	        const newImgCount = newFiles.length;
+	        if (existingImgCount + newImgCount >= MAX_FILES) {
+	            alert('이미지는 최대 ' + MAX_FILES + '개까지 첨부할 수 있습니다.');
+	            e.preventDefault(); // 파일 선택창이 열리는 것을 막음
+	        }
 	    });
+		
+	 	// 기존 이미지 삭제 (수정 모드일 때만)
+	    fileListDisplay.on('click', '.remove-existing-file', function() {
+		    var imgNo = $(this).data('img-no');
+		    // 화면에서 미리보기 제거
+		    $(this).parent('.file-preview-item').remove();
+		    // 서버에 삭제할 이미지 번호를 보내기 위해 hidden input 추가
+		    form.append('<input type="hidden" name="deleteImgNos" value="' + imgNo + '">');
+		});
 	
 	    // 새 파일 선택 시 미리보기
 	    $('#fileInput').on('change', function(event) {
-	        const files = event.target.files;
-	        const fileListDisplay = $('#file-list-display');
-	        
-	        // 이전에 추가됐던 '새로운' 파일 미리보기만 삭제 (기존 파일은 유지)
-	        fileListDisplay.find('.file-preview-item:not(.existing)').remove();
-	
-	        if (files.length > 0) {
-	            Array.from(files).forEach(file => {
-	                const reader = new FileReader();
-	                reader.onload = function(e) {
-	                    const fileItem = $('<div class="file-preview-item"></div>');
-	                    const img = $('<img>').attr('src', e.target.result);
-	                    const fileName = $('<span class="file-name"></span>').text(file.name);
-	                    fileItem.append(img).append(fileName);
-	                    fileListDisplay.append(fileItem);
-	                };
-	                reader.readAsDataURL(file);
-	            });
+	    	
+	    	// 사용자가 선택한 파일들 (읽기 전용 FileList)
+	        var selectedFiles = event.target.files;
+	        if (!selectedFiles.length) {
+	            return;
 	        }
+
+	        // 현재 화면의 파일 개수 계산
+	        var existingImgCount = $('.file-preview-item.existing').length;
+	        var currentNewFilesCount = newFiles.length;
+
+	        // 최대 개수 초과 확인
+	        if (existingImgCount + currentNewFilesCount + selectedFiles.length > MAX_FILES) {
+	            alert('이미지는 최대 ' + MAX_FILES + '개까지 첨부할 수 있습니다.');
+	            fileInput.val(''); // 파일 선택 초기화
+	            return;
+	        }
+
+	        // 선택된 파일들을 순회
+	        for (var i = 0; i < selectedFiles.length; i++) {
+	            var file = selectedFiles[i];
+	            
+	            // 이미지 파일인지 확인
+	            if (!file.type.startsWith('image/')) {
+	                continue; // 이미지 파일이 아니면 다음 파일로 넘어감
+	            }
+
+	            // 파일 장바구니(배열)에 파일 추가
+	            newFiles.push(file);
+
+	            // FileReader를 사용해 이미지 미리보기 생성
+	            var reader = new FileReader();
+	            reader.onload = function(e) {
+	                // 미리보기 HTML 문자열 생성 (백틱 대신 + 연산자 사용)
+	                var previewItemHtml = 
+	                    '<div class="file-preview-item new-file">' +
+	                        '<img src="' + e.target.result + '">' +
+	                        '<span class="file-name">' + file.name + '</span>' +
+	                        '<span class="remove-new-file" title="삭제">&times;</span>' +
+	                    '</div>';
+	                
+	                // 생성된 미리보기를 화면에 추가
+	                fileListDisplay.append(previewItemHtml);
+	            };
+	            // 파일을 읽어 Data URL로 변환 (onload 이벤트 발생)
+	            reader.readAsDataURL(file);
+	        }
+
+	        // 사용자가 동일한 파일을 다시 선택할 수 있도록 input의 값을 초기화
+	        fileInput.val('');
+	    });
+	    fileListDisplay.on('click', '.remove-new-file', function() {
+	        // 클릭된 'x' 버튼의 부모 div (미리보기 아이템)
+	        var itemToRemove = $(this).parent('.file-preview-item');
+	        
+	        // 화면의 '새로운 파일' 목록 중에서 몇 번째 아이템인지 인덱스 찾기
+	        var itemIndex = itemToRemove.index('.file-preview-item.new-file');
+	        
+	        // 인덱스를 찾았을 경우
+	        if (itemIndex > -1) {
+	            // 파일 장바구니(배열)에서 해당 인덱스의 파일 제거
+	            newFiles.splice(itemIndex, 1);
+	        }
+	        
+	        // 화면에서 미리보기 아이템 제거
+	        itemToRemove.remove();
 	    });
 	 	
 	    
 	    //================================= 폼 전송 & 취소 ===========================================
 	    // 폼 전송 시, 태그 데이터를 hidden input에 담아 함께 보냄
 	    $('#enrollForm').on('submit', function() {
-	        const tagString = tags.join(',');
+	    	// --- 1. 태그(Tag) 최종 처리 (기존 로직) ---
+	        var tagString = tags.join(','); // 'tags' 배열은 스크립트 상단에 정의되어 있어야 합니다.
+	        // form에 hidden input이 없으면 새로 추가
 	        if ($('#tagHiddenInput').length === 0) {
 	            form.append('<input type="hidden" id="tagHiddenInput" name="tagStr">');
 	        }
+	        // hidden input에 최종 태그 목록을 값으로 설정
 	        $('#tagHiddenInput').val(tagString);
+
+
+	        // --- 2. 이미지(Image) 최종 처리 (새로 추가된 로직) ---
+	        // DataTransfer 객체 생성 (파일을 담는 임시 컨테이너)
+	        var dataTransfer = new DataTransfer();
+
+	        // 파일 장바구니(newFiles 배열)에 있는 모든 파일을 dataTransfer에 추가
+	        // 'newFiles' 배열은 이미지 스크립트 부분에 정의되어 있어야 합니다.
+	        newFiles.forEach(function(file) {
+	            dataTransfer.items.add(file);
+	        });
+
+	        // 최종 정리된 파일 목록을 원래의 <input type="file">의 files 속성에 할당
+	        $('#fileInput')[0].files = dataTransfer.files;
+
 	    });
 	    
 	    // 작성 취소 버튼
