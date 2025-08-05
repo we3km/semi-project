@@ -1,10 +1,15 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
+
 * {
+	margin: 0;
+	padding: 0;
 	box-sizing: border-box;
 }
 
 body {
 	margin: 0;
-	font-family: sans-serif;
+	font-family: 'SUIT', sans-serif;
 	background-color: #f9f9f9;
 }
 
@@ -62,6 +67,7 @@ body {
 	border-radius: 8px;
 	margin-bottom: 8px;
 	max-width: 78%;
+	transition: background-color 0.3s, transform 0.2s;
 }
 
 .chat-footer1 {
@@ -380,8 +386,12 @@ body {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	font-size: 14px;
-	color: #333;
+	font-size: 15px;
+	color: #2c2c2c;
+	font-family: 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Roboto', sans-serif;
+	font-weight: 400;
+	line-height: 1.6;
+	letter-spacing: 0.3px;
 }
 
 .item-description div {
@@ -393,10 +403,6 @@ body {
 	display: none;
 	border: 1px solid #ccc;
 	border-radius: 20px;
-}
-
-.list-chat {
-	transition: background-color 0.3s, transform 0.2s;
 }
 
 .list-chat:hover {
@@ -411,4 +417,54 @@ body {
 
 #transMenuIcon {
 	display: none;
+}
+
+/*============================= 채팅창 ===============================*/
+.chat-user-info {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 4px;
+}
+
+.chat-profile-img {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.chat-nickname {
+	font-weight: bold;
+	font-size: 13px;
+}
+
+.chat-text {
+	font-size: 14px;
+	white-space: pre-line;
+	word-break: break-word;
+}
+
+.chat-time {
+	font-size: 10px;
+	color: #999;
+	text-align: right;
+	margin-top: 5px;
+}
+
+.chat-profile-img {
+	transition: filter 0.3s ease;
+}
+
+.chat-profile-img:hover {
+	filter: brightness(80%);
+	cursor: pointer;
+}
+
+.chat-system-message {
+	text-align: center;
+	color: gray;
+	font-size: 0.9rem;
+	margin: 10px 0;
+	font-style: italic;
 }

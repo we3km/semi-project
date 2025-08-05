@@ -7,12 +7,13 @@ import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
+import com.kh.itda.user.model.vo.User;
 
 public interface ChatService {
 
 	List<ChatRoom> selectChatRoomList(int userNum);
 
-	int openChatRoom(int userNum, int refNum, int boardId);
+	int openChatRoom(int userNum, int boardOwnerNum, int refNum, int boardId);
 
 	List<ChatMessage> joinChatRoom(ChatRoomJoin join);
 
@@ -28,5 +29,7 @@ public interface ChatService {
 
 	SelectBoardInfo selectBoardInfo(int boardId);
 
-	ChatMessage getSenderInfo(int userNum);
+	User getSenderInfo(int userNum);
+	
+	ChatRoom selectOpponentProfile( Map<String, Object> opps);
 }

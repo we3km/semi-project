@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServlet;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.kh.itda.common.LocationUtils;
+
+import com.kh.itda.chat.model.service.ChatService;
+import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
 import com.kh.itda.user.model.vo.User;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -40,6 +43,10 @@ public class OpenChatController {
 	private locationService locationService;
 	@Autowired
 	private OpenChatService openChatService;
+	@Autowired
+	private ChatService chatService;
+
+	private SimpMessagingTemplate messagingTemplate;
 
 	@GetMapping("/openChatList")
 	public String selectOpenChatList(@RequestParam(required = false) String sido,
@@ -145,11 +152,13 @@ public class OpenChatController {
 		return "redirect:/openchat/openChatList";
 	}
 
+	// 김성겸 => 채팅방 입장 시스템 메세지 삽입
 	@GetMapping("/enter")
 	public String enterChatRoom(@RequestParam("roomId") int roomId, Authentication authentication, Model model,
 			RedirectAttributes ra) {
 		// 세션에서 로그인 유저 정보 가져오기
 		User loginUser = (User) authentication.getPrincipal();
+
 		if (loginUser == null) {
 			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
 			return "redirect:/";
@@ -161,7 +170,22 @@ public class OpenChatController {
 			ra.addFlashAttribute("msg", "입장할 수 없는 채팅방입니다.");
 			return "redirect:/openchat/openChatList";
 		}
-		// 입장 성공 시 채팅방 정보 전달
+		
+		// ========================입장 성공 시 채팅방 정보 전달
+		String nickName = loginUser.getNickName();
+		log.info("입장하는 사람 이름 : {}", nickName);
+
+		// 입장 메세지 전송용 객체
+		ChatMessage systemMsg = new ChatMessage();
+		systemMsg.setChatRoomId(roomId);
+		systemMsg.setChatContent(nickName + "님이 채팅방을 입장했습니다.");
+		systemMsg.setUserNum(0); // 시스템 메시지라면 userNum 0으로 처리
+
+		// 시스템 메세지 DB에 저장
+		chatService.sendMessage(systemMsg);
+		messagingTemplate.convertAndSend("/topic/room/" + roomId, systemMsg);
+		// ========================
+		
 		model.addAttribute("chatRoom", room);
 		return "redirect:/chat/chatRoomList"; // → /WEB-INF/views/chat/chatroomList.jsp
 	}

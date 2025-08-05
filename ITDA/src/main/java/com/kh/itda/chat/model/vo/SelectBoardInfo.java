@@ -45,5 +45,12 @@ public class SelectBoardInfo {
 	// 대여
 	private int rentalFee = 0; // 대여금액, FROM BOARD_RENTAL
 	private int deposit = 0; // 보증금, FROM BOARD_RENTAL
+	
+	// 경매
+	private int auctionStartingFee = 0; // 경매 입찰 시작금
+	private String auctionEndDate = ""; // 경매 종료 날짜
+	
+	// 나눔
+	private int sharingCount = 0; // 나눔 갯수
 
 }

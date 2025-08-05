@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,11 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/chat")
 @Slf4j
 @SessionAttributes({ "chatRoomNo" }) // model 영역에 추가하는 key값이 chatRoomNo인 데이터를 HttpSession에 저장
-
 public class ChatController {
 
 	@Autowired
 	private ChatService chatService;
+	private SimpMessagingTemplate messagingTemplate;
 
 	// 로그인 한 회원이 접속중인 채팅방 보여줌
 	@GetMapping("/chatRoomList")
@@ -58,21 +59,47 @@ public class ChatController {
 		} else {
 			log.info("채팅방 리스트 : {}", chatRoomList);
 		}
-		return "chat/chatRoomList"; // /WEB-INF/views/chat/chatRoomList.jsp
+		return "chat/chatRoomList";
 	}
 
 	// 현재 로그인한 회원 번호 보내서 회원 정보 가져오기
 	@GetMapping("/getSenderInfo")
 	@ResponseBody
-	public Map<String, Object> getSenderInfo(int userNum, Authentication authentication) {		
-		ChatMessage senderInfo = chatService.getSenderInfo(userNum);
-		
+	public Map<String, Object> getSenderInfo(int userNum, Authentication authentication) {
+		// 챗 메세지 객체로 정보 할당
+		User senderInfo = chatService.getSenderInfo(userNum);
+
 		Map<String, Object> map = new HashMap<String, Object>();
+		
 		map.put("nickName", senderInfo.getNickName());
-		map.put("chaImg", senderInfo.getChatImg());
+		map.put("imageUrl", senderInfo.getImageUrl());
+		
 		return map;
 	}
-	
+
+	// 거래 채팅!!하고 있는 상대방 프로필 가져오기
+	@GetMapping("/selectOpponentProfile")
+	@ResponseBody
+	public Map<String, Object> selectOpponentProfile(int chatRoomId, Authentication authentication) {
+		// chatRoom 객체로 정보 할당
+		User loginUser = (User) authentication.getPrincipal();
+		int userNum = loginUser.getUserNum();
+
+		Map<String, Object> opps = new HashMap<String, Object>();
+		opps.put("chatRoomId", chatRoomId);
+		opps.put("userNum", userNum);
+
+		// 현재 로그인한 회원정보와 다른 상대 정보 가져오자
+		ChatRoom opponentProfile = chatService.selectOpponentProfile(opps);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nickName", opponentProfile.getNickName());
+		map.put("imageUrl", opponentProfile.getImageUrl());
+
+		log.info("상대 프로필 정보 : {}", map);
+		return map;
+	}
+
 	// 게시판 정보 불러오기
 	@GetMapping("/selectBoardInfo")
 	@ResponseBody
@@ -89,22 +116,19 @@ public class ChatController {
 	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, Authentication authentication) {
 		// 현재 로그인한 회원 정보 받아옴
 		User loginUser = (User) authentication.getPrincipal();
+
+		// 로그인한 회원 정보와, 게시물 주인 정보 번호 받아서 채팅방 생성 정보 할당
 		int userNum = loginUser.getUserNum();
-		log.info("로그인한 회원정보 : {}", loginUser);
-
+		int boardOwnerNum = boardInfo.getUserNum();
 		int refNum = boardInfo.getTransactionRefNum();
-		log.info("거래 유형 번호 : {}", refNum);
-
 		int boardId = boardInfo.getBoardId();
-		log.info("게시판 번호 : {}", boardId);
 
-		int result = chatService.openChatRoom(userNum, refNum, boardId);
+		int result = chatService.openChatRoom(userNum, boardOwnerNum, refNum, boardId);
 
 		if (result > 0) {
 			log.info("채팅방 성공! : {}", result);
+			log.info("생성된 채팅방 정보 : {}", boardInfo);
 		}
-		log.info("생성된 채팅방 정보 : {}", boardInfo);
-
 		return "success";
 	}
 
@@ -118,11 +142,26 @@ public class ChatController {
 	// 채팅방 나가기 -> 단순히 나가는 것이기 때문에 채팅방의 STATUS값만 바꿔줌
 	@PostMapping("/exit/{chatRoomId}")
 	@ResponseBody
-	public void exitChatRoom(@PathVariable int chatRoomId) {
+	public void exitChatRoom(@PathVariable int chatRoomId, Authentication authentication) {
+		User loginUser = (User) authentication.getPrincipal();
+		String nickName = loginUser.getNickName();
+
 		int result = chatService.exitChatRoom(chatRoomId);
 
+		log.info("나가는 사람 이름 : {}", nickName);
 		if (result > 0) {
 			log.info(chatRoomId + "번 채팅방 STATUS N으로 변경 완료");
+
+			// 퇴장 메세지 전송
+			ChatMessage systemMsg = new ChatMessage();
+			systemMsg.setChatRoomId(chatRoomId);
+			systemMsg.setChatContent(nickName + "님이 채팅방을 나갔습니다.");
+			systemMsg.setUserNum(0); // 시스템 메시지라면 userNum 0으로 처리 나 ENUM없음
+
+			// 시스템 메세지 DB에 저장
+			chatService.sendMessage(systemMsg);
+
+			messagingTemplate.convertAndSend("/topic/room/" + chatRoomId, systemMsg);
 		} else {
 			log.info(chatRoomId + "번 채팅방 STATUS N으로 변경 실패ㅠㅠ");
 		}
@@ -187,7 +226,7 @@ public class ChatController {
 			if (!dir.exists())
 				dir.mkdirs();
 
-			// 파일명 중복 방지를 위한 UUID
+			// 파일명 중복 방지하자
 			String originalFilename = image.getOriginalFilename();
 			String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
 			String renamedFilename = UUID.randomUUID().toString() + ext;
@@ -203,6 +242,11 @@ public class ChatController {
 			chatMessage.setChatContent("");
 			chatMessage.setUserNum(userNum);
 			chatMessage.setChatImg(chatImgUrl);
+			
+			// 로그인 정보 넘겨서 채팅메세지에 할당해주자			
+			User u = chatService.getSenderInfo(userNum);
+			chatMessage.setNickName(u.getNickName());
+			chatMessage.setImageUrl(u.getImageUrl());
 
 			int insertResult = chatService.sendMessage(chatMessage);
 

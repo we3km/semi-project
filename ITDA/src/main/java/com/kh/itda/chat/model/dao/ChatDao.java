@@ -11,6 +11,7 @@ import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
+import com.kh.itda.user.model.vo.User;
 
 @Repository
 public class ChatDao {
@@ -23,10 +24,14 @@ public class ChatDao {
 	}
 
 	// 채팅방 OpenChatRoom, TransactionChatRoom, ChatParticipant 생성
-	public int openChatRoom(Map<String, Object> map) {
+	public int openChatRoom(Map<String, Object> map) {		
+		// 톡 거는 사람(구매자) 기준으로 채팅방 만듬
 		int result = session.insert("chat.openChatRoom", map);
 		session.insert("chat.openTransactionChatRoom", map);
-		session.insert("chat.openChatParticipant", map);
+		session.insert("chat.openChatParticipantBuyer", map);
+		
+		// 게시물 주인도 CHAT_PARTICIPANT에 넣어주자
+		session.insert("chat.openChatParticipantSeller", map);
 		
 		return result;
 	}
@@ -73,7 +78,12 @@ public class ChatDao {
 		return session.selectOne("chat.selectBoardInfo", boardId);
 	}
 
-	public ChatMessage getSenderInfo(int userNum) {
+	public User getSenderInfo(int userNum) {
 		return session.selectOne("chat.getSenderInfo", userNum);
+	}
+
+	public ChatRoom selectOpponentProfile(Map<String, Object> opps) {
+		return session.selectOne("chat.selectOpponentProfile", opps);
+	
 	}
 }

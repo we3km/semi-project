@@ -31,65 +31,125 @@ function sendMessage() {
 
     // 회원된 로그인 번호
     console.log("회원 로그인 번호 : ", loginUserNum);
-    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
+    console.log("메세지 보내는 채팅방 : ", window.chatRoomId);
     console.log("보내는 메세지 : ", message);
-    console.log("나를 호출하는거야 stomp.js");
+
+    const userNum = loginUserNum;
+    let nickName = null;
+    let imageUrl = null;
+
+    // 메세지 보내는 사람 정보 따와서 메세지 정보에 할당
+    fetch(contextPath + "/chat/getSenderInfo?userNum=" + userNum, {
+        method: "GET"
+    }).then(response => response.json())
+        .then(data => {
+            nickName = data.nickName;
+            imageUrl = data.imageUrl;
+
+            console.log("채팅자 정보!!!!!! : ", data);
+
+            // ChatStompController 호출
+            stompClient.send("/app/chat/sendMessage", {}, JSON.stringify({
+                chatContent: message,
+                chatRoomId: window.chatRoomId,
+                nickName: nickName,
+                imageUrl: imageUrl
+            }));
+
+            input.value = ""; // 입력란 비워줌
+        }).catch(err => console.error("오류 발생: ", err));
 
     if (!message) {
         alert("메세지를 입력해주세요!!");
         return;
     }
-
-    // ChatStompController 호출
-    stompClient.send("/app/chat/sendMessage", {}, JSON.stringify({
-        chatContent: message,
-        chatRoomId: window.chatRoomId
-    }));
-
-    input.value = ""; // 입력란 비워줌
 }
 
-
-// 실시간으로 채팅 보여짐
 const showMessage = msg => {
     const chatContent = document.querySelector('.chat-content2');
+    const loginUserNum = Number(document.body.dataset.usernum);
+    const userNum = msg.userNum;
 
-    // 보여질 메세지 div
-    const newMessage = document.createElement('div');
+    // userNum이 0인 경우,
+    // 시스템 메세지 처리(채팅방 입장 or 채팅방 나가기)
+    if (userNum === 0) {
+        const sysMessage = document.createElement('div');
+        sysMessage.className = "chat-system-message";
+        sysMessage.textContent = msg.chatContent;
 
-    const loginUserNum = Number(document.body.dataset.usernum); // 로그인 유저 번호
-
-    // 회원 정보 받아서 보내주자
-    fetch("${contextPath}/chat/getSenderInfo?userNum=" + loginUserNum)
-        .then(response => {
-            if (!response.ok) throw new Error("메세지 발신자 정보 확인 불가");
-            return response.json();
-        })
-        .then()
-
-    if (msg.userNum === loginUserNum) {
-        newMessage.className = 'chat-message-sent';  // 내가 보낸 메시지 (오른쪽)
-    } else {
-        newMessage.className = 'chat-message-received'; // 상대방 메시지 (왼쪽)
+        chatContent.appendChild(sysMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
+        return;
     }
+    else {
+        const newMessage = document.createElement('div');
 
-    // 텍스트 형식이 아닌 이미지 형식일 경우
-    if (msg.chatImg) {
-        const chatImg = document.createElement('img');
-        chatImg.src = contextPath + msg.chatImg;
-        chatImg.alt = "채팅이미지";
-        chatImg.style.maxWidth = "200px";
-        chatImg.style.borderRadius = "8px";
+        // 내가 보낸 메세지인지 확인
+        console.log("dataset에서 받아온 loginUserNum:", loginUserNum);
+        console.log("메세지 보낸 사람의 userNum:", userNum);
 
-        newMessage.textContent = msg.sentAt;
-        newMessage.appendChild(chatImg);
-    } else {
-        msg.sentAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        newMessage.textContent = msg.chatContent + msg.sentAt;
+        const isSender = userNum === loginUserNum;
+        newMessage.className = isSender ? "chat-message-sent" : "chat-message-received";
 
-        console.log("메세지 발신자 정보 : ", msg);
+        console.log("발신자 정보 : ", msg);
+        // 시간 포맷 처리
+        const sentAt = new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        console.log("보여지는 시간 ", msg.sentAt);
+
+        if (!isSender) {
+            // 상대방 프로필과 닉네임 추가
+            const userInfo = document.createElement('div');
+            userInfo.className = "chat-user-info";
+
+            console.log("프로필 이미지 경로 :", msg.imageUrl);
+
+            const profileImg = document.createElement('img');
+            profileImg.className = "chat-profile-img";
+            profileImg.src = contextPath + msg.imageUrl;
+            profileImg.alt = msg.nickName + " 프로필";
+
+            // 클릭 시 마이페이지로 이동
+            profileImg.style.cursor = 'pointer';
+            profileImg.addEventListener('click', () => {
+                window.location.href = contextPath + "/user/myPage?userNum=" + msg.userNum;
+            });
+
+            const nicknameSpan = document.createElement('span');
+            nicknameSpan.className = "chat-nickname";
+            nicknameSpan.textContent = msg.nickName;
+
+            userInfo.appendChild(profileImg);
+            userInfo.appendChild(nicknameSpan);
+
+            newMessage.appendChild(userInfo);
+        }
+
+        // 메시지 내용 또는 이미지
+        const textDiv = document.createElement('div');
+        textDiv.className = "chat-text";
+
+        if (msg.chatImg) {
+            const chatImg = document.createElement('img');
+
+            // GPT 이미지 실시간
+            chatImg.src = contextPath + msg.chatImg + "?t=" + new Date().getTime();
+            chatImg.alt = "채팅 이미지";
+            chatImg.style.maxWidth = "200px";
+            chatImg.style.borderRadius = "8px";
+            textDiv.appendChild(chatImg);
+        } else {
+            textDiv.textContent = msg.chatContent;
+        }
+        newMessage.appendChild(textDiv);
+
+
+        // 보낸 시간 출력
+        const timeDiv = document.createElement('div');
+        timeDiv.className = "chat-time";
+        timeDiv.textContent = sentAt;
+        newMessage.appendChild(timeDiv);
+
+        chatContent.appendChild(newMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
     }
-
-    chatContent.appendChild(newMessage);
-    chatContent.scrollTop = chatContent.scrollHeight;
 };

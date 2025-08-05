@@ -298,11 +298,10 @@ console.log("유저:",loginUser.userNum);
 			    });
 			        
 			    
-
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
+					location.href = "${contextPath}/itda/chat/chatRoomList";
 				});
 				//알람버튼
 				$('#alarm-icon').click(function() {

@@ -13,6 +13,7 @@ import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
+import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,10 +31,11 @@ public class ChatServiceImpl implements ChatService {
 
 	@Transactional
 	@Override
-	public int openChatRoom(int userNum, int refNum, int boardId) {
+	public int openChatRoom(int userNum, int boardOwnerNum, int refNum, int boardId) {
 		
 		Map<String, Object> map = new HashMap<>();
-		map.put("userNum", userNum);
+		map.put("userNum", userNum); // 현재 로그인한 회원정보
+		map.put("boardOwnerNum", boardOwnerNum); // 게시물 주인
 		map.put("refNum", refNum);
 		map.put("boardId", boardId);
 		
@@ -95,7 +97,12 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public ChatMessage getSenderInfo(int userNum) {
+	public User getSenderInfo(int userNum) {
 		return dao.getSenderInfo(userNum);
+	}
+
+	@Override
+	public ChatRoom selectOpponentProfile(Map<String, Object> opps) {
+		return dao.selectOpponentProfile(opps);
 	}
 }

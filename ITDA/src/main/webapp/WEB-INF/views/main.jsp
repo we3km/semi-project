@@ -28,24 +28,7 @@
 </head>
 <body>
 	<div class="container">
-		
-		 <div class="top-buttons">
-		    <%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
-		    <sec:authorize access="isAnonymous()">
-		        <div class="unlogin">
-		            <div class="btn" id="loginBtn">로그인</div>
-		            <div class="btn" id="joinMembership">회원가입</div>
-		        </div>
-		    </sec:authorize>
-		
-		    <%--로그인했을 때만 이 div를 렌더링--%>
-		    <sec:authorize access="isAuthenticated()">
-		        <div class="login">
-		            <div class="btn" id="myPage">마이페이지</div>
-		            <div class="btn" id="logoutBtn">로그아웃</div>
-		        </div>
-		    </sec:authorize>
-		</div> 
+	
 		
 		<div class="headline">IT다</div>
     	<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
@@ -102,7 +85,6 @@
 					</div>
 
 				</div>
-
 				<!-- 상품유형 드롭다운 -->
 				<div class="dropdown" id="product-type-dropdown">
 					<button class="dropbtn">
