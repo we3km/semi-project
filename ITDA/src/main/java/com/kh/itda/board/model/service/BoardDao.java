@@ -88,6 +88,8 @@ public interface BoardDao {
 
 	Map<String, ProductCategories> getProductType();
 
+	String getProfileImage(int writerUserNum);
+
 
 
 }

@@ -604,6 +604,7 @@ public class BoardController {
 		// 접속한 회원아이디
 		dibs.setLikesUserId(userNum);
 		
+		
 		boolean exists = boardService.isLiked(dibs);
 		System.out.println();
 		if (exists) {
@@ -613,6 +614,9 @@ public class BoardController {
 			model.addAttribute("isDibs", exists);
 		}
 
+		// 게시자의 프로필 이미지
+		String profileImage = boardService.getProfileImage(writerUserNum);
+		model.addAttribute("profileImage", profileImage);
 
 		return "board/detailRental";
 	}

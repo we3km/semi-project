@@ -314,6 +314,12 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 
+	@Override
+	public String getProfileImage(int writerUserNum) {
+		return boardDao.getProfileImage(writerUserNum);
+	}
+
+
 
 
 

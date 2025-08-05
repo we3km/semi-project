@@ -396,7 +396,14 @@ img {
 					inputImages.forEach((input, index) => {
 					  input.addEventListener('change', function () {
 					    const file = this.files[0];
-					    if (file) {
+					    	if (file) {
+					    	// 이미지인지 검사
+					        if (!file.type.startsWith('image/')) {
+					          alert('이미지 파일만 업로드할 수 있습니다.');
+					          this.value = ''; // input 비우기
+					          return;
+					        }	
+					    	
 					      const reader = new FileReader();
 					      reader.onload = function (e) {
 					        // 미리보기 wrapper 생성
@@ -934,10 +941,6 @@ img {
 			  });
 			</script>
 			</section>
-				</c:when>
-				
-				<c:when test="${boardCategory eq 'exchange'}">
-					<jsp:include page="/WEB-INF/views/board/writeExchange.jsp"></jsp:include>
 				</c:when>
 				
 				<c:when test="${boardCategory eq 'share'}">

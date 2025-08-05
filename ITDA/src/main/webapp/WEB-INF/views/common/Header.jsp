@@ -307,6 +307,6 @@
 
 			});
 		</script>
-		</div>
+		
 </body>
 </html>

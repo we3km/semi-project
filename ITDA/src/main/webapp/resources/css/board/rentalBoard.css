@@ -1,18 +1,17 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
 
     body {
-      margin: 0;
-      display: flex;
-      flex-direction:column;
-      background-color: white;
+	  margin: 0;
+	  padding: 30px;
+	  font-family: 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
+	  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+	  min-height: 100vh;
+	
     }
     .container{
-    	margin: 0;
-      display: flex;
+	display:flex;
+    margin: 0;
       background-color: white;
     }
 
@@ -35,24 +34,35 @@
     .filter-section label {
       display: block;
       margin-bottom: 5px;
+      
+    }
+    
+    .top-section{
+    	display:flex;
+    	margin: 0; 
+    	padding: 0;
+    	align-items: center;
+    	
     }
 
     .main {
-      flex: 1;
+      min-height:85%;
+      min-width:85%;
       padding: 30px 100px;
       position: relative;
     }
 
     .top {
+      margin: 0; padding: 0;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      box-sizing: border-box;
     }
 
     .top h2 {
       font-size: 28px;
-      margin: 0;
+      margin-right: 10px;
     }
 
     .top .location {
@@ -70,34 +80,59 @@
       font-weight: bold;
       cursor: pointer;
     }
+    
+    #filter-btn{
+		background-color: #6657ff;
+      	color: white;
+      	padding: 7px 12px;
+      	cursor: pointer;
+      	border: none;
+      	border-radius: 12px;
+      	font-weight: bold;
+      	margin-left:10px;
+      	
+    }
+    
+    .sortDrop{
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+}
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
+      padding: 16px;
     }
 
-    .card {
-      background-color: white;
-      padding: 15px;
-     	width:250px;
-     	height:280px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      position: relative;
-    }
+    .card  {
+		min-width: 0; /* 셀 너비를 넘지 않게 */
+		overflow: hidden; /* 넘칠 경우 숨김 처리 */
+		word-wrap: break-word; /* 긴 단어 줄바꿈 */
+		box-sizing: border-box;
+		background-color: white;
+		padding: 15px;
+		width: 250px;
+		height: 300px;
+		border-radius: 12px;
+		text-align: center;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+		position: relative;
+	}
 
     .card img {
       width: 100%;
       /* max-width: 180px; */
-      height: auto;
+      height: 60%;
     }
 
     .card .heart {
-      position: absolute;
-      top: 10px;
-      right: 10px;
       font-size: 20px;
       cursor: pointer;
     }

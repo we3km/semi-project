@@ -539,6 +539,12 @@ public class BoardDaoImpl implements BoardDao {
 	}
 
 
+	@Override
+	public String getProfileImage(int writerUserNum) {
+		return session.selectOne("board.getProfileImage", writerUserNum);
+	}
+
+
 
 
 

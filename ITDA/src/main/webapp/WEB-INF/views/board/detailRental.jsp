@@ -137,6 +137,20 @@ body {
   background-color:gray;
   color: white; /* 찜 안한 상태일 때 회색 하트 */
 }
+
+.profile-icon {
+            width: 28px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 50%;
+   			overflow:hidden;
+            flex-shrink: 0;
+        }
+.profile-img{
+         	width:100%;
+		    height:100%;
+		    object-fit:cover;
+        }
 </style>
 
 </head>
@@ -197,6 +211,11 @@ body {
 				
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
+					<div class="profile-icon">
+						<img class="profile-img"
+							src="${pageContext.request.contextPath}${profileImage}"
+							alt="프로필" />
+					</div>
 					<strong>${writer} </strong>
 					<p>매너점수 : ${mannerScore }</p>
 				</div>

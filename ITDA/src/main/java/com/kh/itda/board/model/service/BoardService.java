@@ -93,6 +93,8 @@ public interface BoardService {
 
 	Map<String, ProductCategories> getProductType();
 
+	String getProfileImage(int writerUserNum);
+
 
 
 

@@ -28,12 +28,12 @@
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/rental/list">
-			<div class="filter-section">
+			<div class="filter-section top-section">
 				<h3>정렬 조건</h3>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 				<option value="price">가격 순</option>
@@ -215,18 +215,10 @@
 				<div class="card"
 					onclick="moveDetail(${board.boardCommon.boardId});">
 					<c:set var="boardId" value="${board.boardCommon.boardId}" />
-					<c:if test="${fn:contains(likedBoardIds, boardId)}">
-						<div class="heart liked"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
-					</c:if>
-					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
-						<div class="heart"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
-					</c:if>
-
+					
 					<img
 						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
-						alt="이미지" style="width: 90%; height: auto;" />
+						alt="이미지" />
 					<p id="product-name">${board.boardCommon.productName }</p>
 
 					<p id="rental-fee">대여료 : ${board.boardRental.rentalFee }</p>
@@ -237,7 +229,15 @@
 						<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 							pattern="yyyy/MM/dd" />
 					</p>
-				</div>
+					<c:if test="${fn:contains(likedBoardIds, boardId)}">
+						<div class="heart liked"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
+					</c:if>
+					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
+						<div class="heart"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
+					</c:if>
+			</div>
 			</c:forEach>
 			<script>
 	  	function moveDetail(bid){
