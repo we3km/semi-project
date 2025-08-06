@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import com.kh.itda.support.model.vo.Report;
+import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,15 @@ public class SecurityDaoImpl implements SecurityDao {
     public List<Report> getAllReports() {
         return session.selectList("security.getAllReports");
     }
+    
 	@Override
 	public List<String> findAuthoritiesByUserNum(int userNum) {
 		return session.selectList("security.findAuthoritiesByUserNum", userNum);
+	}
+
+	@Override
+	public void banUser(BanUser banUser) {
+		session.insert("banned.banUser", banUser);
 	}
 
 

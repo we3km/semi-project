@@ -17,13 +17,16 @@
 		SELECT
 		U.USER_NUM as userNum,
 		U.USER_ID as userId,
-		U.USER_PWD as userPwd,
+		U.USER_PWD
+		as userPwd,
 		U.NICK_NAME as nickName,
 		U.EMAIL as email,
-		U.CREATE_DATE as createDate
+		U.CREATE_DATE as
+		createDate
 		FROM USER_TB U
 		WHERE U.NICK_NAME LIKE #{keyword}
-		ORDER BY U.USER_NUM
+		ORDER BY
+		U.USER_NUM
 	</select>
 
 	<select id="getAllReports"
@@ -33,7 +36,7 @@
 		USER_NUM AS userNum,
 		TYPE AS
 		type,
-		TARGET_NAME AS targetName,
+		TARGET_ID AS targetId,
 		REASON AS reason,
 		DETAIL_REASON AS
 		detailReason,

@@ -1,5 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
@@ -129,12 +128,15 @@ section {
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-	<header class="header">
-		<jsp:include page="/WEB-INF/views/common/Header.jsp" />
-	</header>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<div class="container">
 		<h2>관리자 마이페이지</h2>
-
+		
+		
 		<!-- 관리자 정보 표시 -->
 		<div class="user-info">
 			<sec:authorize access="isAuthenticated()">
@@ -153,7 +155,10 @@ section {
 		<nav>
 			<ul>
 				<li><a href="${pageContext.request.contextPath}/admin/reports">신고 관리 페이지</a></li>
-				<li><a href="${pageContext.request.contextPath}/admin/inquriry">문의하기 관리 페이지</a></li>
+				<br>
+				<br>
+				<br>
+				<li><a href="${pageContext.request.contextPath}/cs">문의하기 관리 페이지</a></li>
 			</ul>
 		</nav>
 

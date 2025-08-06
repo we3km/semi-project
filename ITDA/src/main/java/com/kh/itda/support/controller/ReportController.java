@@ -27,7 +27,7 @@ public class ReportController {
         
         report.setUserNum(loginUser.getUserNum());
         report.setCreatedAt(new Date());
-        report.setStatus("대기중");
+        report.setStatus("접수");
 
         int result = reportService.insertReport(report);
 

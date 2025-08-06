@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
- 
+
 <mapper namespace="banned">
 
-
+	<insert id="banUser"
+		parameterType="com.kh.itda.user.model.vo.BanUser">
+		INSERT INTO banned_user (
+		banned_num,
+		user_num,
+		reason,
+		is_banned,
+		penalty_date,
+		release_date,
+		admin_user_name
+		) VALUES (
+		BANNED_NUM_SEQ.NEXTVAL,
+		#{userNum},
+		#{reason},
+		#{isBanned},
+		#{penaltyDate},
+		#{releaseDate},
+		#{adminUserName}
+		)
+	</insert>
 
 </mapper>

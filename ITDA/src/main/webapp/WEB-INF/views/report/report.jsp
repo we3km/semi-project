@@ -21,7 +21,7 @@
 			<form:form id="reportForm" method="post" modelAttribute="report"
 				action="/report/submit">
 
-				<!-- 신고 타입 및 대상 ID -->
+				<!-- 신고 타입 및 대상 닉네임 -->
 				<form:hidden path="reportType" id="reportType" />
 				<form:hidden path="targetId" id="targetId" />
 
@@ -57,6 +57,6 @@
 		</div>
 	</div>
 
-	<script src="reports.js"></script>
+	<script src="/resources/js/report/reports.js"></script>
 </body>
 </html>

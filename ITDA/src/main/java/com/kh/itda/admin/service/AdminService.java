@@ -3,6 +3,7 @@ package com.kh.itda.admin.service;
 import java.util.List;
 
 import com.kh.itda.support.model.vo.Report;
+import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
 
 public interface AdminService {
@@ -11,4 +12,5 @@ public interface AdminService {
 	Report getReportById(int reportNum);
 	boolean updateReportStatus(int reportNum, String status);
 	User findUserById(String userId);
+	void banUser(BanUser banUser);
 }

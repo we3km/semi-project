@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kh.itda.support.model.vo.Report;
+import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
 
 public interface SecurityDao {
@@ -21,4 +22,6 @@ public interface SecurityDao {
 	User findUserByNum(int userNum); // 유저 번호로 조회
 
 	List<String> findAuthoritiesByUserNum(int userNum); // 유저 권한 조회
+
+	void banUser(BanUser banUser);
 }

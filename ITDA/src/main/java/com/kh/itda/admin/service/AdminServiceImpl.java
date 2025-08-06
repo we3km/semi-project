@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.kh.itda.security.model.dao.SecurityDao;
 import com.kh.itda.support.model.dao.ReportDao;
 import com.kh.itda.support.model.vo.Report;
+import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class AdminServiceImpl implements AdminService {
 		report.setStatus(status);
 		int result = reportDao.updateReportStatus(report);
 		return result > 0;
+	}
+
+	@Override
+	public void banUser(BanUser banUser) {
+		securityDao.banUser(banUser);
 	}
 	
 

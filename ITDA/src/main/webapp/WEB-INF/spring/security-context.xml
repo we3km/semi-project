@@ -16,8 +16,7 @@
 
 
 	<!-- 시큐리티 인증/인가 -->
-	<http auto-config="true"
-		access-decision-manager-ref="accessDecisionManager">
+	<http auto-config="true">
 		<intercept-url pattern="/" access="permitAll" />
 		<intercept-url pattern="/user/login/**"
 			access="isAnonymous()" />
@@ -28,23 +27,25 @@
 		<intercept-url pattern="/user/findPwd/**"
 			access="isAnonymous()" />
 
-		<form-login login-page="/user/login"
-			login-processing-url="/user/loginprocess"
-			authentication-success-handler-ref="customAuthenticationSuccessHandler"
-			authentication-failure-handler-ref="customAuthenticationFailureHandler"
-			username-parameter="userId" password-parameter="userPwd" />
-
 		<!-- 권한별 접근 제어 -->
 		<intercept-url pattern="/admin/**"
 			access="hasRole('ROLE_ADMIN')" />
 		<intercept-url pattern="/user/mypage/**"
 			access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<intercept-url pattern="/cs/**" access="isAuthenticated()" />
+		
+		<form-login login-page="/user/login"
+			login-processing-url="/user/loginprocess"
+			authentication-success-handler-ref="customAuthenticationSuccessHandler"
+			authentication-failure-handler-ref="customAuthenticationFailureHandler"
+			username-parameter="userId" password-parameter="userPwd" />
 
 		<logout logout-url="/user/logout" logout-success-url="/"
 			invalidate-session="true" delete-cookies="JSESSIONID, remember-me" />
 		<remember-me key="itdaUniqueSecurityKey"
 			data-source-ref="dataSource" token-validity-seconds="1209600" />
+
 
 		<csrf disabled="true" />
 	</http>

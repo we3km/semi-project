@@ -1,4 +1,4 @@
-function openReportModal(type, targetId, targetName, targetUserNum) {
+function openReportModal(type, targetId, targetUserNum) {
   document.getElementById('reportType').value = type;
   document.getElementById('targetId').value = targetId;
 
@@ -6,7 +6,7 @@ function openReportModal(type, targetId, targetName, targetUserNum) {
   document.getElementById('targetUserNum').value = targetUserNum;
 
   // 신고 대상 이름 표시
-  document.getElementById('targetInfo').textContent = `${type} 신고 대상: ${targetName}`;
+  document.getElementById('targetInfo').textContent = `${type} 신고 대상: ${targetId}`;
 
   // 신고 사유 카테고리 동적 생성
   const categorySelect = document.querySelector('select[name="category"]');

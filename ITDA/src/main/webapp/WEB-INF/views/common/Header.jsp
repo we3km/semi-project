@@ -15,22 +15,14 @@
 <link
 	href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;600;700&display=swap"
 	rel="stylesheet">
-
 <%-- Header CSS 파일 --%>
 <link href="${pageContext.request.contextPath}/resources/css/Header.css"
 	rel="stylesheet">
-
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
 <body>
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
-
-	<script type="text/javascript">
-console.log("유저:",${loginUser.userNum});
-</script>
-
 	<div class="container_header">
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
@@ -77,7 +69,6 @@ console.log("유저:",${loginUser.userNum});
 				</script>
 			</c:otherwise>
 		</c:choose> --%>
-
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 			<div class="filters">
@@ -134,8 +125,7 @@ console.log("유저:",${loginUser.userNum});
 	<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
-
-				// 로그인-로그아웃 버튼 
+				// 로그인-로그아웃 버튼
 				// 로그인 상태 토글
 				$('#loginBtn').click(function() {
 					$('.unlogin').hide();
@@ -150,24 +140,20 @@ console.log("유저:",${loginUser.userNum});
 				$('.unlogin').show(); // 비로그인용 버튼 보이기
 				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
 				// 로그인 클릭 시
-
 				$('#loginBtn').click(function() {
 					location.href = contextPath
 							+ '/user/tempLogin';
 					/* location.href = contextPath + '/user/login'; */
-
 				});
 				// 로그아웃 클릭 시
 				$('#logoutBtn').click(function() {
 					alert(`로그아웃 하였습니다`);
 					location.href = contextPath	+ '/user/logout';
 				});
-
 				//회원가입 이동
 				$('#joinMembership').click(function() {
 					location.href = contextPath + '/user/join';
 				});
-
 				//마이페이지 이동
 				$('#myPage').click(function(){
 					 const userRole= $('#userRole').val();
@@ -178,18 +164,15 @@ console.log("유저:",${loginUser.userNum});
 						}					
 				});
 				
-
 				//고객센터이동
 				$('#customerService').click( function() {
 							location.href = contextPath
 									+ '/cs';
 				})
-
 				// 로고
 				$('.logo').click(function() {
 					location.href = contextPath;
 				})
-
 				// 카테고리
 				// 카테고리 클릭 시 active
 				$('.category-line .category').click(function() {
@@ -207,76 +190,6 @@ console.log("유저:",${loginUser.userNum});
 					        }
 					        window.location.href = targetUrl;
 						});
-
-				// 로그인-로그아웃 버튼 
-				// 로그인 상태 토글
-				$('#loginBtn').click(function() {
-					$('.unlogin').hide();
-					$('.login').show();
-				});
-				$('#logoutBtn').click(function() {
-					$('.login').hide();
-					$('.unlogin').show();
-				});
-				// 초기화 - 무조건 로그인된 상태 숨기기
-				$('.login').hide(); // 로그인된 사용자용 버튼 숨김
-				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기
-				// 로그인 클릭 시
-				$('#loginBtn').click(
-						function() {
-							//로그인 페이지로 이동
-							alert(`로그인창`);
-							location.href = contextPath
-									+ '/user/login';
-							location.href = contextPath + '/user/login'; 
-
-							$('.unlogin').hide();
-							$('.login').css('display', 'flex');
-							$('.login_effect').show();
-						});
-				// 로그아웃 클릭 시
-				$('#logoutBtn').click(
-						function() {
-							//로그아웃
-							alert(`로그아웃 하였습니다`);
-							const form = document.createElement('form');
-						    form.method = 'POST';
-						    form.action = contextPath + '/user/logout';
-
-						    document.body.appendChild(form);
-						    form.submit();
-						    
-							$('.login').hide();
-							$('.login_effect').hide();
-							$('.unlogin')
-									.css('display', 'flex');
-						});
-
-				//회원가입 이동
-				$('#joinMembership').click(function() {
-					location.href = contextPath + '/user/join';
-				});
-
-				//마이페이지 이동
-				const userRole = $('#userRole').val();
-
-				$('#myPage').click(function() {
-				if (userRole === 'ROLE_ADMIN') {
-					location.href = contextPath + '/admin/mypage';
-					} else {
-						location.href = contextPath + '/user/mypage';
-					}
-});
-				
-
-				//고객센터이동
-				$('#customerService').click(
-						function() {
-							location.href = contextPath
-									+ '/cs';
-						})
-
 				// 검색창
 				// 드롭다운 화살표 클릭 시 목록 열기
 			    $('.dropbtn_click').on('click', function (e) {
@@ -288,7 +201,7 @@ console.log("유저:",${loginUser.userNum});
 			        dropdown.find('.dropdown-content').toggleClass('show');
 			    });
 			    $(window).on('click', () => $('.dropdown-content').removeClass('show'));
-			    
+			   
 			 	// '거래유형' 드롭다운 클릭 이벤트 분리
 			    $('#deal-type-dropdown').on('click', '.category', function () {
 			        const dropdown = $(this).closest('.dropdown');
@@ -297,28 +210,23 @@ console.log("유저:",${loginUser.userNum});
 			     	// 선택된 거래유형의 ID와 Gubun 저장
 			        selectedCategoryId = $(this).data('id');
 			        selectedCategoryGubun = $(this).data('gubun');
-			        
+			       
 			     	// 거래유형 버튼의 제목을 선택한 항목으로 변경
 			        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
 			        dropdown.find('.dropdown-content').removeClass('show');
-
 			        // --- 상품유형 드롭다운을 동적으로 변경하는 로직 ---
 			        const $productDropdown = $('#product-type-dropdown .dropdown-content');
 			        const $productBtnText = $('#product-type-dropdown .dropbtn_content');
-
 			        $productDropdown.empty(); // 기존 목록 비우기
 			        $productBtnText.text('상품유형'); // 버튼 텍스트 초기화
 			        selectedProductTypeId = null; // 이전에 선택했던 상품유형 값 초기화
-
 			        let dataToPopulate = [];
 			        const id = Number(selectedCategoryId);
-
 			        if (id >= 6 && id <= 9) { // 대여, 교환 등
 			            dataToPopulate = subCategoryData.board;
 			        } else if (id === 10) { // 커뮤니티
 			            dataToPopulate = subCategoryData.community;
 			        }
-
 			        // 새 목록 생성 및 추가
 			        dataToPopulate.forEach(item => {
 			            const categoryDiv = $('<div></div>')
@@ -336,10 +244,9 @@ console.log("유저:",${loginUser.userNum});
 			            alert("거래유형을 선택해주세요.");
 			            return;
 			        }
-			        
+			       
 			        const keyword = $("#search-input").val().trim();
 			        const params = new URLSearchParams();
-
 			        if(keyword) {
 			            params.append('keyword', keyword);
 			        }
@@ -347,10 +254,8 @@ console.log("유저:",${loginUser.userNum});
 			        if(selectedProductTypeId) {
 			            params.append('category', selectedProductTypeId);
 			        }
-
 			        let url = "";
 			        const id = Number(selectedCategoryId);
-
 			        if (id >= 6 && id <= 9) {
 			            url = contextPath + "/board/" + selectedCategoryGubun + "/list";
 			        } else if (id === 10) {
@@ -359,13 +264,12 @@ console.log("유저:",${loginUser.userNum});
 			            alert("잘못된 카테고리입니다.");
 			            return;
 			        }
-			        
+			       
 			        const queryString = params.toString();
 			        location.href = url + (queryString ? '?' + queryString : '');
 			    });
-			        
-			    
-
+			       
+			   
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
@@ -375,9 +279,8 @@ console.log("유저:",${loginUser.userNum});
 				$('#alarm-icon').click(function() {
 					alert(`채팅 페이지로 이동~`);
 				});
-
 			});
 		</script>
-	</div>
+
 </body>
 </html>

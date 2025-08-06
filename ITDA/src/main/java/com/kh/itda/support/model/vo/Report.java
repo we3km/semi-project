@@ -11,7 +11,7 @@ public class Report {
 	    private int reportNum;
 	    private int userNum;
 	    private String type;
-	    private String targetName;
+	    private int targetId;
 	    private String reason;
 	    private String detailReason;
 	    private String status;

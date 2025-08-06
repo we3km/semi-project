@@ -1,12 +1,8 @@
 package com.kh.itda.support.controller;
 
-import java.util.List;
-
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.itda.admin.service.AdminService;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.service.InquiryService;
 import com.kh.itda.support.model.vo.Inquiry;
@@ -31,23 +27,17 @@ public class CustomerServiceController {
 
 	@Autowired
 	private InquiryService inquiryService;
+	@Autowired
+	private AdminService adminService;
 
 	@GetMapping
-	public String csServiceMain(@AuthenticationPrincipal UserExt loginUser, Model model) {
-		boolean isAdmin = loginUser.getAuthorities().stream()
-				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+	public String csServiceMain(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String userId = authentication.getName();
 
-		if (isAdmin) {
-			List<Inquiry> allInquiries = inquiryService.selectAllInquiries();
-			model.addAttribute("list", allInquiries);
-			model.addAttribute("isAdmin", true);
-		} else {
-			int userNum = loginUser.getUserNum();
-			List<Inquiry> myInquiries = inquiryService.selectInquiriesByUserNum(userNum);
-			model.addAttribute("list", myInquiries);
-			model.addAttribute("isAdmin", false);
-		}
-	
+		com.kh.itda.user.model.vo.User user = adminService.findUserById(userId);
+		model.addAttribute("loginUser", user);
+
 		return "cs_service/CS_Service";
 	}
 
@@ -85,25 +75,20 @@ public class CustomerServiceController {
 	@GetMapping("/inquiry/detail/{csNum}")
 	public String selectInquiryById(
 	        @PathVariable int csNum,
-	        @AuthenticationPrincipal UserExt loginUser,
 	        Model model) {
 
 	    Inquiry inquiry = inquiryService.selectInquiryById(csNum);
 
-	    boolean isAdmin = loginUser.getAuthorities().stream()
-	            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+	    // 인증 정보 가져오기
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String userId = authentication.getName();
+	    com.kh.itda.user.model.vo.User loginUser = adminService.findUserById(userId);
 
 	    int userNum = loginUser.getUserNum();
 
-	    if (!isAdmin && inquiry.getUserNum() != userNum) {
-	        model.addAttribute("errorMsg", "권한이 없습니다.");
-	        return "error/forbidden";
-	    }
-
-	    model.addAttribute("inquiry", inquiry);
 	    return "inquiry/detail";
 	}
-	
+
 	@PostMapping("/inquiry/reply")
 	public String updateInquiryReply(@ModelAttribute Inquiry inquiry) {
 		inquiryService.updateInquiryReply(inquiry);

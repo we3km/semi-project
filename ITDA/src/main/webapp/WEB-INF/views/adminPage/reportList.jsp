@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/adminPage/reportList.css" />
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 <div class="report-container">
     <h2>신고 리스트</h2>
     <table class="report-table">
@@ -78,7 +83,6 @@
                 </li>
             </c:forEach>
 
-            <!-- 다음 페이지 -->
             <c:if test="${pi.currentPage < pi.maxPage}">
                 <c:url var="nextUrl" value="/admin/reports">
                     <c:param name="currentPage" value="${pi.currentPage + 1}" />

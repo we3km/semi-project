@@ -17,7 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.admin.service.AdminService;
 import com.kh.itda.common.model.vo.PageInfo;
+import com.kh.itda.common.model.vo.template.Pagination;
 import com.kh.itda.support.model.vo.Report;
+import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
 
 @Controller
@@ -45,34 +47,25 @@ public class AdminController {
 	 * 신고 관리 페이지
 	 */
 	@GetMapping("/reports")
-	public String reportList(
-	        @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
-	        Model model) {
+	public String reportList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
 
-	    // 전체 신고글 수
-	    int listCount = adminService.getAllReports().size();
+		List<Report> allReports = adminService.getAllReports();
 
-	    // 페이징 관련 변수 설정
-	    int pageLimit = 10;       // 페이지 번호 갯수
-	    int communityLimit = 10;  // 한 페이지에 보여줄 글 개수
+		int listCount = allReports.size();
+		int pageLimit = 10;
+		int communityLimit = 10;
 
-	    // PageInfo 객체 생성 (페이징 정보)
-	    PageInfo pi = com.kh.itda.common.model.vo.template.Pagination.getPagInfo(listCount, currentPage, pageLimit, communityLimit);
+		PageInfo pi = Pagination.getPagInfo(listCount, currentPage, pageLimit, communityLimit);
 
-	    // 전체 신고글 리스트
-	    List<Report> allReports = adminService.getAllReports();
+		int start = (currentPage - 1) * communityLimit;
+		int end = Math.min(start + communityLimit, listCount);
 
-	    // 현재 페이지에 맞는 리스트 서브셋 추출
-	    int start = (currentPage - 1) * communityLimit;
-	    int end = Math.min(start + communityLimit, listCount);
+		List<Report> pageReports = allReports.subList(start, end);
 
-	    List<Report> pageReports = allReports.subList(start, end);
+		model.addAttribute("reportList", pageReports);
+		model.addAttribute("pi", pi);
 
-	    // 모델에 데이터 넣기
-	    model.addAttribute("reportList", pageReports);
-	    model.addAttribute("pi", pi);
-
-	    return "adminPage/reportList";
+		return "adminPage/reportList";
 	}
 
 	/**
@@ -103,18 +96,34 @@ public class AdminController {
 		model.addAttribute("report", report);
 		return "adminPage/reportDetail";
 	}
+
+	@PostMapping("/reports/updateStatus")
+	public String updateReportStatus(@RequestParam("reportNum") int reportNum, @RequestParam("status") String status,
+			RedirectAttributes redirectAttributes) {
+		try {
+			adminService.updateReportStatus(reportNum, status);
+			redirectAttributes.addFlashAttribute("msg", "신고 상태가 성공적으로 변경되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("msg", "신고 상태 변경 중 오류가 발생했습니다.");
+		}
+		return "redirect:/admin/reports/detail/" + reportNum; // 상세 페이지로 다시 이동
+	}
+
+	@PostMapping("/banUser")
+	public String banUser(BanUser banUser, @RequestParam("reportNum") int reportNum,
+			RedirectAttributes redirectAttributes) {
+		try {
+			adminService.banUser(banUser); // 제재 저장
+			adminService.updateReportStatus(reportNum, "완료"); // 상태 "완료"로 갱신
+
+			redirectAttributes.addFlashAttribute("msg", "제재가 정상 처리되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("msg", "제재 처리 중 오류가 발생했습니다.");
+		}
+		return "redirect:/admin/reports";
+	}
 	
-    @PostMapping("/reports/updateStatus")
-    public String updateReportStatus(@RequestParam("reportNum") int reportNum,
-                                     @RequestParam("status") String status,
-                                     RedirectAttributes redirectAttributes) {
-        try {
-            adminService.updateReportStatus(reportNum, status);
-            redirectAttributes.addFlashAttribute("msg", "신고 상태가 성공적으로 변경되었습니다.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("msg", "신고 상태 변경 중 오류가 발생했습니다.");
-        }
-        return "redirect:/admin/reports/detail/" + reportNum;  // 상세 페이지로 다시 이동
-    }
+//	@GetMapping("/inquiry")
 }
