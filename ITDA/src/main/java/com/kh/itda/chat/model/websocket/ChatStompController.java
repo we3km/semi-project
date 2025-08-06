@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 
 import com.kh.itda.chat.model.service.ChatService;
 import com.kh.itda.chat.model.vo.ChatMessage;
+import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class ChatStompController {
 		chatMessage.setNickName(nickNameStr);
 		chatMessage.setImageUrl(imageUrlStr);
 
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		chatMessage.setUserNum(loginUser.getUserNum());
 		
 		log.info("보내는 채팅메세지 속성 : {}", chatMessage);
