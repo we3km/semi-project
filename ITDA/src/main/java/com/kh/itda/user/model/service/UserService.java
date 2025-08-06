@@ -16,8 +16,6 @@ public interface UserService {
 	
 	int idCheck(String userId);
 
-	int updateUser(User user);
-
 	void updatePassword(String userId, String encodedPwd);
 	
 	void updateNickname(String userId, String newNickname);

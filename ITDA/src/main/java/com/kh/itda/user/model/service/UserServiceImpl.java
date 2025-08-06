@@ -35,12 +35,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int updateUser(User user) { // 회원정보 수정
-
-		return 0;
-	}
-
-	@Override
 	public Optional<String> findIdByNameAndEmail(String nickName, String email) {
 		log.debug(" findIdByNameAndEmail {},{}", nickName, email);
 		String userId = sqlSession.selectOne("user.findId", Map.of("nickName", nickName, "email", email));

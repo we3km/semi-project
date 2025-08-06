@@ -104,7 +104,7 @@
         <div class="profile-change" id="changeProfile">프로필 변경</div>
         <input type="file" id="profileInput" accept="image/*" style="display:none" />
         <div class="profile-image">
-            <img id="preview" src="${pageContext.request.contextPath}${user.imageUrl}" 
+            <img id="preview" src="${pageContext.request.contextPath}${imageUrl}"
             	alt="프로필 이미지" width="300" height="300" style="display: block;">
         </div>
         
@@ -388,7 +388,6 @@
 	    reader.onload = function (e) {
 	        const preview = document.getElementById('preview');
 	        preview.src = e.target.result;
-	        preview.style.display = "block";
 	    };
 	    reader.readAsDataURL(file);
 	    

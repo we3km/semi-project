@@ -41,7 +41,7 @@ public class SecurityServiceImpl implements SecurityService {
 		userExt.setAddress(user.getAddress());
 		userExt.setImageUrl(user.getImageUrl());
 		userExt.setAuthorities(authorities);
-		log.debug("{}",userExt);
+		log.debug("userExt : {}",userExt);
 		return userExt;
 	}
 

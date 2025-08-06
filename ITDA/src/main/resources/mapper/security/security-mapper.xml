@@ -60,7 +60,10 @@
 	<!-- 회원 정보 조회(프로필 제외) -->
 	<select id="findUserById" parameterType="string"
 		resultType="User">
-		SELECT * FROM USER_TB WHERE USER_ID = #{userId}
+		SELECT U.*, P.IMAGE_URL
+		FROM USER_TB U
+		LEFT JOIN PROFILE P ON U.USER_NUM = P.USER_NUM
+		WHERE USER_ID = #{userId}
 	</select>
 
 	<!-- 아이디 중복 체크 -->

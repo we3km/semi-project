@@ -105,7 +105,6 @@ public class UserDaoImpl implements UserDao {
 	public String selectUserNickname(String userId) {
 		return session.selectOne("user.selectUserNickname", userId);
 	}
-	
 
 	@Override
 	public String selectUserNum(String userId) {
@@ -123,7 +122,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User findUserById(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return session.selectOne("security.findUserById", userId);
 	}
 }
