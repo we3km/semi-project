@@ -50,11 +50,6 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public User findUserById(String userId) {
-		return session.selectOne("user.findUserById", userId);
-	}
-
-	@Override
 	public User findUserByNum(int userNum) {
 		return session.selectOne("user.findUserByNum", userNum);
 	}
@@ -124,5 +119,11 @@ public class UserDaoImpl implements UserDao {
 
 	public String getProfileImageUrl(int userNum) {
 		return session.selectOne("user.getProfileImageUrl", userNum);
+	}
+
+	@Override
+	public User findUserById(String userId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

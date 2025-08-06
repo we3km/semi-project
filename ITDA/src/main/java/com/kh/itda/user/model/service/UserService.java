@@ -40,5 +40,4 @@ public interface UserService {
 
 	User findUserById(String userId);
 
-
 }

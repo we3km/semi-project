@@ -3,9 +3,7 @@ package com.kh.itda.security.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.servlet.http.HttpSession;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,38 +29,38 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 public class SecurityController {
-
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final UserService uService;
-    private final EmailService emailService;
-    private final HttpSession session;
-	
-	public SecurityController(BCryptPasswordEncoder passwordEncoder, UserService uService, HttpSession session, EmailService emailService) {
+	private final EmailService emailService;
+	private final HttpSession session;
+
+	public SecurityController(BCryptPasswordEncoder passwordEncoder, UserService uService, HttpSession session,
+			EmailService emailService) {
 		super();
 		this.passwordEncoder = passwordEncoder;
 		this.uService = uService;
 		this.emailService = emailService;
 		this.session = session;
 	}
-	
-	//로그인
+
+	// 로그인
 	@GetMapping("/user/login")
 	public String login() {
-	    return "user/login";
-	}
-	
-	//아이디 찾기
-	@GetMapping("/user/findId")
-	public String findId() {
-	    return "user/findId";
+		return "user/login";
 	}
 
-	//비밀번호 찾기
+	// 아이디 찾기
+	@GetMapping("/user/findId")
+	public String findId() {
+		return "user/findId";
+	}
+
+	// 비밀번호 찾기
 	@GetMapping("/user/findPwd")
 	public String findPwd() {
-	    return "user/findPwd";
+		return "user/findPwd";
 	}
-	
+
 	// 회원가입용 인증번호 전송
     @PostMapping("/user/sendVerification")
     @ResponseBody

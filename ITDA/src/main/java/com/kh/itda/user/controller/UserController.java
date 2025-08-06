@@ -1,5 +1,6 @@
 package com.kh.itda.user.controller;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import javax.servlet.http.HttpSession;
@@ -15,20 +16,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
@@ -37,6 +31,7 @@ import com.kh.itda.user.model.vo.User;
 import com.kh.itda.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 //마이페이지 전용
 @Controller
 @RequiredArgsConstructor
@@ -302,6 +297,7 @@ public class UserController {
 //		  return "redirect:/"; // 로그인 후 메인 페이지로 이동 
 //	  }
 
+
 //	  // 로그아웃 (세션 무효화)
 //	  @GetMapping("/user/logout") 
 //	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
@@ -332,6 +328,7 @@ public class UserController {
 //		     }
 //		 }
 //	 
+
 	  
 	  // 로그아웃 (세션 무효화)
 	  @GetMapping("/user/logout") 
@@ -340,6 +337,4 @@ public class UserController {
 		  return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
 	  }
 }
-
-
 

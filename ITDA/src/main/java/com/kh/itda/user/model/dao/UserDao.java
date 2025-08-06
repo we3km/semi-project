@@ -42,6 +42,4 @@ public interface UserDao {
 
 	String getProfileImageUrl(int userNum);
 
-	//void insertUserAndAuthority(User user);
-
 }
