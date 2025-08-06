@@ -40,6 +40,7 @@ import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
 import com.kh.itda.community.model.vo.CommunityType;
+import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -123,10 +124,10 @@ public class CommunityController {
 	// 게시판 등록폼 이동 서비스
 	@GetMapping("/insert")
 	public String enrollForm(
-			@ModelAttribute Community c, /* @PathVariable("communityCode") String communityCode, */
+			@ModelAttribute("c") CommunityExt c, /* @PathVariable("communityCode") String communityCode, */
 			Model model) {
-		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
-	    model.addAttribute("communityTypeMap", communityTypeMap);
+//		Map<String, CommunityType> communityTypeMap = communityService.getCommunityTypeMap();
+//	    model.addAttribute("communityTypeMap", communityTypeMap);
 		model.addAttribute("c", c);
 		return "community/communityWrite";
 	}
@@ -139,6 +140,10 @@ public class CommunityController {
 								/* Model model, */ RedirectAttributes ra,
 								@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles
 								) {
+		if (upfiles != null && upfiles.size() > 5) {
+	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
+	        return "redirect:/community/insert"; // 글쓰기 폼으로 다시 돌려보냄
+	    }
 		
 		List<CommunityImg> imgList = new ArrayList<>();
 		int level = 0; // 첨부파일의 레벨
@@ -161,11 +166,8 @@ public class CommunityController {
 		}
 		
 		//로그인 사용자 정보 등록
-		User loginUser = (User) auth.getPrincipal();
+		UserExt loginUser = (UserExt) auth.getPrincipal();
 		c.setCommunityWriter(loginUser.getUserNum());
-		
-		//임시로그인
-		//c.setCommunityWriter(1);
 		
 		c.setCommunityNickname(String.valueOf(1));
 		c.setWriteDate(new Date());
@@ -216,9 +218,8 @@ public class CommunityController {
 			
 		}
 		
-		//유져관련
-		User loginUser = (User) auth.getPrincipal();
-		int userNum = ((User) auth.getPrincipal()).getUserNum();
+		//유져관련		
+		int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
 		//int userNum = 3;
 	    
 
@@ -288,11 +289,9 @@ public class CommunityController {
 	@PostMapping("/react")
 	@ResponseBody
 	public Map<String, Object> react(@RequestBody CommunityReaction reaction,Authentication auth, HttpSession session) {
-		// 임시 로그인 유저 번호 
-	    //int userNum = 3;
-		User loginUser = (User) auth.getPrincipal();
-		int userNum = ((User) auth.getPrincipal()).getUserNum();
-	    //int userNum = ((User) session.getAttribute("loginUser")).userNum();
+		
+		int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
+	    
 	    
 	    reaction.setUserNum(userNum);
 
@@ -317,9 +316,8 @@ public class CommunityController {
 									Authentication auth,
 									RedirectAttributes ra) {
 		//로그인 유저정보
-		User loginUser = (User)auth.getPrincipal();
+		UserExt loginUser = (UserExt)auth.getPrincipal();
 		int userNum = loginUser.getUserNum();
-		//int userNum = 1;
 		
 		//삭제 시도
 		int result = communityService.deleteCommunity(communityNo, userNum);
@@ -334,11 +332,86 @@ public class CommunityController {
 		return "redirect:/community/list/all";
 	}
 	
+	//게시글 수정
+	@GetMapping("/update/{communityNo}")
+	public String updateForm(
+							@PathVariable("communityNo") int communityNo,
+							Model model
+							) {
+		CommunityExt community = communityService.selectCommunity(communityNo);
+		
+		community.setCommunityContent(Utils.newLineClear(community.getCommunityContent()));
+		
+		model.addAttribute("c",community);
+		
+		return "community/communityWrite";
+	}
+	
+	//게시글 수정 반영
+	@PostMapping("/update")
+	public String updateCommunity(
+									@ModelAttribute("c") CommunityExt c,
+									@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles,
+									@RequestParam(value="deleteImgNos", required=false) List<Integer> deleteImgNos,
+									RedirectAttributes ra
+								) {
+		
+		
+		
+	    // 1. DB에서 현재 게시글의 이미지 정보를 가져옴
+	    CommunityExt originalCommunity = communityService.selectCommunity(c.getCommunityNo());
+	    int existingImgCount = originalCommunity.getImgList().size();
+	    
+	    // 2. 삭제될 이미지 개수를 반영
+	    int deleteCount = (deleteImgNos != null) ? deleteImgNos.size() : 0;
+	    
+	    // 3. 새로 추가될 이미지 개수를 반영
+	    int newImgCount = (upfiles != null && !upfiles.get(0).isEmpty()) ? upfiles.size() : 0;
+	    
+	    // 4. 최종 개수 계산 및 검사
+	    if (existingImgCount - deleteCount + newImgCount > 5) {
+	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
+	        return "redirect:/community/update/" + c.getCommunityNo(); // 수정 폼으로 다시 돌려보냄
+	    }
+	   
+
+	    System.out.println("### [디버깅] updateCommunity 메소드 시작. 전달받은 communityNo: " + c.getCommunityNo());
+	   
+		List<CommunityImg> imgList = new ArrayList<>();
+		if(upfiles != null) {
+			for (MultipartFile upfile : upfiles) {
+				if (upfile != null && !upfile.isEmpty()) {
+					// 파일을 서버에 저장하고, CommunityImg 객체로 만들어 리스트에 추가
+					String folderName = "community/" + c.getCommunityCd();
+					String changeName = Utils.saveFileToCategoryFolder(upfile, application, folderName);
+					
+					CommunityImg ci = new CommunityImg();
+					ci.setChangeName(changeName);
+					ci.setOriginName(upfile.getOriginalFilename());
+					// 이미지 레벨이나 참조 게시글 번호는 서비스에서 설정
+					imgList.add(ci);
+				}
+			}
+		}
+		
+		int result = communityService.updateCommunity(c, imgList, deleteImgNos);
+		
+		if(result > 0) {
+			ra.addFlashAttribute("alertMsg","게시글이 성공적으로 수정되었습니다.");
+		}else {
+			ra.addFlashAttribute("alertMsg","게시글 수정에 실패했습니다.");
+		}
+		return "redirect:/community/detail/" + c.getCommunityCd() + "/" + c.getCommunityNo();
+	}
+	
 	// 댓글 목록 조회 (AJAX) - Service에서 계층형으로 처리된 데이터를 반환
 	@GetMapping(value="/comments/{communityNo}", produces="application/json; charset=UTF-8")
 	@ResponseBody
-	public List<BoardCommentExt> ajaxSelectCommentList(@PathVariable("communityNo") int communityNo) {
-	    return communityService.selectCommentList(communityNo);
+	public List<BoardCommentExt> ajaxSelectCommentList( @PathVariable("communityNo") int communityNo,
+														@RequestParam(value="sort", defaultValue="asc") String sort
+													  ) {
+		System.out.println("정렬 : "+ sort +" communityNo : " + communityNo);
+	    return communityService.selectCommentList(communityNo, sort);
 	}
 
 	// 댓글 등록 (AJAX)
@@ -346,9 +419,8 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment, Authentication auth) {
 	    // 임시 유저 정보 (로그인 연동 후 수정)
-	    User loginUser = (User) auth.getPrincipal();
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
 	    comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    //comment.setCmtWriterUserNum(1); // 임시 작성자 NUM
 	    
 	    int result = communityService.insertComment(comment);
 	    
@@ -368,9 +440,9 @@ public class CommunityController {
 	public Map<String, Object> ajaxDeleteComment(@RequestBody BoardComment comment, Authentication auth) {
 	    
 	    // 임시 유저 정보 (로그인 연동 후 Authentication 객체에서 가져옵니다)
-		User loginUser = (User) auth.getPrincipal();
+		UserExt loginUser = (UserExt) auth.getPrincipal();
 	    comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    int userNum = ((User) auth.getPrincipal()).getUserNum();
+	    int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
 	    
 	    int result = communityService.deleteComment(comment.getBoardCmtId(), userNum);
 	    
