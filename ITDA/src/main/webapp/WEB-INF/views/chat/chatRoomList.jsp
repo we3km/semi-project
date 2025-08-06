@@ -13,11 +13,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ChattingRoomList</title>
 
-<%-- report css --%>
-<link
-	href="${pageContext.request.contextPath}/resources/css/report/reports.css"
-	rel="stylesheet">
-<%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <link
@@ -27,6 +22,9 @@
 	href="${pageContext.request.contextPath}/resources/css/chat-style.css">
 
 <!-- 모달 CSS 기술 -->
+<link
+	href="${pageContext.request.contextPath}/resources/css/report/reports.css"
+	rel="stylesheet">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/modal_css/shipping_Inform.css">
 <link rel="stylesheet"
@@ -62,8 +60,15 @@
 
 <body data-usernum="${loginUser.userNum}">
 	<script>
-	// 로그인한 회원 번호
-	const loginUserNum = (Number)(document.body.dataset.usernum);	
+		// 시작전에 오른쪽 채팅방 clean
+		document.addEventListener("DOMContentLoaded", function () {
+			document.querySelectorAll(".chat-message-received, .chat-message-sent, .chat-system-message, .chat-content2 > img").forEach(element => {
+				element.remove();
+			});
+		});
+
+		// 로그인한 회원 번호
+		const loginUserNum = (Number)(document.body.dataset.usernum);	
 	</script>
 	<div class="chat-wrapper">
 		<!-- 왼쪽 채팅창 -->
@@ -234,7 +239,6 @@
 									// 거래 채팅방 기준 상대방 프로필 가져오기
 								</script>
 
-
 								<!-- 오픈 채팅일 경우, 오픈 채팅방 프로필-->
 								<!-- 거래 채팅방일 경우, 상대방 프로필 이미지 & 마이페이지 -->
 								<script>								
@@ -247,7 +251,6 @@
 											alt="오픈채팅방 프로필" width="50" height="50"
 											style="border-radius: 20%;" />
 									</c:when>
-
 
 									<c:otherwise>
 										<button class="profile-button"
@@ -331,7 +334,8 @@
 										onclick="toggleActionMenu(this)" />
 									<!-- 채팅 버튼 신고하기, 대화나가기 -->
 									<div class="exit-report-menu hidden">
-										<button class="exit-report-button" onclick="reportChat()">🚩
+										<button class="exit-report-button"
+											onclick="openReportModal('OPENCHAT', ${chatRoom.chatRoomId}, ${chatRoom.userNum})">🚩
 											신고하기</button>
 										<button class="exit-report-button" onclick="leaveChat(this)">❌
 											대화 나가기</button>
@@ -342,15 +346,13 @@
 					</c:when>
 				</c:choose>
 			</c:forEach>
-
-			<!-- <div class="chat-footer1"></div> -->
 		</div>
 
 
 		<!-- 오른쪽 채팅방 -->
 		<div class="chatting-room">
 			<div class="chat-header2">
-				<span id="chat-header2-title">채팅방을 눌러 대화를 시작하세요.</span>
+				<span id="chat-header2-title">왼쪽 채팅방을 눌러 대화를 시작하세요.</span>
 				<!-- 클릭하면 판매자 or 구매자에 맞춰서 해당하는 기능 제공 창  -->
 				<button class="ellipse-button" onclick="transactionService()"
 					id="transMenuIcon">
@@ -606,8 +608,7 @@
 			</div>
 
 			<!-- 내 계좌 정보 입력 모달 -->
-			<div id="account_Inform_Input" class="modal-overlay"
-				style="display: none;">
+			<div id="account_Inform_Input" class="modal-overlay">
 				<div class="modal-box">
 					<button class="close-button"
 						onclick="closeModal('account_Inform_Input')">×</button>
@@ -951,8 +952,8 @@
 	<!-- chat.js 참조 -->
 	<script type="text/javascript"
 		src="${contextPath}/resources/js/chat/chat.js"></script>
-	
-	<jsp:include page="/WEB-INF/views/report/report.jsp"/>
+
+	<jsp:include page="/WEB-INF/views/report/report.jsp" />
 	<script
 		src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 </body>

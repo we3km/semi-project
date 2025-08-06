@@ -56,7 +56,10 @@ function sendMessage() {
                 imageUrl: imageUrl
             }));
 
-            bringLastMessage(window.chatRoomId);
+            const lastMessageElement = document.getElementById("lastMessage-" + window.chatRoomId);
+            if (lastMessageElement) {
+                lastMessageElement.textContent = message;
+            }
 
             input.value = ""; // 입력란 비워줌
         }).catch(err => console.error("오류 발생: ", err));

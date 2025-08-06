@@ -82,7 +82,7 @@ public class ChatController {
 	}
 
 	// 거래 채팅!!하고 있는 상대방 프로필 가져오기
-	@GetMapping("/selectOpponentProfile ")
+	@GetMapping("/selectOpponentProfile")
 	@ResponseBody
 	public Map<String, Object> selectOpponentProfile(int chatRoomId, Authentication authentication) {
 		// chatRoom 객체로 정보 할당
