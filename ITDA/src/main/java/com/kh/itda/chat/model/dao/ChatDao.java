@@ -86,4 +86,8 @@ public class ChatDao {
 		return session.selectOne("chat.selectOpponentProfile", opps);
 	
 	}
+
+	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
+		return session.selectList("chat.findParticipantsByChatRoomId",chatRoomId);
+	}
 }

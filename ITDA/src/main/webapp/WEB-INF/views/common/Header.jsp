@@ -178,7 +178,7 @@
 		        container.style.borderBottom = "1px solid #eee";
 
 		        const strong = document.createElement("strong");
-		        strong.textContent = text;
+		        strong.innerHTML = text;
 
 		        const small = document.createElement("small");
 		        small.textContent = time;
@@ -206,7 +206,6 @@ document.getElementById('alarm-icon').addEventListener('click', function () {
 });
 </script>
 		<script>
->>>>>>> Stashed changes
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
 				// 로그인-로그아웃 버튼
@@ -351,13 +350,9 @@ document.getElementById('alarm-icon').addEventListener('click', function () {
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-
-					location.href = "${contextPath}/itda/chat/chatRoomList";
+					location.href = contextPath + `/chat/chatRoomList`;
 				});
-				 //알람버튼
-				//$('#alarm-icon').click(function() {
-					//alert(`채팅 페이지로 이동~`);
-				//}); 
+			});
 		</script>
 		<sec:authorize access="isAuthenticated()">
 </sec:authorize>

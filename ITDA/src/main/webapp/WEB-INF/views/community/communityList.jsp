@@ -289,8 +289,8 @@
             location.href = contextPath + `/community/insert`;
         });
 
-        $('#openListBtn').click(() => {
-            alert("오픈채팅방 리스트 연결");
+        $('#openListBtn').on('click',function(){
+            location.href =  contextPath + `/openchat/openChatList`
         });
     });
 

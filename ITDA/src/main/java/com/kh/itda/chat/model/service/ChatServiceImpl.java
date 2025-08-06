@@ -105,4 +105,9 @@ public class ChatServiceImpl implements ChatService {
 	public ChatRoom selectOpponentProfile(Map<String, Object> opps) {
 		return dao.selectOpponentProfile(opps);
 	}
+
+	@Override
+	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
+		return dao.findParticipantsByChatRoomId(chatRoomId);
+	}
 }

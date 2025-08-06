@@ -47,6 +47,16 @@
 							</select>
 						</div>
 					</c:if>
+						<!-- 3) 위치 표시 -->	
+						<c:if test="${not empty selectedSido}">
+						<div class="location-filter">
+							<h4>위치</h4>
+							<div class="sido-label">
+								${selectedSido}
+								<c:if test="${not empty selectedSigun}"> ${selectedSigungu}</c:if>
+							</div>
+						</div>
+					</c:if>
 
 					<!-- 2-2) 시 바로 아래 구가 있는 경우: 라디오 버튼 출력 -->
 					<c:if test="${fn:length(sigunList) == 0 and not empty guList}">
@@ -62,18 +72,7 @@
 							</c:forEach>
 						</div>
 					</c:if>
-
-					<!-- 3) 위치 표시 -->
-					<c:if test="${not empty selectedSido}">
-						<div class="location-filter">
-							<h4>위치</h4>
-							<div class="sido-label">
-								${selectedSido}
-								<c:if test="${not empty selectedSigun}"> ${selectedSigungu}</c:if>
-							</div>
-						</div>
-					</c:if>
-
+				
 					<!-- 4) 구 리스트 (시군 아래 구 리스트) -->
 					<c:if
 						test="${not empty guList and not empty selectedSigun and fn:length(sigunList) > 0}">
@@ -90,7 +89,6 @@
 					</c:if>
 				</aside>
 			</form>
-
 			<main class="main-content">
 
 				<!-- 상단 바 -->

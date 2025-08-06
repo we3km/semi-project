@@ -1,4 +1,5 @@
 package com.kh.itda.openchat.controller;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,9 +27,13 @@ import com.kh.itda.location.model.vo.Location;
 import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
-import com.kh.itda.user.model.vo.User;
+import com.kh.itda.security.model.vo.UserExt;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/openchat")
 @Slf4j
 @SessionAttributes({ "chatRoomID" })
@@ -39,7 +44,8 @@ public class OpenChatController {
 	private OpenChatService openChatService;
 	@Autowired
 	private ChatService chatService;
-	private SimpMessagingTemplate messagingTemplate;
+	private final SimpMessagingTemplate messagingTemplate;
+
 	@GetMapping("/openChatList")
 	public String selectOpenChatList(@RequestParam(required = false) String sido,
 			@RequestParam(required = false) String sigun, @RequestParam(required = false) String gu,
@@ -115,12 +121,13 @@ public class OpenChatController {
 		model.addAttribute("listCount", total);
 		return "openchat/openChatList";
 	}
+
 	@PostMapping("/createOpenChat")
 	public String createChatList(@ModelAttribute OpenChatRoom room, @ModelAttribute Location loc,
 			@RequestParam(value = "openImage", required = false) List<MultipartFile> openImages,
 			@RequestParam(value = "tagContent", required = false) String tagContent, RedirectAttributes ra,
 			HttpServletRequest request, Authentication authentication) {
-		User u = (User) authentication.getPrincipal();
+		UserExt u = (UserExt) authentication.getPrincipal();
 		if (u == null) {
 			ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
 			return "redirect:/member/login";
@@ -141,12 +148,13 @@ public class OpenChatController {
 		ra.addFlashAttribute("alertMsg", "채팅방 생성 성공");
 		return "redirect:/openchat/openChatList";
 	}
+
 	// 김성겸 => 채팅방 입장 시스템 메세지 삽입
 	@GetMapping("/enter")
 	public String enterChatRoom(@RequestParam("roomId") int roomId, Authentication authentication, Model model,
 			RedirectAttributes ra) {
 		// 세션에서 로그인 유저 정보 가져오기
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		if (loginUser == null) {
 			ra.addFlashAttribute("msg", "로그인 후 이용 가능합니다.");
 			return "redirect:/";
@@ -158,7 +166,7 @@ public class OpenChatController {
 			ra.addFlashAttribute("msg", "입장할 수 없는 채팅방입니다.");
 			return "redirect:/openchat/openChatList";
 		}
-		
+
 		// ========================입장 성공 시 채팅방 정보 전달
 		String nickName = loginUser.getNickName();
 		log.info("입장하는 사람 이름 : {}", nickName);
@@ -171,7 +179,7 @@ public class OpenChatController {
 		chatService.sendMessage(systemMsg);
 		messagingTemplate.convertAndSend("/topic/room/" + roomId, systemMsg);
 		// ========================
-		
+
 		model.addAttribute("chatRoom", room);
 		return "redirect:/chat/chatRoomList"; // → /WEB-INF/views/chat/chatroomList.jsp
 	}

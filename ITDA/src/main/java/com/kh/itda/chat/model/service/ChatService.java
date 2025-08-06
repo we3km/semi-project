@@ -32,4 +32,6 @@ public interface ChatService {
 	User getSenderInfo(int userNum);
 	
 	ChatRoom selectOpponentProfile( Map<String, Object> opps);
+
+	List<Integer> findParticipantsByChatRoomId(int chatRoomId);
 }

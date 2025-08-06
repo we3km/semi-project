@@ -299,4 +299,9 @@
 			#{reviewText}	
 		)
 	</insert>
+	<select id="findParticipantsByChatRoomId" resultType="int">
+    SELECT USER_NUM
+    FROM CHAT_PARTICIPANT
+    WHERE CHATROOM_ID = #{chatRoomId}
+</select>
 </mapper>

@@ -3,7 +3,7 @@
   margin: 0;
   padding: 30px;
   font-family: 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
-  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+  background: #eff2ff;
   min-height: 100vh;
 }
 
@@ -26,6 +26,7 @@
   max-width: 1440px;
   gap: 0px;
   box-sizing: border-box;
+  background-color: #ffffff;
 }
 
 /* 왼쪽 필터 박스 */
@@ -41,28 +42,30 @@
   padding-top: 0px; 
   box-sizing: border-box;
   margin-top: 120px;      /* 너무 크던 margin-top 줄임 */
-  margin-right:50px;        /* 음수 마진 제거 */
+  margin-right:40px;        /* 음수 마진 제거 */
   flex-shrink: 0;
+  margin-left: 30px;
 }
 
 /* 필터 제목 및 위치 표시 */
 .location-filter h4 {
-  margin: 0 0 6px 0;
   font-size: 1rem;
   color: #333;
+  margin-left :10px;
 }
 .sido-label {
   font-size: 1.1rem;
   font-weight: 600;
   color: #5A54FF;
-  margin-bottom: 8px;
+  margin-left: 10px;
+  margin-bottom: 6px;
 }
 
 /* 시·도, 시·군 셀렉트박스 */
 .sido-select,
 .sigun-select {
   width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
 }
 #sidoSelect,
 #sigunSelect {
@@ -84,7 +87,17 @@
 
 /* 구 라디오 그룹 */
 .gu-radio-group {
-  margin-bottom: 14px;
+  display: flex;
+  flex-direction:column;
+  flex-wrap: nowrap;
+  align-items: center;
+  max-height:250px;
+  overflow-y :hidden;
+  overflow-x :hidden;
+  gap: 8px;
+  margin: 0 auto 10px auto;
+  width: 100%;
+  justify-content: flex-start;
 }
 .gu-radio-group p {
   margin: 0 0 6px 0;
@@ -106,7 +119,8 @@
   transition: background 0.2s;
   justify-content: center;
   width: 100%;
-  max-width: 150px
+  max-width: 100px;
+  text-align: center;
 }
 .gu-item input[type="radio"] {
   margin-right: 4px;
@@ -126,6 +140,7 @@
   overflow-x :hidden;
   gap: 8px;
   margin: 0 auto 10px auto;
+  width: 100%;
 }
 .more-hidden {
   display: none;

@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <!-- 헤더 연결은 나중에 하자 -->
 <%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <meta charset="UTF-8" />
