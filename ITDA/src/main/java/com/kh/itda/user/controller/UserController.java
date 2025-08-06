@@ -1,6 +1,7 @@
 package com.kh.itda.user.controller;
 
 import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,11 @@ import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 //마이페이지 전용
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-
-	@Autowired
-	private UserService uService;
 	
 	@GetMapping("/user/myPage")
 	public String myPage() {
@@ -106,6 +103,7 @@ public class UserController {
 	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
 	  }
 }
+
 
 
 

@@ -66,7 +66,6 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public boolean emailExists(String email) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

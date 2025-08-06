@@ -1,5 +1,7 @@
 package com.kh.itda.user.model.dao;
 
+import java.util.List;
+
 import com.kh.itda.user.model.vo.User;
 
 public interface UserDao {
@@ -26,6 +28,8 @@ public interface UserDao {
 	String selectUserNum(String userId);
 
 	//void insertUserAndAuthority(User user);
+	
+	List<String> findAuthoritiesByUserNum(int userNum);
 	
 
 
