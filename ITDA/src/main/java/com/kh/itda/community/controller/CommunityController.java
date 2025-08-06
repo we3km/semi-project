@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.itda.alarm.model.service.AlarmService;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.BoardComment;
 import com.kh.itda.common.model.vo.BoardCommentExt;
@@ -60,6 +61,8 @@ public class CommunityController {
 	// ResourceLoader : 스프링에서 제공하는 자원 로딩클래스
 	// classpath, file시스템, url등 다양한 경로의 자원을 동일한 인터페이스로 로드하는 메서드를 제공
 	private final ResourceLoader resourceLoader;
+	
+	private final AlarmService alarmService;
 
 	// communityType 전역객체 설정
 	@PostConstruct
@@ -414,25 +417,40 @@ public class CommunityController {
 	    return communityService.selectCommentList(communityNo, sort);
 	}
 
-	// 댓글 등록 (AJAX)
-	@PostMapping(value="/comments", produces="application/json; charset=UTF-8")
-	@ResponseBody
-	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment, Authentication auth) {
-	    // 임시 유저 정보 (로그인 연동 후 수정)
-	    UserExt loginUser = (UserExt) auth.getPrincipal();
-	    comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    
-	    int result = communityService.insertComment(comment);
-	    
-	    Map<String, String> response = new HashMap<>();
-	    if (result > 0) {
-	        response.put("result", "success");
-	    } else {
-	        response.put("result", "fail");
-	    }
-	    
-	    return response;
-	}
+	 //댓글 등록 (AJAX)
+		@PostMapping(value="/comments", produces="application/json; charset=UTF-8")
+		@ResponseBody
+		public Map<String, String> ajaxInsertComment(
+		        @RequestBody BoardComment comment, 
+		        Authentication auth) {
+		    UserExt loginUser = (UserExt) auth.getPrincipal();
+		    comment.setCmtWriterUserNum(loginUser.getUserNum());
+
+		    int result = communityService.insertComment(comment);
+
+		    Map<String, String> response = new HashMap<>();
+		    if (result > 0) {
+		        // 1) 게시글 정보 조회
+		        CommunityExt c = communityService.selectCommunity(comment.getRefNo());
+		        
+		        System.out.println("게시글 작성자: " + c.getCommunityWriter());
+		        System.out.println("현재 로그인 유저: " + loginUser.getUserNum());
+
+		        // 2) 작성자와 내가 다르면 알림 전송
+		        if (c != null && loginUser.getUserNum() != c.getCommunityWriter()) {
+		            alarmService.sendBoardCommentAlarm(
+		                c.getCommunityWriter(),
+		                c.getCommunityNo(),
+		                c.getCommunityTitle()
+		            );
+		        }
+		      
+		        response.put("result", "success");
+		    } else {
+		        response.put("result", "fail");
+		    }
+		    return response;
+		}
 	
 	// 댓글 삭제 (AJAX)
 	@PostMapping(value="/comments/delete", produces="application/json; charset=UTF-8")
@@ -459,4 +477,3 @@ public class CommunityController {
 	
 
 }
-

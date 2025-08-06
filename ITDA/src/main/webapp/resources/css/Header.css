@@ -234,3 +234,56 @@ body {
 	height: 20px;
 	cursor: pointer;
 }
+
+.alarm-wrapper {
+	position: relative;
+	display: inline-block;
+}
+
+.alarm-icon {
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+}
+
+.alarm-dot {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 8px;
+	height: 8px;
+	background-color: red;
+	border-radius: 50%;
+	display: none;
+}
+
+.alarm-dropdown {
+	position: absolute;
+	top: 35px;
+	right: 0px;
+	width: 300px;
+	max-height: 300px;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	display: none;
+	z-index: 9999;
+	overflow-y: auto;
+}
+
+.alarm-list {
+	list-style: none;
+	margin: 0;
+	padding: 10px;
+}
+
+.alarm-list li {
+	padding: 8px;
+	border-bottom: 1px solid #eee;
+	background-color: yelloew;
+}
+
+.alarm-list small {
+	color: #888;
+}

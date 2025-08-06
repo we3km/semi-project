@@ -564,6 +564,7 @@
 		            data: JSON.stringify({
 		                boardCmtContent: content,
 		                refNo: communityNo,
+		                communityNo: communityNo,
 		                refCommentId: refCommentId // 부모 댓글 번호 (최상위 댓글은 0)
 		            }),
 		            success: function(map) {

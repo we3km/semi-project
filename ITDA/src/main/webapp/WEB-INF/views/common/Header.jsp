@@ -20,9 +20,10 @@
 	rel="stylesheet">
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
-
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 	<div class="container_header">
@@ -89,26 +90,123 @@
 		</div>
 
 
-		<!-- 유저 인사 + 알림 -->
-		<sec:authorize access="isAuthenticated()">
-			<div class="login_effect">
-				<!-- 회원 이름 바뀌기-->
-				<div class="user">
-					<strong> <sec:authentication property="principal.nickName" />
-					</strong>님 반갑습니다!
-				</div>
+			<sec:authorize access="isAuthenticated()">
+			  <div class="login_effect">
+			    <!-- 회원 이름 바뀌기 -->
+			    <div class="user">
+			      <strong>
+			        <sec:authentication property="principal.nickName"/>
+			      </strong>님 반갑습니다!
+			    </div>
+			
+			    <div id="icons">
+			      <img
+			        src="${pageContext.request.contextPath}/resources/images/message.png"
+			        alt="message icon" id="message-icon" />
+			
+			      <div class="alarm-wrapper"> 
+			        <img
+			          src="${pageContext.request.contextPath}/resources/images/alam.png"
+			          alt="alarm icon" id="alarm-icon" />
+			        <span id="alarm-dot" class="alarm-dot"></span>
+			        
+			        <div id="alarm-dropdown" class="alarm-dropdown">
+			          <ul id="alarm-list" class="alarm-list"></ul>
+			        </div>
+			      </div> 
+			    </div>
+			  </div>
+			</sec:authorize>
+		</div>
+		<script>
+		let stompClient = null;
+		const loginUserNum1 = "<sec:authentication property='principal.userNum' />"; 
+		
+		function connectAlarmWebSocket(loginUserNum1) {
+			const socket = new SockJS("${pageContext.request.contextPath}/stomp");
+			stompClient = Stomp.over(socket);
 
-				<div id="icons">
-					<img
-						src="${pageContext.request.contextPath}/resources/images/message.png"
-						alt="message icon" id="message-icon" /> <img
-						src="${pageContext.request.contextPath}/resources/images/alam.png"
-						alt="alarm icon" id="alarm-icon" />
-				</div>
-			</div>
-		</sec:authorize>
-	</div>
-	<script>
+			stompClient.connect({}, function () {
+				stompClient.subscribe("/topic/alarm/" + loginUserNum1, function (message) {
+					const content = message.body; 
+					showAlarm(content); 
+				});
+			});
+		}
+
+		connectAlarmWebSocket(loginUserNum1);
+		let alarmList = [];
+		let unread = false;
+
+		function showAlarm(text) {
+		    const trimmedText = text ? text.trim() : "";
+		    if (!trimmedText) {
+		        console.warn("❗ 알림 내용이 비어 있음:", text);
+		        return;
+		    }
+
+		    const time = new Date().toLocaleTimeString();
+
+		    alarmList.unshift({ text: trimmedText, time });
+
+		    console.log("📥 알림 추가됨:", trimmedText);
+
+		    // 알림 뱃지 표시
+		    document.getElementById('alarm-dot').style.display = 'block';
+		    unread = true;
+
+		    renderAlarmList();
+		}
+
+		function renderAlarmList() {
+		    const ul = document.getElementById('alarm-list');
+
+		    if (!ul) {
+		        console.error("❌ #alarm-list 요소를 찾을 수 없습니다.");
+		        return;
+		    }
+
+		    // 기존 목록 초기화
+		    ul.innerHTML = "";
+
+		    // 알림 목록 다시 그림
+		    alarmList.forEach(({ text, time }) => {
+		        const li = document.createElement("li");
+
+		        const container = document.createElement("div");
+		        container.style.padding = "8px";
+		        container.style.borderBottom = "1px solid #eee";
+
+		        const strong = document.createElement("strong");
+		        strong.textContent = text;
+
+		        const small = document.createElement("small");
+		        small.textContent = time;
+		        small.style.color = "#888";
+		        small.style.display = "block";
+		        small.style.marginTop = "4px";
+
+		        container.appendChild(strong);
+		        container.appendChild(small);
+		        li.appendChild(container);
+		        ul.appendChild(li);
+		    });
+		}
+		
+
+// 알림 아이콘 클릭 시 드롭다운 토글
+document.getElementById('alarm-icon').addEventListener('click', function () {
+    const box = document.getElementById('alarm-dropdown');
+    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+
+    if (unread) {
+        document.getElementById('alarm-dot').style.display = 'none';
+        unread = false;
+    }
+});
+</script>
+		<script>
+>>>>>>> Stashed changes
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
 				// 로그인-로그아웃 버튼
@@ -257,12 +355,12 @@
 				$('#message-icon').click(function() {
 					location.href = "${contextpath}/itda/chat/chatRoomList";
 				});
-				//알람버튼
-				$('#alarm-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
-				});
-			});
+				 //알람버튼
+				//$('#alarm-icon').click(function() {
+					//alert(`채팅 페이지로 이동~`);
+				//}); 
 		</script>
-
+		<sec:authorize access="isAuthenticated()">
+</sec:authorize>
 </body>
 </html>

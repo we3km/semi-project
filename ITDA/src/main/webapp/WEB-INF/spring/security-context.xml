@@ -5,16 +5,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/security 
+        http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security.xsd
-        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
-
 	<http pattern="/resources/**" security="none" />
-
-
 	<!-- 시큐리티 인증/인가 -->
 	<http auto-config="true">
 		<intercept-url pattern="/" access="permitAll" />
@@ -26,7 +23,6 @@
 			access="isAnonymous()" />
 		<intercept-url pattern="/user/findPwd/**"
 			access="isAnonymous()" />
-
 		<!-- 권한별 접근 제어 -->
 		<intercept-url pattern="/admin/**"
 			access="hasRole('ROLE_ADMIN')" />
@@ -40,20 +36,15 @@
 			authentication-success-handler-ref="customAuthenticationSuccessHandler"
 			authentication-failure-handler-ref="customAuthenticationFailureHandler"
 			username-parameter="userId" password-parameter="userPwd" />
-
 		<logout logout-url="/user/logout" logout-success-url="/"
 			invalidate-session="true" delete-cookies="JSESSIONID, remember-me" />
 		<remember-me key="itdaUniqueSecurityKey"
 			data-source-ref="dataSource" token-validity-seconds="1209600" />
-
-
 		<csrf disabled="true" />
 	</http>
 	<!-- com.kh.itda.security 패키지 스캔 -->
 	<context:component-scan
 		base-package="com.kh.itda" />
-
-
 	<!-- 권한 계층 설정: ADMIN이 USER 권한도 포함 -->
 	<beans:bean id="roleHierarchy"
 		class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
@@ -63,13 +54,11 @@
 			</beans:value>
 		</beans:property>
 	</beans:bean>
-
 	<!-- 권한 계층을 적용한 Role Voter -->
 	<beans:bean id="roleVoter"
 		class="org.springframework.security.access.vote.RoleHierarchyVoter">
 		<beans:constructor-arg ref="roleHierarchy" />
 	</beans:bean>
-
 	<!-- 접근 결정 관리자 -->
 	<beans:bean id="accessDecisionManager"
 		class="org.springframework.security.access.vote.AffirmativeBased">
@@ -83,23 +72,19 @@
 			</beans:list>
 		</beans:constructor-arg>
 	</beans:bean>
-
 	<!-- 로그인 성공 핸들러 - 권한에 따른 리다이렉트 -->
 	<beans:bean id="customAuthenticationSuccessHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationSuccessHandler" />
-
 	<!-- 로그인 실패 핸들러 -->
 	<beans:bean id="customAuthenticationFailureHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
-
-	<!-- com.kh.itda.security 패키지 스캔 -->
-	<context:component-scan
-		base-package="com.kh.itda" />
-
+    <!-- com.kh.itda.security 패키지 스캔 -->
+    <context:component-scan base-package="com.kh.itda">
+		<context:exclude-filter type="assignable" expression="com.kh.itda.chat.model.websocket.ChatStompController"/>
+    </context:component-scan>
 	<!-- BCryptPasswordEncoder -->
 	<beans:bean id="bcryptPasswordEncoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
-
 	<!-- 사용자 인증 매니저 설정 -->
 	<authentication-manager>
 		<authentication-provider
@@ -107,5 +92,4 @@
 			<password-encoder ref="bcryptPasswordEncoder" />
 		</authentication-provider>
 	</authentication-manager>
-
 </beans:beans>
