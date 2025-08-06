@@ -21,6 +21,8 @@ public class BoardComment {
     private int boardAssortment;
     private int refCommentId; // 부모id
     private String nickName;	//NICK_NAME
+    
+    private String imageUrl;
 	
 
 }
