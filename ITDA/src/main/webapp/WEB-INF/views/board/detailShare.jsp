@@ -210,9 +210,6 @@ body {
 					        const contextPath = '${contextPath}';
 					        // 데헷 이거 널값임					        
 					        const boardId = "${board.boardCommon.boardId}";
-					        
-					        console.log("contextPath: ", contextPath);
-					        console.log("현재 게시판 번호 : ", boardId);
 					
 					        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
 					            method: "GET"

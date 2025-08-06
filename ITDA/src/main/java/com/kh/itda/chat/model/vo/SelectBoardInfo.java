@@ -29,7 +29,7 @@ public class SelectBoardInfo {
 			return 2;
 		case "auction":
 			return 3;
-		case "sharing":
+		case "share":
 			return 4;
 		default:
 			return 5;

@@ -32,8 +32,8 @@
 	href="${pageContext.request.contextPath}/resources/css/modal_css/shipping_Address.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/modal_css/manner_Review.css">
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/modal_css/reports.css">
+<%-- <link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/modal_css/reports.css"> --%>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <script
@@ -155,7 +155,7 @@
 			      // 사진인 경우 <사진>으로 출력
 			      if (lastMessage) {
 			            const trimmedMessage = lastMessage.length > 8 
-		                ? FlastMessage.slice(0, 8) + "..."
+		                ? lastMessage.slice(0, 8) + "..."
 		                : lastMessage;
 		            targetDiv.textContent = trimmedMessage;
 		        } else {
@@ -206,7 +206,8 @@
 						<!-- 채팅 리스트 -->
 						<div class="chat-content1">
 							<!-- 각각의 채팅방 속성 -->
-							<div class="list-chat" data-chat-room-id="${chatRoom.chatRoomId}"
+							<div class="list-chat" 
+								data-chat-room-id="${chatRoom.chatRoomId}"
 								data-chat-userNum="${chatRoom.userNum}"
 								data-board-id="${chatRoom.boardId}"
 								data-chat-type="${chatRoom.refName}"
@@ -241,6 +242,7 @@
 											alt="오픈채팅방 프로필" width="50" height="50"
 											style="border-radius: 20%;" />
 									</c:when>
+
 
 									<c:otherwise>
 										<button class="profile-button"
@@ -504,6 +506,7 @@
 					return;
 				}
 
+				const reviewTextarea = document.getElementById('reviewText');
 				const sliderValue = parseInt(document.getElementById("slider").value);
 				const reviewText = document.getElementById("reviewText").value.trim();
 
@@ -528,9 +531,10 @@
 				.then(response => {
 					if (response.ok) {
 						alert("후기가 등록되었습니다!");
+					    reviewTextarea.value = "";				    
 					} else {
 						alert("이미 후기가 등록되었습니다!");
-					}
+					}				
 				})
 				.catch(error => {
 					console.error("에러 발생:", error);
@@ -942,9 +946,9 @@
 	<script type="text/javascript"
 		src="${contextPath}/resources/js/chat/chat.js"></script>
 
-	<!-- chat.js 참조 -->
-	<script type="text/javascript"
-		src="${contextPath}/resources/js/report/reports.js"></script>
+	<!-- reports.js 참조 -->
+	<%-- <script type="text/javascript"
+		src="${contextPath}/resources/js/report/reports.js"></script> --%>
 </body>
 
 </html>

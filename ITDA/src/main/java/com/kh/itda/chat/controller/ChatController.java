@@ -123,6 +123,8 @@ public class ChatController {
 		int refNum = boardInfo.getTransactionRefNum();
 		int boardId = boardInfo.getBoardId();
 
+		log.info("채팅방 속성 :", boardInfo);
+		
 		int result = chatService.openChatRoom(userNum, boardOwnerNum, refNum, boardId);
 
 		if (result > 0) {
@@ -132,7 +134,7 @@ public class ChatController {
 		return "success";
 	}
 
-	// 메세지 받아와서 채팅방 오른쪽에 출력하자이
+	// 메세지 받아와서 채팅방 오른쪽에 출력하자이	
 	@GetMapping("/messages/{chatRoomId}")
 	@ResponseBody // JSP에서 데이터만 받겠다
 	public List<ChatMessage> getMessages(@PathVariable int chatRoomId) {
