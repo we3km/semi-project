@@ -3,17 +3,18 @@ package com.kh.itda;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+
 import com.kh.itda.board.model.service.BoardService;
+
 import com.kh.itda.common.model.vo.boardCategory;
 import com.kh.itda.common.service.MainService;
 import com.kh.itda.community.model.service.CommunityService;
-import com.kh.itda.user.model.vo.User;
+
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainController {
 	private final MainService mainService;
+
 	private final CommunityService communityService; // CommunityService 주입
 	private final BoardService boardService;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model,Authentication auth) {
 		// 거래유형 목록 드롭다운
+		//if(((User)auth.getPrincipal()).getUserId()!=null)
+			//log.info("user info : {}",((User)auth.getPrincipal()).getPhone());
+		
 		Map<Integer, boardCategory> mainTypeMap = mainService.getMainTypeMap();
 	     model.addAttribute("mainCategoryType", mainTypeMap);
 	     
@@ -48,3 +53,5 @@ public class MainController {
 	
 	
 }
+
+

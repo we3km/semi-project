@@ -1,0 +1,123 @@
+/* 컨테이너 기본 세팅 */
+.report-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+  font-family: 'Nanum Gothic', 'Malgun Gothic', sans-serif;
+  color: #333;
+  background: #fff;
+  padding: 20px 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+/* 제목 */
+.report-container h2 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #2e86de;
+  margin-bottom: 25px;
+  letter-spacing: 1.2px;
+}
+
+/* 테이블 기본 스타일 */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 0 8px rgba(46,134,222,0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* 헤더 스타일 */
+.report-table thead tr {
+  background-color: #2e86de;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* 테이블 셀 */
+.report-table th, .report-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* 짝수행 배경색 */
+.report-table tbody tr:nth-child(even) {
+  background-color: #f9fbff;
+}
+
+/* 마우스 올렸을 때 */
+.report-table tbody tr:hover {
+  background-color: #dbe9ff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 빈 데이터 메시지 */
+.report-table tbody tr td {
+  font-style: italic;
+  color: #888;
+}
+
+/* 페이지네이션 박스 */
+#pagingArea {
+  margin-top: 30px;
+  text-align: center;
+}
+
+/* 페이지네이션 리스트 스타일 */
+.pagination {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: inline-flex;
+  gap: 8px;
+  user-select: none;
+}
+
+/* 페이지 번호 li */
+.pagination li {
+  display: inline-block;
+}
+
+/* 링크 스타일 */
+.pagination a {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: 1.5px solid #2e86de;
+  color: #2e86de;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* hover 효과 */
+.pagination a:hover {
+  background-color: #2e86de;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(46,134,222,0.5);
+}
+
+/* 현재 페이지 */
+.pagination li.active a {
+  background-color: #2e86de;
+  color: white;
+  pointer-events: none;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* 이전/다음 버튼 강조 */
+.pagination a:first-child,
+.pagination a:last-child {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
