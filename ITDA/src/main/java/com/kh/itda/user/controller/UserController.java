@@ -20,7 +20,6 @@ import com.kh.itda.validator.UserValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 //마이페이지 전용
 @Controller
 @RequiredArgsConstructor
@@ -186,6 +185,5 @@ public class UserController {
 //	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
 //	  }
 }
-
 
 

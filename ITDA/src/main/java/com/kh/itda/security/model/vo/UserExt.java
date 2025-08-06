@@ -1,52 +1,49 @@
 package com.kh.itda.security.model.vo;
 
 import java.util.Collection;
-import java.util.List;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.kh.itda.user.model.vo.User;
-
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@NoArgsConstructor
-@ToString(callSuper = true)
-public class UserExt extends User implements UserDetails{
-	private List<GrantedAuthority> authorities;
-	
+public class UserExt implements UserDetails {
+	private int userNum;
+	private String userId;
+	private String userPwd;
+	private String nickName;
+	private String email;
+	private String birth;
+	private String phone;
+	private String address;
+	private String imageUrl;
+
+	// Spring Security 권한 목록
+	private Collection<? extends GrantedAuthority> authorities;
+
+	// 실제 DB에 저장되는 필드는 아님, 권한 목록 중 첫 번째 권한을 반환
+	public String getRole() {
+		if (authorities != null && !authorities.isEmpty()) {
+			// ROLE_ADMIN, ROLE_USER 형태로 들어있음
+			return authorities.iterator().next().getAuthority();
+		}
+		return null;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
-	// 스프링 시큐리티에서 비밃번호, 아이디를 가져올때 사용할 메서드
 	@Override
 	public String getPassword() {
-		return getUserPwd();
-	}
-	
-	@Override
-	public String getNickName() {
-		return super.getNickName();
+		return userPwd;
 	}
 
 	@Override
 	public String getUsername() {
-		return getUserId();
-	}
-	
-	public int getUserNum() {
-	    return super.getUserNum();
+		return userId;
 	}
 
-	public void setAuthorities(List<GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-	
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
@@ -66,5 +63,4 @@ public class UserExt extends User implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
-	
 }

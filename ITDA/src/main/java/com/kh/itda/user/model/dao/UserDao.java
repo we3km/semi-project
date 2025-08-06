@@ -1,12 +1,13 @@
 package com.kh.itda.user.model.dao;
 
+import java.util.List;
+
 import com.kh.itda.user.model.vo.User;
 
 public interface UserDao {
 
 	int insertUser(User user);
 	
-
 	void insertProfile(int userNum, String imageUrl);
 	
 	void insertAuthority(User user);
@@ -28,6 +29,10 @@ public interface UserDao {
 	String selectUserNum(String userId);
 
 	void updatePhone(String userId, String newPhone);
+
+	//void insertUserAndAuthority(User user);
+	
+	List<String> findAuthoritiesByUserNum(int userNum);
 
 	void updateAddress(String userId, String newAddress);
 

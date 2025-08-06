@@ -2,19 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="security">
 
-	<!-- 회원 정보 조회 -->
 	<select id="loadUserByUsername" resultMap="userResultMap">
 		SELECT U.*,
 		P.IMAGE_URL
 		FROM USER_TB U
-		LEFT JOIN PROFILE USING(USER_NUM)
+		LEFT JOIN PROFILE P
+		ON U.USER_NUM = P.USER_NUM
 		WHERE
 		USER_ID = #{userId}
 	</select>
 
+	<select id="searchUsers" parameterType="String"
+		resultType="com.kh.itda.user.model.vo.User">
+		SELECT
+		U.USER_NUM as userNum,
+		U.USER_ID as userId,
+		U.USER_PWD
+		as userPwd,
+		U.NICK_NAME as nickName,
+		U.EMAIL as email,
+		U.CREATE_DATE as
+		createDate
+		FROM USER_TB U
+		WHERE U.NICK_NAME LIKE #{keyword}
+		ORDER BY
+		U.USER_NUM
+	</select>
+
+	<select id="getAllReports"
+		resultType="com.kh.itda.support.model.vo.Report">
+		SELECT
+		REPORT_NUM AS reportNum,
+		USER_NUM AS userNum,
+		TYPE AS
+		type,
+		TARGET_ID AS targetId,
+		REASON AS reason,
+		DETAIL_REASON AS
+		detailReason,
+		STATUS AS status,
+		CREATED_AT AS createdAt,
+		PROCESSED_AT AS
+		processedAt
+		FROM REPORTS
+		ORDER BY REPORT_NUM DESC
+	</select>
+
+
 	<!-- 권한 조회 -->
 	<select id="findAuthoritiesByUserNum" parameterType="int"
-		resultType="string">
+		resultType="String">
 		SELECT AUTHORITY
 		FROM AUTHORITIES
 		WHERE USER_NUM = #{userNum}
@@ -37,31 +74,35 @@
 		SELECT
 		COUNT(*) FROM USER_TB WHERE NICK_NAME = #{nickName}
 	</select>
-	
+
 	<insert id="insertToken">
-		INSERT 
-			INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN, LAST_USED) 
-			VALUES (#{series}, #{username}, #{token}, #{lastUsed})
+		INSERT
+		INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN,
+		LAST_USED)
+		VALUES (#{series}, #{username}, #{token}, #{lastUsed})
 	</insert>
-	
+
 	<update id="updateToken">
 		UPDATE PERSISTENT_LOGINS
-		SET TOKEN = #{token}, LAST_USED = #{lastUsed}
+		SET TOKEN = #{token},
+		LAST_USED = #{lastUsed}
 		WHERE SERIES = #{series}
 	</update>
-	
-	<select id="selectToken" resultType="org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken">
-		SELECT 
-			SERIES, 
-			USERNAME,
-			TOKEN,
-			LAST_USED
+
+	<select id="selectToken"
+		resultType="org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken">
+		SELECT
+		SERIES,
+		USERNAME,
+		TOKEN,
+		LAST_USED
 		FROM PERSISTENT_LOGINS
 		WHERE SERIES = #{series}
 	</select>
-	
+
 	<delete id="deleteTokensByUserNum" parameterType="map">
-		DELETE FROM PERSISTENT_LOGINS WHERE USERNAME = #{username}
+		DELETE FROM
+		PERSISTENT_LOGINS WHERE USERNAME = #{username}
 	</delete>
 
 	<resultMap type="userExt" id="userResultMap">
@@ -77,7 +118,8 @@
 		<result column="IMAGE_URL" property="imageUrl" />
 		<collection property="authorities" javaType="arraylist"
 			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
-			column="USER_NUM" select="user.findAuthoritiesByUserNum" />
+			column="USER_NUM" select="findAuthoritiesByUserNum" />
 	</resultMap>
+
 
 </mapper>

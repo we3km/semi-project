@@ -9,7 +9,7 @@ public class CommunityLikes {
 	private int reactionNum;         // REACTION_NUM (PK)
     private int reactionUserNum;     // REACTION_USER_NUM 
     private String targetType;       // TARGET_TYPE 
-    private int targetId;            // TARGET_ID 
+    private int targetName;            // TARGET_NAME
     private String reactionType;     // REACTION_TYPE
 
 }

@@ -1,6 +1,7 @@
 package com.kh.itda.user.model.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -14,7 +15,7 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	private SqlSessionTemplate session;
-	
+
 	@Override
 	public int insertUser(User user) {
 		return session.insert("user.insertUser", user);
@@ -38,8 +39,8 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void insertProfile(int userNum, String imageUrl) {
 		Map<String, Object> param = new HashMap<>();
-	    param.put("userNum", userNum);
-	    param.put("imageUrl", imageUrl);
+		param.put("userNum", userNum);
+		param.put("imageUrl", imageUrl);
 		session.insert("user.insertProfile", param);
 	}
 
@@ -60,7 +61,7 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("encodedPwd", encodedPwd);
 	    
-	    int result = session.update("user.updatePassword", param);
+	    session.update("user.updatePassword", param);
 	    // System.out.println("업데이트 결과: " + result + "행");
 	}
 
@@ -70,7 +71,7 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("newNickname", newNickname);
 	    
-	    int result = session.update("user.updateNickname", param);
+	    session.update("user.updateNickname", param);
 	}
 	
 	@Override
@@ -79,7 +80,7 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("newPhone", newPhone);
 	    
-	    int result = session.update("user.updatePhone", param);
+	    session.update("user.updatePhone", param);
 	}
 	
 	@Override
@@ -88,23 +89,23 @@ public class UserDaoImpl implements UserDao {
 	    param.put("userId", userId);
 	    param.put("newAddress", newAddress);
 	    
-	    int result = session.update("user.updateAddress", param);
+	    session.update("user.updateAddress", param);
 	}
-
-/*	public void insertUserAndAuthority(User user) {
-		// TODO Auto-generated method stub
-		
-
-	}*/
 
 	@Override
 	public String selectUserNickname(String userId) {
-		return session.selectOne("user.selectUserNickname", userId); 
+		return session.selectOne("user.selectUserNickname", userId);
 	}
 	
 
 	@Override
 	public String selectUserNum(String userId) {
-		return session.selectOne("user.selectUserNum", userId); 
+		return session.selectOne("user.selectUserNum", userId);
 	}
+
+	@Override
+	public List<String> findAuthoritiesByUserNum(int userNum) {
+		return session.selectList("user.findAuthoritiesByUserNum", userNum);
+	}
+
 }

@@ -161,7 +161,7 @@ public class SignUpController { //회원가입
     		return "-1";
     	}
     	int result = uService.checkNickname(nickName);
-    	return String.valueOf(result);
+    	return result+"";
     }
     
     // 3단계: 회원정보 입력 페이지
