@@ -22,6 +22,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 	<div class="container_header">
@@ -53,22 +54,6 @@
 
 		<input type="hidden" id="userRole"
 			value="${sessionScope.loginUser.role}" />
-		<%-- <c:choose>
-			<c:when test="${not empty sessionScope.loginUser}">
-				<script>
-					$('.unlogin').hide();
-					$('.login').show();
-					$('.login_effect').show();
-				</script>
-			</c:when>
-			<c:otherwise>
-				<script>
-					$('.login').hide();
-					$('.unlogin').show();
-					$('.login_effect').hide();
-				</script>
-			</c:otherwise>
-		</c:choose> --%>
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 		    <div class="filters">
@@ -135,10 +120,6 @@
 					$('.login').hide();
 					$('.unlogin').show();
 				});
-				// 초기화 - 무조건 로그인된 상태 숨기기
-			/* 	$('.login').hide(); // 로그인된 사용자용 버튼 숨김
-				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
 				// 로그인 클릭 시
 				$('#loginBtn').click(function() {
 					location.href = contextPath
@@ -273,7 +254,7 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
+					location.href = "${contextpath}/itda/chat/chatRoomList";
 				});
 				//알람버튼
 				$('#alarm-icon').click(function() {

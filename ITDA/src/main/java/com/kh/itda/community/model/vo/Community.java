@@ -21,6 +21,7 @@ public class Community {
 	
 	private int views;	//VIEWS
 	private Date writeDate;	//WRITE_DATE
+	private Date editDate;
 //	private String status;
 	
 	private String tagStr;	//태그
