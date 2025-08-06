@@ -4,10 +4,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
-
 <!DOCTYPE html>
 <html>
 <head>
+<!-- 헤더 연결은 나중에 하자 -->
+<%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ChattingRoomList</title>
@@ -31,16 +32,35 @@
 	href="${pageContext.request.contextPath}/resources/css/modal_css/shipping_Address.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/modal_css/manner_Review.css">
+<%-- <link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/modal_css/reports.css"> --%>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<script
+	src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
+<script>
+	//stompClient 연결 설정
+	const userNum = '${loginUser.userNum}';
+	const nickName = '${loginUser.nickName}';
+	const imageUrl = '${loginUser.imageUrl}';
+	const contextPath = '${contextPath}';	
+</script>
+
+<script type="text/javascript"
+	src="${contextPath}/resources/js/stomp.js"></script>
+<!-- 카카오 우편번호 API -->
+<script
+	src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 
-<body>
-	<!-- 카카오 우편번호 API1 -->
-	<script
-		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
+<body data-usernum="${loginUser.userNum}">
+	<script>
+	// 로그인한 회원 번호
+	const loginUserNum = (Number)(document.body.dataset.usernum);	
+	</script>
 	<div class="chat-wrapper">
 		<!-- 왼쪽 채팅창 -->
 		<div class="chatlist-container">
@@ -49,23 +69,13 @@
 				<span id="chatTypeLabel">전체 채팅방</span>
 				<!-- '전체 채팅방' 디폴트 -->
 				<!-- '+'버튼 누르면 채팅방 유형별 뜨도록 -->
-
-				<!-- 채팅 유형 버튼 -->
 				<button class="ellipse-button-chatRoomType" onclick="chatRoomType()">
 					<b>채팅방 선택</b>
 				</button>
 
-				<!-- 채팅방 생성 -->
-				<button class="ellipse-button-chatRoomType"
-					onclick="selectBoardInfo(51)">
-					<!-- 게시물 번호 51번으로 임의 데이터 -->
-					<b>게시물에서 채팅방 생성</b>
-				</button>
-
 				<script>
 				// 게시물 정보 받아오기 & openChatRoom컨트롤러에 바로 보냄
-				// boardId 51번으로 고정
-					function selectBoardInfo(boardId) {
+					function selectBoardInfo(boardId) {			
 					fetch("${contextPath}/chat/selectBoardInfo?boardId=" + boardId, {
 				    	method: "GET"
 				    	})
@@ -124,13 +134,13 @@
 		              // 메뉴 닫기
 		              const menu = document.getElementById("chatMenu");
 		              if (menu) menu.classList.add("hidden");
-		            }
+		            }		       
 		          </script>
 				</div>
 			</div>
 
 			<script>
-			// 왼쪽 채팅창 마지막 메세지 가져오기
+			// 왼쪽 채팅창 마지막 메세지 가져오기			
 			function bringLastMessage(chatRoomId) {
 			    console.log("chatRoomId:", chatRoomId);
 			    fetch("${contextPath}/chat/bringLastMessage?chatRoomId=" + chatRoomId, {
@@ -141,20 +151,28 @@
 			      return res.json(); 
 			    })
 			    .then(({lastMessage}) => {
-			      const targetDiv = document.getElementById("lastMessage-" + chatRoomId);
-			      if (targetDiv) targetDiv.textContent = lastMessage;
+			      const targetDiv = document.getElementById("lastMessage-" + chatRoomId);		
+			      // 사진인 경우 <사진>으로 출력
+			      if (lastMessage) {
+			            const trimmedMessage = lastMessage.length > 8 
+		                ? lastMessage.slice(0, 8) + "..."
+		                : lastMessage;
+		            targetDiv.textContent = trimmedMessage;
+		        } else {
+		        	targetDiv.textContent = "<사진>";
+		        }
 			    })
 			    .catch(err => console.error("마지막 메시지 로드 실패:", err));
 			}
 			
-			// 채팅방 나가면 STATUS = 'N' 처리
+			// 채팅방 나가면 STATUS = 'N' 처리1 11
 			function leaveChat(button) {
 		        const confirmLeave = confirm("대화방에서 나가시겠습니까?");
 		        if (confirmLeave) {
 		            let listChat = button.closest(".list-chat");
+		            // 나간다는 메세지 오른쪽에 출력되게
 		            if (listChat) {
 		                const chatRoomId = listChat.getAttribute("data-chat-room-id");
-
 		                fetch("${contextPath}/chat/exit/" + chatRoomId, {
 		                    method: "POST",
 		                    headers: {
@@ -165,8 +183,14 @@
 		                listChat.remove();
 		                alert("대화방을 나갔습니다.");
 		            }
-		        }
+		        }		        
 		    }
+			
+			// 신고하기 
+			function reportChat(){
+				// 신고하기 모달창 열어주자.
+				openModal("reportModal");	
+			}
 			
      		// 프로필 이미지 누르면 그 사람 소개페이지로 이동 (태형이 마이페이지)
 			function goToUserPage(userId) {
@@ -182,7 +206,8 @@
 						<!-- 채팅 리스트 -->
 						<div class="chat-content1">
 							<!-- 각각의 채팅방 속성 -->
-							<div class="list-chat" data-chat-room-id="${chatRoom.chatRoomId}"
+							<div class="list-chat" 
+								data-chat-room-id="${chatRoom.chatRoomId}"
 								data-chat-userNum="${chatRoom.userNum}"
 								data-board-id="${chatRoom.boardId}"
 								data-chat-type="${chatRoom.refName}"
@@ -195,29 +220,82 @@
 
 								<script>
 									/* 마지막 메세지 가져오는 거 호출 !!이자리 일단 픽스 해놓자!! */
-									bringLastMessage('${chatRoom.chatRoomId}');
+									console.log("")
+									bringLastMessage("${chatRoom.chatRoomId}");
 									
-									console.log("거래 프로필", "${chatRoom.imageUrl}");
-									console.log("오픈 프로필", "${chatRoom.fileName}");
+									if("${chatRoom.refName}"==="오픈채팅방") console.log("오픈 프로필", "${chatRoom.fileName}");										
+									else console.log("${chatRoom.refName}", "프로필", "${chatRoom.imageUrl}");
+									
+									// 거래 채팅방 기준 상대방 프로필 가져오기
 								</script>
+
 
 								<!-- 오픈 채팅일 경우, 오픈 채팅방 프로필-->
 								<!-- 거래 채팅방일 경우, 상대방 프로필 이미지 & 마이페이지 -->
+								<script>								
+									console.log("오픈 프로필 사진 경로 : ", "${contextPath}/resources/images/chat/openchat/"+"${chatRoom.fileName}");
+								</script>
 								<c:choose>
-									<c:when test="${chatRoom.refName == '오픈채팅'}">
-										<img src="${contextPath}${chatRoom.fileName}" alt="오픈채팅방 프로필"
-											width="50" height="50" style="border-radius: 20%;" />
+									<c:when test="${chatRoom.refName == '오픈채팅방'}">
+										<img
+											src="/itda/resources/images/chat/openchat/2025080412442662255.png"
+											alt="오픈채팅방 프로필" width="50" height="50"
+											style="border-radius: 20%;" />
 									</c:when>
+
+
 									<c:otherwise>
 										<button class="profile-button"
 											onclick="goToUserPage('user123')">
 											<!-- 프로필 이미지 및 오픈채팅방 대표 이미지 경로 할당 필요 -->
-											<img src="${contextPath}${chatRoom.imageUrl}"
-												alt="상대방 프로필 이미지" width="50" height="50"
-												style="border-radius: 20%;" />
+											<!-- 오픈 채팅방 대표 이미지 경로 직접 할당 -->
+											<img id="profileImage-${chatRoom.chatRoomId}"
+												src="${contextPath}${chatRoom.imageUrl}" alt="상대방 프로필 이미지"
+												width="50" height="50" style="border-radius: 20%;" />
 										</button>
+
+										<script>			
+										/* ===================================== 거래 채팅방 프로필 나타내기 ===================================== */
+											if("${chatRoom.refName}" !== "오픈채팅방"){
+												fetch("${contextPath}/chat/selectOpponentProfile?chatRoomId=${chatRoom.chatRoomId}", {
+													method: "GET"
+												})
+													.then(response => {
+														if (!response.ok) throw new Error("상대방 프로필 불러오기 실패ㅠㅠ");
+														console.log("${chatRoom.chatRoomId}");
+														return response.json();
+													})
+													.then(data => {
+														console.log("상대방 정보 : ", data);
+														const imgEl = document.getElementById("profileImage-${chatRoom.chatRoomId}");
+														if (imgEl) {
+															imgEl.src = "${contextPath}" + data.imageUrl;
+															window.revieweeImg = "${contextPath}" + data.imageUrl;															
+															console.log("window.revieweeImg", window.revieweeImg);
+															imgEl.alt = data.nickName + "프로필 이미지";
+														} else {
+															console.log("상대방 프로필 없음!!");
+														}
+														
+														const titleEl = document.getElementById("chatname-${chatRoom.chatRoomId}");
+														if (titleEl) {
+															window.revieweeNickName = data.nickName;
+															console.log("상대방 닉네임 : ", data.nickName);
+															titleEl.textContent = data.nickName;															
+														} else {
+															console.log("상대방 닉네임 없음!!");
+														}
+														
+													}).catch(error => {
+														console.error("에러 발생:", error);
+													})
+											}
+											/* ===================================== 프로필 나타내기 ===================================== */
+										</script>
+
 									</c:otherwise>
 								</c:choose>
+
 
 								<div style="flex: 1; margin-left: 20px;">
 									<!-- 상대 닉네임 or 오픈채팅방 제목 -->
@@ -231,12 +309,14 @@
 											</div>
 											<div class="lastM" id="lastMessage-${chatRoom.chatRoomId}"></div>
 										</c:when>
+
 										<c:otherwise>
 											<!-- 거래채팅방인 경우 거래채팅방 제목 -->
-											<div class="chatname">${chatRoom.nickName}</div>
+											<div class="chatname" id="chatname-${chatRoom.chatRoomId}">${chatRoom.nickName}</div>
 											<div class="lastM" id="lastMessage-${chatRoom.chatRoomId}"></div>
 										</c:otherwise>
 									</c:choose>
+
 								</div>
 								<!-- 오른쪽: 햄버거 버튼 + 메뉴 -->
 								<div style="position: relative;">
@@ -259,14 +339,14 @@
 				</c:choose>
 			</c:forEach>
 
-			<div class="chat-footer1"></div>
+			<!-- <div class="chat-footer1"></div> -->
 		</div>
 
 
 		<!-- 오른쪽 채팅방 -->
 		<div class="chatting-room">
 			<div class="chat-header2">
-				<span id="chat-header2-title">왼쪽 채팅방을 눌러 대화를 시작하세요.</span>
+				<span id="chat-header2-title">채팅방을 눌러 대화를 시작하세요.</span>
 				<!-- 클릭하면 판매자 or 구매자에 맞춰서 해당하는 기능 제공 창  -->
 				<button class="ellipse-button" onclick="transactionService()"
 					id="transMenuIcon">
@@ -344,7 +424,7 @@
 
 				  const messageWrapper = document.createElement('div');
 				  messageWrapper.classList.add('message', 'system-message');
-
+				  
 				  messageWrapper.innerHTML = `
 				    <button class="review-button" onclick="openModal('manner_Review')">
 				     후기 작성하기
@@ -354,12 +434,12 @@
 				  chatContent.appendChild(messageWrapper);
 				  // 스크롤 하단으로 이동
 				  chatContent.scrollTop = chatContent.scrollHeight;
-				  console.log("리뷰당하는 사람 이름 :", window.chatRightTitle);
 				}
 			</script>
 
 
 			<!-- ======================= 각 모달 기술 ======================= -->
+			<!-- 신고 모달 -->
 
 			<!-- 매너 평가 모달 -->
 			<div id="manner_Review" class="modal-overlay hidden">
@@ -373,13 +453,10 @@
 						<!-- 상대방 프로필 이미지 -->
 						<!-- 경로 할당 필요! -->
 						<div class="user-icon">
-							<img src="${contextPath}/resources/images/chat/profile.jpg"
-								alt="프로필 이미지" width="50" height="50" style="border-radius: 20%;" />
+							<img id="reviewee-Img" src="" alt="프로필 이미지" width="50"
+								height="50" style="border-radius: 20%;" />
 						</div>
 						<div class="username" id="revieweeName">상대방 닉네임</div>
-						<!-- <script>
-							document.getElementById("revieweeName").textContent = window.chatRightTitle;
-						</script> -->
 					</div>
 					<div class="slider-container">
 						<div id="tempDisplay" class="temp-indicator" style="left: 36%">
@@ -400,7 +477,7 @@
 				</div>
 			</div>
 
-			<script>
+			<script>			
 				let hasSubmitted = false; // 이미 제출했는지 체크
 			
 		        const slider = document.getElementById("slider");
@@ -429,6 +506,7 @@
 					return;
 				}
 
+				const reviewTextarea = document.getElementById('reviewText');
 				const sliderValue = parseInt(document.getElementById("slider").value);
 				const reviewText = document.getElementById("reviewText").value.trim();
 
@@ -438,7 +516,6 @@
 				console.log("후기 받을 회원 번호 (게시물 주인): ", window.boardInfo.userNum);
 
 				// POST 요청 보내기
-				"${contextPath}/chat/exit/"
 				fetch("${contextPath}/chat/insertManner/", {
 					method: 'POST',
 					headers: {
@@ -454,9 +531,10 @@
 				.then(response => {
 					if (response.ok) {
 						alert("후기가 등록되었습니다!");
+					    reviewTextarea.value = "";				    
 					} else {
 						alert("이미 후기가 등록되었습니다!");
-					}
+					}				
 				})
 				.catch(error => {
 					console.error("에러 발생:", error);
@@ -503,7 +581,6 @@
 							<!-- 상품 제목 -->
 							<br>(주)잇다
 						</p>
-
 						<form class="address-form">
 							<label>받으시는 분</label> <input type="text" class="input" id="name"
 								placeholder="받으시는 분 성함" /> <label>주소</label>
@@ -533,10 +610,10 @@
 					<div class="modal-header">IT다 결제창</div>
 
 					<h2 class="modal-title">내 계좌 정보 입력</h2>
-					<%-- <p class="item-desc">
+					<p class="item-desc" id="item-desc-title">
 						상품명<br> ${productName}
 						<!-- 전달된 상품명 동적 표현 -->
-					</p> --%>
+					</p>
 
 					<input type="text" class="input-box"
 						placeholder="상대방과 최종 합의된 가격을 기입해주세요." id="price" /> <select
@@ -555,13 +632,13 @@
 
 
 
-			<!-- 오른쪽 창 메세지 -->
+			<!-- ===================== 오른쪽 창 메세지 ===================== -->
 			<div class="chat-content2">
 				<!-- 바디 부분 -->
 				<div class="chat-message" id="item-board">
-					<button class="item-button" onclick="goToUserPage('상품 상세 사이트 링크')">
+					<button class="item-button" onclick="goToBoardPage()">
 						<!-- 게시물 사진 -->
-						<img src="" alt="" width="150" height="150"
+						<img id="product-img" src="" alt="상품 이미지" width="150" height="150"
 							style="border-radius: 20%;">
 						<div class="item-description">
 							<div class="item-title">
@@ -573,74 +650,52 @@
 							<div class="item-ID">
 								<strong>게시물 ID: </strong><span id="board-id"></span>
 							</div>
+							<!-- 거래 유형에 맞게 추가 정보 보여주자 -->
+							<div id="extra-info"></div>
 						</div>
 					</button>
 				</div>
 				<!-- 데베에 있던 메세지 끝어옴 -->
-				<!-- <div class="chat-message received"></div> -->
+				<div class="chat-message-received">
+					<!-- 받은 메시지 전체 감싸는 div -->
+					<div class="chat-user-info">
+						<!-- 프로필 이미지와 닉네임 영역 -->
+						<img src="상대방프로필" alt="상대방 이미지" class="chat-profile-img"> <span
+							class="chat-nickname"></span>
+					</div>
+					<div class="chat-text"></div>
+					<!-- 실제 채팅 메시지 -->
+					<div class="chat-time"></div>
+					<!-- 보낸 시간 -->
+				</div>
 			</div>
-
-			<script>
-			  function sendMessage() {
-			    const input = document.querySelector('.chat-input');
-			    const message = input.value;
-			
-			    console.log("챗룸아이디 전역변수 : ", window.chatRoomId);
-			    console.log("보내는 메세지 : ", message);
-			
-			    fetch("${contextPath}/chat/sendMessage", {
-			      method: "POST",
-			      headers: {
-			        "Content-Type": "application/json"
-			      },
-			      body: JSON.stringify({
-			        chatContent: message,
-			        chatRoomId: window.chatRoomId
-			      })
-			    })
-			    .then(response => {
-				    if (!response.ok) throw new Error("서버 에러");
-				    return response.json();
-				})
-			    .then(data => {
-			      const chatContent = document.querySelector('.chat-content2');
-			
-			      const newMessage = document.createElement('div');
-			      newMessage.className = 'chat-message sent';
-			      newMessage.textContent = data.chatContent;
-			
-			      chatContent.appendChild(newMessage);
-			      chatContent.scrollTop = chatContent.scrollHeight;
-			
-			      input.value = ""; // 입력란 비워줌
-			    })
-			    .catch(error => {
-			      console.error("메시지 전송 실패:", error);
-			      alert("메시지 전송 실패");
-			    });
-			  }
-			</script>
 
 			<div class="chat-footer2">
 				<!-- 버튼 눌렀을 때 나올 메뉴 -->
 				<!-- 실제 파일 업로드용 input (숨김 처리) -->
 				<input type="file" id="imageInput" accept="image/*"
-					style="display: none;" />
+					style="display: none;" onchange="uploadImage(this)" />
 				<!-- 사용자가 누르게 될 버튼 -->
 				<button class="ellipse-button" onclick="insertImg()">
 					<b>+</b>
 				</button>
-				<input type="text" class="chat-input" placeholder="메시지를 입력하세요..." />
+				<input type="text" class="chat-input" placeholder="메시지를 입력하세요..."
+					onkeydown="handleKeyDown(event)" />
 				<button class="send-button" onclick="sendMessage()">
 					<b>전송</b>
 				</button>
 
-
 				<!-- =========================우측 채팅방 기능========================= -->
 				<script>
-                // 오른쪽 채팅창 헤더 +버튼 눌렀을 때 
-                // 주소요청, 운송장 입력 등 거래 유형에 맞게 보여줌
+				function handleKeyDown(event) {
+					if (event.key === "Enter") {
+						event.preventDefault(); // 폼 제출 막기 (폼이 있을 경우)
+						sendMessage(); // 전송 함수 호출
+					}
+				}
 
+                // 오른쪽 채팅창 헤더 +버튼 눌렀을 때 
+                // 주소요청, 운송장 입력 등 거래 유형에 맞게 보여줌                
                 function transactionService() {
                     const menu = document.getElementById("transMenu");
                     menu.classList.toggle("hidden");
@@ -651,6 +706,49 @@
                     document.getElementById('imageInput').click();
                     // 숨겨진 input을 클릭
                 }
+                
+                // 이미지 선택시, 이미지 서버 저장, DB삽입하자
+                function uploadImage(input) {
+                    const file = input.files[0];
+                    if (!file) return;
+                    
+                    console.log("사진 파일 : ", file);
+
+                    // 실제 사진 파일, 채룸 아이디
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('chatRoomId', window.chatRoomId); // 채팅방 id도 같이 전송
+
+                    fetch("${contextPath}/chat/uploadImageMessage", {                    	
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {                    	
+                        if (data.success) {
+                            stompClient.send("/topic/room/" + window.chatRoomId, {}, JSON.stringify(data.chatMessage));
+                        } else {
+                            alert('이미지 업로드 실패');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('에러 발생');
+                    });
+                } 
+                
+                // 게시물 상제 조회에서 누르면 사이트로 이동
+                function goToBoardPage(){               
+                	let url = "";
+                	if(window.chatRoomTypeOf === "대여"){
+                		url = "/itda/board/detail/rental/" + window.chatBoardNum;
+                	}else if(window.chatRoomTypeOf === "나눔"){
+                		url = "/itda/board/detail/share/" + window.chatBoardNum;
+                	}else if(window.chatRoomTypeOf === "경매"){
+                		url = "/itda/board/detail/auction/" + window.chatBoardNum;
+                	}					
+					window.location.href = url;
+				}
             </script>
 			</div>
 		</div>
@@ -658,11 +756,21 @@
 
 	<!-- ================= 왼쪽 채팅방 누르면 오른쪽에 해당 채팅 정보 출력 ================== -->
 	<script>
+	let currentSubscribe = null; //전역에서 구독 객체 추적, 선언해보자
+	
     document.addEventListener("DOMContentLoaded", function () {
+    	connect();
         const chatRooms = document.querySelectorAll(".list-chat");
-
+	
         chatRooms.forEach(chat => {
             chat.addEventListener("click", function () {
+            	// 기존 구독 취소
+                if (currentSubscribe) {
+                	console.log("다른 방 선택!! 기존에 있던 구독 연결 취소")
+                	currentSubscribe.unsubscribe();
+                	currentSubscribe = null;
+                }
+            	
             	// 기존에 있을 수 있는 후기 버튼 제거
             	document.querySelectorAll(".review-button").forEach(btn => {
 				    const wrapper = btn.closest(".system-message");
@@ -675,7 +783,10 @@
 				const profileImg = chat.getAttribute("data-chat-profile");	
 					
                 const chatRoomType = chat.getAttribute("data-chat-type");
-                const chatBoardId = chat.getAttribute("data-board-id");
+                window.chatRoomTypeOf = chatRoomType; 
+                
+                const chatBoardId = chat.getAttribute("data-board-id");                
+                window.chatBoardNum = chatBoardId;
 
                 const chatHeader2 = document.getElementById("chat-header2-title");
 
@@ -699,29 +810,74 @@
 
                 window.boardInfo = null;
 
-                // ===== 일반 채팅방인 경우 =====
-                if (chatRoomType!=="오픈채팅방") { // 오픈채팅방이 아닌 경우
+                // ========================= 거래 채팅방인 경우 =========================
+                if (chatRoomType!=="오픈채팅방") { 
                     transMenuIcon.style.display = "block";
                     itemBoard.style.display = "block";
                     
-                    console.log("거래 채팅방 이미지 경로 : ", profileImg);
-
+                    console.log("거래 채팅방 이미지 경로 : ", profileImg);                   
+                    // 게시물 정보
                     fetch("${contextPath}/chat/selectBoardInfo?boardId=" + chatBoardId)
                         .then(response => {
                             if (!response.ok) throw new Error("게시물 정보 응답 실패");
                             return response.json();
                         })
                         .then(data => {
+                        	// 거래 채팅방이니 거래 게시물 정보 표기
                             window.boardInfo = data;
 
-                            document.getElementById("revieweeName").textContent = window.chatRightTitle;
-                            chatHeader2.textContent = window.chatRightTitle;
+                        	// 리뷰 당하는 사람이름 지정 및 오른쪽 채팅방 이름 설정
+                            document.getElementById("revieweeName").textContent = window.revieweeNickName;
+                            chatHeader2.textContent = window.revieweeNickName;
 
+                            // 게시물 번호로 끌고 온 게시물 정보, 오른쪽 채팅방 할당
+                            // 오른쪽 채팅방 제목 할당
+                            
+                            console.log("거래 유형 :", chatRoomType);
+                            
                             document.getElementById("product-name").textContent = data.productName;
                             document.getElementById("transaction-type").textContent = chatRoomType;
-                            document.getElementById("board-id").textContent = chatBoardId;
-
-                            // 게시물 정보 가져온 뒤 메시지도 가져오기
+                            
+                            const extraInfo = document.getElementById("extra-info");
+                            extraInfo.innerHTML = ""; // 초기화 먼저 하자
+                            
+                            // 거래 유형에 맞게 게시물 정보 보여줌
+							if(chatRoomType === "대여"){
+							// 대여금액, 보증금	
+								extraInfo.textContent = "대여금액 : " + data.rentalFee + 
+								"원\n보증금 : " + data.deposit + "원";				    
+							} else if(chatRoomType === "경매"){
+							// 경매 입찰 시작금, 경매 종료 날짜
+								extraInfo.textContent = "입찰 시작가 : " + data.auctionStartingFee + 
+								"원\n종료일 : " + data.auctionEndDate;
+							} else if(chatRoomType === "나눔"){
+							// 나눔 갯수
+								extraInfo.textContent = "나눔 갯수 : " + data.sharingCount + "개";
+							}                           
+                        
+                            document.getElementById("item-desc-title").textContent = data.productName;                            
+                            document.getElementById("board-id").textContent = chatBoardId;                             
+              			    console.log("후기 당하는 사람 이미지 경로 : ", window.revieweeImg);
+              			    document.getElementById("reviewee-Img").src = window.revieweeImg;
+             				
+              			    
+                    		if(chatRoomType === "대여"){
+                    			const imgSrc = "${contextPath}/resources/images/board/rental/" + data.fileName;                    			
+                    			document.getElementById("product-img").src = imgSrc; 
+                    			
+                    		} else if(chatRoomType === "나눔"){
+                    			const imgSrc = "${contextPath}/resources/images/board/share/" + data.fileName;
+                    			document.getElementById("product-img").src = imgSrc;
+                    			
+                    		} else if(chatRoomType === "경매"){
+                    			const imgSrc = "${contextPath}/resources/images/board/auction/" + data.fileName;
+                    			document.getElementById("product-img").src = imgSrc;
+                    			
+                    		} else if(chatRoomType === "교환"){
+                    			const imgSrc = "${contextPath}/resources/images/board/exchange/" + data.fileName;
+                    			document.getElementById("product-img").src = imgSrc;
+                    		}                            
+                            // 이제 메세지 가져오자
                             return fetch("${contextPath}/chat/messages/" + window.chatRoomId);
                         })
                         .then(res => {
@@ -730,53 +886,56 @@
                         })
                         .then(messages => {
                         	console.log("출력되는 메세지 : ", messages);
-                            document.querySelectorAll(".chat-message-talk").forEach(element => {
-                                element.remove();
-                            });
+                        	// 출력됐던 메세지 & 사진 모두 지우자
+                            document.querySelectorAll(".chat-message-received, .chat-message-sent, .chat-system-message, .chat-content2 > img").forEach(element => {
+                            	element.remove();
+                            	});
                             messages.forEach(msg => {
-                                const newMessage = document.createElement("div");
-                                newMessage.className = "chat-message-talk";
-                                newMessage.textContent = msg.chatContent;
-                                newMessage.sentAt = msg.sentAt;
-                                chatContent2.appendChild(newMessage);
+                            	showMessage(msg);
                             });
                         })
                         .catch(err => {
                             console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
                         });
 
-
-                } else if(chatRoomType==="오픈채팅방") {
-                    // ===== 오픈채팅방인 경우, 게시물 없이 메세지만 가져오자 =====
-                    chatHeader2.textContent = window.chatRightTitle;
-
-                    transMenuIcon.style.display = "none";
-                    itemBoard.style.display = "none";
-                    // 오픈 채팅방인 경우 게시물 정보, 거래 버튼 (거래완료 등) 안 보여줌
                     
-                    console.log("오픈 채팅방 이미지 경로 : ", openImg);
+                } else if (chatRoomType === "오픈채팅방") {
+                	// ========================= 오픈채팅방인 경우, 게시물 없이 메세지만 가져오자 =========================
+                	chatHeader2.textContent = window.chatRightTitle;
 
-                    fetch("${contextPath}/chat/messages/" + window.chatRoomId)
-                        .then(res => {
-                            if (!res.ok) throw new Error("메세지 가져오기 실패");
-                            return res.json();
-                        })
-                        .then(messages => {
-                            console.log("출력되는 메세지 : ", messages);
-                            document.querySelectorAll(".chat-message-talk").forEach(element => {
-                                element.remove();
-                            });
-                            messages.forEach(msg => {
-                                const newMessage = document.createElement("div");
-                                newMessage.className = "chat-message-talk";
-                                newMessage.textContent = msg.chatContent;
-                                chatContent2.appendChild(newMessage);
-                            });
-                        })
-                        .catch(err => {
-                            console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
-                        });
-                }
+                	transMenuIcon.style.display = "none";
+                	itemBoard.style.display = "none";
+                	// 오픈 채팅방인 경우 게시물 정보, 거래 버튼 (거래완료 등) 안 보여줌
+
+                	console.log("오픈 채팅방 대표 이미지 경로 : ", openImg);
+
+                	fetch("${contextPath}/chat/messages/" + window.chatRoomId)
+                		.then(res => {
+                			if (!res.ok) throw new Error("메세지 가져오기 실패");
+                			return res.json();
+                		})
+                		// 출력됐던 메세지 & 사진 모두 지우자
+                		.then(messages => {
+                			console.log("출력되는 메세지 : ", messages);
+                			document.querySelectorAll(".chat-message-received, .chat-message-sent, .chat-system-message, .chat-content2 > img").forEach(element => {
+                				element.remove();
+                			});
+                			messages.forEach( msg => {
+                				showMessage(msg);                				
+                			});
+                		})
+                		.catch(err => {
+                			console.error("메세지 받아와서 뿌리는거에서 오류!:", err);
+                		});
+                }      
+                // 실시간으로 메세지 보여줌 -> chatStompController 호출
+                currentSubscribe = stompClient.subscribe("/topic/room/" + window.chatRoomId, function(message){
+                    // message.body가 본문 
+                    const chatMessage = JSON.parse(message.body);
+                    console.log("발송하는 채팅 메세시 속성 : ", chatMessage)
+                    showMessage(chatMessage);                    
+                });          
+                
             }); // addEventListener close
         }); // forEach close
     });
@@ -785,7 +944,11 @@
 
 	<!-- chat.js 참조 -->
 	<script type="text/javascript"
-		src="${contextPath}/resources/js/chat.js"></script>
+		src="${contextPath}/resources/js/chat/chat.js"></script>
+
+	<!-- reports.js 참조 -->
+	<%-- <script type="text/javascript"
+		src="${contextPath}/resources/js/report/reports.js"></script> --%>
 </body>
 
 </html>

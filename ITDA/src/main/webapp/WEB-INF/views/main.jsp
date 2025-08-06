@@ -25,8 +25,6 @@
 <body>
 	<input type="hidden" id="userRole" value="${sessionScope.role}" />
 	<div class="container">
-
-
 		<div class="top-buttons">
 			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
 			<sec:authorize access="isAnonymous()">
@@ -39,12 +37,19 @@
 			<%--로그인했을 때만 이 div를 렌더링--%>
 			<sec:authorize access="isAuthenticated()">
 				<div class="login">
+					<div class="btn" id="myChatRoom">나의 채팅방</div>
 					<div class="btn" id="myPage">마이페이지</div>
 					<div class="btn" id="logoutBtn">로그아웃</div>
 				</div>
 			</sec:authorize>
 		</div>
 
+		<!-- 채팅방 리스트 이동 -->
+		<script>
+		document.getElementById("myChatRoom").addEventListener("click", function() {
+		    location.href = "${contextpath}/itda/chat/chatRoomList";
+		});
+		</script>
 		<div class="headline">IT다</div>
 		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
 
@@ -54,14 +59,19 @@
 				<!-- 거래유형 드롭다운 -->
 				<div class="dropdown" id="deal-type-dropdown">
 					<button class="dropbtn">
-
 				        <span class="dropbtn_content">게시판유형</span>
 				        <span class="dropbtn_click" aria-hidden="true">
 				            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
 				                 width="16" height="16" viewBox="0 0 24 24">
+
 				                  <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 				            </svg>
 						</span>
+					</button>
+
+					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
+					</svg>
+					</span>
 					</button>
 					<!-- 목록 -->
 					<div class="dropdown-content">
@@ -76,13 +86,19 @@
 				<!-- 상품유형 드롭다운 -->
 				<div class="dropdown" id="product-type-dropdown">
 					<button class="dropbtn">
-						<span class="dropbtn_content">카테고리</span> 
-						<span class="dropbtn_click" aria-hidden="true"> 
-							<svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-									width="16" height="16" viewBox="0 0 24 24">
+
+						<span class="dropbtn_content">상품유형</span> <span
+							class="dropbtn_click" aria-hidden="true"> <svg
+								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+								width="16" height="16" viewBox="0 0 24 24">
 	                			<path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 	              			</svg>
 						</span>
+					</button>
+
+					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
+					</svg>
+					</span>
 					</button>
 					<div class="dropdown-content"></div>
 				</div>

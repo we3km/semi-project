@@ -106,7 +106,7 @@
 						<span>#${tag}</span>
 					</c:forEach>
 				</div>
-				
+
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
 					<div class="profile-icon">
@@ -117,16 +117,18 @@
 					<strong>${writer} </strong>
 					<p>매너점수 : ${mannerScore }</p>
 				</div>
-				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
+				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
 				<div class="buttons">
 					<!-- 연결해야함 -->
+					<!-- 게시물 주인과 회원번호 다를때만 메세지 보내기 생성 -->
 					<c:if test="${userNum ne board.boardCommon.userNum}">
-						<button>메시지 보내기</button>
+						<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
+							보내기</button>
 						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-	  						<i class="fa fa-heart"></i> 찜하기
+							<i class="fa fa-heart"></i> 찜하기
 						</button>
 					</c:if>
-					
+
 					<!-- 게시자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum eq board.boardCommon.userNum}">
 						<form action="${pageContext.request.contextPath}/board/delete/rental/${board.boardCommon.boardId}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
@@ -134,7 +136,46 @@
 						</form>
 					</c:if>
 
+					<!-- 채팅방 리스트 이동 -->
+					<script>
+					     function createTransactionChatRoom() {
+					        const contextPath = '${contextPath}';
+					        // 데헷 이거 널값임					        
+					        const boardId = "${board.boardCommon.boardId}";
+					        
+					        console.log("contextPath: ", contextPath);
+					        console.log("현재 게시판 번호 : ", boardId);
 					
+					        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
+					            method: "GET"
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("게시물 정보 응답 실패");
+					            return response.json();
+					        })
+					        .then(data => {
+					            console.log("게시물 정보:", data);
+					
+					            return fetch("/itda/chat/openChatRoom", {
+					                method: "POST",
+					                headers: {
+					                    "Content-Type": "application/json"
+					                },
+					                body: JSON.stringify(data)
+					            });
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("채팅방 열기 실패");
+					            location.href = contextPath + "/itda/chat/chatRoomList";
+					        })
+					        .catch(err => console.error("오류 발생:", err));
+					    } 
+					</script>
+
+
+					<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+						<i class="fa fa-heart"></i> 찜하기
+					</button>
 					<!-- 연결해야함 -->
 					<button>신고하기</button>
 				</div>
@@ -179,7 +220,7 @@
     </script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
-			<h2>${writer}님의 다른 상품</h2>
+			<h2>${writer}님의다른상품</h2>
 			<div class="product-list">
 
 				<!-- 카드 반복 -->
@@ -220,7 +261,7 @@
 			<h3>상품정보</h3>
 			<pre>${board.boardCommon.productComment}</pre>
 		</div>
-		
+
 		<!-- 카테고리 소분류와 같은 다른 대여 게시물들 목록 -->
 		<div class="related-products">
 			<h2>이 상품과 유사한 상품</h2>
@@ -258,5 +299,8 @@
 			</div>
 		</div>
 	</div>
+	<!-- transactionChat.js 참조 -->
+	<%-- <script type="text/javascript"
+		src="${contextPath}/resources/js/transactionChat.js"></script> --%>
 </body>
 </html>

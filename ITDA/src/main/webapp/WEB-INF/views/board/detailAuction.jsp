@@ -54,7 +54,8 @@
 						pattern="yyyy/MM/dd" />
 				</div>
 
-				<div class="price">경매시작금 : ${board.boardAuction.auctionStartingFee}원</div>
+				<div class="price">경매시작금 :
+					${board.boardAuction.auctionStartingFee}원</div>
 				<div class="date-range">
 					대여기간 :
 					<fmt:formatDate value="${board.boardAuction.auctionStartDate }"
@@ -68,7 +69,7 @@
 						<span>#${tag}</span>
 					</c:forEach>
 				</div>
-				
+
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
 					<div class="profile-icon">
@@ -79,23 +80,61 @@
 					<strong>${writer} </strong>
 					<p>매너점수 : ${mannerScore }</p>
 				</div>
-				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
+				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
 				<div class="buttons">
 					<!-- 연결해야함 -->
 					<!-- 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum ne board.boardCommon.userNum}">
-						<button>메시지 보내기</button>
+						<button id="sendMessage">메시지 보내기</button>
+						<script>
+					     function createTransactionChatRoom() {
+					        const contextPath = '${contextPath}';
+					        // 데헷 이거 널값임					        
+					        const boardId = "${board.boardCommon.boardId}";
+					        
+					        console.log("contextPath: ", contextPath);
+					        console.log("현재 게시판 번호 : ", boardId);
+					
+					        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
+					            method: "GET"
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("게시물 정보 응답 실패");
+					            return response.json();
+					        })
+					        .then(data => {
+					            console.log("게시물 정보:", data);
+					
+					            return fetch("/itda/chat/openChatRoom", {
+					                method: "POST",
+					                headers: {
+					                    "Content-Type": "application/json"
+					                },
+					                body: JSON.stringify(data)
+					            });
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("채팅방 열기 실패");
+					            location.href = contextPath + "/itda/chat/chatRoomList";
+					        })
+					        .catch(err => console.error("오류 발생:", err));
+					    } 
+					</script>
 					</c:if>
 					<!-- 경매가 종료 되고 게시글 게시자가 상세보기에 들어왔을 때 -->
-					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and not empty bidList}">
-						<button id="message-winner" onclick="messageWinner(${board.boardCommon.boardId})">낙찰자에게 채팅 보내기</button>
+					<c:if
+						test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and not empty bidList}">
+						<button id="message-winner"
+							onclick="messageWinner(${board.boardCommon.boardId})">낙찰자에게
+							채팅 보내기</button>
 					</c:if>
-					
+
 					<!-- 경매가 종료 되었지만 입찰자가 단 한명도 없을때 게시글 게시자가 상세보기에 들어왔을 때 -->
-					<c:if test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and empty bidList}">
+					<c:if
+						test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and empty bidList}">
 						<button id="message-winner">입찰자 없음</button>
 					</c:if>
-					
+
 					<script>
 						function messageWinner(boardId) {
 						    $.ajax({
@@ -119,52 +158,56 @@
 						    <button type="submit">삭제</button>
 						</form>
 					</c:if>
-					
+
 					<!-- 게시가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum ne board.boardCommon.userNum}">
 						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-	  						<i class="fa fa-heart"></i> 찜하기
+							<i class="fa fa-heart"></i> 찜하기
 						</button>
 					</c:if>
-					
-						<!-- 경매가 종료되고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때   -->
-						<!-- 경매가 종료되지 않고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
+
+					<!-- 경매가 종료되고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때   -->
+					<!-- 경매가 종료되지 않고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:choose>
-						<c:when test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'end'}">
-							<button class="auctionEnd" style="cursor: default; background-color:gray; color: white;">
-							경매종료</button>
+						<c:when
+							test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'end'}">
+							<button class="auctionEnd"
+								style="cursor: default; background-color: gray; color: white;">
+								경매종료</button>
 						</c:when>
-						<c:when test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'doing'}">
+						<c:when
+							test="${userNum ne board.boardCommon.userNum and auctionEnd eq 'doing'}">
 							<button onclick="openModal('${boardId}', '${userNum}')">입찰하기</button>
 						</c:when>
 					</c:choose>
-					
-					
-					<div id="bidModal" style="display:none; position:fixed; top:20%; left:30%; width:300px; height:200px; background:white; border:1px solid black; padding:20px;">
-					  <h3>${board.boardCommon.productName}의 입찰금 제시</h3>
-					  <h4>입찰금 단위 : ${board.boardAuction.bidUnit}</h4>
-					  <button type="button" onclick="changeBid(-1)">-</button>
-					  <input type="text" id="popupInput" placeholder="제시할 입찰금"/>
-					  <button type="button" onclick="changeBid(1)">+</button>
-					  <button onclick="applyValue()">제시</button>
-					  <button onclick="closeModal()">닫기</button>
+
+
+					<div id="bidModal"
+						style="display: none; position: fixed; top: 20%; left: 30%; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px;">
+						<h3>${board.boardCommon.productName}의입찰금 제시</h3>
+						<h4>입찰금 단위 : ${board.boardAuction.bidUnit}</h4>
+						<button type="button" onclick="changeBid(-1)">-</button>
+						<input type="text" id="popupInput" placeholder="제시할 입찰금" />
+						<button type="button" onclick="changeBid(1)">+</button>
+						<button onclick="applyValue()">제시</button>
+						<button onclick="closeModal()">닫기</button>
 					</div>
-					
+
 					<h3>입찰금 현황</h3>
 					<div id="biddingList">
 						<c:forEach var="bid" items="${bidList }" varStatus="status">
-							<p class="bid ${status.first ? 'top-bid' : ''}" 
-  							data-nickname="${bid.nickName}">
+							<p class="bid ${status.first ? 'top-bid' : ''}"
+								data-nickname="${bid.nickName}">
 								${bid.nickName} - ${bid.bid }
-<%-- 								<c:if test="${bid.biddingUserNum == userNum}">
+								<%-- 								<c:if test="${bid.biddingUserNum == userNum}">
 							    	<button onclick="openModal('${board.boardCommon.boardId}', '${userNum}')">
 							    	수정</button>
 								</c:if> --%>
 							</p>
-						
+
 						</c:forEach>
 					</div>
-					
+
 					<!-- 연결해야함 -->
 					<button>신고하기</button>
 				</div>
@@ -207,9 +250,9 @@
            });
     	});
     </script>
-    
-    <!-- 입찰금 제시 모달창 스크립트 -->
-	<script>
+
+		<!-- 입찰금 제시 모달창 스크립트 -->
+		<script>
 		const bidUnit = ${board.boardAuction.bidUnit}; // 입찰 단위 (서버에서 받아오는 값)
 		let previousBid = 0;        // 사용자의 이전 입찰 금액 (서버에서 받아오는 값)
 		let currentBid = 0;
@@ -328,7 +371,7 @@
 	</script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
-			<h2>${writer}님의 다른 상품</h2>
+			<h2>${writer}님의다른 상품</h2>
 			<div class="product-list">
 
 				<!-- 카드 반복 -->
@@ -344,11 +387,13 @@
 						<p>${writerAuctionWrapper.boardCommon.productName }</p>
 						<p class="price">경매시작금:${writerAuctionWrapper.boardAuction.auctionStartingFee }</p>
 						<c:if test="${writerAuctionWrapper.highestBid ne 0}">
-							<p id="highest-bid">최고입찰가 : ${writerAuctionWrapper.highestBid}</p>
+							<p id="highest-bid">최고입찰가 :
+								${writerAuctionWrapper.highestBid}</p>
 						</c:if>
-					
+
 						<c:if test="${writerAuctionWrapper.highestBid eq 0}">
-							<p id="highest-bid">최고입찰가 : ${writerAuctionWrapper.boardAuction.auctionStartingFee}</p>
+							<p id="highest-bid">최고입찰가 :
+								${writerAuctionWrapper.boardAuction.auctionStartingFee}</p>
 						</c:if>
 						<p>
 							<fmt:formatDate
@@ -357,7 +402,8 @@
 						</p>
 						~
 						<p>
-							<fmt:formatDate value="${writerAuctionWrapper.boardAuction.auctionEndDate }"
+							<fmt:formatDate
+								value="${writerAuctionWrapper.boardAuction.auctionEndDate }"
 								pattern="yyyy/MM/dd" />
 						</p>
 					</div>
@@ -376,8 +422,8 @@
 			<h3>상품정보</h3>
 			<pre>${board.boardCommon.productComment}</pre>
 		</div>
-		
-		
+
+
 		<!-- 카테고리 소분류와 같은 다른 대여 게시물들 목록 -->
 		<div class="related-products">
 			<h2>이 상품과 유사한 상품</h2>
@@ -396,11 +442,12 @@
 						<c:if test="${equalsCategoryboard.highestBid ne 0}">
 							<p id="highest-bid">최고입찰가 : ${equalsCategoryboard.highestBid}</p>
 						</c:if>
-					
+
 						<c:if test="${equalsCategoryboard.highestBid eq 0}">
-							<p id="highest-bid">최고입찰가 : ${equalsCategoryboard.boardAuction.auctionStartingFee}</p>
+							<p id="highest-bid">최고입찰가 :
+								${equalsCategoryboard.boardAuction.auctionStartingFee}</p>
 						</c:if>
-						
+
 						<p>
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardAuction.auctionStartDate }"
@@ -410,7 +457,7 @@
 						<p>
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardAuction.auctionEndDate }"
-								pattern="yyyy/MM/dd"/>
+								pattern="yyyy/MM/dd" />
 						</p>
 					</div>
 				</c:forEach>

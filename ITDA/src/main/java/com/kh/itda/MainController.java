@@ -44,8 +44,6 @@ public class MainController {
         //커뮤니티 타입 목록 (categoryId 10일 때 사용)
         model.addAttribute("communityTypes", communityService.getCommunityTypeMap());
 	       
-        
-		
 		  // 로그인한 사용자 ID
 		  //System.out.println((User) auth.getPrincipal());
 		 

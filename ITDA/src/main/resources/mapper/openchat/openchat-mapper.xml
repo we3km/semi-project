@@ -7,51 +7,57 @@
 
 	<!-- 오픈 채팅방 목록 조회 -->
 	<select id="selectOpenChatRoomList"
-	resultType="com.kh.itda.openchat.model.vo.OpenChatRoom"
-	parameterType="map">
-	SELECT
+		resultType="com.kh.itda.openchat.model.vo.OpenChatRoom"
+		parameterType="map">
+		SELECT
 		OC.CHATROOM_ID AS chatRoomID,
 		OC.OPEN_CHAT_ROOM_NAME AS chatName,
 		COUNT(DISTINCT CP.USER_NUM) AS chatCount,
-		OC.MAX_CHATROOM_COUNT AS maxchatCount,
+		OC.MAX_CHATROOM_COUNT AS
+		maxchatCount,
 		OC.EXPLANATION AS explanation,
-		LISTAGG(DISTINCT t.TAG_CONTENT, ',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS tagContent,
+		LISTAGG(DISTINCT
+		t.TAG_CONTENT, ',') WITHIN GROUP (ORDER BY t.TAG_CONTENT) AS
+		tagContent,
 
 		F.FILE_ID AS fileId,
 		F.FILE_NAME AS fileName
 
-	FROM OPEN_CHAT OC
-		LEFT JOIN CHAT_PARTICIPANT CP ON OC.CHATROOM_ID = CP.CHATROOM_ID
-		LEFT JOIN OPENCHATROOM_TAG OT ON OC.CHATROOM_ID = OT.CHATROOM_ID
+		FROM OPEN_CHAT OC
+		LEFT JOIN CHAT_PARTICIPANT CP ON OC.CHATROOM_ID =
+		CP.CHATROOM_ID
+		LEFT JOIN OPENCHATROOM_TAG OT ON OC.CHATROOM_ID =
+		OT.CHATROOM_ID
 		LEFT JOIN TAG T ON ot.TAG_ID = T.TAG_ID
-		LEFT JOIN LOCATION L ON OC.LOCATION_ID = L.LOCATION_ID
+		LEFT JOIN
+		LOCATION L ON OC.LOCATION_ID = L.LOCATION_ID
 
-		LEFT JOIN "FILE" F 
-			ON F.REF_NO = OC.CHATROOM_ID 
-			AND F.CATEGORY_ID = 11
-			AND F.FILE_ID = (
-				SELECT MIN(FILE_ID)
-				FROM "FILE"
-				WHERE REF_NO = OC.CHATROOM_ID 
-				AND CATEGORY_ID = 11
-			)
-	<where>
-	<if test="sido !=null and sido !=''">
-	 AND L.SIDO = #{sido}
-	</if>
-	<if test="sigungu !=null and sigungu !=''">
-		AND L.SIGUNGU = #{sigungu}
-	</if>
-	<if test="keyword != null and keyword != ''">
-        AND (
-             OC.OPEN_CHAT_ROOM_NAME LIKE '%' || #{keyword} || '%'
-          OR OC.EXPLANATION LIKE '%' || #{keyword} || '%'
-          OR upper(T.TAG_CONTENT) LIKE '%' || upper(#{keyword}) || '%'
-        )
-      </if>
-	</where>
+		LEFT JOIN "FILE" F
+		ON F.REF_NO = OC.CHATROOM_ID
+		AND F.CATEGORY_ID = 11
+		AND F.FILE_ID = (
+		SELECT MIN(FILE_ID)
+		FROM "FILE"
+		WHERE REF_NO = OC.CHATROOM_ID
+		AND CATEGORY_ID = 11
+		)
+		<where>
+			<if test="sido !=null and sido !=''">
+				AND L.SIDO = #{sido}
+			</if>
+			<if test="sigungu !=null and sigungu !=''">
+				AND L.SIGUNGU = #{sigungu}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (
+				OC.OPEN_CHAT_ROOM_NAME LIKE '%' || #{keyword} || '%'
+				OR OC.EXPLANATION LIKE '%' || #{keyword} || '%'
+				OR upper(T.TAG_CONTENT) LIKE '%' || upper(#{keyword}) || '%'
+				)
+			</if>
+		</where>
 
-	GROUP BY
+		GROUP BY
 		OC.CHATROOM_ID,
 		OC.OPEN_CHAT_ROOM_NAME,
 		OC.MAX_CHATROOM_COUNT,
@@ -59,8 +65,8 @@
 		F.FILE_ID,
 		F.FILE_NAME
 
-	ORDER BY OC.CHATROOM_ID
-</select>
+		ORDER BY OC.CHATROOM_ID
+	</select>
 
 
 
@@ -162,58 +168,60 @@
 		#{tagId}
 		)
 	</insert>
-	
+
 	<!-- 채팅방 생성시 채팅방 생성자 자동 입장 -->
 	<insert id="insertParticipant" parameterType="map">
-    MERGE INTO CHAT_PARTICIPANT cp
-    USING (SELECT #{chatRoomID} CHATROOM_ID,
-                  #{userNum}    USER_NUM
-           FROM dual) src
-    ON (cp.CHATROOM_ID = src.CHATROOM_ID
-        AND cp.USER_NUM = src.USER_NUM)
-    WHEN NOT MATCHED THEN
-      INSERT (CHATROOM_ID, USER_NUM)
-      VALUES (src.CHATROOM_ID, src.USER_NUM)
-</insert>
+		MERGE INTO CHAT_PARTICIPANT cp
+		USING (SELECT #{chatRoomID} CHATROOM_ID,
+		#{userNum} USER_NUM
+		FROM dual) src
+		ON (cp.CHATROOM_ID = src.CHATROOM_ID
+		AND cp.USER_NUM = src.USER_NUM)
+		WHEN NOT MATCHED THEN
+		INSERT (CHATROOM_ID, USER_NUM)
+		VALUES (src.CHATROOM_ID, src.USER_NUM)
+	</insert>
 
-<!-- 현재 참여인원 늘리기 -->
-<update id="updateOpenChatCount" parameterType="int">
-    UPDATE OPEN_CHAT
-    SET OPEN_CHAT_COUNT = (
-        SELECT COUNT(*)
-        FROM CHAT_PARTICIPANT 
-        WHERE CHATROOM_ID = #{chatRoomID}
-    )
-    WHERE CHATROOM_ID = #{chatRoomID}
-</update>
+	<!-- 현재 참여인원 늘리기 -->
+	<update id="updateOpenChatCount" parameterType="int">
+		UPDATE OPEN_CHAT
+		SET OPEN_CHAT_COUNT = (
+		SELECT COUNT(*)
+		FROM CHAT_PARTICIPANT
+		WHERE CHATROOM_ID = #{chatRoomID}
+		)
+		WHERE CHATROOM_ID = #{chatRoomID}
+	</update>
 
-<select id="selectChatRoombyId" parameterType="int"
-        resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
-	SELECT CHATROOM_ID,
-	       OPEN_CHAT_ROOM_NAME AS chatName,
-	       EXPLANATION,
-	       MAX_CHATROOM_COUNT AS maxchatCount,
-	       OPEN_CHAT_COUNT AS chatCount
-	FROM OPEN_CHAT
-	WHERE CHATROOM_ID = #{chatRoomId}
-</select>
+	<select id="selectChatRoombyId" parameterType="int"
+		resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+		SELECT CHATROOM_ID,
+		OPEN_CHAT_ROOM_NAME AS chatName,
+		EXPLANATION,
+		MAX_CHATROOM_COUNT AS maxchatCount,
+		OPEN_CHAT_COUNT AS chatCount
+		FROM OPEN_CHAT
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</select>
 
-<select id="selectChatRoomsByUser" parameterType="int" resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
-    SELECT oc.CHATROOM_ID,
-           oc.OPEN_CHAT_ROOM_NAME AS chatName,
-           oc.EXPLANATION AS explanation,
-           oc.MAX_CHATROOM_COUNT AS maxchatCount,
-           oc.OPEN_CHAT_COUNT AS chatCount
-    FROM OPEN_CHAT oc
-    JOIN CHAT_PARTICIPANT cp ON oc.CHATROOM_ID = cp.CHATROOM_ID
-    WHERE cp.USER_NUM = #{userNum}
-</select>
+	<select id="selectChatRoomsByUser" parameterType="int"
+		resultType="com.kh.itda.openchat.model.vo.OpenChatRoom">
+		SELECT oc.CHATROOM_ID,
+		oc.OPEN_CHAT_ROOM_NAME AS chatName,
+		oc.EXPLANATION AS explanation,
+		oc.MAX_CHATROOM_COUNT AS maxchatCount,
+		oc.OPEN_CHAT_COUNT AS chatCount
+		FROM OPEN_CHAT oc
+		JOIN CHAT_PARTICIPANT cp ON oc.CHATROOM_ID = cp.CHATROOM_ID
+		WHERE cp.USER_NUM = #{userNum}
+	</select>
 
-<select id="existsOpenChatRoomTag" parameterType="map" resultType="int">
-    SELECT COUNT(*)
-    FROM OPENCHATROOM_TAG
-    WHERE CHATROOM_ID = #{chatRoomID}
-      AND TAG_ID = #{tagId}
-</select>
+	<select id="existsOpenChatRoomTag" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM OPENCHATROOM_TAG
+		WHERE CHATROOM_ID = #{chatRoomID}
+		AND TAG_ID = #{tagId}
+	</select>
 
 </mapper>
