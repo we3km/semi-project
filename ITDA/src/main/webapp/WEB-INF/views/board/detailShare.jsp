@@ -129,13 +129,13 @@ body {
 }
 
 #dibsBtn.liked {
-	background-color:red;
-  color: white; /* 좋아요 상태일 때 빨간색 하트 */
+	background-color: red;
+	color: white; /* 좋아요 상태일 때 빨간색 하트 */
 }
 
 #dibsBtn.not-liked {
-  background-color:gray;
-  color: white; /* 찜 안한 상태일 때 회색 하트 */
+	background-color: gray;
+	color: white; /* 찜 안한 상태일 때 회색 하트 */
 }
 </style>
 
@@ -176,7 +176,67 @@ body {
 				</div>
 
 				<div class="price">나눔수량 : ${board.boardSharing.sharingCount}개</div>
+
+			</div>
+			<div class="location">지역 :
+				${board.boardCommon.transactionAddress}</div>
+			<div class="keywords">
+				<c:forEach var="tag" items="${tags}">
+					<span>#${tag}</span>
+				</c:forEach>
+			</div>
+
+			<!-- 게시자의 매너 정보 -->
+			<div class="seller-info">
+				<strong>${writer} </strong>
+				<p>매너점수 : ${mannerScore }</p>
+			</div>
+			<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
+			<div class="buttons">
+				<!-- 연결해야함 -->
+
+				<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+					<i class="fa fa-heart"></i> 찜하기
+				</button>
+				<!-- 연결해야함 -->
+
+							
+				<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
+					보내기</button>
 				
+				<!-- 채팅방 리스트 이동  -->
+				<script>
+					     function createTransactionChatRoom() {
+					        const contextPath = '${contextPath}';
+					        // 데헷 이거 널값임					        
+					        const boardId = "${board.boardCommon.boardId}";
+					
+					        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
+					            method: "GET"
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("게시물 정보 응답 실패");
+					            return response.json();
+					        })
+					        .then(data => {
+					            console.log("게시물 정보:", data);
+					
+					            return fetch("/itda/chat/openChatRoom", {
+					                method: "POST",
+					                headers: {
+					                    "Content-Type": "application/json"
+					                },
+					                body: JSON.stringify(data)
+					            });
+					        })
+					        .then(response => {
+					            if (!response.ok) throw new Error("채팅방 열기 실패");
+					            location.href = contextPath + "/itda/chat/chatRoomList";
+					        })
+					        .catch(err => console.error("오류 발생:", err));
+					    } 
+					</script>
+	
 				</div>
 				<div class="location">지역 :
 					${board.boardCommon.transactionAddress}</div>
@@ -212,8 +272,9 @@ body {
 				</div>
 			</div>
 		</div>
-		<!-- 찜하기 버튼 스크립트 -->
-		<script>
+	</div>
+	<!-- 찜하기 버튼 스크립트 -->
+	<script>
     	$('#dibsBtn').on('click', function () {
         	$.ajax({
           	type: 'POST',
@@ -251,66 +312,70 @@ body {
 
 		
     </script>
-		<!-- 게시물 게시자의 다른 대여 글들 -->
-		<div class="related-products">
-			<h2>${writer}님의 다른 상품</h2>
-			<div class="product-list">
+	<!-- 게시물 게시자의 다른 대여 글들 -->
+	<div class="related-products">
+		<h2>${writer}님의다른상품</h2>
+		<div class="product-list">
 
-				<!-- 카드 반복 -->
-				<c:forEach var="writerShareWrapper"
-					items="${writerShareWrapperList }">
+			<!-- 카드 반복 -->
+			<c:forEach var="writerShareWrapper"
+				items="${writerShareWrapperList }">
 
-					<div class="card"
-						onclick="moveDetail(${writerShareWrapper.boardCommon.boardId});">
-						<img
-							src="${pageContext.request.contextPath}/${writerShareWrapper.filePath.categoryPath}/${writerShareWrapper.filePath.fileName}"
-							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${writerShareWrapper.boardCommon.productName }</p>
-						<p class="price">나눔수량:${writerShareWrapper.boardSharing.sharingCount }개</p>
-					</div>
-				</c:forEach>
-				<!-- 클릭시 상세보기로 이동 -->
-				<script>
+				<div class="card"
+					onclick="moveDetail(${writerShareWrapper.boardCommon.boardId});">
+					<img
+						src="${pageContext.request.contextPath}/${writerShareWrapper.filePath.categoryPath}/${writerShareWrapper.filePath.fileName}"
+						alt="이미지"
+						style="width: 90%; height: auto; border: 2px solid black;" />
+					<p>${writerShareWrapper.boardCommon.productName }</p>
+					<p class="price">나눔수량:${writerShareWrapper.boardSharing.sharingCount }개</p>
+				</div>
+			</c:forEach>
+			<!-- 클릭시 상세보기로 이동 -->
+			<script>
 				  	function moveDetail(bid){
 				  		location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
 				  	}
 				 </script>
 
-			</div>
 		</div>
-		<!-- 상품 정보 -->
-		<div class="description">
-			<h3>상품정보</h3>
-			<pre>${board.boardCommon.productComment}</pre>
-		</div>
-		
-		<!-- 카테고리 소분류와 같은 다른 대여 게시물들 목록 -->
-		<div class="related-products">
-			<h2>이 상품과 유사한 상품</h2>
-			<div class="product-list">
-				<!-- 카드 반복 -->
-				<c:forEach var="equalsCategoryboard" items="${equalsCategoryList }">
+	</div>
+	<!-- 상품 정보 -->
+	<div class="description">
+		<h3>상품정보</h3>
+		<pre>${board.boardCommon.productComment}</pre>
+	</div>
 
-					<div class="card"
-						onclick="moveDetail(${equalsCategoryboard.boardCommon.boardId});">
-						<img
-							src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
-							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="price">${equalsCategoryboard.boardSharing.sharingCount }</p>
-						
-					</div>
-				</c:forEach>
-				<!-- 게시물 클릭시 상세보기 이동 -->
-				<script>
+	<!-- 카테고리 소분류와 같은 다른 대여 게시물들 목록 -->
+	<div class="related-products">
+		<h2>이 상품과 유사한 상품</h2>
+		<div class="product-list">
+			<!-- 카드 반복 -->
+			<c:forEach var="equalsCategoryboard" items="${equalsCategoryList }">
+
+				<div class="card"
+					onclick="moveDetail(${equalsCategoryboard.boardCommon.boardId});">
+					<img
+						src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
+						alt="이미지"
+						style="width: 90%; height: auto; border: 2px solid black;" />
+					<p>${equalsCategoryboard.boardCommon.productName }</p>
+					<p class="price">${equalsCategoryboard.boardSharing.sharingCount }</p>
+
+				</div>
+			</c:forEach>
+			<!-- 게시물 클릭시 상세보기 이동 -->
+			<script>
 				  	function moveDetail(bid){
 				  		location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
 				  	}
 				 </script>
-			</div>
 		</div>
+<<<<<<< HEAD
+	</div>
+	</div>
+=======
 	
+>>>>>>> main
 </body>
 </html>

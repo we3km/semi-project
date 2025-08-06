@@ -23,7 +23,4 @@ public interface UserService {
 	String selectUserNickname(String userId);
 
 	String selectUserNum(String userId);
-
-
-
 }

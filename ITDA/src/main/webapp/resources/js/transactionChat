@@ -1,0 +1,32 @@
+function createTransactionChatRoom() {
+    const contextPath = '${contextPath}';
+    // 데헷 이거 널값임					        
+    const boardId = "${board.boardCommon.boardId}";
+
+    console.log("contextPath: ", contextPath);
+    console.log("현재 게시판 번호 : ", boardId);
+
+    fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
+        method: "GET"
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("게시물 정보 응답 실패");
+            return response.json();
+        })
+        .then(data => {
+            console.log("게시물 정보:", data);
+
+            return fetch("/itda/chat/openChatRoom", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("채팅방 열기 실패");
+            location.href = contextPath + "/itda/chat/chatRoomList";
+        })
+        .catch(err => console.error("오류 발생:", err));
+}
