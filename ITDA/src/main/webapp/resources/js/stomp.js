@@ -56,6 +56,8 @@ function sendMessage() {
                 imageUrl: imageUrl
             }));
 
+            bringLastMessage(window.chatRoomId);
+
             input.value = ""; // 입력란 비워줌
         }).catch(err => console.error("오류 발생: ", err));
 
@@ -94,7 +96,6 @@ const showMessage = msg => {
         console.log("발신자 정보 : ", msg);
         // 시간 포맷 처리
         const sentAt = new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        console.log("보여지는 시간 ", msg.sentAt);
 
         if (!isSender) {
             // 상대방 프로필과 닉네임 추가

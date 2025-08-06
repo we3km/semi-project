@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ChatMessage {
 	private int MessageId; // 메세지 번호
-	private String chatContent; // 메세지 내용
+	private String chatContent = null; // 메세지 내용
 	private String sentAt; // 채팅 보낸 시간
 	private int chatRoomId; // 채팅방 고유 번호
 	

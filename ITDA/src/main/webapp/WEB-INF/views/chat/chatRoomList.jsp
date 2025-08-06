@@ -8,11 +8,16 @@
 <html>
 <head>
 <!-- 헤더 연결은 나중에 하자 -->
-<%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
+<%@ include file="/WEB-INF/views/common/Header.jsp"%>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ChattingRoomList</title>
 
+<%-- report css --%>
+<link
+	href="${pageContext.request.contextPath}/resources/css/report/reports.css"
+	rel="stylesheet">
+<%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <link
@@ -32,8 +37,6 @@
 	href="${pageContext.request.contextPath}/resources/css/modal_css/shipping_Address.css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/modal_css/manner_Review.css">
-<%-- <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/modal_css/reports.css"> --%>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <script
@@ -41,6 +44,7 @@
 <script
 	src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
+<!-- 신고하기 -->
 <script>
 	//stompClient 연결 설정
 	const userNum = '${loginUser.userNum}';
@@ -149,17 +153,19 @@
 			    .then(res => {
 			      if (!res.ok) throw new Error("메세지 못 받아옴");
 			      return res.json(); 
-			    })
-			    .then(({lastMessage}) => {
+			    })			    
+			    .then(lastMessage => {
 			      const targetDiv = document.getElementById("lastMessage-" + chatRoomId);		
 			      // 사진인 경우 <사진>으로 출력
-			      if (lastMessage) {
-			            const trimmedMessage = lastMessage.length > 8 
-		                ? lastMessage.slice(0, 8) + "..."
-		                : lastMessage;
+			      if (lastMessage.chatContent) {
+			            const trimmedMessage = lastMessage.chatContent.length > 8 
+		                ? lastMessage.chatContent.slice(0, 8) + "..."
+		                : lastMessage.chatContent;
 		            targetDiv.textContent = trimmedMessage;
-		        } else {
+		        } else if (lastMessage.chatImg) {
 		        	targetDiv.textContent = "<사진>";
+		        } else {
+		        	targetDiv.textContent = "";
 		        }
 			    })
 			    .catch(err => console.error("마지막 메시지 로드 실패:", err));
@@ -206,8 +212,7 @@
 						<!-- 채팅 리스트 -->
 						<div class="chat-content1">
 							<!-- 각각의 채팅방 속성 -->
-							<div class="list-chat" 
-								data-chat-room-id="${chatRoom.chatRoomId}"
+							<div class="list-chat" data-chat-room-id="${chatRoom.chatRoomId}"
 								data-chat-userNum="${chatRoom.userNum}"
 								data-board-id="${chatRoom.boardId}"
 								data-chat-type="${chatRoom.refName}"
@@ -292,7 +297,6 @@
 											}
 											/* ===================================== 프로필 나타내기 ===================================== */
 										</script>
-
 									</c:otherwise>
 								</c:choose>
 
@@ -831,10 +835,7 @@
                             chatHeader2.textContent = window.revieweeNickName;
 
                             // 게시물 번호로 끌고 온 게시물 정보, 오른쪽 채팅방 할당
-                            // 오른쪽 채팅방 제목 할당
-                            
-                            console.log("거래 유형 :", chatRoomType);
-                            
+                            // 오른쪽 채팅방 제목 할당                            
                             document.getElementById("product-name").textContent = data.productName;
                             document.getElementById("transaction-type").textContent = chatRoomType;
                             
@@ -847,9 +848,15 @@
 								extraInfo.textContent = "대여금액 : " + data.rentalFee + 
 								"원\n보증금 : " + data.deposit + "원";				    
 							} else if(chatRoomType === "경매"){
-							// 경매 입찰 시작금, 경매 종료 날짜
-								extraInfo.textContent = "입찰 시작가 : " + data.auctionStartingFee + 
-								"원\n종료일 : " + data.auctionEndDate;
+								// 거래 낙찰 상태인경우
+								if(data.bid !== 0){
+									extraInfo.textContent = "<낙찰 완료>\n입찰 시작가 : " + data.auctionStartingFee + 
+									"원\n최종 낙찰가 : " + data.bid;
+								}
+								else{
+									extraInfo.textContent = "<입찰 진행중>\n입찰 시작가 : " + data.auctionStartingFee + 
+									"원\n종료일 : " + data.auctionEndDate;
+								}
 							} else if(chatRoomType === "나눔"){
 							// 나눔 갯수
 								extraInfo.textContent = "나눔 갯수 : " + data.sharingCount + "개";
@@ -859,8 +866,7 @@
                             document.getElementById("board-id").textContent = chatBoardId;                             
               			    console.log("후기 당하는 사람 이미지 경로 : ", window.revieweeImg);
               			    document.getElementById("reviewee-Img").src = window.revieweeImg;
-             				
-              			    
+             				              			    
                     		if(chatRoomType === "대여"){
                     			const imgSrc = "${contextPath}/resources/images/board/rental/" + data.fileName;                    			
                     			document.getElementById("product-img").src = imgSrc; 
@@ -945,10 +951,10 @@
 	<!-- chat.js 참조 -->
 	<script type="text/javascript"
 		src="${contextPath}/resources/js/chat/chat.js"></script>
-
-	<!-- reports.js 참조 -->
-	<%-- <script type="text/javascript"
-		src="${contextPath}/resources/js/report/reports.js"></script> --%>
+	
+	<jsp:include page="/WEB-INF/views/report/report.jsp"/>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 </body>
 
 </html>
