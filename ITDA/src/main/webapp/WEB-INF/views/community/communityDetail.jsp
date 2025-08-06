@@ -21,9 +21,13 @@
 <%-- communityDatil CSS 파일 --%>
 <link href="${pageContext.request.contextPath}/resources/css/communityDetail.css"
 	rel="stylesheet">
+	
+<%-- report css --%>
+<link href="${pageContext.request.contextPath}/resources/css/report/reports.css" rel="stylesheet">
 
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <link rel="icon" href="${pageContext.request.contextPath}/resources/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -69,8 +73,8 @@
         <!-- 공유 + 신고하기 + 삭제 버튼-->
         <div class="post-actions">
             <button class="share-btn">공유</button>
-            <button class="report-btn" data-id="${community.communityNo}" 
-			        data-title="${fn:escapeXml(community.communityTitle)}">
+            <button class="report-btn" 
+			        onclick="openReportModal('BOARD', '${community.communityNo}', '${community.communityWriter}')">
 			    신고하기
 			</button>
             <button class="sub-btn">︙</button>
@@ -155,7 +159,8 @@
        
         
     </div>
-    
+    <jsp:include page="/WEB-INF/views/report/report.jsp" />
+   
     
 		<script>
 		const userReaction = "${userReaction}";
@@ -232,11 +237,11 @@
 		            $('#sharePopup').toggle();         
 		        });
 			  //신고하기
-			   $('.report-btn').click(function(){
+			   /* $('.report-btn').click(function(){
 				   const id = $(this).data('id');
 				    const title = $(this).data('title');
 				    openReportModal('community', id, title);
-				});
+				}); */
 			 // 복사 버튼 클릭
 			 	$('#shareUrl').val(window.location.href);
 			 
@@ -442,7 +447,7 @@
 		        commentHtml += '  </div>';
 		        commentHtml += '  <div class="options-btn">︙</div>';
 		        commentHtml += '  <div class="options-popup">';
-		        commentHtml += '      <div class="report-comment-btn" data-comment-no="'+ comment.boardCmtId +'">신고하기</div>';
+		        commentHtml += '      <div class="report-comment-btn" data-type="COMMENT" data-target-id="'+ comment.boardCmtId +'" data-target-user-num="'+ comment.cmtWriterUserNum +'">신고하기</div>';
 		        if(loginUserNum && parseInt(loginUserNum) === comment.cmtWriterUserNum) {
 			        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
 		        }
@@ -511,10 +516,13 @@
 
 		    // 팝업 메뉴의 '신고하기' 클릭 이벤트
 		    $('#commentList').on('click', '.report-comment-btn', function() {
-		        const commentNo = $(this).data('comment-no');
-		        alert(commentNo + '번 댓글을 신고했습니다.');
-		        // 여기에 실제 신고 로직(AJAX)을 추가할 수 있습니다.
-		    });
+			    const type = $(this).data('type');
+			    const targetId = $(this).data('target-id');
+			    const targetUserNum = $(this).data('target-user-num');
+			
+			    // openReportModal 함수 호출
+			    openReportModal(type, targetId, targetUserNum);
+			});
 		    
 		 	// 	팝업 메뉴의 '삭제하기' 클릭 이벤트
 		    $('#commentList').on('click', '.delete-comment-btn', function() {
@@ -579,6 +587,7 @@
 		    }
 		    
 		</script>
+		<script src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 
 </body>
 </html>

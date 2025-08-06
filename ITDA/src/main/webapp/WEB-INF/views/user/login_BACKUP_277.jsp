@@ -107,13 +107,15 @@ input[type="text"], input[type="password"] {
 </style>
 </head>
 <body>
+<<<<<<< HEAD
 
+=======
 	<c:if test="${param.error == 'true'}">
 		<script>
 			alert("${param.message != null ? param.message : '아이디 또는 비밀번호가 틀렸습니다.'}");
 		</script>
 	</c:if>
-
+>>>>>>> main
 	<div class="login-container">
 		<h2>세상을</h2>
 		<h1>IT다</h1>
@@ -124,22 +126,31 @@ input[type="text"], input[type="password"] {
 				maxlength="12" required autocomplete="username"><br> <input
 				type="password" id="user-pwd" name="userPwd" placeholder="비밀번호"
 				maxlength="15"><br>
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 			<div class="checkbox-wrap">
 				<input type="checkbox" name="rememberMe" id="rememberMe"> <label
 					for="rememberMe"> <span class="badge">로그인</span> 상태 유지
 				</label>
 			</div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 			<button type="submit" class="login-btn">
 				<span class="itda-text">IT다</span><span class="login-text">로그인</span>
 			</button>
 		</form>
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 		<div class="links">
 			<a href="${pageContext.request.contextPath}/user/join/terms">회원가입</a>
-			<a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a>
-			<a href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
+			<a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a> <a
+				href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
 		</div>
 	</div>
 </body>

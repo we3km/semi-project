@@ -68,4 +68,11 @@
 		<property name="maxUploadSize" value="10000000"></property>
 		<property name="maxInMemorySize" value="2000000"></property>
 	</bean>
+	
+	<websocket:message-broker application-destination-prefix="/app">
+		<websocket:stomp-endpoint path="/stomp">
+			<websocket:sockjs />
+		</websocket:stomp-endpoint>
+		<websocket:simple-broker prefix="/topic" />
+	</websocket:message-broker>
 </beans>
