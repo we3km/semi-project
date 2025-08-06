@@ -1,5 +1,6 @@
 package com.kh.itda.user.controller;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import javax.servlet.http.HttpSession;
@@ -11,21 +12,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.itda.user.model.service.UserService;
+import javax.servlet.http.HttpServletRequest;
+
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 //마이페이지 전용
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-	
 	@GetMapping("/user/myPage")
 	public String myPage() {
 		return "user/myPage";
 	}
-	
 	/*
 	 * @Autowired private UserService uService;
 	 * 
@@ -72,6 +74,7 @@ public class UserController {
 //		  
 //		  return "redirect:/"; // 로그인 후 메인 페이지로 이동 
 //	  }
+
 //		 @PostMapping("/login")
 //		 public String login(
 //		             User user,          // 로그인 페이지 form에서 넘어온 id, pwd 정보
@@ -97,13 +100,10 @@ public class UserController {
 //		     }
 //		 }
 //	 
+
 	  
 	  // 로그아웃 (세션 무효화)
 	  @GetMapping("/user/logout") 
 	  public String logout(HttpServletRequest request){ request.getSession().invalidate(); return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
 	  }
 }
-
-
-
-

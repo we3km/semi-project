@@ -11,5 +11,4 @@ public class File {
 	private int categoryId;
 	private String fileName;
 	private int refNo; // 첨부된 게시글, 채팅방 번호
-
 }

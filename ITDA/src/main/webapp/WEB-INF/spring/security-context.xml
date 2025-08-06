@@ -78,7 +78,7 @@
 	<!-- 로그인 실패 핸들러 -->
 	<beans:bean id="customAuthenticationFailureHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
-    <!-- com.kh.itda.security 패키지 스캔 -->
+    <!-- com.kh.itda.security 패키지 스캔 -->   
     <context:component-scan base-package="com.kh.itda">
 		<context:exclude-filter type="assignable" expression="com.kh.itda.chat.model.websocket.ChatStompController"/>
     </context:component-scan>

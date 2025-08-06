@@ -18,12 +18,12 @@
 		infrastructure -->
 
 	<!-- Enables the Spring MVC @Controller programming model -->
-	
-	<!-- 카카오 api 사용할려면 sevlet,root-contxt.xml에도 있어야 되더라구요 이거 맞습니다  -->
+
+	<!-- 카카오 api 사용할려면 sevlet,root-contxt.xml에도 있어야 되더라구요 이거 맞습니다 -->
 	<context:property-placeholder
-      location="classpath:driver.properties,classpath:kakaoapi.properties"
-      file-encoding="UTF-8"/>
-	
+		location="classpath:driver.properties,classpath:kakaoapi.properties"
+		file-encoding="UTF-8" />
+
 	<annotation-driven />
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
@@ -47,7 +47,4 @@
     <!-- 파일 인코딩 -->
     <beans:property name="defaultEncoding" value="UTF-8" />
 	</beans:bean>
-
-
-
 </beans:beans>
