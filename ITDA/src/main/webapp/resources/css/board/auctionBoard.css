@@ -122,7 +122,7 @@
 		background-color: white;
 		padding: 15px;
 		width: 250px;
-		height: 300px;
+		height: 370px;
 		border-radius: 12px;
 		text-align: center;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -148,7 +148,7 @@
 		font-size: 20px;
 	}
 	
-    #rental-fee {
+    #auction-fee, #highest-bid {
       font-weight: bold;
     }
 	.date{

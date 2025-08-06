@@ -4,7 +4,7 @@ body {
 	margin: 0;
 	padding: 20px;
 	background: #f9f9f9;
-	overflow-x: hidden; /* ✅ 가로 스크롤 강제 제거 */
+
 }
 
 .container {

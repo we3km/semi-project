@@ -202,6 +202,14 @@
 				<div class="card"
 					onclick="moveDetail(${board.boardCommon.boardId});">
 					<c:set var="boardId" value="${board.boardCommon.boardId}" />
+
+					<img
+						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
+						 />
+					<p id="product-name">${board.boardCommon.productName }</p>
+
+					<p id="sharing-count">나눔 수량 : ${board.boardSharing.sharingCount }</p>
+				
 					<c:if test="${fn:contains(likedBoardIds, boardId)}">
 						<div class="heart liked"
 							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
@@ -210,15 +218,6 @@
 						<div class="heart"
 							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
 					</c:if>
-
-					<img
-						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
-						alt="이미지" style="width: 90%; height: auto;" />
-					<p id="product-name">${board.boardCommon.productName }</p>
-
-					<p id="sharing-count">나눔 수량 : ${board.boardSharing.sharingCount }</p>
-				
-					
 				</div>
 			</c:forEach>
 			<script>

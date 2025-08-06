@@ -10,6 +10,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<%-- report css --%>
+<link href="${pageContext.request.contextPath}/resources/css/report/reports.css" rel="stylesheet">
 <link
 	href="${pageContext.request.contextPath}/resources/css/board/detailAuction.css"
 	rel="stylesheet">
@@ -21,38 +23,75 @@
 		</header>
 	</div>
 	<div class="container">
+		<div class="product-catrgory">
+			${board.boardCommon.productCategoryL}
+			&gt;
+			${board.boardCommon.productCategoryM}
+			&gt;
+			${board.boardCommon.productCategoryS}
+		</div>
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->
 			<div class="related-img">
-				<div class="img-list">
+				<div class="img-list" id="slider">
 					<c:forEach var="img" items="${imgList}">
 						<img
 							src="${pageContext.request.contextPath}/${img.categoryPath}/${img.fileName}"
-							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
+							alt="이미지"/>
 					</c:forEach>
 				</div>
+				<button class="slider-btn prev-btn" onclick="moveSlide(-1)">‹</button>
+  				<button class="slider-btn next-btn" onclick="moveSlide(1)">›</button>
 			</div>
+			<script>
+			const slider = document.getElementById('slider');
+			const images = slider.querySelectorAll('img');
+			let currentIndex = 0;
+
+			function updateSlide() {
+			  const parentWidth = slider.parentElement.clientWidth;
+			  slider.style.width = `\${parentWidth * images.length}px`;
+
+			  images.forEach(img => {
+			    img.style.width = `\${parentWidth - 10}px`;
+			  });
+
+			  slider.style.transform = `translateX(\${-currentIndex * parentWidth}px)`;
+			}
+
+			function moveSlide(direction) {
+			  currentIndex += direction;
+			  if (currentIndex < 0) currentIndex = images.length - 1;
+			  if (currentIndex >= images.length) currentIndex = 0;
+			  updateSlide();
+			}
+
+			window.addEventListener('load', updateSlide);
+			window.addEventListener('resize', updateSlide);
+			</script>
 			<!-- 입력한 게시물 정보 -->
 			<div class="info">
-				<h1>${board.boardCommon.productName}</h1>
-				<div class="views">조회수:${board.boardCommon.views}</div>
-				<div class="dibs">
-					찜 수:
-					<p id="dibCount">${dibsCount}</p>
+				<div class="title">
+					${board.boardCommon.productName}
 				</div>
-				<div class="product-catrgory">
-					<div class="product-category-large">${board.boardCommon.productCategoryL}</div>
-					>
-					<div class="product-category-middle">${board.boardCommon.productCategoryM}</div>
-					>
-					<div class="product-category-small">${board.boardCommon.productCategoryS}</div>
-				</div>
-				<div class="create-date">
-					게시날짜:
-					<fmt:formatDate value="${board.boardCommon.createDate }"
-						pattern="yyyy/MM/dd" />
-				</div>
+				<div class="detail">
+				<ul>
+					<li>
+						<div class="views">조회수:${board.boardCommon.views}</div>
+					</li>
+					<li>
+						<div class="dibs">
+							찜 수: ${dibsCount}
+						</div>
+					</li>
+					<li>
+					<div class="create-date">
+						게시날짜:
+						<fmt:formatDate value="${board.boardCommon.createDate }"
+							pattern="yyyy/MM/dd" />
+					</div>
+					</li>
+				</ul>
 
 				<div class="price">경매시작금 :
 					${board.boardAuction.auctionStartingFee}원</div>
@@ -72,13 +111,32 @@
 
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
-					<div class="profile-icon">
-						<img class="profile-img"
-							src="${pageContext.request.contextPath}${profileImage}"
-							alt="프로필" />
+					<div class="profile">
+						<div class="profile-icon">
+							<img class="profile-img"
+								src="${pageContext.request.contextPath}${profileImage}"
+								alt="프로필" />
+						</div>
+						<strong>${writer} </strong>
 					</div>
-					<strong>${writer} </strong>
-					<p>매너점수 : ${mannerScore }</p>
+					<c:choose>
+					    <c:when test="${mannerScore lt 40}">
+					        <c:set var="barColor" value="#ff4d4f" /> <!-- 빨강 -->
+					    </c:when>
+					    <c:when test="${mannerScore lt 70}">
+					        <c:set var="barColor" value="#faad14" /> <!-- 노랑 -->
+					    </c:when>
+					    <c:otherwise>
+					        <c:set var="barColor" value="#52c41a" /> <!-- 초록 -->
+					    </c:otherwise>
+					</c:choose>
+					
+					<div class="manner-score-box">
+					    <span class="manner-label">매너점수: ${mannerScore}</span>
+					    <div class="manner-bar">
+					        <div class="manner-fill" style="width: ${mannerScore}%; background-color: ${barColor};"></div>
+					    </div>
+					</div>
 				</div>
 				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
 				<div class="buttons">
@@ -86,6 +144,9 @@
 					<!-- 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum ne board.boardCommon.userNum}">
 						<button id="sendMessage">메시지 보내기</button>
+						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+							<i class="fa fa-heart"></i> 찜하기
+						</button>
 						<script>
 					     function createTransactionChatRoom() {
 					        const contextPath = '${contextPath}';
@@ -159,13 +220,6 @@
 						</form>
 					</c:if>
 
-					<!-- 게시가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
-					<c:if test="${userNum ne board.boardCommon.userNum}">
-						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-							<i class="fa fa-heart"></i> 찜하기
-						</button>
-					</c:if>
-
 					<!-- 경매가 종료되고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때   -->
 					<!-- 경매가 종료되지 않고 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:choose>
@@ -193,21 +247,10 @@
 						<button onclick="closeModal()">닫기</button>
 					</div>
 
-					<h3>입찰금 현황</h3>
-					<div id="biddingList">
-						<c:forEach var="bid" items="${bidList }" varStatus="status">
-							<p class="bid ${status.first ? 'top-bid' : ''}"
-								data-nickname="${bid.nickName}">
-								${bid.nickName} - ${bid.bid }
-
-							</p>
-
-						</c:forEach>
-					</div>
-
 					<!-- 연결해야함 -->
-					<button>신고하기</button>
+					<button onclick="openReportModal('BOARD', '${board.boardCommon.boardId}', '${board.boardCommon.userNum}')">신고하기</button>
 				</div>
+			</div>
 			</div>
 		</div>
 		<!-- 찜하기 버튼 스크립트 -->
@@ -247,7 +290,17 @@
            });
     	});
     </script>
-
+		<h3>입찰금 현황</h3>
+		<div id="biddingList">
+						<c:forEach var="bid" items="${bidList }" varStatus="status">						
+							<div class="bid ${status.first ? 'top-bid' : ''}"
+								data-nickname="${bid.nickName}">
+								<div class="bid-nickname">${bid.nickName}</div>
+      							<div class="bid-amount">${bid.bid} 원</div>
+							</div>
+						</c:forEach>
+					
+		</div>
 		<!-- 입찰금 제시 모달창 스크립트 -->
 		<script>
 		const bidUnit = ${board.boardAuction.bidUnit}; // 입찰 단위 (서버에서 받아오는 값)
@@ -380,9 +433,9 @@
 						<img
 							src="${pageContext.request.contextPath}/${writerAuctionWrapper.filePath.categoryPath}/${writerAuctionWrapper.filePath.fileName}"
 							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${writerAuctionWrapper.boardCommon.productName }</p>
-						<p class="price">경매시작금:${writerAuctionWrapper.boardAuction.auctionStartingFee }</p>
+							/>
+						<p id="product-name">${writerAuctionWrapper.boardCommon.productName }</p>
+						<p id="auction-fee">경매시작금:${writerAuctionWrapper.boardAuction.auctionStartingFee }</p>
 						<c:if test="${writerAuctionWrapper.highestBid ne 0}">
 							<p id="highest-bid">최고입찰가 :
 								${writerAuctionWrapper.highestBid}</p>
@@ -392,13 +445,11 @@
 							<p id="highest-bid">최고입찰가 :
 								${writerAuctionWrapper.boardAuction.auctionStartingFee}</p>
 						</c:if>
-						<p>
+						<p class="date">
 							<fmt:formatDate
 								value="${writerAuctionWrapper.boardAuction.auctionStartDate }"
 								pattern="yyyy/MM/dd" />
-						</p>
-						~
-						<p>
+							~						
 							<fmt:formatDate
 								value="${writerAuctionWrapper.boardAuction.auctionEndDate }"
 								pattern="yyyy/MM/dd" />
@@ -433,9 +484,9 @@
 						<img
 							src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
 							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="price">경매시작금:${equalsCategoryboard.boardAuction.auctionStartingFee }</p>
+							 />
+						<p id="product-name">${equalsCategoryboard.boardCommon.productName }</p>
+						<p id="auction-fee">경매시작금:${equalsCategoryboard.boardAuction.auctionStartingFee }</p>
 						<c:if test="${equalsCategoryboard.highestBid ne 0}">
 							<p id="highest-bid">최고입찰가 : ${equalsCategoryboard.highestBid}</p>
 						</c:if>
@@ -445,13 +496,11 @@
 								${equalsCategoryboard.boardAuction.auctionStartingFee}</p>
 						</c:if>
 
-						<p>
+						<p class="date">
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardAuction.auctionStartDate }"
 								pattern="yyyy/MM/dd" />
-						</p>
-						~
-						<p>
+							~
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardAuction.auctionEndDate }"
 								pattern="yyyy/MM/dd" />
@@ -467,5 +516,7 @@
 			</div>
 		</div>
 	</div>
+	<jsp:include page="/WEB-INF/views/report/report.jsp" />
+	<script src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 </body>
 </html>

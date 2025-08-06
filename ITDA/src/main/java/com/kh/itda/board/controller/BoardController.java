@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -59,6 +58,7 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -519,7 +519,7 @@ public class BoardController {
 		String userId = ((UserDetails) principal).getUsername();
 		int userNum = Integer.parseInt(userService.selectUserNum(userId));
 		model.addAttribute("userNum", userNum);
-		
+		model.addAttribute("report", new Report());
 		// 대여 게시글 정보 추출
 		BoardRentalWrapper board = boardService.selectBoardRental(boardId);
 		model.addAttribute("board", board);
@@ -629,7 +629,7 @@ public class BoardController {
 				String userId = ((UserDetails) principal).getUsername();
 				int userNum = Integer.parseInt(userService.selectUserNum(userId));
 				model.addAttribute("userNum", userNum);
-				
+				model.addAttribute("report", new Report());
 				// 대여 게시글 정보 추출
 				BoardShareWrapper board = boardService.selectBoardShare(boardId);
 				model.addAttribute("board", board);
@@ -741,6 +741,7 @@ public class BoardController {
 					String userId = ((UserDetails) principal).getUsername();
 					String userNickname = userService.selectUserNickname(userId);
 					String userNum = userService.selectUserNum(userId);
+					model.addAttribute("report", new Report());
 					
 					System.out.println("회원번호"+userNum);
 					model.addAttribute("userNickname", userNickname);

@@ -13,29 +13,110 @@ body {
 	padding: 20px;
 }
 
+
+
 .top-section {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 20px;
-}
-
-.image-preview, .info {
-	flex: 1 1 300px;
-}
-
-.image-preview img {
 	width: 100%;
-	border-radius: 12px;
+	height: 100%;
 }
+.related-img{
+	flex: 2;
+	position: relative;
+	max-width: 700px;
+	width: 100%;
+	margin: auto;
+	height: 500px;
+	overflow: hidden;
+	border-radius: 10px;
+}
+
+.info{
+	flex: 1;
+  	box-sizing: border-box;
+}
+
+.title{
+	font-size: 30px;
+	font-weight: bold;
+	margin:10px;
+}
+.detail{
+	position: relative;
+	height:454px;
+	
+}
+li{
+	font-size:15px;
+	color:gray;
+	list-style: none;
+	padding-left:10px;
+}
+
+.price, .date-range{
+	font-size: 18px;
+	font-weight: bold;
+	padding-top:10px;
+	padding-left:10px;
+}
+.price{
+	margin-top:20px;
+	font-size: 25px;
+	color: #4a4aff;
+}
+
+.product-catrgory{
+	  white-space: nowrap;
+	
+}
+
+.img-list{
+	display: flex;
+  	transition: transform 0.5s ease-in-out;
+  	height: 100%;
+  	gap: 10px;
+	/* width: 500px; */
+  	/* width: 100%; */
+  	/* overflow: hidden; */
+  	
+}
+
+.related-img,
+.img-list,
+.img-list img {
+  box-sizing: border-box;
+}
+
+.img-list img {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%; 
+  object-fit: cover; /* 이미지가 영역에 꽉 차도록 */
+  display: block;
+  box-sizing: border-box;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  font-size: 20px;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 4px;
+}
+.prev-btn { left: 0px; }
+.next-btn { right: 10px; }
 
 .info h1 {
 	font-size: 24px;
 	margin-bottom: 10px;
-}
-
-.price, .date-range, .location {
-	margin: 5px 0;
-	font-size: 16px;
 }
 
 .keywords span {
@@ -48,9 +129,46 @@ body {
 }
 
 .seller-info {
-	margin: 20px 0;
 	display: flex;
 	align-items: center;
+	padding-left:20px;
+	padding-right:20px;
+  	justify-content: space-between;
+  	align-items: center;
+}
+
+.profile{
+	display:flex;
+}
+
+.manner-score-box {
+    width: 30%;
+    
+}
+
+.manner-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.manner-bar {
+    width: 100%;
+    height: 12px;
+    background-color: #eee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.manner-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+.buttons{
+	position: absolute;
+    bottom: 0; 
 }
 
 .buttons button {
@@ -69,35 +187,51 @@ body {
 
 .product-list {
 	display: flex;
-	overflow-x: auto;
-	gap: 10px;
+  overflow-x: auto; /* 가로 스크롤 */
+  white-space: nowrap; /* 줄바꿈 방지 */
+  gap: 16px; /* 카드 간 간격 (원하는 값으로 조절) */
+  padding: 10px;
+  scrollbar-width: thin; /* Firefox */
 }
 
-.related-img {
-	margin-top: 30px;
-}
+    .card {
+    	flex: 0 0 auto; 
+		 min-width: 0; /* 셀 너비를 넘지 않게 */
+		overflow: hidden; /* 넘칠 경우 숨김 처리 */
+		word-wrap: break-word; /* 긴 단어 줄바꿈 */
+		box-sizing: border-box;
+		background-color: white;
+		padding: 15px;
+		width: 250px;
+		height: 300px;
+		border-radius: 12px;
+		text-align: center;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+		position: relative;
+	}
 
-.img-list {
-	display: flex;
-	overflow-x: auto;
-	gap: 10px;
-	width: 500px;
-}
-
-.product-item {
-	flex: 0 0 auto;
-	width: 150px;
-	background: #fdfdfd;
-	border: 1px solid #ddd;
-	padding: 10px;
-	border-radius: 8px;
-	text-align: center;
-}
-
-.product-item img {
+    .card img {
 	width: 100%;
-	border-radius: 6px;
-}
+      /* max-width: 180px; */
+      height: 60%;
+      object-fit: cover;
+    }
+    
+    .card p {
+      margin: 5px 0;
+    }
+	
+	#product-name{
+		font-size: 20px;
+	}
+	
+    #rental-fee {
+      font-weight: bold;
+    }
+	.date{
+		font-size: 10px;
+	}
+
 
 .description {
 	margin-top: 30px;
@@ -110,11 +244,6 @@ body {
 	border-radius: 8px;
 }
 
-@media screen and (max-width: 768px) {
-	.top-section {
-		flex-direction: column;
-	}
-}
 
 #dibsBtn.liked {
 	background-color:red;
@@ -125,3 +254,18 @@ body {
   background-color:gray;
   color: white; /* 찜 안한 상태일 때 회색 하트 */
 }
+
+.profile-icon {
+            width: 28px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 50%;
+   			overflow:hidden;
+            flex-shrink: 0;
+            margin-right:20px;
+        }
+.profile-img{
+         	width:100%;
+		    height:100%;
+		    object-fit:cover;
+        }

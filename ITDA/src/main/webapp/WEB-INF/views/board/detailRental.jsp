@@ -73,9 +73,9 @@
 			</script>
 			<!-- 입력한 게시물 정보 -->
 			<div class="info">
-			<div class="title">
-				${board.boardCommon.productName}
-			</div>
+				<div class="title">
+					${board.boardCommon.productName}
+				</div>
 			<div class="detail">
 			<ul>
 				
@@ -295,9 +295,9 @@
 							src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
 							alt="이미지"
 							/>
-						<p>${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="card-price">${equalsCategoryboard.boardRental.rentalFee }</p>
-						<p>
+						<p id="product-name">${equalsCategoryboard.boardCommon.productName }</p>
+						<p class="rental-fee">${equalsCategoryboard.boardRental.rentalFee }</p>
+						<p class="date">
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardRental.rentalStartDate }"
 								pattern="yyyy/MM/dd" />
