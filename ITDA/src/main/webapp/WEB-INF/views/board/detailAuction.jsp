@@ -199,10 +199,7 @@
 							<p class="bid ${status.first ? 'top-bid' : ''}"
 								data-nickname="${bid.nickName}">
 								${bid.nickName} - ${bid.bid }
-								<%-- 								<c:if test="${bid.biddingUserNum == userNum}">
-							    	<button onclick="openModal('${board.boardCommon.boardId}', '${userNum}')">
-							    	수정</button>
-								</c:if> --%>
+
 							</p>
 
 						</c:forEach>
