@@ -101,13 +101,13 @@
        	<!-- 게시글 이미지 -->
         <div class="post-img">
 	        <c:if test="${not empty community.imgList}">
-		        <c:forEach var="img" items="${community.imgList}">
-		            <%-- 
-		                Utils.saveFile에서 저장한 경로와 맞춰주어야 합니다.
-		                예시: /resources/uploads/커뮤니티코드/파일명
-		            --%>
-		            <img src="${pageContext.request.contextPath}/resources/images/community/${community.communityCd }/${img.changeName}">
-		        </c:forEach>
+	        	<div class="img-area">
+		        	<c:forEach var="img" items="${community.imgList}">
+		            	<div class="img-item">
+			            	<img src="${pageContext.request.contextPath}/resources/images/community/${community.communityCd }/${img.changeName}" class="detail-img">
+		            	</div>
+		        	</c:forEach>
+		        </div>
 		    </c:if>
         </div>
         
@@ -360,7 +360,6 @@
 		                    });
 		                } else {
 		                    $('#commentCount, #commentCountDisplay').text(0);
-		                    $commentListDiv.append('<div class="comment-empty">작성된 댓글이 없습니다.</div>');
 		                }
 		            },
 		            error: function() { console.log("댓글 목록 조회에 실패했습니다."); }
@@ -397,6 +396,10 @@
 		     function createCommentHtml(comment) {
 
 		 		const contextPath = '${pageContext.request.contextPath}';
+		 		
+		 		//유저 프로필 URL 수정필요
+		 		const profileUrl = contextPath + "/user/mypage/" + comment.cmtWriterUserNum;
+		 	
 		        let repliesHtml = '';
 		        if (comment.replies && comment.replies.length > 0) {
 		            $.each(comment.replies, function(index, reply) {
@@ -418,9 +421,9 @@
 		       
 		        let commentHtml = '';
 		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
-		        commentHtml += '  <div class="profile-icon"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></div>';
+		        commentHtml += '  <div class="profile-icon"><a href="' + profileUrl + '"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></a></div>';
 		        commentHtml += '  <div class="content">';
-		        commentHtml += '    <div class="author">' + comment.nickName + '</div>';
+		        commentHtml += '    <div class="author"><a href="' + profileUrl + '">' + comment.nickName + '</a></div>';
 		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>'; 
 		        commentHtml += '    <div class="actions">';
 		        commentHtml += '      <span>' + writeDate + '</span>';
@@ -433,7 +436,7 @@
 		        commentHtml += '        <button class="reply-submit-btn" data-parent-no="' + comment.boardCmtId + '">등록</button>';
 		        commentHtml += '      </div>';
 		        commentHtml += '      <div class="replies-container" id="replies-container-' + comment.boardCmtId + '">';
-		        commentHtml += '        <div class="replies">' + repliesHtml + '</div>';
+		        commentHtml += '        <div class="replies" >' + repliesHtml + '</div>';
 		        commentHtml += '      </div>';
 		        commentHtml += '    </div>';
 		        commentHtml += '  </div>';

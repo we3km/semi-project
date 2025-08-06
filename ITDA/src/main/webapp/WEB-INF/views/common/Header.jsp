@@ -55,22 +55,6 @@
 
 		<input type="hidden" id="userRole"
 			value="${sessionScope.loginUser.role}" />
-		<%-- <c:choose>
-			<c:when test="${not empty sessionScope.loginUser}">
-				<script>
-					$('.unlogin').hide();
-					$('.login').show();
-					$('.login_effect').show();
-				</script>
-			</c:when>
-			<c:otherwise>
-				<script>
-					$('.login').hide();
-					$('.unlogin').show();
-					$('.login_effect').hide();
-				</script>
-			</c:otherwise>
-		</c:choose> --%>
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 			<div class="filters">
@@ -137,10 +121,6 @@
 					$('.login').hide();
 					$('.unlogin').show();
 				});
-				// 초기화 - 무조건 로그인된 상태 숨기기
-			/* 	$('.login').hide(); // 로그인된 사용자용 버튼 숨김
-				$('.unlogin').show(); // 비로그인용 버튼 보이기
-				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
 				// 로그인 클릭 시
 				$('#loginBtn').click(function() {
 					location.href = contextPath

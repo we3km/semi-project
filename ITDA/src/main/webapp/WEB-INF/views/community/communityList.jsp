@@ -262,24 +262,25 @@
 
         // 필터 적용 버튼 클릭 이벤트
         $('#applyFilterBtn').on('click', function() {
+        	 // 1. 항상 정렬 값을 먼저 가져옵니다.
             const sort = $('input[name="sort"]:checked').val() || 'latest';
-            const $allCheckbox = $('input[name="category"][value="all"]');
-
-            // '전체'가 선택되었거나, 아무 카테고리도 선택되지 않았을 경우
-            if ($allCheckbox.is(':checked') || $('input[name="category"]:checked').length === 0) {
-                // [핵심 수정] sort 파라미터 없이 /community/list/all 로만 이동합니다.
-                location.href = contextPath + '/community/list/all';
-                return; // 함수 종료
-            }
-
-            // '전체'가 아닌 다른 카테고리들이 선택된 경우
+            
+            // 2. URL 파라미터를 만들기 시작하고, sort는 항상 추가합니다.
             const searchParams = new URLSearchParams();
             searchParams.append("sort", sort);
 
-            $('input[name="category"]:checked').not('[value="all"]').each(function() {
-                searchParams.append("category", $(this).val());
-            });
+            // 3. '전체'가 선택되었는지 확인합니다.
+            const $allCheckbox = $('input[name="category"][value="all"]');
+            const isAllCategory = $allCheckbox.is(':checked') || $('input[name="category"]:checked').length === 0;
 
+            // 4. '전체'가 아닌 특정 카테고리가 선택된 경우에만 category 파라미터를 추가합니다.
+            if (!isAllCategory) {
+                $('input[name="category"]:checked').not('[value="all"]').each(function() {
+                    searchParams.append("category", $(this).val());
+                });
+            }
+            
+            // 5. 최종적으로 만들어진 파라미터를 포함하여 URL로 이동합니다.
             location.href = contextPath + '/community/list/all?' + searchParams.toString();
         });
 

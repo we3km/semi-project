@@ -40,6 +40,7 @@ import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
 import com.kh.itda.community.model.vo.CommunityType;
+import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -165,11 +166,8 @@ public class CommunityController {
 		}
 		
 		//로그인 사용자 정보 등록
-		User loginUser = (User) auth.getPrincipal();
+		UserExt loginUser = (UserExt) auth.getPrincipal();
 		c.setCommunityWriter(loginUser.getUserNum());
-		
-		//임시로그인
-		//c.setCommunityWriter(1);
 		
 		c.setCommunityNickname(String.valueOf(1));
 		c.setWriteDate(new Date());
@@ -220,9 +218,8 @@ public class CommunityController {
 			
 		}
 		
-		//유져관련
-		User loginUser = (User) auth.getPrincipal();
-		int userNum = ((User) auth.getPrincipal()).getUserNum();
+		//유져관련		
+		int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
 		//int userNum = 3;
 	    
 
@@ -292,11 +289,9 @@ public class CommunityController {
 	@PostMapping("/react")
 	@ResponseBody
 	public Map<String, Object> react(@RequestBody CommunityReaction reaction,Authentication auth, HttpSession session) {
-		// 임시 로그인 유저 번호 
-	    //int userNum = 3;
-		User loginUser = (User) auth.getPrincipal();
-		int userNum = ((User) auth.getPrincipal()).getUserNum();
-	    //int userNum = ((User) session.getAttribute("loginUser")).userNum();
+		
+		int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
+	    
 	    
 	    reaction.setUserNum(userNum);
 
@@ -321,9 +316,8 @@ public class CommunityController {
 									Authentication auth,
 									RedirectAttributes ra) {
 		//로그인 유저정보
-		User loginUser = (User)auth.getPrincipal();
+		UserExt loginUser = (UserExt)auth.getPrincipal();
 		int userNum = loginUser.getUserNum();
-		//int userNum = 1;
 		
 		//삭제 시도
 		int result = communityService.deleteCommunity(communityNo, userNum);
@@ -425,9 +419,8 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, String> ajaxInsertComment(@RequestBody BoardComment comment, Authentication auth) {
 	    // 임시 유저 정보 (로그인 연동 후 수정)
-	    User loginUser = (User) auth.getPrincipal();
+	    UserExt loginUser = (UserExt) auth.getPrincipal();
 	    comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    //comment.setCmtWriterUserNum(1); // 임시 작성자 NUM
 	    
 	    int result = communityService.insertComment(comment);
 	    
@@ -447,9 +440,9 @@ public class CommunityController {
 	public Map<String, Object> ajaxDeleteComment(@RequestBody BoardComment comment, Authentication auth) {
 	    
 	    // 임시 유저 정보 (로그인 연동 후 Authentication 객체에서 가져옵니다)
-		User loginUser = (User) auth.getPrincipal();
+		UserExt loginUser = (UserExt) auth.getPrincipal();
 	    comment.setCmtWriterUserNum(loginUser.getUserNum());
-	    int userNum = ((User) auth.getPrincipal()).getUserNum();
+	    int userNum = ((UserExt) auth.getPrincipal()).getUserNum();
 	    
 	    int result = communityService.deleteComment(comment.getBoardCmtId(), userNum);
 	    
