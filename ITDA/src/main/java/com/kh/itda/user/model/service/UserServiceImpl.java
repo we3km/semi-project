@@ -112,5 +112,10 @@ public class UserServiceImpl implements UserService {
 		return userDao.getProfileImageUrl(userNum);
 	}
 
+	@Override
+	public int getScore(int userNum) {
+		return userDao.getScore(userNum);
+	}
+
 }
 

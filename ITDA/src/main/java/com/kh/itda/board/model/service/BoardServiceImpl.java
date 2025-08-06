@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -303,6 +304,12 @@ public class BoardServiceImpl implements BoardService{
 	public List<RentalItem> getRentalItemByUserNum(int userNum) {
 		return boardDao.getRentalItemByUserNum(userNum);
 
+	}
+
+
+	@Override
+	public List<BoardAllWrapper> selectMyBoard(int userNum) {
+		return boardDao.selectMyBoard(userNum);
 	}
 
 

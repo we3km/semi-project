@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -85,6 +86,8 @@ public interface BoardDao {
 	void insertBiddingWinner(int boardId);
 
 	List<RentalItem> getRentalItemByUserNum(int userNum);
+
+	List<BoardAllWrapper> selectMyBoard(int userNum);
 
 
 

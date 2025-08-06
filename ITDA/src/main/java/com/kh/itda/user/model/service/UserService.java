@@ -38,4 +38,6 @@ public interface UserService {
 
 	User findUserById(String userId);
 
+	int getScore(int userNum);
+
 }

@@ -42,4 +42,6 @@ public interface UserDao {
 
 	String getProfileImageUrl(int userNum);
 
+	int getScore(int userNum);
+
 }

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +14,7 @@
     <div class="div">
         <!-- 헤더 -->
         <div class="overlap-15">
-            <div class="itda-point-text">온도</div>
+            <div class="itda-point-text">${itdaPoint}℃</div>
             <div class="degree">🔥</div>
         </div>
         <div class="itda-point">
@@ -122,6 +123,7 @@
         </div>
 
         <!-- 관심글 및 내가 쓴 글 등 반복 영역은 JSTL로 -->
+        <!-- 
         <div class="group-20 element">
 		    <c:forEach var="board" items="${boardList}" varStatus="status">
 		        <c:if test="${status.index < 4}">
@@ -145,11 +147,78 @@
 		    <div class="text-wrapper-22">내가 등록한 게시글</div>
 		    <div class="text-wrapper-23">거래 기록</div>
 		    <div class="text-wrapper-24">찜 목록</div>
-		
+		-->
 		    <!-- 더보기는 나중 구현 -->
+		    <!--
 		    <div class="see-more1">더보기 &gt;</div>
 		    <div class="see-more2">더보기 &gt;</div>
 		    <div class="see-more3">더보기 &gt;</div>
+		</div>
+		-->
+		<div class="group-20 element">
+			<c:forEach var="board" items="${boardList}" varStatus="status">
+				<c:if test="${status.index < 4}">
+					<div class="group-box group-${24 + status.index}" 
+						onclick="moveDetail(${board.boardCommon.boardId}, '${board.boardCommon.transactionCategory}')">
+		
+						<div class="red">
+							<img class="board-img" 
+							src="${pageContext.request.contextPath}${board.filePath.categoryPath}${board.filePath.fileName}" />
+						</div>
+						
+						<div class="overlap-3">
+							<div class="board-title">${board.boardCommon.productName}</div>
+						</div>
+		
+						<!-- 조건에 따른 표시 -->
+						<c:choose>
+							<c:when test="${board.boardRental != null}">
+								<div class="overlap-4">
+									<div class="board-terms">대여료 : ${board.boardRental.rentalFee}원</div>
+								</div>
+								<div class="overlap-group-2">
+									<div class="board-period">
+										<fmt:formatDate value="${board.boardRental.rentalStartDate}" pattern="yyyy/MM/dd" />
+										~
+										<fmt:formatDate value="${board.boardRental.rentalEndDate}" pattern="yyyy/MM/dd" />
+									</div>
+								</div>
+							</c:when>
+		
+							<c:when test="${board.boardAuction != null}">
+								<div class="overlap-4">
+									<div class="board-terms">시작가 : ${board.boardAuction.auctionStartingFee}원</div>
+								</div>
+								<div class="overlap-group-2">
+									<div class="board-period">
+										<fmt:formatDate value="${board.boardAuction.auctionStartDate}" pattern="yyyy/MM/dd" />
+										~
+										<fmt:formatDate value="${board.boardAuction.auctionEndDate}" pattern="yyyy/MM/dd" />
+									</div>
+								</div>
+							</c:when>
+		
+							<c:when test="${board.boardSharing != null}">
+								<div class="overlap-4">
+									<div class="board-terms">나눔 수량 : ${board.boardSharing.sharingCount}개</div>
+								</div>
+								<div class="overlap-group-2">
+									<div class="board-period">나눔 게시물</div>
+								</div>
+							</c:when>
+						</c:choose>
+					</div>
+				</c:if>
+			</c:forEach>
+		
+			<!-- 더보기 버튼 -->
+			<c:if test="${fn:length(boardList) > 4}">
+				<div class="see-more1" onclick="location.href='${pageContext.request.contextPath}/board/all'">더보기 &gt;</div>
+			</c:if>
+		
+			<div class="text-wrapper-22">내가 등록한 게시글</div>
+			<div class="text-wrapper-23">거래 기록</div>
+			<div class="text-wrapper-24">찜 목록</div>
 		</div>
     </div>
 </div>
@@ -157,18 +226,17 @@
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
 	const contextPath = "${pageContext.request.contextPath}";
-	let value = 36; // 값 범위: 0 ~ 100 사이 임의의 값
+	let score = ${itdaPoint};
 	
 	// 잇다점수 시각적 표시
 	const gaugeFill = document.getElementById('gauge-fill');
 	
-	function updateGauge(val) {
-	  const clampedVal = Math.max(0, Math.min(val, 100)); // 0~100으로 제한
-	  gaugeFill.style.width = clampedVal + '%';
+	function updateGauge(score) { // 0~100으로 제한
+		const clampedScore = Math.max(0, Math.min(score, 100));
+		gaugeFill.style.width = clampedScore + '%';
 	}
 	
-	// 초기값 설정
-	updateGauge(value);
+	updateGauge(score);
 	
 	// 회원 정보 변경 모달 ON/OFF
 	function openModal(type) {

@@ -124,4 +124,10 @@ public class UserDaoImpl implements UserDao {
 	public User findUserById(String userId) {
 		return session.selectOne("security.findUserById", userId);
 	}
+
+	@Override
+	public int getScore(int userNum) {
+		Integer score = session.selectOne("board.selectMannerScore", userNum);
+	    return (score != null) ? score : 80;
+	}
 }

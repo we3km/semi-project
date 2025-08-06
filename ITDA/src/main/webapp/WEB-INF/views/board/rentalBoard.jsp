@@ -248,48 +248,48 @@
 				</div>
 			</c:forEach>
 			<script>
-	  	function moveDetail(bid){
-	  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
-	  	}
-	  </script>
+		  	function moveDetail(bid){
+		  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+		  	}
+	  		</script>
 
 			<script>
-		function toggleLike(heartEl, boardId) {
-        	$.ajax({
-              	type: 'POST',
-              	url: '${pageContext.request.contextPath}/board/addDibs',
-              	data: {
-              	  userId: '${userNum}',
-              	  boardId: boardId,
-              	  boardCategory: 'rental'
-             	 },
-             	 success: function (res) {
-             		 console.log(res);
-    	       		  const liked = heartEl.classList.contains('liked');
-    	      		
-    	    		  if (liked) {
-    	    		    // 찜 취소
-    	    		    heartEl.textContent = '♡';
-    	    		    heartEl.classList.remove('liked');
-    	    		
-    	    		    // TODO: 서버로 찜 취소 요청 (Ajax)
-    	    		    console.log(`찜 취소: ${boardId}`);
-    	    		  } else {
-    	    		    // 찜 등록
-    	    		    heartEl.textContent = '♥';
-    	    		    heartEl.classList.add('liked');
-    	    		
-    	    		    // TODO: 서버로 찜 등록 요청 (Ajax)
-    	    		    console.log(`찜 등록: ${boardId}`);
-    	    		  }
-             	 },
-             	 error: function (err) {   
-             	    console.error(err);
-             	  }
-               
-             	 
-               });
-		}
+			function toggleLike(heartEl, boardId) {
+	        	$.ajax({
+	              	type: 'POST',
+	              	url: '${pageContext.request.contextPath}/board/addDibs',
+	              	data: {
+	              	  userId: '${userNum}',
+	              	  boardId: boardId,
+	              	  boardCategory: 'rental'
+	             	 },
+	             	 success: function (res) {
+	             		 console.log(res);
+	    	       		  const liked = heartEl.classList.contains('liked');
+	    	      		
+	    	    		  if (liked) {
+	    	    		    // 찜 취소
+	    	    		    heartEl.textContent = '♡';
+	    	    		    heartEl.classList.remove('liked');
+	    	    		
+	    	    		    // TODO: 서버로 찜 취소 요청 (Ajax)
+	    	    		    console.log(`찜 취소: ${boardId}`);
+	    	    		  } else {
+	    	    		    // 찜 등록
+	    	    		    heartEl.textContent = '♥';
+	    	    		    heartEl.classList.add('liked');
+	    	    		
+	    	    		    // TODO: 서버로 찜 등록 요청 (Ajax)
+	    	    		    console.log(`찜 등록: ${boardId}`);
+	    	    		  }
+	             	 },
+	             	 error: function (err) {   
+	             	    console.error(err);
+	             	}
+	               
+	             	 
+	             });
+			}
 		
     	
 
@@ -297,7 +297,7 @@
 		
 		
 		
-		</script>
+			</script>
 
 		</div>
 	</div>

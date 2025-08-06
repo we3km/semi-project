@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
 import com.kh.itda.board.model.vo.BiddingWinner;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuction;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
@@ -529,6 +530,12 @@ public class BoardDaoImpl implements BoardDao {
 
 	public List<RentalItem> getRentalItemByUserNum(int userNum) {
 		return session.selectList("user.getRentalItemByUserNum", userNum);
+	}
+
+
+	@Override
+	public List<BoardAllWrapper> selectMyBoard(int userNum) {
+		return session.selectList("board.selectMyBoard", userNum);
 	}
 
 

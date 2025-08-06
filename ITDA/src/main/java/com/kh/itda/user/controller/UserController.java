@@ -7,12 +7,14 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.itda.board.model.service.BoardService;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.service.UserService;
@@ -56,15 +59,28 @@ public class UserController {
 		
 		String userId = authentication.getName();
 		User user = uService.findUserById(userId);
+		int userNum = user.getUserNum();
+		model.addAttribute("user", user);
 		
 		// 사용자 프로필 이미지 url 조회
 		String imageUrl = uService.getProfileImageUrl(user.getUserNum());
 	    if (imageUrl == null || imageUrl.isEmpty()) {
 	    	imageUrl = "/resources/profile/default.png";
 	    }
+	    model.addAttribute("imageUrl", imageUrl);
+	    
+	    // 사용자 매너점수 조회
+	    Integer rawScore = uService.getScore(user.getUserNum());
+	    int itdaPoint = (rawScore != null) ? rawScore : 80;
+	    model.addAttribute("itdaPoint", itdaPoint);
 		
-		model.addAttribute("user", user);
-		model.addAttribute("imageUrl", imageUrl);
+	    // 사용자가 작성한 게시물 리스트
+	    List<BoardAllWrapper> boardAllWrapper = bService.selectMyBoard(userNum);
+	    model.addAttribute("boardList" ,boardAllWrapper);
+	    
+	    //사용자가 찜해둔 게시물 리스트
+	    
+	    
 		return "user/mypage";
 	}
 
@@ -275,16 +291,16 @@ public class UserController {
 	// 임시 로그인 (하드코딩된 USER1 정보로 세션에 로그인 유저 저장)
 	 @GetMapping("/user/tempLogin") 
 	 public String tempLogin(HttpServletRequest request) { 
-		  User tempUser = new User(); tempUser.setUserId("USER1");
+		User tempUser = new User(); tempUser.setUserId("USER1");
 	 
-		  tempUser.setUserPwd("1234"); tempUser.setUserNum(1); // 적당한 사용자 번호
-		  tempUser.setNickName("USER1");
+		tempUser.setUserPwd("1234"); tempUser.setUserNum(1); // 적당한 사용자 번호
+		tempUser.setNickName("USER1");
 	  
 		  // 세션에 loginUser 속성으로 저장 
-		  request.getSession().setAttribute("loginUser", tempUser);
+		request.getSession().setAttribute("loginUser", tempUser);
 		  
-		  return "redirect:/"; // 로그인 후 메인 페이지로 이동 
-	  }
+		return "redirect:/"; // 로그인 후 메인 페이지로 이동 
+	 }
 	 
 //	 @GetMapping("/user/login") 
 //	 public String login(HttpServletRequest request) { 
@@ -329,12 +345,18 @@ public class UserController {
 //		 }
 //	 
 
+	// 타인 정보 페이지
+	@GetMapping("/user/mypageOthers/{userNum}")
+	public String mypageOthers(@PathVariable int userNum, Model model) {
+		
+		return "/user/mypageOthers";
+	}
 	  
-	  // 로그아웃 (세션 무효화)
-	  @GetMapping("/user/logout") 
-	  public String logout(HttpServletRequest request){ 
-		  request.getSession().invalidate(); 
-		  return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
-	  }
+	// 로그아웃 (세션 무효화)
+	@GetMapping("/user/logout") 
+	public String logout(HttpServletRequest request){ 
+		request.getSession().invalidate(); 
+		return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
+	}
 }
 
