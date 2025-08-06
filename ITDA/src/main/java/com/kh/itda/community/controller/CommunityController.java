@@ -42,6 +42,7 @@ import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
 import com.kh.itda.community.model.vo.CommunityType;
 import com.kh.itda.security.model.vo.UserExt;
+import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
@@ -285,6 +286,7 @@ public class CommunityController {
 		model.addAttribute("reactionForm", new CommunityReaction());
 		model.addAttribute("userReaction", userReaction);
 		model.addAttribute("communityCd", communityCd); 
+		model.addAttribute("report", new Report());
 		
 		return "community/communityDetail"; 
 	}

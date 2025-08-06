@@ -17,7 +17,7 @@ public class Community {
 	private String communityCdName;	//카테고리명
 	
 	private String communityNickname;	//nickname
-	private int communityWriter; // userNo,
+	private int communityWriter; // userNum,
 	
 	private int views;	//VIEWS
 	private Date writeDate;	//WRITE_DATE
