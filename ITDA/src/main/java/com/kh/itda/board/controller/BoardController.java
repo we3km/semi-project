@@ -176,16 +176,11 @@ public class BoardController {
 		return "board/shareBoard";
 	}
 
-	// 교환게시판 매핑
-	@GetMapping("/exchange/list")
-	public String exchangeBoard() {
-		return "board/exchangeBoard";
-	}
 
 	// 경매게시판 매핑
 	// 리스트를 정렬할 조건들을 선택해서 정렬버튼을 눌렀을 시 파라미터를 받아와서 해시맵에 저장
-		@GetMapping("/auction/list")
-		public String auctionBoard(Model model, @RequestParam(defaultValue = "date") String sort,
+	@GetMapping("/auction/list")
+	public String auctionBoard(Model model, @RequestParam(defaultValue = "date") String sort,
 				@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 				@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
 				@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
@@ -728,6 +723,9 @@ public class BoardController {
 					model.addAttribute("isDibs", exists);
 				}
 
+				// 게시자의 프로필 이미지
+				String profileImage = boardService.getProfileImage(writerUserNum);
+				model.addAttribute("profileImage", profileImage);
 				return "board/detailShare";
 			}
 
@@ -867,6 +865,10 @@ public class BoardController {
 					} else {
 						model.addAttribute("isDibs", exists);
 					}
+					
+					// 게시자의 프로필 이미지
+					String profileImage = boardService.getProfileImage(writerUserNum);
+					model.addAttribute("profileImage", profileImage);
 
 					return "board/detailAuction";
 				}

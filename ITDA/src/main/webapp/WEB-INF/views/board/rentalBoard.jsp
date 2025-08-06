@@ -29,7 +29,7 @@
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/rental/list">
 			<div class="filter-section top-section">
-				<h3>정렬 조건</h3>
+				<h2>정렬 조건</h2>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
@@ -42,11 +42,11 @@
 
 			<div class="filter-section">
 			  <div class="category-area">
-			    <label>상품 카테고리</label>
+			    <h4>상품 카테고리</h4>
 			
 			    <div class="category-wrapper">
 			      <!-- 대분류 -->
-			      <div class="category-column">
+			      <div class="category-column" id="large">
 			        <h5>대분류</h5>
 			        <div class="category-list-large">
 			          <c:forEach items="${categoryList}" var="productCategory">

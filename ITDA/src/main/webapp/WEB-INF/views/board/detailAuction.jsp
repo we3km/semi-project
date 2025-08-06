@@ -208,6 +208,11 @@ body {
 				
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
+					<div class="profile-icon">
+						<img class="profile-img"
+							src="${pageContext.request.contextPath}${profileImage}"
+							alt="프로필" />
+					</div>
 					<strong>${writer} </strong>
 					<p>매너점수 : ${mannerScore }</p>
 				</div>

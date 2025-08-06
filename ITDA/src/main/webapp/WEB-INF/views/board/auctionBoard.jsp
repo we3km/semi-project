@@ -1,8 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -14,7 +10,7 @@ pageEncoding="UTF-8"%>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link
-	href="${pageContext.request.contextPath}/resources/css/board/rentalBoard.css"
+	href="${pageContext.request.contextPath}/resources/css/board/auctionBoard.css"
 	rel="stylesheet">
 <meta charset="UTF-8">
 <title>경매 게시판</title>
@@ -31,12 +27,12 @@ pageEncoding="UTF-8"%>
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/auction/list">
-			<div class="filter-section">
+			<div class="filter-section top-section">
 				<h3>정렬 조건</h3>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 				<option value="highestBid">최고입찰가 순</option>

@@ -10,208 +10,13 @@
 <head>
 <meta charset="UTF-8">
 <title>나눔 게시판</title>
-<style>
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
-
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction:column;      
-      background-color: white;
-    }
-    
-    .container{
-    	margin: 0;
-      display: flex;
-      background-color: white;
-    }
-
-    .sidebar {
-      width: 300px;
-      background-color: white;
-      padding: 20px;
-      border-right: 1px solid #ddd;
-    }
-
-    .sidebar h3 {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .filter-section {
-      margin-bottom: 25px;
-    }
-
-    .filter-section label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .main {
-      flex: 1;
-      padding: 30px 100px;
-      position: relative;
-    }
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .top h2 {
-      font-size: 28px;
-      margin: 0;
-    }
-
-    .top .location {
-      color: #9d83ff;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-
-    #write-btn {
-      background-color: #6657ff;
-      color: white;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .card {
-      background-color: white;
-      padding: 15px;
-     	width:250px;
-     	height:280px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      position: relative;
-    }
-
-    .card img {
-      width: 100%;
-      /* max-width: 180px; */
-      height: auto;
-    }
-
-    .card .heart {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .card p {
-      margin: 5px 0;
-    }
-	
-	#product-name{
-		font-size: 20px;
-	}
-	
-    #rental-fee {
-      font-weight: bold;
-    }
-	.date{
-		font-size: 10px;
-	}
-
-    input[type="range"] {
-      width: 100%;
-    }
-
-    input[type="date"] {
-      width: 100%;
-      margin-top: 5px;
-      margin-bottom: 5px;
-    }
-    
-    
-   .category-large,
-.category-middle,
-.category-small {
-	    flex: 1;
-  padding: 8px 12px;
-  margin: 5px 5px 0 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  transition: all 0.2s;
-}
-
-
-.category-large.selected,
-.category-middle.selected,
-.category-small.selected {
-  background-color: #007bff;
-  color: white;
-}
-
-/* 선택된 상태일 때 색상 강조 */
-.category-large.active,
-.category-middle.active,
-.category-small.active {
-  background-color: #007bff;
-  color: #6657ff;
-  border-color: #007bff;
-}
-
-.category-wrapper {
-    
-    gap: 1rem;
-    margin-top: 10px;
-  }
-
-  .category-column {
-  display: flex;
-   
-    min-height: 100px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-
-  .category-column h5 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #555;
-  }
-
-  .category-column div {
-    margin-bottom: 6px;
-    cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-
-
-  .category-column .active {
-    background-color: #007bff;
-    color: white;
-  }
-
-</style>
 
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	
+<link
+	href="${pageContext.request.contextPath}/resources/css/board/shareBoard.css"
+	rel="stylesheet">
 </head>
 <body>
 
@@ -225,12 +30,12 @@
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/share/list">
-			<div class="filter-section">
+			<div class="filter-section top-section">
 				<h3>정렬 조건</h3>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 			</select>
