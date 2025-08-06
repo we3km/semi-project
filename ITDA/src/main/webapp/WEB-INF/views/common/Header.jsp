@@ -32,6 +32,7 @@
 			<div class="category">경매</div>
 			<div class="category">교환</div>
 			<div class="category">나눔</div>
+	
 			<div class="category">커뮤니티</div>
 		</div>
 		<!-- 로그인 / 로그아웃 버튼 -->
