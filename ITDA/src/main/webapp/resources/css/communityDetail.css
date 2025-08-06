@@ -86,7 +86,12 @@
         .meta-row .right .red #commentCount {
             color: red;
         }
-        
+        /* 댓글 작성자 닉네임 링크 스타일 초기화 */
+		.comment .author a {
+		    text-decoration: none; /* 밑줄 제거 */
+		    color: inherit;       /* 부모 요소의 글자색(기존 닉네임 색)을 그대로 사용 */
+		}
+		
 
         hr {
             border: none;
@@ -179,7 +184,6 @@
             margin-left: 5px;
             font-size: 14px;
         }
-        /* communityDetail.css 파일에 추가 */
 		.post-img {
 		    margin-top: 20px;
 		    margin-bottom: 30px;
@@ -200,6 +204,27 @@
             gap: 10px;
             margin-bottom: 20px;
         }
+        /* 이미지 영역 스타일 */
+		.img-area {
+		    margin-top: 20px; /* 구분선과의 간격 */
+		    margin-bottom: 20px;
+		    
+		}
+		
+		/* 개별 이미지 아이템 스타일 */
+		.img-item {
+		    margin-bottom: 10px; /* 이미지 사이의 세로 간격 */
+		    
+		}
+		
+		/* 실제 이미지 스타일 */
+		.detail-img {
+		    max-width: 100%; /* 이미지가 게시글 너비보다 커지지 않도록 설정 */
+		    height: auto;    /* 가로/세로 비율 유지 */
+		    border-radius: 8px; /* 모서리를 살짝 둥글게 */
+		    display: block;  /* 이미지를 블록 요소로 만들어 margin 적용 */
+		    margin: 0 auto;
+		}
 
         .comment-input input {
             flex: 1;
@@ -281,9 +306,15 @@
             height: 28px;
             background: #ccc;
             border-radius: 50%;
+   			overflow:hidden;
             flex-shrink: 0;
         }
-
+        
+       .comment .profile-img{
+         	width:100%;
+		    height:100%;
+		    object-fit:cover;
+        }
         .comment .content {
             display: flex;
             flex-direction: column;
