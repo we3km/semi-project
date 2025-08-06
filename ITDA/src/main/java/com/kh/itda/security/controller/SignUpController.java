@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.itda.config.FileConfig;
 import com.kh.itda.user.model.service.EmailService;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.User;
@@ -225,7 +226,7 @@ public class SignUpController { //회원가입
         if (profileImage != null && !profileImage.isEmpty()) {
             try {
                 // 실제 저장 경로
-                String saveDirectory = session.getServletContext().getRealPath("/resources/profile/");
+                String saveDirectory = session.getServletContext().getRealPath(FileConfig.PROFILE_IMAGE_WEB_PATH);
                 File dir = new File(saveDirectory);
                 if (!dir.exists()) {
                     dir.mkdirs(); // 디렉토리가 없으면 생성
@@ -238,7 +239,7 @@ public class SignUpController { //회원가입
                 profileImage.transferTo(destFile);
 
                 // 이미지 파일 URL 설정 (브라우저에서 접근 가능 경로)
-                user.setImageUrl("/resources/profile/" + newFilename);
+                user.setImageUrl(FileConfig.PROFILE_IMAGE_WEB_PATH + newFilename);
 
             } catch (IOException e) {
                 e.printStackTrace();

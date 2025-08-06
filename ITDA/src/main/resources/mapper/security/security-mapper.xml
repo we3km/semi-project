@@ -74,7 +74,13 @@
 		SELECT
 		COUNT(*) FROM USER_TB WHERE NICK_NAME = #{nickName}
 	</select>
-
+	
+	<!-- 폰번호 중복 체크 -->
+	<select id="checkPhone" resultType="int" parameterType="String">
+		SELECT
+		COUNT(*) FROM USER_TB WHERE PHONE = #{phone}
+	</select>
+	
 	<insert id="insertToken">
 		INSERT
 		INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN,

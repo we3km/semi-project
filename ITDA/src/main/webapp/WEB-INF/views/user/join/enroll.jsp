@@ -282,10 +282,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 		    const token = '${_csrf.token}';
 		
 		    fetch(contextPath + "/user/join/enroll/checkNickname?nickname=" + encodeURIComponent(nickName), {
-		        method: "GET",
-		        headers: {
-		            'X-CSRF-TOKEN': token
-		        }
+		        method: "GET"
 		    })
 		    .then(res => res.text())
 		    .then(data => {

@@ -12,6 +12,8 @@ public interface UserService {
 
 	Optional<String> findPwdByIdAndEmail(String userId, String email);
 
+	String getProfileImageUrl(int userNum);
+	
 	int idCheck(String userId);
 
 	int updateUser(User user);
@@ -24,14 +26,19 @@ public interface UserService {
 	
 	void updateAddress(String userId, String newAddress);
 
+	void updateProfileImage(int userNum, String imageUrl);
+	
 	boolean emailExists(String email);
 
 	int checkNickname(String nickName);
+	
+	int checkPhone(String newPhone);
 
 	String selectUserNickname(String userId);
 
 	String selectUserNum(String userId);
 
+	User findUserById(String userId);
 
 
 }

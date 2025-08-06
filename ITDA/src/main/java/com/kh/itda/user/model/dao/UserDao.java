@@ -7,7 +7,7 @@ import com.kh.itda.user.model.vo.User;
 public interface UserDao {
 
 	int insertUser(User user);
-	
+
 	void insertProfile(int userNum, String imageUrl);
 	
 	void insertAuthority(User user);
@@ -15,6 +15,8 @@ public interface UserDao {
 	int idCheck(String userId);
 	
 	int checkNickname(String nickName);
+	
+	int checkPhone(String newPhone);
 	
 	User findUserById(String userId);	// 로그인 시 유저 조회
 	
@@ -35,6 +37,10 @@ public interface UserDao {
 	List<String> findAuthoritiesByUserNum(int userNum);
 
 	void updateAddress(String userId, String newAddress);
+
+	void updateProfileImage(int userNum, String imageUrl);
+
+	String getProfileImageUrl(int userNum);
 
 	//void insertUserAndAuthority(User user);
 

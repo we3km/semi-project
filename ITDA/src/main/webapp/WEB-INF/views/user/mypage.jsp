@@ -36,7 +36,7 @@
                     <div class="overlap-group-4">
                         <div class="group-33">
                             <div class="text-wrapper-30">
-                                닉네임님 반갑습니다!
+                                ${user.nickName}님 반갑습니다!
                             </div>
                         </div>
                         <div class="bell">벨</div>
@@ -87,13 +87,13 @@
         <div class="update-phone" onclick="openModal('phone')">휴대폰 번호 변경</div>
         <div class="update-address" onclick="openModal('address')">주소 변경</div>
 
-        <div class="info-box" style="top: 460px;">아이디</div>
+        <div class="info-box" style="top: 460px;">${user.userId}</div>
 		<div class="info-box" style="top: 519px;">(비밀번호 비공개)</div>
-		<div class="info-box" style="top: 578px;">닉넴</div>
-		<div class="info-box" style="top: 637px;">메일</div>
-		<div class="info-box" style="top: 696px;">생일</div>
-		<div class="info-box" style="top: 755px;">폰</div>
-		<div class="info-box" style="top: 815px;">주소</div>
+		<div class="info-box" style="top: 578px;">${user.nickName}</div>
+		<div class="info-box" style="top: 637px;">${user.email}</div>
+		<div class="info-box" style="top: 696px;">${user.birth}</div>
+		<div class="info-box" style="top: 755px;">${user.phone}</div>
+		<div class="info-box" style="top: 815px; height: 70px">${user.address}</div>
 		<div class="text-wrapper-12" style="top: 459px;">아이디</div>
         <div class="text-wrapper-12" style="top: 518px;">비밀번호</div>
         <div class="text-wrapper-12" style="top: 577px;">닉네임</div>
@@ -101,10 +101,11 @@
         <div class="text-wrapper-12" style="top: 695px;">생일</div>
         <div class="text-wrapper-12" style="top: 754px;">휴대폰 번호</div>
         <div class="text-wrapper-12" style="top: 814px;">주소</div>
-        <div class="profile-change">프로필 변경</div>
+        <div class="profile-change" id="changeProfile">프로필 변경</div>
+        <input type="file" id="profileInput" accept="image/*" style="display:none" />
         <div class="profile-image">
-            <img src="${pageContext.request.contextPath}/resources/profile/default.png" 
-            	alt="프로필 이미지" width="300" height="300">
+            <img id="preview" src="${pageContext.request.contextPath}${user.imageUrl}" 
+            	alt="프로필 이미지" width="300" height="300" style="display: block;">
         </div>
         
         <div id="modal-overlay" class="modal hidden">
@@ -194,8 +195,8 @@
 			form.method = "post";
 			title.innerText = "닉네임 변경";
 			body.innerHTML = 
-				`<input type="text" name="newNickName" id="newNickName" placeholder="새 닉네임 입력"
-					pattern="^(([가-힣]{2,8})|([a-zA-Z]{4,16})|([가-힣a-zA-Z]{2,10}))$" required>
+				`<input type="text" name="newNickname" id="newNickname" placeholder="새 닉네임 입력"
+					pattern="^([가-힣a-zA-Z0-9]{2,12})$" required>
 				<input type="button" onclick="checkNickname()" value="중복 확인">`
 		}
 		
@@ -217,8 +218,8 @@
 			title.innerText = "주소 변경";
 			body.innerHTML = 
 			      `<input type="button" onclick="execDaumPostcode()" value="주소검색">
-			      <input type="text" name="addr1" id="addr1" placeholder="기본주소" >
-			      <input type="text" name="addr2" id="addr2" placeholder="상세주소" >
+			      <input type="text" name="addr1" id="addr1" placeholder="기본주소" readonly>
+			      <input type="text" name="addr2" id="addr2" placeholder="상세주소">
 			      <input type="hidden" id="address" name="address" />`
 		}
 	}
@@ -227,15 +228,84 @@
 		document.getElementById("modal-overlay").classList.add("hidden");
 	}
 	
+	// 닉네임 체크
+	let nickNameValid = false;
+	function checkNickname() {
+		const newNickname = document.getElementById("newNickname").value;
+		fetch(contextPath + "/user/mypage/checkNickname?newNickname=" + encodeURIComponent(newNickname), {
+	        method: "GET"
+	    })
+	    .then(res => res.text())
+	    .then(data => {
+	        if (data === "0") { // 사용 가능
+	            alert("사용 가능한 닉네임입니다");
+	        	nickNameValid = true;
+	        } else if (data === "1") { // 중복
+	        	alert("중복된 닉네임입니다");
+	        	nickNameValid = false;
+	        } else if (data === "-1") { // 유효하지 않은 닉네임
+	        	alert("유효하지 않은 닉네임입니다");
+	        	nickNameValid = false;
+	        } else {
+	        	alert("사용 불가능한 닉네임입니다");
+	        	nickNameValid = false;
+	        }
+	    })
+	    .catch(err => alert('오류 발생: ' + err));
+	}
+	
+	// 폰번호 체크
+	let phoneValid = false;
+	function checkPhone() {
+		const newPhone = document.getElementById("newPhone").value;
+		fetch(contextPath + "/user/mypage/checkPhone?newPhone=" + encodeURIComponent(newPhone), {
+	        method: "GET"
+	    })
+	    .then(res => res.text())
+	    .then(data => {
+	        if (data === "0") { // 사용 가능
+	            alert("수정 가능합니다");
+	            phoneValid = true;
+	        } else if (data === "1") { // 중복
+	        	alert("이미 사용중인 휴대폰 번호입니다");
+	        	phoneValid = false;
+	        } else if (data === "-1") { // 유효하지 않음
+	        	alert("다시 입력해주세요");
+	        	phoneValid = false;
+	        } else {
+	        	alert("오류가 발생했습니다");
+	        	phoneValid = false;
+	        }
+	    })
+	    .catch(err => alert('오류 발생: ' + err));
+	}
+	
+	// 기본 주소 검색
+	function execDaumPostcode() {
+		new daum.Postcode({
+            oncomplete: function(data) {
+                // 도로명 주소
+                console.log( data.roadAddress);
+                document.getElementById('addr1').value = data.roadAddress;
+                // 상세 주소
+                document.getElementById('addr2').focus();
+            }
+        }).open();
+	}
+	
 	function submitModal() {
 		const title = document.getElementById("modal-title").innerText;
 		const form = document.getElementById("modal-form");
 		
 		// 닉네임
 		if (title.includes("닉네임")) {
-			const nicknameInput = document.getElementById("newNickName");
+			const nicknameInput = document.getElementById("newNickname");
 			if (!nicknameInput.value.trim()) {
 				alert("닉네임을 입력해주세요.");
+				return;
+			}
+			if (!nickNameValid) {
+				alert("닉네임 중복 확인을 해주세요.");
 				return;
 			}
 			
@@ -253,6 +323,10 @@
 				alert("휴대폰 번호 형식이 올바르지 않습니다.");
 				return;
 			}
+			if (!phoneValid) {
+				alert("휴대폰 번호 중복 확인을 해주세요.");
+				return;
+			}
 			form.submit();
 			
 		// 주소
@@ -260,8 +334,8 @@
 			const addr1 = document.getElementById("addr1").value.trim();
 			const addr2 = document.getElementById("addr2").value.trim();
 
-			if (!addr1 || addr1.replace(/\s/g, '') === '') {
-		        alert("기본 주소를 정확히 입력해주세요.");
+			if (!addr1) {
+		        alert("기본 주소를 입력해주세요.");
 		        return;
 		    }
 		    if (!addr2 || addr2.replace(/\s/g, '') === '') {
@@ -270,17 +344,9 @@
 		    }
 
 		    // 합친 전체 주소를 hidden 필드나 별도 input에 세팅 (필요하면)
-		    const fullAddress = addr1 + " " + addr2;
-		    
-		    let hiddenFullAddr = document.getElementById('fullAddress');
-		    if (!hiddenFullAddr) {
-		        hiddenFullAddr = document.createElement('input');
-		        hiddenFullAddr.type = 'hidden';
-		        hiddenFullAddr.name = 'fullAddress';
-		        hiddenFullAddr.id = 'fullAddress';
-		        form.appendChild(hiddenFullAddr);
-		    }
-		    hiddenFullAddr.value = fullAddress;
+		    const address = addr1 + " " + addr2;
+		    const hiddenFullAddr = document.getElementById('address');
+		    hiddenFullAddr.value = address;
 		    
 			form.submit();
 			
@@ -308,6 +374,45 @@
 		
 		closeModal();
 	}
+	
+	// 프로필 변경
+	document.getElementById('changeProfile').addEventListener('click', function () {
+		document.getElementById('profileInput').click();
+	});
+	
+	document.getElementById('profileInput').addEventListener('change', function (event) {
+		const file = event.target.files[0];
+		if (!file) return;
+		
+		const reader = new FileReader();
+	    reader.onload = function (e) {
+	        const preview = document.getElementById('preview');
+	        preview.src = e.target.result;
+	        preview.style.display = "block";
+	    };
+	    reader.readAsDataURL(file);
+	    
+		const formData = new FormData();
+		formData.append("profileImage", file);
+
+		fetch(contextPath + "/user/mypage/updateProfileImage", {
+			method: "POST",
+			body: formData
+		})
+		.then(res => res.json())
+		.then(data => {
+			if (data.success) {
+			    alert("프로필 이미지가 변경되었습니다.");
+				document.getElementById("preview").src = data.newImageUrl;
+			} else {
+			    alert("이미지 변경 실패: " + data.message);
+			}
+		})
+		.catch(error => {
+			console.error("에러 발생:", error);
+			alert("서버 오류");
+		});
+	});
 	
 	/* function submitPassword() {
 		const newPwd = document.getElementById("newPwd").value;

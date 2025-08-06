@@ -37,6 +37,11 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	@Override
+	public int checkPhone(String newPhone) {
+		return session.selectOne("security.checkPhone", newPhone);
+	}
+	
+	@Override
 	public void insertProfile(int userNum, String imageUrl) {
 		Map<String, Object> param = new HashMap<>();
 		param.put("userNum", userNum);
@@ -91,6 +96,15 @@ public class UserDaoImpl implements UserDao {
 	    
 	    session.update("user.updateAddress", param);
 	}
+	
+	@Override
+	public void updateProfileImage(int userNum, String imageUrl) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userNum", userNum);
+	    param.put("imageUrl", imageUrl);
+	    
+	    session.update("user.updateProfile", param);
+	}
 
 	@Override
 	public String selectUserNickname(String userId) {
@@ -108,4 +122,7 @@ public class UserDaoImpl implements UserDao {
 		return session.selectList("user.findAuthoritiesByUserNum", userNum);
 	}
 
+	public String getProfileImageUrl(int userNum) {
+		return session.selectOne("user.getProfileImageUrl", userNum);
+	}
 }

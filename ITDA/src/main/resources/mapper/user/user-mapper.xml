@@ -26,7 +26,20 @@
 		SELECT
 		USER_TB_SEQ.NEXTVAL FROM DUAL
 	</select>
-
+	
+	<!-- 프로필 URL 찾기 -->
+	<select id="getProfileImageUrl" resultType="String">
+		SELECT IMAGE_URL
+    	FROM PROFILE
+    	WHERE USER_NUM = #{userNum}
+	</select>
+	
+	<select id="findUserById" resultType="User">
+		SELECT U.*
+		FROM USER_TB U
+		WHERE USER_ID = #{userId}
+	</select>
+	
 	<!-- 회원 정보 주입 -->
 	<insert id="insertUser" parameterType="user">
 		INSERT INTO USER_TB (
@@ -100,6 +113,36 @@
 		SET ADDRESS = #{newAddress}
 		WHERE USER_ID = #{userId}
 	</update>
+	
+	<!-- 프로필 변경 -->
+	<update id="updateProfile" parameterType="map">
+		UPDATE PROFILE
+		SET IMAGE_URL = #{imageUrl}
+		WHERE USER_NUM = #{userNum}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<!-- <update id="updateUser">
+		UPDATE USER_TB
+			<set>
+				<if test="email != null">
+					EMAIL = #{email},
+				</if>
+				<if test="nickName != null">
+					NICK_NAME = #{nickName},
+				</if>
+				<if test="phone != null">
+					PHONE = #{phone},
+				</if>
+				<if test="address != null">
+					ADDRESS = #{address},
+				</if>
+				<if test="encodedPwd != null and encodedPwd != ''">
+					USER_PWD = #{encodedPwd}
+				</if>
+			</set>
+		WHERE USER_ID = #{userId}
+	</update> -->
 
 	<select id="selectUserNickname" resultType="String">
 		SELECT NICK_NAME FROM

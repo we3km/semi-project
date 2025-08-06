@@ -63,6 +63,11 @@ public class UserServiceImpl implements UserService{
 	public int checkNickname(String nickName) {
 		return userDao.checkNickname(nickName);
 	}
+	
+	@Override
+	public int checkPhone(String newPhone) {
+		return userDao.checkPhone(newPhone);
+	}
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
@@ -83,6 +88,11 @@ public class UserServiceImpl implements UserService{
 	public void updateAddress(String userId, String newAddress) {
 		userDao.updateAddress(userId, newAddress);
 	}
+	
+	@Override
+	public void updateProfileImage(int userNum, String imageUrl) {
+		userDao.updateProfileImage(userNum, imageUrl);
+	}
 
 	@Override
 	public boolean emailExists(String email) {
@@ -99,6 +109,15 @@ public class UserServiceImpl implements UserService{
 		return userDao.selectUserNum(userId);
 	}
 
+	@Override
+	public User findUserById(String userId) {
+		return userDao.findUserById(userId);
+	}
+	
+	@Override
+	public String getProfileImageUrl(int userNum) {
+		return userDao.getProfileImageUrl(userNum);
+	}
 
 }
 

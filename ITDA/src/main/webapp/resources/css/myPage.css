@@ -299,6 +299,10 @@
   line-height: normal;
 }
 
+.addr-height{
+	height: 70px !important;
+}
+
 .modal {
   position: fixed;
   z-index: 100;
