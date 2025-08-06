@@ -1,6 +1,7 @@
 package com.kh.itda.user.model.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -53,11 +54,17 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public String selectUserNickname(String userId) {
-		return session.selectOne("user.selectUserNickname", userId); 
+		return session.selectOne("user.selectUserNickname", userId);
 	}
 
 	@Override
 	public String selectUserNum(String userId) {
-		return session.selectOne("user.selectUserNum", userId); 
+		return session.selectOne("user.selectUserNum", userId);
 	}
+
+	@Override
+	public List<String> findAuthoritiesByUserNum(int userNum) {
+		return session.selectList("user.findAuthoritiesByUserNum", userNum);
+	}
+
 }

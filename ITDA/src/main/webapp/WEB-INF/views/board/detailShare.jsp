@@ -204,7 +204,7 @@ body {
 				<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
 					보내기</button>
 				
-				<!-- 채팅방 리스트 이동 -->
+				<!-- 채팅방 리스트 이동  -->
 				<script>
 					     function createTransactionChatRoom() {
 					        const contextPath = '${contextPath}';

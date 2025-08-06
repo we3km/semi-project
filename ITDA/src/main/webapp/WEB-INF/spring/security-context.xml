@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns="http://www.springframework.org/schema/security"
-    xmlns:beans="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xsi:schemaLocation="
+<beans:beans
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
         http://www.springframework.org/schema/security 
         http://www.springframework.org/schema/security/spring-security.xsd
         http://www.springframework.org/schema/beans 
@@ -11,47 +12,82 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<http pattern="/resources/**" security="none"/>
-    <!-- 시큐리티 인증/인가 -->
-    <http auto-config="true">
-    	
-    	<intercept-url pattern="/" access="permitAll"/>
-	    <intercept-url pattern="/user/login/**" access="isAnonymous()" />
-	    <intercept-url pattern="/user/join/**" access="isAnonymous()" />
-	    <intercept-url pattern="/user/findId/**" access="isAnonymous()" />
-	    <intercept-url pattern="/user/findPwd/**" access="isAnonymous()" />
-	    <intercept-url pattern="/admin/**" access="hasRole('ADMIN')" /> 
-	    <intercept-url pattern="/**" access="isAuthenticated()" />
+	<http pattern="/resources/**" security="none" />
 
-        <form-login
-            login-page="/user/login"
-            login-processing-url="/user/loginprocess"
-            default-target-url="/"
-            always-use-default-target="true"
-            authentication-failure-url="/user/login?error=true"
-            username-parameter="userId"
-            password-parameter="userPwd" />
-            
-            <!-- 로그인 설정 - 권한별 리다이렉트를 위해 success-handler 사용 -->
+
+	<!-- 시큐리티 인증/인가 -->
+	<http auto-config="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/user/login/**"
+			access="isAnonymous()" />
+		<intercept-url pattern="/user/join/**"
+			access="isAnonymous()" />
+		<intercept-url pattern="/user/findId/**"
+			access="isAnonymous()" />
+		<intercept-url pattern="/user/findPwd/**"
+			access="isAnonymous()" />
+
+		<!-- 권한별 접근 제어 -->
+		<intercept-url pattern="/admin/**"
+			access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/user/mypage/**"
+			access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<intercept-url pattern="/cs/**" access="isAuthenticated()" />
+		
 		<form-login login-page="/user/login"
 			login-processing-url="/user/loginprocess"
 			authentication-success-handler-ref="customAuthenticationSuccessHandler"
 			authentication-failure-handler-ref="customAuthenticationFailureHandler"
 			username-parameter="userId" password-parameter="userPwd" />
-            
-        <logout 
-        	logout-url="/user/logout" 
-        	logout-success-url="/"
-        	invalidate-session="true"
-        	delete-cookies="JSESSIONID, remember-me" />
-        <remember-me key="itdaUniqueSecurityKey" data-source-ref="dataSource" token-validity-seconds="1209600" />
-        	
-        <csrf disabled="true"/>
-    </http>
-    
-    <!-- 로그인 성공 핸들러 - 권한에 따른 리다이렉트 -->
+
+		<logout logout-url="/user/logout" logout-success-url="/"
+			invalidate-session="true" delete-cookies="JSESSIONID, remember-me" />
+		<remember-me key="itdaUniqueSecurityKey"
+			data-source-ref="dataSource" token-validity-seconds="1209600" />
+
+
+		<csrf disabled="true" />
+	</http>
+	<!-- com.kh.itda.security 패키지 스캔 -->
+	<context:component-scan
+		base-package="com.kh.itda" />
+
+
+	<!-- 권한 계층 설정: ADMIN이 USER 권한도 포함 -->
+	<beans:bean id="roleHierarchy"
+		class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+		<beans:property name="hierarchy">
+			<beans:value>
+				ROLE_ADMIN > ROLE_USER
+			</beans:value>
+		</beans:property>
+	</beans:bean>
+
+	<!-- 권한 계층을 적용한 Role Voter -->
+	<beans:bean id="roleVoter"
+		class="org.springframework.security.access.vote.RoleHierarchyVoter">
+		<beans:constructor-arg ref="roleHierarchy" />
+	</beans:bean>
+
+	<!-- 접근 결정 관리자 -->
+	<beans:bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<beans:constructor-arg>
+			<beans:list>
+				<beans:ref bean="roleVoter" />
+				<beans:bean
+					class="org.springframework.security.access.vote.AuthenticatedVoter" />
+				<beans:bean
+					class="org.springframework.security.web.access.expression.WebExpressionVoter" />
+			</beans:list>
+		</beans:constructor-arg>
+	</beans:bean>
+
+	<!-- 로그인 성공 핸들러 - 권한에 따른 리다이렉트 -->
 	<beans:bean id="customAuthenticationSuccessHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationSuccessHandler" />
+
 	<!-- 로그인 실패 핸들러 -->
 	<beans:bean id="customAuthenticationFailureHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
@@ -61,14 +97,16 @@
 		<context:exclude-filter type="assignable" expression="com.kh.itda.chat.model.websocket.ChatStompController"/>
     </context:component-scan>
 
-    <!-- BCryptPasswordEncoder -->
-    <beans:bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<!-- BCryptPasswordEncoder -->
+	<beans:bean id="bcryptPasswordEncoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
 
-    <!-- 사용자 인증 매니저 설정 -->
-    <authentication-manager>
-        <authentication-provider user-service-ref="securityServiceImpl">
-            <password-encoder ref="bcryptPasswordEncoder" />
-        </authentication-provider>
-    </authentication-manager>
+	<!-- 사용자 인증 매니저 설정 -->
+	<authentication-manager>
+		<authentication-provider
+			user-service-ref="securityServiceImpl">
+			<password-encoder ref="bcryptPasswordEncoder" />
+		</authentication-provider>
+	</authentication-manager>
 
 </beans:beans>

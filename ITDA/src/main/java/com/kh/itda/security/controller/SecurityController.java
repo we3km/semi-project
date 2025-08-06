@@ -276,8 +276,6 @@ public class SecurityController {
 		}
 
 		// db의 user객체를 수정
-		int result = uService.updateUser(loginUser);
-
 		// 변경된 회원정보를 DB에서 얻어온 후 새로운 인증정보 생성하여 스레드로컬에 저장
 		// 새로운 Authentication 객체생성
 		Authentication newAuth = new UsernamePasswordAuthenticationToken(loginUser, auth.getCredentials(),

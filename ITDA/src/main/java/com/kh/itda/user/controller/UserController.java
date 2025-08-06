@@ -1,21 +1,14 @@
 package com.kh.itda.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.kh.itda.community.model.service.CommunityService;
 import com.kh.itda.user.model.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import com.kh.itda.user.model.vo.User;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,10 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-
-	@Autowired
-	private UserService uService;
-
 	@GetMapping("/user/myPage")
 	public String myPage() {
 		return "user/myPage";

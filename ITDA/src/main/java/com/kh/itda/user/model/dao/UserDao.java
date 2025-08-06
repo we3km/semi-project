@@ -1,5 +1,7 @@
 package com.kh.itda.user.model.dao;
 
+import java.util.List;
+
 import com.kh.itda.user.model.vo.User;
 
 public interface UserDao {
@@ -16,7 +18,9 @@ public interface UserDao {
 
 	String selectUserNum(String userId);
 
-	// void insertUserAndAuthority(User user);
+	//void insertUserAndAuthority(User user);
+	
+	List<String> findAuthoritiesByUserNum(int userNum);
 
 	User findUserByNum(int userNum); // 로그인 외 다른 곳에서 조회
 
