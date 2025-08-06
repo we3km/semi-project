@@ -424,7 +424,7 @@
 		            repliesToggleHtml = '<div class="replies-toggle-btn" data-comment-no="'+ comment.boardCmtId +'">답글 접기</div>';
 		        }
 		       
-		        let commentHtml = '';
+		        /* let commentHtml = '';
 		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
 		        commentHtml += '  <div class="profile-icon"><a href="' + profileUrl + '"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></a></div>';
 		        commentHtml += '  <div class="content">';
@@ -453,11 +453,55 @@
 		        }
 		        
 		        commentHtml += '  </div>';
-		        commentHtml += '</div>';
-			    
+		        commentHtml += '</div>'; */
 		        
-		        
-		        
+		        let commentHtml = '';
+		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
+
+		        // 첫 줄: 프로필, 본문, 옵션 버튼을 3등분해서 한 줄에 배치
+		        commentHtml += '  <div class="comment-row">';
+		        commentHtml += '    <div class="comment-left">';
+		        commentHtml += '      <a href="' + profileUrl + '">';
+		        commentHtml += '        <div class="profile-icon">';
+		        commentHtml += '          <img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image">';
+		        commentHtml += '        </div>';
+		        commentHtml += '      </a>';
+		        commentHtml += '    </div>';
+
+		        commentHtml += '    <div class="comment-center">';
+		        commentHtml += '      <div class="author"><a href="' + profileUrl + '">' + comment.nickName + '</a></div>';
+		        commentHtml += '      <div class="text">' + comment.boardCmtContent + '</div>';
+		        commentHtml += '      <div class="actions">';
+		        commentHtml += '        <span>' + writeDate + '</span>';
+		        commentHtml +=        replyBtnHtml;
+		        commentHtml +=        repliesToggleHtml;
+		        commentHtml += '      </div>';
+		        commentHtml += '    </div>';
+
+		        commentHtml += '    <div class="comment-right">';
+		        commentHtml += '      <div class="options-btn">︙</div>';
+		        commentHtml += '      <div class="options-popup">';
+		        commentHtml += '        <div class="report-comment-btn" data-type="COMMENT" data-target-id="'+ comment.boardCmtId +'" data-target-user-num="'+ comment.cmtWriterUserNum +'">신고하기</div>';
+		        if (loginUserNum && parseInt(loginUserNum) === comment.cmtWriterUserNum) {
+		            commentHtml += '        <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
+		        }
+		        commentHtml += '      </div>';
+		        commentHtml += '    </div>';
+		        commentHtml += '  </div>'; // comment-row 끝
+
+		        // 답글 입력창과 답글 리스트
+		        commentHtml += '  <div class="reply-section">';
+		        commentHtml += '    <div class="reply-box" id="reply-box-' + comment.boardCmtId + '" style="display:none;">';
+		        commentHtml += '      <div class="profile-icon small"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></div>';
+		        commentHtml += '      <input type="text" class="reply-input" placeholder="답글 추가...">';
+		        commentHtml += '      <button class="reply-submit-btn" data-parent-no="' + comment.boardCmtId + '">등록</button>';
+		        commentHtml += '    </div>';
+		        commentHtml += '    <div class="replies-container" id="replies-container-' + comment.boardCmtId + '">';
+		        commentHtml += '      <div class="replies">' + repliesHtml + '</div>';
+		        commentHtml += '    </div>';
+		        commentHtml += '  </div>'; // reply-section 끝
+
+		        commentHtml += '</div>'; // comment 끝
 		        
 		        return commentHtml;
 		    }
