@@ -94,7 +94,7 @@
 				<!-- 상단 바 -->
 				<div class="top-bar">
 				<h1 class="main-title">오픈 채팅방 리스트</h1>
-				<h2 class="location"></h2>
+				<h2 class="location">📍</h2>
 					<form id="sortForm" method="get"
 						action="${contextPath}/openchat/openChatList">
 						 <input type="hidden" name="sido" value="${selectedSido}" /> <input
@@ -329,7 +329,7 @@ function success(position) {
 	    .then(data => {
 	    	console.log("locHeader element is:", document.querySelector("h2.location"));
 	    	const fullAddr = data.address || "";
-	    	document.getElementById("locationText").value = fullAddr;
+	    	document.getElementById("locationText").value =fullAddr;
 	    	
 	    	const parts= fullAddr.split(" ");
 	        const sido =  parts[0] || ""; // e.g. "서울특별시" 또는 "경기도"

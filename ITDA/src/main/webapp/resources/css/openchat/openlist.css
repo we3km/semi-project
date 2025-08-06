@@ -178,7 +178,7 @@
   gap: 14px;
   margin-bottom: 24px;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
 }
 /* 메인 타이틀 */
 .main-title {
@@ -222,6 +222,7 @@ h2.location {
   cursor: pointer;
   transition: background 0.2s;
   justify-content: flex-end;
+  margin-left: 200px;
 }
 .create-chat-btn:hover {
   background: linear-gradient(90deg, #7B6AFF 0%, #5A54FF 100%);
