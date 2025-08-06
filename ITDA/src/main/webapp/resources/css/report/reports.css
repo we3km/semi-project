@@ -1,65 +1,111 @@
+@charset "UTF-8";
+
+/* 모달 전체 배경 (overlay) */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* 회색 반투명 배경 */
-  display: none; /* 기본 숨김 */
+  background-color: rgba(0, 0, 0, 0.5);  
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
-.modal-overlay.active {
-  display: flex; /* 모달 보임 */
-  opacity: 1;
-  pointer-events: auto;
-}
-
+/* 모달 창 스타일 */
 .modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  transform: translateY(30px);
-  opacity: 0;
-  transition: all 0.3s ease;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 500px;
+  max-width: 90%;
+  font-family: 'SUIT', sans-serif;
+  color: #333;
+  position: relative;
 }
 
-.modal-overlay.active .modal-content {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.modal-buttons {
-  margin-top: 10px;
-  text-align: right;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
+/* 제목 */
+.modal-content h2 {
   margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #6c63ff;
+  text-align: center;
 }
 
+/* 신고 대상 텍스트 */
+#targetInfo {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* 라벨 공통 */
 label {
+  font-weight: 600;
+  display: block;
   margin-bottom: 6px;
-  font-weight: bold;
+  color: #444;
 }
 
+/* 셀렉트박스 */
+select,
 textarea {
-  resize: vertical;
-  min-height: 120px;
   width: 100%;
-  height: 150px;  
-  resize: none;     
-  padding: 10px;
-  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
+  font-size: 15px;
+  margin-bottom: 20px;
+  background-color: #f7f7ff;
+  font-family: inherit;
+  resize: none;
+}
+
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #a9a5ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* 버튼 */
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.modal-buttons button {
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+/* 제출 버튼 */
+.modal-buttons button[type="submit"] {
+  background-color: #6c63ff;
+  color: white;
+}
+
+.modal-buttons button[type="submit"]:hover {
+  background-color: #4f49d2;
+}
+
+/* 취소 버튼 */
+.modal-buttons button[type="button"] {
+  background-color: #e0dfff;
+  color: #444;
+}
+
+.modal-buttons button[type="button"]:hover {
+  background-color: #d0ceff;
 }

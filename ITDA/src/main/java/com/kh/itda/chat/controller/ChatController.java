@@ -28,6 +28,7 @@ import com.kh.itda.chat.model.service.ChatService;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
+import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.user.model.vo.User;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class ChatController {
 	@GetMapping("/chatRoomList")
 	public String selectChatRoomList(Model model, Authentication authentication) {
 
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
 
@@ -82,7 +83,7 @@ public class ChatController {
 	@ResponseBody
 	public Map<String, Object> selectOpponentProfile(int chatRoomId, Authentication authentication) {
 		// chatRoom 객체로 정보 할당
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 
 		Map<String, Object> opps = new HashMap<String, Object>();
@@ -115,7 +116,7 @@ public class ChatController {
 	@ResponseBody
 	public String openChatRoom(@RequestBody SelectBoardInfo boardInfo, Authentication authentication) {
 		// 현재 로그인한 회원 정보 받아옴
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 
 		// 로그인한 회원 정보와, 게시물 주인 정보 번호 받아서 채팅방 생성 정보 할당
 		int userNum = loginUser.getUserNum();
@@ -145,7 +146,7 @@ public class ChatController {
 	@PostMapping("/exit/{chatRoomId}")
 	@ResponseBody
 	public void exitChatRoom(@PathVariable int chatRoomId, Authentication authentication) {
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		String nickName = loginUser.getNickName();
 
 		int result = chatService.exitChatRoom(chatRoomId);
@@ -174,7 +175,7 @@ public class ChatController {
 	@ResponseBody
 	// 매너 평가자, 매너 평가 받는 사람, 매너 점수(int), 후기 내용(String)
 	public void insertManner(@RequestBody Map<String, Object> data, Authentication authentication) {
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 
 		int userNum = loginUser.getUserNum();
 
@@ -217,7 +218,7 @@ public class ChatController {
 	public Map<String, Object> uploadImageMessage(@RequestParam("image") MultipartFile image,
 			@RequestParam("chatRoomId") int chatRoomId, HttpServletRequest request, Authentication authentication) {
 
-		User loginUser = (User) authentication.getPrincipal();
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 
 		Map<String, Object> result = new HashMap<>();

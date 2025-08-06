@@ -10,6 +10,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<%-- report css --%>
+<link href="${pageContext.request.contextPath}/resources/css/report/reports.css" rel="stylesheet">
+
 <link
 	href="${pageContext.request.contextPath}/resources/css/board/detailRental.css"
 	rel="stylesheet">
@@ -22,12 +25,12 @@
 	</div>
 	<div class="container">
 		<div class="product-catrgory">
-						${board.boardCommon.productCategoryL}
-						&gt;
-						${board.boardCommon.productCategoryM}
-						&gt;
-						${board.boardCommon.productCategoryS}
-					</div>
+			${board.boardCommon.productCategoryL}
+			&gt;
+			${board.boardCommon.productCategoryM}
+			&gt;
+			${board.boardCommon.productCategoryS}
+		</div>
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->
 			<div class="related-img">
@@ -70,52 +73,75 @@
 			</script>
 			<!-- 입력한 게시물 정보 -->
 			<div class="info">
-				<div class="title">
-				<h1>${board.boardCommon.productName}</h1>
-					<div class="product-catrgory">
-						${board.boardCommon.productCategoryL}
-						&gt;
-						${board.boardCommon.productCategoryM}
-						&gt;
-						${board.boardCommon.productCategoryS}
-					</div>
-				</div>
-				<div class="views">조회수:${board.boardCommon.views}</div>
-				<div class="dibs">
-					찜 수:
-					<p id="dibCount">${dibsCount}</p>
-				</div>
+			<div class="title">
+				${board.boardCommon.productName}
+			</div>
+			<div class="detail">
+			<ul>
 				
-				<div class="create-date">
-					게시날짜:
-					<fmt:formatDate value="${board.boardCommon.createDate }"
-						pattern="yyyy/MM/dd" />
-				</div>
-
-				<div class="price">대여금액 : ${board.boardRental.rentalFee}원</div>
-				<div class="date-range">
+				<li>
+					<div class="views">조회수:${board.boardCommon.views}</div>
+				</li>
+				<li>
+					<div class="dibs">
+						찜 수: ${dibsCount}
+					</div>
+				</li>
+				<li>
+					<div class="create-date">
+						게시날짜:
+						<fmt:formatDate value="${board.boardCommon.createDate }"
+							pattern="yyyy/MM/dd" />
+					</div>
+				</li>
+			</ul>
+				
+			<div class="price">대여금액 : ${board.boardRental.rentalFee}원</div>
+				
+				
+			<div class="date-range">
 					대여기간 :
 					<fmt:formatDate value="${board.boardRental.rentalStartDate }"
 						pattern="yyyy/MM/dd" />
 					~
 					<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 						pattern="yyyy/MM/dd" />
-				</div>
-				<div class="keywords">
-					<c:forEach var="tag" items="${tags}">
-						<span>#${tag}</span>
-					</c:forEach>
-				</div>
+			</div>
+				
+			<div class="keywords">
+				<c:forEach var="tag" items="${tags}">
+					<span>#${tag}</span>
+				</c:forEach>
+			</div>
 
 				<!-- 게시자의 매너 정보 -->
 				<div class="seller-info">
-					<div class="profile-icon">
-						<img class="profile-img"
-							src="${pageContext.request.contextPath}${profileImage}"
-							alt="프로필" />
+					<div class="profile">
+						<div class="profile-icon">
+							<img class="profile-img"
+								src="${pageContext.request.contextPath}${profileImage}"
+								alt="프로필" />
+						</div>
+						<strong>${writer} </strong>
 					</div>
-					<strong>${writer} </strong>
-					<p>매너점수 : ${mannerScore }</p>
+					<c:choose>
+					    <c:when test="${mannerScore lt 40}">
+					        <c:set var="barColor" value="#ff4d4f" /> <!-- 빨강 -->
+					    </c:when>
+					    <c:when test="${mannerScore lt 70}">
+					        <c:set var="barColor" value="#faad14" /> <!-- 노랑 -->
+					    </c:when>
+					    <c:otherwise>
+					        <c:set var="barColor" value="#52c41a" /> <!-- 초록 -->
+					    </c:otherwise>
+					</c:choose>
+					
+					<div class="manner-score-box">
+					    <span class="manner-label">매너점수: ${mannerScore}</span>
+					    <div class="manner-bar">
+					        <div class="manner-fill" style="width: ${mannerScore}%; background-color: ${barColor};"></div>
+					    </div>
+					</div>
 				</div>
 				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
 				<div class="buttons">
@@ -171,14 +197,10 @@
 					        .catch(err => console.error("오류 발생:", err));
 					    } 
 					</script>
-
-
-					<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-						<i class="fa fa-heart"></i> 찜하기
-					</button>
 					<!-- 연결해야함 -->
-					<button>신고하기</button>
+					<button onclick="openReportModal('BOARD', '${board.boardCommon.boardId}', '${board.boardCommon.userNum}')">신고하기</button>
 				</div>
+			</div>
 			</div>
 		</div>
 		<!-- 찜하기 버튼 스크립트 -->
@@ -220,7 +242,7 @@
     </script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
-			<h2>${writer}님의다른상품</h2>
+			<h2>${writer}님의 다른상품</h2>
 			<div class="product-list">
 
 				<!-- 카드 반복 -->
@@ -232,16 +254,14 @@
 						<img
 							src="${pageContext.request.contextPath}/${writerRentalWrapper.filePath.categoryPath}/${writerRentalWrapper.filePath.fileName}"
 							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
-						<p>${writerRentalWrapper.boardCommon.productName }</p>
-						<p class="price">${writerRentalWrapper.boardRental.rentalFee }</p>
-						<p>
+							 />
+						<p id="product-name">${writerRentalWrapper.boardCommon.productName }</p>
+						<p id="rental-fee">${writerRentalWrapper.boardRental.rentalFee }</p>
+						<p class="date">
 							<fmt:formatDate
 								value="${writerRentalWrapper.boardRental.rentalStartDate }"
 								pattern="yyyy/MM/dd" />
-						</p>
 						~
-						<p>
 							<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 								pattern="yyyy/MM/dd" />
 						</p>
@@ -274,16 +294,14 @@
 						<img
 							src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
 							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
+							/>
 						<p>${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="price">${equalsCategoryboard.boardRental.rentalFee }</p>
+						<p class="card-price">${equalsCategoryboard.boardRental.rentalFee }</p>
 						<p>
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardRental.rentalStartDate }"
 								pattern="yyyy/MM/dd" />
-						</p>
 						~
-						<p>
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardRental.rentalEndDate }"
 								pattern="yyyy/MM/dd" />
@@ -299,6 +317,8 @@
 			</div>
 		</div>
 	</div>
+	<jsp:include page="/WEB-INF/views/report/report.jsp" />
+	<script src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 	<!-- transactionChat.js 참조 -->
 	<%-- <script type="text/javascript"
 		src="${contextPath}/resources/js/transactionChat.js"></script> --%>
