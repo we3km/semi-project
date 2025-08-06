@@ -6,153 +6,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>${product.title}</title>
+<title>잇다 - 대여게시판 > ${board.boardCommon.productName}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<style>
-body {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 20px;
-	background: #f9f9f9;
-}
-
-.container {
-	max-width: 1200px;
-	margin: auto;
-	background: #fff;
-	padding: 20px;
-}
-
-.top-section {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-}
-
-.image-preview, .info {
-	flex: 1 1 300px;
-}
-
-.image-preview img {
-	width: 100%;
-	border-radius: 12px;
-}
-
-.info h1 {
-	font-size: 24px;
-	margin-bottom: 10px;
-}
-
-.price, .date-range, .location {
-	margin: 5px 0;
-	font-size: 16px;
-}
-
-.keywords span {
-	background: #eef;
-	padding: 5px 10px;
-	border-radius: 12px;
-	margin-right: 5px;
-	font-size: 13px;
-	display: inline-block;
-}
-
-.seller-info {
-	margin: 20px 0;
-	display: flex;
-	align-items: center;
-}
-
-.buttons button {
-	margin-right: 10px;
-	padding: 8px 14px;
-	background: #4a4aff;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-.related-products {
-	margin-top: 30px;
-}
-
-.product-list {
-	display: flex;
-	overflow-x: auto;
-	gap: 10px;
-}
-
-.related-img {
-	margin-top: 30px;
-}
-
-.img-list {
-	display: flex;
-	overflow-x: auto;
-	gap: 10px;
-	width: 500px;
-}
-
-.product-item {
-	flex: 0 0 auto;
-	width: 150px;
-	background: #fdfdfd;
-	border: 1px solid #ddd;
-	padding: 10px;
-	border-radius: 8px;
-	text-align: center;
-}
-
-.product-item img {
-	width: 100%;
-	border-radius: 6px;
-}
-
-.description {
-	margin-top: 30px;
-}
-
-.description pre {
-	white-space: pre-wrap;
-	background: #f1f1f1;
-	padding: 16px;
-	border-radius: 8px;
-}
-
-@media screen and (max-width: 768px) {
-	.top-section {
-		flex-direction: column;
-	}
-}
-
-#dibsBtn.liked {
-	background-color:red;
-  color: white; /* 좋아요 상태일 때 빨간색 하트 */
-}
-
-#dibsBtn.not-liked {
-  background-color:gray;
-  color: white; /* 찜 안한 상태일 때 회색 하트 */
-}
-
-.profile-icon {
-            width: 28px;
-            height: 28px;
-            background: #ccc;
-            border-radius: 50%;
-   			overflow:hidden;
-            flex-shrink: 0;
-        }
-.profile-img{
-         	width:100%;
-		    height:100%;
-		    object-fit:cover;
-        }
-</style>
-
+<link
+	href="${pageContext.request.contextPath}/resources/css/board/detailRental.css"
+	rel="stylesheet">
 </head>
 <body>
 	<div class="wrapper">
@@ -161,33 +21,71 @@ body {
 		</header>
 	</div>
 	<div class="container">
+		<div class="product-catrgory">
+						${board.boardCommon.productCategoryL}
+						&gt;
+						${board.boardCommon.productCategoryM}
+						&gt;
+						${board.boardCommon.productCategoryS}
+					</div>
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->
 			<div class="related-img">
-				<div class="img-list">
+				<div class="img-list" id="slider">
 					<c:forEach var="img" items="${imgList}">
 						<img
 							src="${pageContext.request.contextPath}/${img.categoryPath}/${img.fileName}"
-							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
+							alt="이미지" />
 					</c:forEach>
 				</div>
+					<button class="slider-btn prev-btn" onclick="moveSlide(-1)">‹</button>
+  					<button class="slider-btn next-btn" onclick="moveSlide(1)">›</button>
 			</div>
+			
+			<script>
+			const slider = document.getElementById('slider');
+			const images = slider.querySelectorAll('img');
+			let currentIndex = 0;
+
+			function updateSlide() {
+			  const parentWidth = slider.parentElement.clientWidth;
+			  slider.style.width = `\${parentWidth * images.length}px`;
+
+			  images.forEach(img => {
+			    img.style.width = `\${parentWidth - 10}px`;
+			  });
+
+			  slider.style.transform = `translateX(\${-currentIndex * parentWidth}px)`;
+			}
+
+			function moveSlide(direction) {
+			  currentIndex += direction;
+			  if (currentIndex < 0) currentIndex = images.length - 1;
+			  if (currentIndex >= images.length) currentIndex = 0;
+			  updateSlide();
+			}
+
+			window.addEventListener('load', updateSlide);
+			window.addEventListener('resize', updateSlide);
+			</script>
 			<!-- 입력한 게시물 정보 -->
 			<div class="info">
+				<div class="title">
 				<h1>${board.boardCommon.productName}</h1>
+					<div class="product-catrgory">
+						${board.boardCommon.productCategoryL}
+						&gt;
+						${board.boardCommon.productCategoryM}
+						&gt;
+						${board.boardCommon.productCategoryS}
+					</div>
+				</div>
 				<div class="views">조회수:${board.boardCommon.views}</div>
 				<div class="dibs">
 					찜 수:
 					<p id="dibCount">${dibsCount}</p>
 				</div>
-				<div class="product-catrgory">
-					<div class="product-category-large">${board.boardCommon.productCategoryL}</div>
-					>
-					<div class="product-category-middle">${board.boardCommon.productCategoryM}</div>
-					>
-					<div class="product-category-small">${board.boardCommon.productCategoryS}</div>
-				</div>
+				
 				<div class="create-date">
 					게시날짜:
 					<fmt:formatDate value="${board.boardCommon.createDate }"

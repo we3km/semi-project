@@ -1,0 +1,187 @@
+@charset "UTF-8";
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 20px;
+	background: #f9f9f9;
+	overflow-x: hidden; /* ✅ 가로 스크롤 강제 제거 */
+}
+
+.container {
+	max-width: 1200px;
+	margin: auto;
+	background: #fff;
+	padding: 20px;
+}
+
+.top-section {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	height: 100%;
+}
+
+.related-img{
+	flex: 2;
+	position: relative;
+	max-width: 700px;
+	width: 100%;
+	margin: auto;
+	height: 500px;
+	overflow: hidden;
+	border-radius: 10px;
+}
+
+.info{
+	flex: 1;
+  	box-sizing: border-box;
+}
+
+.product-catrgory{
+	  white-space: nowrap;
+	
+}
+.title{
+display:flex;
+}
+.img-list{
+	display: flex;
+  	transition: transform 0.5s ease-in-out;
+  	height: 100%;
+  	/* width: 100%; */
+  	/* overflow: hidden; */
+  	
+}
+.related-img,
+.img-list,
+.img-list img {
+  box-sizing: border-box;
+}
+
+.img-list img {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%; 
+  object-fit: cover; /* 이미지가 영역에 꽉 차도록 */
+  display: block;
+  box-sizing: border-box;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  font-size: 20px;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 4px;
+}
+.prev-btn { left: 0px; }
+.next-btn { right: 10px; }
+
+.info h1 {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+
+.price, .date-range, .location {
+	margin: 5px 0;
+	font-size: 16px;
+}
+
+.keywords span {
+	background: #eef;
+	padding: 5px 10px;
+	border-radius: 12px;
+	margin-right: 5px;
+	font-size: 13px;
+	display: inline-block;
+}
+
+.seller-info {
+	margin: 20px 0;
+	display: flex;
+	align-items: center;
+}
+
+.buttons button {
+	margin-right: 10px;
+	padding: 8px 14px;
+	background: #4a4aff;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.related-products {
+	margin-top: 30px;
+}
+
+.product-list {
+	display: flex;
+	overflow-x: auto;
+	gap: 10px;
+}
+
+.related-img {
+	margin-top: 30px;
+}
+
+.img-list {
+	display: flex;
+	overflow-x: auto;
+	gap: 10px;
+	width: 500px;
+}
+
+.product-item {
+	flex: 0 0 auto;
+	width: 150px;
+	background: #fdfdfd;
+	padding: 10px;
+	border-radius: 8px;
+	text-align: center;
+}
+
+
+.description {
+	margin-top: 30px;
+}
+
+.description pre {
+	white-space: pre-wrap;
+	background: #f1f1f1;
+	padding: 16px;
+	border-radius: 8px;
+}
+
+
+#dibsBtn.liked {
+	background-color:red;
+  color: white; /* 좋아요 상태일 때 빨간색 하트 */
+}
+
+#dibsBtn.not-liked {
+  background-color:gray;
+  color: white; /* 찜 안한 상태일 때 회색 하트 */
+}
+
+.profile-icon {
+            width: 28px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 50%;
+   			overflow:hidden;
+            flex-shrink: 0;
+        }
+.profile-img{
+         	width:100%;
+		    height:100%;
+		    object-fit:cover;
+        }

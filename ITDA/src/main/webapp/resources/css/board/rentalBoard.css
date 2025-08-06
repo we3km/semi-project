@@ -22,10 +22,6 @@
       border-right: 1px solid #ddd;
     }
 
-    .sidebar h2 {
-      margin-bottom: 20px;
-      
-    }
 
     .filter-section {
       margin-bottom: 25px;
@@ -36,12 +32,18 @@
       margin-bottom: 5px;
       
     }
+    .category-area label {
+      display: block;
+      margin-bottom: 5px;
+      
+    }
     
     .top-section{
     	display:flex;
     	margin: 0; 
     	padding: 0;
     	align-items: center;
+    	margin-bottom:10px;
     	
     }
 
@@ -94,7 +96,9 @@
     }
     
     .sortDrop{
+   	width:100%;
     background-color: white;
+    margin-bottom: 25px;
     border: 1px solid #ccc;
     padding: 5px;
     font-size: 14px;
@@ -102,6 +106,12 @@
     display: flex;
     align-items: center;
     border-radius: 4px;
+    margin-top: 10px;
+}
+
+
+.maxRentalFee, .minRentalFee{
+	width:100%;
 }
 
     .grid {

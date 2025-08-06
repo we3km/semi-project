@@ -28,7 +28,7 @@
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/auction/list">
 			<div class="filter-section top-section">
-				<h3>정렬 조건</h3>
+				<h2>정렬 조건</h2>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
@@ -40,13 +40,13 @@
 			</select>
 			<div class="filter-section">
 			  <div class="category-area">
-			    <label>상품 카테고리</label>
+			    <h4>상품 카테고리</h4>
 			
 			    <div class="category-wrapper">
 			      <!-- 대분류 -->
 			      <div class="category-column">
 			        <h5>대분류</h5>
-			        <div class="category-list-large">
+			        <div class="category-list-large"  id="large">
 			          <c:forEach items="${categoryList}" var="productCategory">
 			            <c:if test="${productCategory.parentNum == 0}">
 			              <div class="category-large" data-id="${productCategory.productCategoryNum}">
@@ -180,10 +180,10 @@
  			<div class="filter-section">
 			  <h4>가격</h4>
 			  <label>최소 입찰금:</label>
-			  <input type="number" name="minBid" min="0">
+			  <input class="minRentalFee" type="number" name="minBid" min="0">
 			
 			  <label>최대 입찰금:</label>
-			  <input type="number" name="maxBid" min="0">
+			  <input class="maxRentalFee" type="number" name="maxBid" min="0">
 			</div>
 			
 			<div class="filter-section">

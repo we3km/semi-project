@@ -182,10 +182,10 @@
 			<div class="filter-section">
 			  <h4>가격</h4>
 			  <label>최소 가격:</label>
-			  <input type="number" name="minRentalFee" min="0">
+			  <input class="minRentalFee" type="number" name="minRentalFee" min="0">
 			
 			  <label>최대 가격:</label>
-			  <input type="number" name="maxRentalFee" min="0">
+			  <input class="maxRentalFee" type="number" name="maxRentalFee" min="0">
 			</div>
 			
 			<div class="filter-section">
