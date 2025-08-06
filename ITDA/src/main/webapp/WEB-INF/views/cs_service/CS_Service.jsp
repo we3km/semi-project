@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,9 +17,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<!-- 헤더 -->
-	<div id="header"></div>
-
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
+	_
 	<!-- 고객센터 본문 -->
 	<div class="center-wrapper">
 		<div class="cs-header">
@@ -32,24 +37,21 @@
 
 		<div class="header-mq">
 			<div class="my-question">
-				<c:choose>
-					<c:when test="${isAdmin}">
-                        전체 문의 내역
-                    </c:when>
-					<c:otherwise>
-                        내 문의 내역
-                    </c:otherwise>
-				</c:choose>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
+					<div class="my-question">전체 문의 내역</div>
+				</sec:authorize>
+				<sec:authorize access="hasRole('ROLE_USER')">
+					<div class="my-question">내 문의 내역</div>
+				</sec:authorize>
 			</div>
 
 			<!-- 일반 사용자만 1:1문의 버튼 보이기 -->
-			<c:if test="${!isAdmin}">
+			<sec:authorize access="hasRole('ROLE_USER')">
 				<form:form method="get"
-					action="${pageContext.request.contextPath}/cs/inquiry"
-					cssClass="inline-form">
+					action="${pageContext.request.contextPath}/cs/inquiry">
 					<button class="inquiry-btn" type="submit">1:1문의</button>
 				</form:form>
-			</c:if>
+			</sec:authorize>
 		</div>
 
 		<table class="inquiry-table">
