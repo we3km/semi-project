@@ -34,7 +34,6 @@
 		<div class="category-line">
 			<div class="category">대여</div>
 			<div class="category">경매</div>
-			<div class="category">교환</div>
 			<div class="category">나눔</div>
 			<div class="category">커뮤니티</div>
 		</div>
@@ -79,7 +78,7 @@
 		        <!-- 드롭다운 -->
 		        <div class="dropdown" id="deal-type-dropdown">
 		            <button class="dropbtn">
-		                <span class="dropbtn_content">전체</span>
+		                <span class="dropbtn_content">게시판</span>
 		                <span class="dropbtn_click" aria-hidden="true">
 		                    <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
 		                         width="16" height="16" viewBox="0 0 24 24">
