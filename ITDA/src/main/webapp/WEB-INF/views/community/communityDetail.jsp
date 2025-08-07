@@ -402,7 +402,7 @@
 		     function createCommentHtml(comment) {
 
 		 		const contextPath = '${pageContext.request.contextPath}';
-		 		const profileUrl = contextPath + "/user/mypage/" + comment.cmtWriterUserNum;
+		 		const profileUrl = contextPath + "/user/mypageOthers/" + comment.cmtWriterUserNum;
 		        const writeDate = formatCommentDate(comment.cmtWriteDateTimestamp);
 		        const loginUserImage = '<sec:authentication property="principal.imageUrl" />';
 		        

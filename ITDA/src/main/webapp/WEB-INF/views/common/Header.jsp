@@ -38,8 +38,6 @@
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
 
-<<<<<<< Updated upstream
-=======
 		<!-- 카테고리 -->
 		<div class="category-line">
 			<div class="category">대여</div>
@@ -47,7 +45,6 @@
 			<div class="category">나눔</div>
 			<div class="category">커뮤니티</div>
 		</div>
->>>>>>> Stashed changes
 		<!-- 로그인 / 로그아웃 버튼 -->
 		<div class="top-buttons">
 			<sec:authorize access="isAnonymous()">
@@ -347,12 +344,6 @@
 						isMatched = true;
 					} else if (categoryName === '커뮤니티' && currentPath.includes('/community')) {
 						isMatched = true;
-		
-					// TODO: '교환' 게시판 URL이 확정되면 아래 주석을 풀어주세요.
-					/*
-					} else if (categoryName === '교환' && currentPath.includes('/board/exchange')) {
-						isMatched = true;
-					*/
 					}
 		
 					// 일치하는 카테고리에 'active' 클래스 추가
@@ -386,14 +377,14 @@
 					location.href = contextPath + '/user/join';
 				});
 				//마이페이지 이동
-	    $('#myPage').click(function() {
-	        const userRole = $('#userRole').val();
-	        if (userRole === 'ROLE_ADMIN') {
-	            location.href = contextPath + '/admin/mypage';
-	        } else {
-	            location.href = contextPath + '/user/mypage';
-	        }
-	    });
+			    $('#myPage').click(function() {
+			        const userRole = $('#userRole').val();
+			        if (userRole === 'ROLE_ADMIN') {
+			            location.href = contextPath + '/admin/mypage';
+			        } else {
+			            location.href = contextPath + '/user/mypage';
+			        }
+			    });
 				//고객센터이동
 				$('#customerService').click( function() {
 							location.href = contextPath
@@ -406,20 +397,20 @@
 				// 카테고리
 				// 카테고리 클릭 시 active
 				$('.category-line .category').click(function() {
-							$('.category-line .category').removeClass('active');
-							$(this).addClass('active');
-							const category = $(this).text();
-							let targetUrl = '';
-					        switch(category) {
-					            case '대여': targetUrl = contextPath + '/board/rental/list'; break;
-					            case '교환': targetUrl = contextPath + '/board/exchange/list'; break;
-					            case '나눔': targetUrl = contextPath + '/board/share/list'; break;
-					            case '경매': targetUrl = contextPath + '/board/auction/list'; break;
-					            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
-					            default: alert('해당 페이지가 없습니다.'); return;
-					        }
-					        window.location.href = targetUrl;
-						});
+					$('.category-line .category').removeClass('active');
+					$(this).addClass('active');
+					const category = $(this).text();
+					let targetUrl = '';
+			        switch(category) {
+			            case '대여': targetUrl = contextPath + '/board/rental/list'; break;
+			            case '교환': targetUrl = contextPath + '/board/exchange/list'; break;
+			            case '나눔': targetUrl = contextPath + '/board/share/list'; break;
+			            case '경매': targetUrl = contextPath + '/board/auction/list'; break;
+			            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
+			            default: alert('해당 페이지가 없습니다.'); return;
+			        }
+			        window.location.href = targetUrl;
+				});
 				// 검색창
 				// 드롭다운 화살표 클릭 시 목록 열기
 			    $('.dropbtn_click').on('click', function (e) {
@@ -444,19 +435,24 @@
 			     	// 거래유형 버튼의 제목을 선택한 항목으로 변경
 			        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
 			        dropdown.find('.dropdown-content').removeClass('show');
+			        
 			        // --- 상품유형 드롭다운을 동적으로 변경하는 로직 ---
 			        const $productDropdown = $('#product-type-dropdown .dropdown-content');
 			        const $productBtnText = $('#product-type-dropdown .dropbtn_content');
+			        
 			        $productDropdown.empty(); // 기존 목록 비우기
 			        $productBtnText.text('상품유형'); // 버튼 텍스트 초기화
 			        selectedProductTypeId = null; // 이전에 선택했던 상품유형 값 초기화
 			        let dataToPopulate = [];
+			        
 			        const id = Number(selectedCategoryId);
+			        
 			        if (id >= 6 && id <= 9) { // 대여, 교환 등
 			            dataToPopulate = subCategoryData.board;
 			        } else if (id === 10) { // 커뮤니티
 			            dataToPopulate = subCategoryData.community;
 			        }
+			        
 			        // 새 목록 생성 및 추가
 			        dataToPopulate.forEach(item => {
 			            const categoryDiv = $('<div></div>')
@@ -484,8 +480,10 @@
 			        if(selectedProductTypeId) {
 			            params.append('category', selectedProductTypeId);
 			        }
+			        
 			        let url = "";
 			        const id = Number(selectedCategoryId);
+			        
 			        if (id >= 6 && id <= 9) {
 			            url = contextPath + "/board/" + selectedCategoryGubun + "/list";
 			        } else if (id === 10) {
@@ -501,11 +499,10 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-
-					location.href = contextPath + `/chat/chatRoomList`;
-					location.href = "${contextPath}/itda/chat/chatRoomList";
+					location.href = contextPath+"/chat/chatRoomList";
 				});
-				});
+			});
+				
 		</script>
 	<sec:authorize access="isAuthenticated()">
 	</sec:authorize>
