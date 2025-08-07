@@ -7,8 +7,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <!-- 헤더 연결은 나중에 하자 -->
-<%@ include file="/WEB-INF/views/common/Header.jsp"%>
+<%-- <%@ include file="/WEB-INF/views/common/Header.jsp"%> --%>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ChattingRoomList</title>
@@ -960,8 +961,32 @@
                 
             }); // addEventListener close
         }); // forEach close
-    });
-    // 왼쪽 채팅방 오른쪽에 반영 끝ㅋ
+        
+        (function() {
+        	  const params     = new URLSearchParams(window.location.search);
+        	  const rawParam   = params.get("chatRoomId") || params.get("roomId");
+        	  const fromParam  = rawParam && rawParam.trim().length>0 ? rawParam.trim() : null;
+        	  const rawSession = sessionStorage.getItem('pendingOpenRoomId');
+        	  const fromSession = rawSession && rawSession.trim().length>0 ? rawSession.trim() : null;
+        	  const roomToOpen = fromParam || fromSession;
+
+        	  console.log(`🔍 URL chatRoomId: ${params.get("chatRoomId")}, URL roomId: ${params.get("roomId")}, 세션: ${fromSession}`);
+        	  if (!roomToOpen) {
+        	    console.log("⁉️ 자동 열기 대상이 없습니다.");
+        	    sessionStorage.removeItem('pendingOpenRoomId');
+        	    return;
+        	  }
+
+        	  const el = Array.from(chatRooms).find(c => c.dataset.chatRoomId === roomToOpen);
+        	  if (el) {
+        	    console.log(`✅ 자동 열기 성공! roomId=${roomToOpen}`);
+        	    el.click();
+        	  } else {
+        	    console.warn(`❌ 자동 열기 실패, 못 찾음: ${roomToOpen}`);
+        	  }
+        	  sessionStorage.removeItem('pendingOpenRoomId');
+        	})();
+      });
 </script>
 
 	<!-- chat.js 참조 -->

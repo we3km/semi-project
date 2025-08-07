@@ -107,7 +107,12 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
+
+	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
+		return dao.findParticipantsByChatRoomId(chatRoomId);
+	}
 	public BidWinner getBiddingWinner(int boardId) {
 		return dao.getBiddingWinner(boardId);
+
 	}
 }

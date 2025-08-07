@@ -28,6 +28,7 @@ import com.kh.itda.location.service.locationService;
 import com.kh.itda.openchat.model.service.OpenChatService;
 import com.kh.itda.openchat.model.vo.OpenChatRoom;
 import com.kh.itda.security.model.vo.UserExt;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
