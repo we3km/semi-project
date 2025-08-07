@@ -10,25 +10,19 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <title>거래 글쓰기</title>
 <style>
-body {
-	font-family: 'Noto Sans KR', sans-serif;
-	background: #fefefe;
-	margin: 0;
-	padding: 0;
-}
+    body {
+	  margin: 0;
+	  padding: 30px;
+	  font-family: 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
+	  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+	  min-height: 100vh;
+	
+    }
 
 .container {
 	display:flex;
     margin: 0;
       background-color: white;
-}
-
-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	border-bottom: 1px solid #ccc;
-	padding-bottom: 10px;
 }
 
 h1 {
