@@ -18,7 +18,7 @@ document.getElementById('submitShippingInfo').addEventListener('click', function
     }
 
     // 배송메세지 저장하여 메세지 보냄
-    const deliever = `<배송 정보>\n\n택배사: ${deliveryCompany}\n운송장 번호: ${trackingNumber}`;
+    const deliever = `<운송장 정보>\n\n택배사: ${deliveryCompany}\n운송장 번호: ${trackingNumber}`;
     sendModalMessage(deliever);
 
     const chatContent = document.querySelector('.chat-content2');

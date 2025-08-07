@@ -646,15 +646,9 @@
 						<img id="product-img" src="" alt="상품 이미지" width="150" height="150"
 							style="border-radius: 20%;">
 						<div class="item-description">
-							<div class="item-title">
-								<strong>상품명: </strong><span id="product-name"></span>
-							</div>
-							<div class="item-type">
-								<strong>거래유형: </strong><span id="transaction-type"></span>
-							</div>
-							<div class="item-ID">
-								<strong>게시물 ID: </strong><span id="board-id"></span>
-							</div>
+								<span id="product-name"></span>
+								<span id="transaction-type"></span>
+								<span id="board-id"></span>
 							<!-- 거래 유형에 맞게 추가 정보 보여주자 -->
 							<div id="extra-info"></div>
 						</div>
@@ -698,7 +692,6 @@
 				// 메뉴 토글
 				transMenuIcon.addEventListener("click", function (event) {
 					event.stopPropagation(); // 문서 클릭 이벤트 방지
-			
 					transMenu.classList.toggle("show");
 				});
 
@@ -860,8 +853,9 @@
 
                             // 게시물 번호로 끌고 온 게시물 정보, 오른쪽 채팅방 할당
                             // 오른쪽 채팅방 제목 할당                            
-                            document.getElementById("product-name").textContent = data.productName;
-                            document.getElementById("transaction-type").textContent = chatRoomType;
+                            document.getElementById("product-name").textContent = "상품명 : " + data.productName;
+                            document.getElementById("transaction-type").textContent = "거래 유형 : " + chatRoomType;
+                            document.getElementById("board-id").textContent = "게시물 아이디 : " + chatBoardId;                             
                             
                             const extraInfo = document.getElementById("extra-info");
                             extraInfo.innerHTML = ""; // 초기화 먼저 하자
@@ -885,9 +879,7 @@
 							// 나눔 갯수
 								extraInfo.textContent = "나눔 갯수 : " + data.sharingCount + "개";
 							}                           
-                        
-                            document.getElementById("item-desc-title").textContent = data.productName;                            
-                            document.getElementById("board-id").textContent = chatBoardId;                             
+                                                
               			    console.log("후기 당하는 사람 이미지 경로 : ", window.revieweeImg);
               			    document.getElementById("reviewee-Img").src = window.revieweeImg;
              				              			    
