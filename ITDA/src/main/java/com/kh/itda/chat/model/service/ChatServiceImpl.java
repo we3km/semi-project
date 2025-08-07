@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.itda.chat.model.dao.ChatDao;
+import com.kh.itda.chat.model.vo.BidWinner;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
@@ -76,9 +77,8 @@ public class ChatServiceImpl implements ChatService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public int exitChatRoom(int chatRoomId) {
-		// 채팅방 나가기 처리
-		return dao.exitChatRoom(chatRoomId);
+	public int exitChatRoom(Map<String, Object> exit) {
+		return dao.exitChatRoom(exit);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public String bringLastMessage(int chatRoomId) {
+	public ChatMessage bringLastMessage(int chatRoomId) {
 		return dao.bringLastMessage(chatRoomId);
 	}
 
@@ -107,7 +107,12 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
+
 	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
 		return dao.findParticipantsByChatRoomId(chatRoomId);
+	}
+	public BidWinner getBiddingWinner(int boardId) {
+		return dao.getBiddingWinner(boardId);
+
 	}
 }

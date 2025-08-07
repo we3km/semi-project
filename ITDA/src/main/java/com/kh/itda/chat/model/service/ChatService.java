@@ -3,6 +3,7 @@ package com.kh.itda.chat.model.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.itda.chat.model.vo.BidWinner;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
@@ -19,13 +20,13 @@ public interface ChatService {
 
 	int sendMessage(ChatMessage chatMessage);
 
-	int exitChatRoom(int chatRoomId);
+	int exitChatRoom(Map<String, Object> exit);
 
 	List<ChatMessage> getMessagesByChatRoomId(int chatRoomId);
 
 	int insertManner(Map<String, Object> map);
 
-	String bringLastMessage(int chatRoomId);
+	ChatMessage bringLastMessage(int chatRoomId);
 
 	SelectBoardInfo selectBoardInfo(int boardId);
 
@@ -33,5 +34,9 @@ public interface ChatService {
 	
 	ChatRoom selectOpponentProfile( Map<String, Object> opps);
 
+
 	List<Integer> findParticipantsByChatRoomId(int chatRoomId);
+
+	BidWinner getBiddingWinner(int boardId);
+
 }

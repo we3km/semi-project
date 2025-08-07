@@ -63,13 +63,17 @@
 	</select>
 	
 <!-- ==================== 각 채팅방 마지막 메세지 불러오기 ==================== -->
-	<select id="selectLastMessage" parameterType="int" resultType="String">
-	    SELECT CHAT_CONTENT
+	<select id="selectLastMessage" parameterType="int" resultType="ChatMessage">
+	    SELECT 
+	    	CHAT_CONTENT,
+	    	CHAT_IMG
 	    FROM (
-	        SELECT CHAT_CONTENT
+	        SELECT 
+	        	CHAT_CONTENT,
+	        	CHAT_IMG
 	        FROM CHAT_MESSAGE
-	        WHERE CHATROOM_ID = #{chatRoomId}
-	        ORDER BY SENT_AT DESC
+	        	WHERE CHATROOM_ID = #{chatRoomId}
+	        	ORDER BY SENT_AT DESC
 	    ) WHERE ROWNUM = 1
 	</select>
 
@@ -243,18 +247,11 @@
 
 <!-- ==================== 거래 채팅방 나가기 ==================== -->	
 	<!-- 방 번호 받아서 접속한 회원 기준 CHAT_PARTICIPANT 채팅방 없앰 STATUS='N' -->
- 	<update id="exitChatRoom">
+ 	<update id="exitChatRoom" parameterType="map">
 		UPDATE CHAT_PARTICIPANT SET
 			STATUS = 'N'
-		WHERE CHATROOM_ID = #{chatRoomId}
-	</update>
- 
- 
-<!-- ==================== 거래 채팅방 닫기 ==================== -->	
-	<update id="closeChatRoom">
-		UPDATE CHAT_ROOM SET
-		STATUS = 'N'
-		WHERE CHATROOM_ID = #{chatRoomId}
+		WHERE CHATROOM_ID = #{chatRoomId} 
+		AND USER_NUM = #{userNum} 
 	</update>
 	
 	
@@ -299,9 +296,20 @@
 			#{reviewText}	
 		)
 	</insert>
+	
 	<select id="findParticipantsByChatRoomId" resultType="int">
     SELECT USER_NUM
     FROM CHAT_PARTICIPANT
     WHERE CHATROOM_ID = #{chatRoomId}
 </select>
+	
+	<!-- 경매 우승자 회원 정보 가져오기 -->
+	<select id="getBiddingWinner" resultType="BidWinner" parameterType="int">
+		SELECT 
+			USER_NUM,
+			BOARD_ID,
+			BID
+		FROM BIDDING_WINNER
+		WHERE BOARD_ID = #{boardId}
+	</select>
 </mapper>

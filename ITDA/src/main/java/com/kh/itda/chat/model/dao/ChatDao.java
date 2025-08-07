@@ -7,6 +7,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.kh.itda.chat.model.vo.BidWinner;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.ChatRoomJoin;
@@ -52,8 +53,8 @@ public class ChatDao {
 		return session.insert("chat.insertMessage", chatMessage);
 	}
 
-	public int exitChatRoom(int chatRoomId) {
-		return session.update("chat.exitChatRoom", chatRoomId);
+	public int exitChatRoom(Map<String, Object> exit) {
+		return session.update("chat.exitChatRoom", exit);
 	}
 
 	public int countChatRoomMember(ChatMessage chatMessage) {
@@ -70,7 +71,7 @@ public class ChatDao {
 		return session.insert("chat.insertManner", map); // 매너 업데이트
 	}
 	
-	public String bringLastMessage(int chatRoomId) {
+	public ChatMessage bringLastMessage(int chatRoomId) {
 		return session.selectOne("chat.selectLastMessage", chatRoomId);
 	}
 	
@@ -89,5 +90,8 @@ public class ChatDao {
 
 	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
 		return session.selectList("chat.findParticipantsByChatRoomId",chatRoomId);
+	}
+	public BidWinner getBiddingWinner(int boardId) {
+		return session.selectOne("chat.getBiddingWinner", boardId);
 	}
 }

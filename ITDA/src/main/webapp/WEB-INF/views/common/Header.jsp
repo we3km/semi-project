@@ -441,7 +441,15 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
+<<<<<<< HEAD
 					location.href = contextPath + `/chat/chatRoomList`;
+=======
+					location.href = "${contextPath}/itda/chat/chatRoomList";
+				});
+				//알람버튼
+				$('#alarm-icon').click(function() {
+					alert(`채팅 페이지로 이동~`);
+>>>>>>> main
 				});
 			});
 		</script>

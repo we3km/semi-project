@@ -1,13 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
-	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
-		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
-		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	xsi:schemaLocation="http://www.springframework.org/schema/websocket
+	http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
+	http://mybatis.org/schema/mybatis-spring
+	http://mybatis.org/schema/mybatis-spring-1.2.xsd
+	http://www.springframework.org/schema/beans
+	https://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<!-- DB연결 설정 -->
 	<!-- 카카오 api 사용할려면 sevlet,root-contxt.xml에도 있어야 되더라구요 이거 맞습니다 -->
@@ -41,6 +46,7 @@
 		<!-- gpt가 추가하라함 -->
 		<!-- <property name="typeAliasesPackage" value="com.kh.community.model"/> -->
 	</bean>
+
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
@@ -55,11 +61,18 @@
 	
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="defaultEncoding" value="UTF-8"></property>
-		<!-- maxUploadSize : 업로드 되는 전체 파일의 크기 제한 설정(바이트) maxInMemorySize : 업로드
-			처리시 디스크에 파일을 생성하기전, 메모리에 보관할 파일의 최대 크기. 업로드한 파일의 크기가 inMemorySize보다 큰 경우
+		<property name="defaultEncoding" value="UTF-8" />
+		<!-- maxUploadSize : 업로드 되는 전체 파일의 크기 제한 설정(바이트) maxInMemorySize : 업로드 
+			처리시 디스크에 파일을 생성하기전, 메모리에 보관할 파일의 최대 크기. 업로드한 파일의 크기가 inMemorySize보다 큰 경우 
 			파일을 디스크에 임시 보관한다. -->
-		<property name="maxUploadSize" value="10000000"></property>
-		<property name="maxInMemorySize" value="2000000"></property>
+		<property name="maxUploadSize" value="10000000" />
+		<property name="maxInMemorySize" value="2000000" />
 	</bean>
+		<websocket:message-broker
+			application-destination-prefix="/app">
+			<websocket:stomp-endpoint path="/stomp">
+				<websocket:sockjs />
+			</websocket:stomp-endpoint>
+			<websocket:simple-broker prefix="/topic" />
+		</websocket:message-broker>
 </beans>
