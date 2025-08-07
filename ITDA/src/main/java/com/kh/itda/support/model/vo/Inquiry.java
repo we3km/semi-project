@@ -19,8 +19,9 @@ public class Inquiry {
 	private String csReply;
 	private Date csReplyDate;
 	private String status;
-	private int categoryId;
+	private String categoryId;
 	private String categoryName;
+    private String categoryGubun;
 	private List<File> fileList;
-	
+	private String nickName;
 }
