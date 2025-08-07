@@ -32,7 +32,6 @@
 		<div class="category-line">
 			<div class="category">대여</div>
 			<div class="category">경매</div>
-			<div class="category">교환</div>
 			<div class="category">나눔</div>
 			<div class="category">커뮤니티</div>
 		</div>
@@ -55,14 +54,14 @@
 
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
-			<div class="filters">
-				<!-- 드롭다운 -->
-				<div class="dropdown" id="deal-type-dropdown">
-					<button class="dropbtn">
-						<span class="dropbtn_content">전체</span> <span
-							class="dropbtn_click" aria-hidden="true"> <svg
-								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-								width="16" height="16" viewBox="0 0 24 24">
+		    <div class="filters">
+		        <!-- 드롭다운 -->
+		        <div class="dropdown" id="deal-type-dropdown">
+		            <button class="dropbtn">
+		                <span class="dropbtn_content">게시판</span>
+		                <span class="dropbtn_click" aria-hidden="true">
+		                    <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+		                         width="16" height="16" viewBox="0 0 24 24">
 		                        <path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
 		                    </svg>
 						</span>
@@ -258,6 +257,5 @@
 				});
 			});
 		</script>
-
 </body>
 </html>
