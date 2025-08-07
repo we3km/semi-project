@@ -3,13 +3,16 @@
 <mapper namespace="security">
 
 	<select id="loadUserByUsername" resultMap="userResultMap">
-		SELECT U.*,
+		SELECT
+		U.*,
 		P.IMAGE_URL,
+		B.IS_BANNED
 		FROM USER_TB U
 		LEFT JOIN PROFILE P
 		ON U.USER_NUM = P.USER_NUM
-		WHERE
-		USER_ID = #{userId}
+		LEFT JOIN BANNED_TB B
+		ON U.USER_NUM = B.USER_NUM
+		WHERE U.USER_ID = #{userId}
 	</select>
 
 	<select id="searchUsers" parameterType="String"
