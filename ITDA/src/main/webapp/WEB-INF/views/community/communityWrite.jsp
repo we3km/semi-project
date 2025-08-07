@@ -45,6 +45,7 @@
 		<hr>
 
 		<div class="form-container">
+
 			<c:set var="isUpdate" value="${c.communityNo > 0}" />
 	    	<c:set var="formAction" value="${isUpdate ? 'update' : 'insert'}" />
 			
@@ -56,6 +57,7 @@
 		        </c:if>
 		        
 				<div class="write-buttons">
+
 					<button type="button" class="btn-cancel" id="cancelBtn">작성 취소</button>
 					<button type="submit" class="btn-submit" id="submitBtn">
 		               ${isUpdate ? '수정 완료' : '작성 완료'}
@@ -64,6 +66,7 @@
 
 				<!-- 카테고리 -->
 				<div class="form-group">
+
 			    <label>카테고리 선택</label>
 			    <form:select path="communityCd" cssClass="select-category" id="category" required="required">
 				  <form:option value="">카테고리 선택</form:option>
@@ -74,13 +77,15 @@
 			            </c:if>
 			        </c:forEach>
 				</form:select>
+
 				</div>
 
 				<!-- 제목 -->
 				<div class="form-group">
-					<label for="title">제목</label> 
+					<label for="title">제목</label>
 					<!-- <input type="text" id="communityTitle" placeholder="제목을 입력하세요"> -->
-					<form:input path="communityTitle" id="communityTitle" placeholder="제목을 입력하세요" required="required"/>
+					<form:input path="communityTitle" id="communityTitle"
+						placeholder="제목을 입력하세요" required="required" />
 				</div>
 
 				<!-- 태그 -->
@@ -91,7 +96,8 @@
 							<div id="tagList"></div>
 							<input type="text" id="tagInput" placeholder="엔터키로 추가 가능">
 						</div>
-						<img src="${pageContext.request.contextPath}/resources/images/search.png"
+						<img
+							src="${pageContext.request.contextPath}/resources/images/search.png"
 							class="search-icon" />
 					</div>
 
@@ -100,7 +106,9 @@
 				<!-- 내용 -->
 				<div class="form-group">
 					<label for="content">게시글 상세 내용</label>
-					<form:textarea path="communityContent" id="content" placeholder="욕설, 비속어 사용은 자제해주세요. 내용은 1000자까지 입력이 가능합니다." required="required"/>
+					<form:textarea path="communityContent" id="content"
+						placeholder="욕설, 비속어 사용은 자제해주세요. 내용은 1000자까지 입력이 가능합니다."
+						required="required" />
 				</div>
 
 				<!-- 첨부파일 -->
@@ -123,6 +131,7 @@
 				        <label for="fileInput" class="file-label">파일선택</label>
 				        <input type="file" id="fileInput" name="upfile" multiple accept="image/*" style="display: none;">
 				    </div>
+
 				</div>
 			</form:form>
 		</div>

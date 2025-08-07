@@ -12,6 +12,4 @@
 	<typeAliases>
 		<package name="com.kh.itda"/>
 	</typeAliases>
-
-    
 </configuration>

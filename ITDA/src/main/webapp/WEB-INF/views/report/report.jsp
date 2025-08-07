@@ -6,7 +6,8 @@
 <head>
 <meta charset="UTF-8">
 <title>신고하기</title>
-<link rel="stylesheet" href="/resources/css/reports.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/report/reports.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -19,23 +20,19 @@
 
 			<!-- Spring form:form 시작 -->
 			<form:form id="reportForm" method="post" modelAttribute="report"
-				action="/report/submit">
+				action="${pageContext.request.contextPath}/report/submit">
 
 				<!-- 신고 타입 및 대상 닉네임 -->
 				<form:hidden path="type" id="type" />
 				<form:hidden path="targetId" id="targetId" />
 
 				<!-- 신고 대상 작성자 userNum 추가 -->
-				<form:hidden path="userNum" id="targetUserNum" />
+				<form:hidden path="targetUserNum" id="targetUserNum" />
 
 				<!-- 신고 사유 카테고리 -->
-				<label for="category">신고 사유</label>
-				<form:select path="category" required="required">
+				<label for="reason">신고 사유</label>
+				<form:select path="reason" id="reason" required="required">
 					<form:option value="" label="-- 신고 사유를 선택하세요 --" />
-					<form:option value="욕설">욕설</form:option>
-					<form:option value="음란물">음란물</form:option>
-					<form:option value="도배">도배</form:option>
-					<form:option value="기타">기타</form:option>
 				</form:select>
 
 				<br>
@@ -43,8 +40,8 @@
 
 				<!-- 상세 사유 -->
 				<div class="form-group">
-					<label for="content">상세 사유</label>
-					<form:textarea path="content" id="content" required="required" />
+					<label for="detailReason">상세 사유</label>
+					<form:textarea path="detailReason" id="content" required="required" />
 				</div>
 
 				<!-- 버튼 -->
@@ -57,6 +54,6 @@
 		</div>
 	</div>
 
-	<script src="/resources/js/report/reports.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 </body>
 </html>

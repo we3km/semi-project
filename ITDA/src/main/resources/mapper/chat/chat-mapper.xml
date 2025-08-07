@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="chat">
+
+<!-- 거래 채팅방 검색 -->
+<!-- 접속한 회원이 현재 대화하고 있는 채팅방 리스트 검색 -->
+	<select id="selectChatRoomList" parameterType="int" resultType="chatRoom">	
+		SELECT
+		    CP.CHATROOM_ID, 
+		    CP.USER_NUM,
+            
+		    TC.BOARD_ID,
+		    CP.STATUS,
+		    CR.REF_NUM,
+		    U.NICK_NAME,
+            P.IMAGE_URL,
+            
+            OC.OPEN_CHAT_ROOM_NAME,
+            OC.OPEN_CHAT_COUNT,
+            F.FILE_NAME
+                      
+		FROM CHAT_ROOM CR
+		LEFT JOIN TRANSACTION_CHAT TC ON CR.CHATROOM_ID = TC.CHATROOM_ID
+		LEFT JOIN USER_TB U ON CR.USER_NUM = U.USER_NUM
+        LEFT JOIN OPEN_CHAT OC ON CR.CHATROOM_ID = OC.CHATROOM_ID
+        LEFT JOIN PROFILE P ON P.USER_NUM = U.USER_NUM
+		INNER JOIN CHAT_PARTICIPANT CP ON CR.CHATROOM_ID = CP.CHATROOM_ID
+		
+        LEFT JOIN "FILE" F
+			ON F.REF_NO = OC.CHATROOM_ID
+			AND F.CATEGORY_ID = 11
+			AND F.FILE_ID = (
+				SELECT MIN(FILE_ID)
+				FROM "FILE"
+				WHERE REF_NO = OC.CHATROOM_ID
+				AND CATEGORY_ID = 11
+			)
+		WHERE CR.STATUS = 'Y'
+			AND CP.STATUS = 'Y'
+			AND CP.USER_NUM = #{userNum}
+	</select>
+	
+	
+<!-- ==================== 상대방 프로필 불러오기 ==================== -->	
+<!-- 
+	나(로그인한 사람)
+	나 제외한 상대방
+ -->
+	<select id="selectOpponentProfile" parameterType="map" resultType="chatRoom">
+		SELECT
+		    U2.USER_NUM,
+		    U2.NICK_NAME,
+		    P2.IMAGE_URL,
+		    CR.CHATROOM_ID
+		FROM CHAT_ROOM CR
+		INNER JOIN CHAT_PARTICIPANT CP ON CR.CHATROOM_ID = CP.CHATROOM_ID AND CP.USER_NUM = #{userNum}
+		INNER JOIN CHAT_PARTICIPANT CP2 ON CR.CHATROOM_ID = CP2.CHATROOM_ID AND CP2.USER_NUM != #{userNum}
+		LEFT JOIN USER_TB U2 ON CP2.USER_NUM = U2.USER_NUM
+		LEFT JOIN PROFILE P2 ON U2.USER_NUM = P2.USER_NUM
+		WHERE CR.STATUS = 'Y'
+		  AND CR.CHATROOM_ID = #{chatRoomId}  
+		  AND CR.REF_NUM != 5
+	</select>
+	
+<!-- ==================== 각 채팅방 마지막 메세지 불러오기 ==================== -->
+	<select id="selectLastMessage" parameterType="int" resultType="String">
+	    SELECT CHAT_CONTENT
+	    FROM (
+	        SELECT CHAT_CONTENT
+	        FROM CHAT_MESSAGE
+	        WHERE CHATROOM_ID = #{chatRoomId}
+	        ORDER BY SENT_AT DESC
+	    ) WHERE ROWNUM = 1
+	</select>
+
+
+<!-- ==================== 게시물 정보 및 회원 프로필 얻어오기 ==================== -->
+<!-- 
+	<공통적으로 가져오는 것>
+	- 회원 프로필 이미지
+	- 게시물 사진 url
+	- 게시물 번호
+	- 게시물 제목
+	- 거래 유형
+	- 게시물 주인 회원 ID
+	
+	추가
+	<대여>
+	<경매>
+	<나눔>
+ -->
+	<select id="selectBoardInfo" parameterType="int" resultType="SelectBoardInfo">
+		SELECT 
+		    P.IMAGE_URL,
+		    F.FILE_NAME,
+		    BC.BOARD_ID,
+		    BC.PRODUCT_NAME,
+		    BC.TRANSACTION_CATEGORY,
+		    BC.USER_NUM,
+            
+            BR.RENTAL_FEE,
+            BR.DEPOSIT,
+            
+            BA.AUCTION_STARTING_FEE,
+            BA.AUCTION_END_DATE,
+            
+            BS.SHARING_COUNT
+		FROM BOARD_COMMON BC
+        LEFT JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+        LEFT JOIN BOARD_SHARING BS ON BC.BOARD_ID = BS.BOARD_ID
+        LEFT JOIN BOARD_AUCTION BA ON BC.BOARD_ID = BA.BOARD_ID
+        
+		LEFT JOIN USER_TB UT ON UT.USER_NUM = BC.USER_NUM
+		LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
+		LEFT JOIN "FILE" F
+		    ON F.REF_NO = BC.BOARD_ID
+		    AND F.CATEGORY_ID IN (6, 7, 8, 9)
+		    AND F.FILE_ID = (
+		        SELECT MIN(FILE_ID)
+		        FROM "FILE"
+		        WHERE REF_NO = BC.BOARD_ID
+		        AND CATEGORY_ID IN (6, 7, 8, 9)
+		    )
+		WHERE BC.BOARD_ID = #{boardId}
+	</select>	
+
+
+<!-- ==================== 채팅방 생성 ==================== -->
+	<!-- 채팅방 번호, 회원 번호, 채팅방 종류(나눔, 대여, 경매 등) -->
+	<insert id="openChatRoom" parameterType="map">
+		<selectKey keyProperty="chatRoomId" resultType="int" order="BEFORE">
+	        SELECT CHATROOM_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+		INSERT INTO CHAT_ROOM (CHATROOM_ID, USER_NUM, REF_NUM, STATUS)
+		VALUES (
+			#{chatRoomId}, 
+			#{userNum},
+			#{refNum},
+			DEFAULT)
+	</insert> 
+	
+	<!-- TransactionChatRoom 생성 -->
+	<!-- 채팅방 번호, 게시물 Id => BOARD_COMMON의 BOARD_ID 참조 -->
+	<insert id="openTransactionChatRoom"
+		parameterType="map">
+		INSERT INTO TRANSACTION_CHAT (
+			CHATROOM_ID,
+			BOARD_ID
+		) VALUES (
+			#{chatRoomId},
+			#{boardId})
+	</insert>  
+	
+	<!-- 구매자(톡 거는 사람) 채팅방 설정 -->
+	<insert id="openChatParticipantBuyer"
+		parameterType="map">
+		INSERT INTO CHAT_PARTICIPANT (
+			CHATROOM_ID,
+			USER_NUM,
+			STATUS
+		) VALUES (
+			#{chatRoomId},
+			#{userNum},
+			'Y')
+	</insert>  
+	
+	<!-- 판매자(게시물 주인) 채팅방 설정 -->
+	<insert id="openChatParticipantSeller"
+		parameterType="map">
+		INSERT INTO CHAT_PARTICIPANT (
+			CHATROOM_ID,
+			USER_NUM,
+			STATUS
+		) VALUES (
+			#{chatRoomId},
+			#{boardOwnerNum},
+			'Y')
+	</insert>  
+	
+<!-- ==================== 채팅방 참여 여부 검색 ==================== -->
+	<select id="joinCheck" resultType="int">
+		SELECT COUNT(*) FROM CHAT_PARTICIPANT
+		WHERE CHAT_ROOM_ID = #{chatRoomId}
+			AND USER_NUM = #{userNum}
+	</select>
+
+
+<!-- ==================== 메세지 보낸 사람의 정보 ==================== -->
+	<select id="getSenderInfo" parameterType="int" resultType="User">
+		SELECT
+		    UT.NICK_NAME,
+		    P.IMAGE_URL
+		FROM USER_TB UT
+		LEFT JOIN PROFILE P ON P.USER_NUM = UT.USER_NUM
+		WHERE UT.USER_NUM = #{userNum} 
+	</select>
+
+
+<!-- ==================== 메세지 DB에서 끌어옴 ==================== -->
+	<select id="getMessagesByChatRoomId" resultType="ChatMessage">
+	    SELECT
+	        CM.MESSAGE_ID,
+	        CM.CHATROOM_ID,
+	        CM.SENT_AT,
+	        CM.CHAT_CONTENT,
+	        CM.CHAT_IMG,
+	        UT.NICK_NAME,
+	        CM.USER_NUM,
+	        P.IMAGE_URL,
+	        CM.SYSTEM_MESSAGE
+	    FROM CHAT_MESSAGE CM 
+	    LEFT JOIN USER_TB UT ON UT.USER_NUM = CM.USER_NUM
+	    LEFT JOIN PROFILE P ON UT.USER_NUM = P.USER_NUM
+	    WHERE CHATROOM_ID = #{chatRoomId}        
+	    ORDER BY CM.SENT_AT ASC
+	</select>
+
+
+<!-- ==================== 메세지 DB 삽입 ==================== -->	
+	<insert id="insertMessage">
+	    INSERT INTO CHAT_MESSAGE (
+	        MESSAGE_ID,
+	        CHATROOM_ID,
+	        CHAT_CONTENT,
+	        USER_NUM,
+	        CHAT_IMG,
+	        SENT_AT
+	    )
+	    VALUES (
+	        CHATMESSAGE_SEQ.NEXTVAL,
+	        #{chatRoomId},
+	        #{chatContent},
+	        #{userNum},
+	        #{chatImg},
+	      	SYSDATE  
+	    )
+	    
+	    <selectKey keyProperty="sentAt" order="BEFORE" resultType="string">
+			SELECT SYSDATE FROM DUAL
+		</selectKey>
+	</insert>
+
+
+<!-- ==================== 거래 채팅방 나가기 ==================== -->	
+	<!-- 방 번호 받아서 접속한 회원 기준 CHAT_PARTICIPANT 채팅방 없앰 STATUS='N' -->
+ 	<update id="exitChatRoom">
+		UPDATE CHAT_PARTICIPANT SET
+			STATUS = 'N'
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</update>
+ 
+ 
+<!-- ==================== 거래 채팅방 닫기 ==================== -->	
+	<update id="closeChatRoom">
+		UPDATE CHAT_ROOM SET
+		STATUS = 'N'
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</update>
+	
+	
+<!-- ==================== 채팅방 참여중인 회원 수 세기 ==================== -->
+	<select id="countChatRoomMember" resultType="int">
+		SELECT COUNT(*)
+		FROM CHAT_ROOM	
+		WHERE CHATROOM_ID = #{chatRoomId}
+	</select>
+
+
+<!-- ==================== 거래 완료 ==================== -->
+	<!-- 
+	거래 완료된 게시물 boardId 받아와서 해당 게시물
+	거래 상태 완료로 TRANSACTION_STATUS = 'Y' 변경 
+	--> 
+	<update id="updateBoardCommon">
+		UPDATE BOARD_COMMON SET
+		TRANSACTION_STATUS = 'Y'
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	
+	<!-- TRANSACTION_END 테이블에 해당 게시물 정보 넣어줌 -->
+	<!-- 게시물 ID, 구매자 회원번호, 거래 시간 -->
+	<insert id="insertTransactionEnd">
+		INSERT INTO TRANSACTION_END VALUES(
+		#{boardId},
+		#{reviewerUserNum},
+		TRUNC(SYSDATE, 'MI')
+		)
+	</insert>
+	
+		
+	<!-- MANNER 테이블에 거래 완료시 받아오는 정보 할당 -->
+	<insert id="insertManner">
+		INSERT INTO MANNER VALUES(
+			MANNER_SEQ.NEXTVAL,
+			#{reviewerUserNum},
+			#{revieweeUserNum},
+			#{mannerScore},
+			#{reviewText}	
+		)
+	</insert>
+</mapper>
