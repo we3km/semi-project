@@ -13,4 +13,6 @@ public class BoardAuctionFileWrapper {
 	private FilePath filePath;
 	
 	private int highestBid;
+	private String tagContent;
+	
 }

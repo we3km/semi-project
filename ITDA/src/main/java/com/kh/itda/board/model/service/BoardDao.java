@@ -12,6 +12,7 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
+import com.kh.itda.board.model.vo.ProductCategories;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.File;
@@ -82,6 +83,12 @@ public interface BoardDao {
 	void updateBid(AuctionBidding bid);
 
 	void insertBiddingWinner(int boardId);
+
+	void deleteBoard(int boardId);
+
+	Map<String, ProductCategories> getProductType();
+
+	String getProfileImage(int writerUserNum);
 
 
 
