@@ -33,8 +33,9 @@
 		<intercept-url pattern="/user/mypage/**"
 			access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/**" access="isAuthenticated()" />
-		<intercept-url pattern="/cs/**" access="isAuthenticated()" />
-		
+		<intercept-url pattern="/cs/**"
+			access="isAuthenticated()" />
+
 		<form-login login-page="/user/login"
 			login-processing-url="/user/loginprocess"
 			authentication-success-handler-ref="customAuthenticationSuccessHandler"
@@ -91,11 +92,13 @@
 	<!-- 로그인 실패 핸들러 -->
 	<beans:bean id="customAuthenticationFailureHandler"
 		class="com.kh.itda.security.handler.CustomAuthenticationFailureHandler" />
-    
-    <!-- com.kh.itda.security 패키지 스캔 -->   
-    <context:component-scan base-package="com.kh.itda">
-		<context:exclude-filter type="assignable" expression="com.kh.itda.chat.model.websocket.ChatStompController"/>
-    </context:component-scan>
+
+	<!-- com.kh.itda.security 패키지 스캔 -->
+	<context:component-scan
+		base-package="com.kh.itda">
+		<context:exclude-filter type="assignable"
+			expression="com.kh.itda.chat.model.websocket.ChatStompController" />
+	</context:component-scan>
 
 	<!-- BCryptPasswordEncoder -->
 	<beans:bean id="bcryptPasswordEncoder"

@@ -1,5 +1,8 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
+
+@import
+	url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap')
+	;
 
 * {
 	margin: 0;
@@ -321,6 +324,19 @@ body {
 	padding: 5px 0;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 	z-index: 999;
+	
+	max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: scaleY(0.95);
+    transform-origin: top;
+    transition: all 0.25s ease;
+}
+
+.trans-menu.show {
+    max-height: 500px; /* 충분히 큰 값으로 설정 */
+    opacity: 1;
+    transform: scaleY(1);
 }
 
 .trans-option {
@@ -388,7 +404,8 @@ body {
 	justify-content: center;
 	font-size: 15px;
 	color: #2c2c2c;
-	font-family: 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Roboto', sans-serif;
+	font-family: 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Roboto',
+		sans-serif;
 	font-weight: 400;
 	line-height: 1.6;
 	letter-spacing: 0.3px;
