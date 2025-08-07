@@ -25,4 +25,24 @@
 		)
 	</insert>
 
+	<select id="getBanInfoByUserId" parameterType="string"
+		resultType="com.kh.itda.user.model.vo.BanUser">
+		SELECT reason, penalty_date, release_date
+		FROM banned_user
+		bu
+		JOIN user_tb ut ON bu.user_num = ut.user_num
+		WHERE ut.user_id =
+		#{userId}
+		AND bu.is_banned = 'Y'
+	</select>
+
+	<select id="getIsBannedByUserNum" parameterType="int"
+		resultType="char">
+		SELECT is_banned
+		FROM banned_user
+		WHERE user_num = #{userNum}
+		ORDER BY penalty_date DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
 </mapper>
