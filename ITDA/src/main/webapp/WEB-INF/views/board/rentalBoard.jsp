@@ -221,7 +221,7 @@
 						alt="이미지" />
 					<p id="product-name">${board.boardCommon.productName }</p>
 
-					<p id="rental-fee">대여료 : ${board.boardRental.rentalFee }</p>
+					<p id="rental-fee">대여료 : ${board.boardRental.rentalFee }원</p>
 					<p class="date">
 						<fmt:formatDate value="${board.boardRental.rentalStartDate }"
 							pattern="yyyy/MM/dd" />

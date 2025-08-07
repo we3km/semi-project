@@ -96,7 +96,7 @@
 				</li>
 			</ul>
 				
-			<div class="price">대여금액 : ${board.boardRental.rentalFee}원</div>
+			<div class="price">대여료 : ${board.boardRental.rentalFee}원</div>
 				
 				
 			<div class="date-range">
@@ -256,7 +256,7 @@
 							alt="이미지"
 							 />
 						<p id="product-name">${writerRentalWrapper.boardCommon.productName }</p>
-						<p id="rental-fee">${writerRentalWrapper.boardRental.rentalFee }</p>
+						<p id="rental-fee">대여료:${writerRentalWrapper.boardRental.rentalFee }원</p>
 						<p class="date">
 							<fmt:formatDate
 								value="${writerRentalWrapper.boardRental.rentalStartDate }"
@@ -296,7 +296,7 @@
 							alt="이미지"
 							/>
 						<p id="product-name">${equalsCategoryboard.boardCommon.productName }</p>
-						<p class="rental-fee">${equalsCategoryboard.boardRental.rentalFee }</p>
+						<p id="rental-fee">대여료:${equalsCategoryboard.boardRental.rentalFee }원</p>
 						<p class="date">
 							<fmt:formatDate
 								value="${equalsCategoryboard.boardRental.rentalStartDate }"

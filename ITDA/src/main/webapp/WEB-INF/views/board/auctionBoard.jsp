@@ -219,13 +219,13 @@
 						/>
 					<p id="product-name">${board.boardCommon.productName }</p>
 
-					<p id="auction-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }</p>
+					<p id="auction-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }원</p>
 					<c:if test="${board.highestBid ne 0}">
-						<p id="highest-bid">최고입찰가 : ${board.highestBid}</p>
+						<p id="highest-bid">최고입찰가 : ${board.highestBid}원</p>
 					</c:if>
 					
 					<c:if test="${board.highestBid eq 0}">
-						<p id="highest-bid">최고입찰가 : ${board.boardAuction.auctionStartingFee}</p>
+						<p id="highest-bid">최고입찰가 : ${board.boardAuction.auctionStartingFee}원</p>
 					</c:if>
 					
 					<p class="date">
