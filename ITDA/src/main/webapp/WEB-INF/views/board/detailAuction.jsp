@@ -143,11 +143,21 @@
 					<!-- 연결해야함 -->
 					<!-- 게시자가 아닌 다른 사용자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum ne board.boardCommon.userNum}">
-						<button id="sendMessage">메시지 보내기</button>
+						<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
+							보내기</button>
+						
 						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
 							<i class="fa fa-heart"></i> 찜하기
 						</button>
-						<script>
+					</c:if>
+					<!-- 경매가 종료 되고 게시글 게시자가 상세보기에 들어왔을 때 -->
+					<c:if
+						test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and not empty bidList}">
+						<button id="message-winner"
+							onclick="messageWinner(${board.boardCommon.boardId})">낙찰자에게
+							채팅 보내기</button>
+					</c:if>
+					<script>
 					     function createTransactionChatRoom() {
 					        const contextPath = '${contextPath}';
 					        // 데헷 이거 널값임					        
@@ -180,15 +190,40 @@
 					        })
 					        .catch(err => console.error("오류 발생:", err));
 					    } 
+					     
+					     function createBiddingWinnerChatRoom() {
+					    	 const contextPath = '${contextPath}';
+										        
+						     const boardId = "${board.boardCommon.boardId}";
+						        
+						        console.log("contextPath: ", contextPath);
+						        console.log("현재 게시판 번호 : ", boardId);
+						
+						        fetch("/itda/chat/selectBoardInfo?boardId=" + boardId, {
+						            method: "GET"
+						        })
+						        .then(response => {
+						            if (!response.ok) throw new Error("게시물 정보 응답 실패");
+						            return response.json();
+						        })
+						        .then(data => {
+						            console.log("게시물 정보:", data);
+						
+						            return fetch("/itda/chat/openBidChatRoom", {
+						                method: "POST",
+						                headers: {
+						                    "Content-Type": "application/json"
+						                },
+						                body: JSON.stringify(data)
+						            });
+						        })
+						        .then(response => {
+						            if (!response.ok) throw new Error("채팅방 열기 실패");
+						            location.href = contextPath + "/itda/chat/chatRoomList";
+						        })
+						        .catch(err => console.error("오류 발생:", err));
+					     }
 					</script>
-					</c:if>
-					<!-- 경매가 종료 되고 게시글 게시자가 상세보기에 들어왔을 때 -->
-					<c:if
-						test="${userNum eq board.boardCommon.userNum and auctionEnd eq 'end' and not empty bidList}">
-						<button id="message-winner"
-							onclick="messageWinner(${board.boardCommon.boardId})">낙찰자에게
-							채팅 보내기</button>
-					</c:if>
 
 					<!-- 경매가 종료 되었지만 입찰자가 단 한명도 없을때 게시글 게시자가 상세보기에 들어왔을 때 -->
 					<c:if
@@ -205,7 +240,8 @@
 						      success: function(data) {
 						        console.log("서버 응답:", data);
 						        alert("성공: " + data);
-						        // 채팅방 이동로직 추가
+						        // 경매 우승 채팅방 생성
+						        createBiddingWinnerChatRoom();
 						      },
 						      error: function(xhr) {
 						        alert("입찰 저장 실패: " + xhr.responseText);
@@ -238,7 +274,7 @@
 
 					<div id="bidModal"
 						style="display: none; position: fixed; top: 20%; left: 30%; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px;">
-						<h3>${board.boardCommon.productName}의입찰금 제시</h3>
+						<h3>${board.boardCommon.productName}의입찰금제시</h3>
 						<h4>입찰금 단위 : ${board.boardAuction.bidUnit}</h4>
 						<button type="button" onclick="changeBid(-1)">-</button>
 						<input type="text" id="popupInput" placeholder="제시할 입찰금" />
@@ -421,7 +457,7 @@
 	</script>
 		<!-- 게시물 게시자의 다른 대여 글들 -->
 		<div class="related-products">
-			<h2>${writer}님의다른 상품</h2>
+			<h2>${writer}님의다른상품</h2>
 			<div class="product-list">
 
 				<!-- 카드 반복 -->

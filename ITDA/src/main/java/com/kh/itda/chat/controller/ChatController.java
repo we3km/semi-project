@@ -25,12 +25,13 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.itda.chat.model.service.ChatService;
+import com.kh.itda.chat.model.vo.BidWinner;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.chat.model.vo.ChatRoom;
 import com.kh.itda.chat.model.vo.SelectBoardInfo;
 import com.kh.itda.security.model.vo.UserExt;
+import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.vo.User;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -47,14 +48,17 @@ public class ChatController {
 	@GetMapping("/chatRoomList")
 	public String selectChatRoomList(Model model, Authentication authentication) {
 
-		UserExt loginUser = (UserExt) authentication.getPrincipal();
+
+        UserExt loginUser = (UserExt) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();
 		log.info("로그인한 회원정보 아이디 : {}", userNum);
 
 		List<ChatRoom> chatRoomList = chatService.selectChatRoomList(userNum);
 		model.addAttribute("chatRoomList", chatRoomList);
 		model.addAttribute("loginUser", loginUser);
-
+		// 신고 속성 model에 넣어줌
+		model.addAttribute("report", new Report());
+		
 		if (chatRoomList.isEmpty()) {
 			log.info("참여 중인 채팅방이 없습니다.");
 		} else {
@@ -62,7 +66,7 @@ public class ChatController {
 		}
 		return "chat/chatRoomList";
 	}
-
+	
 	// 현재 로그인한 회원 번호 보내서 회원 정보 가져오기
 	@GetMapping("/getSenderInfo")
 	@ResponseBody
@@ -96,6 +100,7 @@ public class ChatController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("nickName", opponentProfile.getNickName());
 		map.put("imageUrl", opponentProfile.getImageUrl());
+		map.put("opponentUserNum", opponentProfile.getUserNum());
 
 		log.info("상대 프로필 정보 : {}", map);
 		return map;
@@ -106,11 +111,17 @@ public class ChatController {
 	@ResponseBody
 	public SelectBoardInfo selectBoardInfo(int boardId) {
 		SelectBoardInfo boardInfo = chatService.selectBoardInfo(boardId);
-
-		System.out.println("끌고 오는 게시물 정보: " + boardInfo);
 		return boardInfo;
 	}
 
+	// 경매 낙찰자 정보 따오기
+	@GetMapping("/getBiddingWinner")
+	@ResponseBody
+	public BidWinner getBiddingWinner(int boardId) {
+		BidWinner bidWinner = chatService.getBiddingWinner(boardId);
+		return bidWinner;
+	}
+	
 	// 게시물 정보 받아와서 채팅방 생성
 	@PostMapping("/openChatRoom")
 	@ResponseBody
@@ -134,6 +145,33 @@ public class ChatController {
 		}
 		return "success";
 	}
+	
+	// 경매 채팅방 생성 
+	@PostMapping("/openBidChatRoom")
+	@ResponseBody
+	public String openBidChatRoom(@RequestBody SelectBoardInfo boardInfo, Authentication authentication) {
+		// 현재 로그인한 회원 정보 받아옴
+		UserExt loginUser = (UserExt) authentication.getPrincipal();
+
+		BidWinner bidWinner = chatService.getBiddingWinner(boardInfo.getBoardId());
+		
+		// boardOwnerNum에 경매 우승자 번호 넣어주자
+		int userNum = loginUser.getUserNum();
+		int bidWinnerNum = bidWinner.getUserNum();
+		int refNum = boardInfo.getTransactionRefNum();
+		int boardId = boardInfo.getBoardId();
+
+		log.info("채팅방 속성 :", boardInfo);
+		
+		int result = chatService.openChatRoom(userNum, bidWinnerNum, refNum, boardId);
+
+		if (result > 0) {
+			log.info("채팅방 성공! : {}", result);
+			log.info("생성된 채팅방 정보 : {}", boardInfo);
+		}
+		return "success";
+	}
+	
 
 	// 메세지 받아와서 채팅방 오른쪽에 출력하자이	
 	@GetMapping("/messages/{chatRoomId}")
@@ -149,7 +187,11 @@ public class ChatController {
 		UserExt loginUser = (UserExt) authentication.getPrincipal();
 		String nickName = loginUser.getNickName();
 
-		int result = chatService.exitChatRoom(chatRoomId);
+		Map<String, Object> exit = new HashMap<String, Object>();
+		exit.put("chatRoomId", chatRoomId);
+		exit.put("userNum", loginUser.getUserNum());
+		
+		int result = chatService.exitChatRoom(exit);
 
 		log.info("나가는 사람 이름 : {}", nickName);
 		if (result > 0) {
@@ -205,11 +247,10 @@ public class ChatController {
 	// 각 채팅방 마다 메세지 마지막메세지 가져오기
 	@GetMapping("/bringLastMessage")
 	@ResponseBody
-	public Map<String, Object> bringLastMessage(int chatRoomId, HttpServletResponse res) {
-		String text = chatService.bringLastMessage(chatRoomId);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("lastMessage", text);
-		return map;
+	public ChatMessage bringLastMessage(int chatRoomId, HttpServletResponse res) {
+		ChatMessage lastMessage = chatService.bringLastMessage(chatRoomId);
+		
+		return lastMessage;
 	}
 
 	// 서버에 사진 파일 저장하자
