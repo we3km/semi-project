@@ -24,7 +24,6 @@
 					action="${pageContext.request.contextPath}/cs/inquiry/insert"
 					method="post" enctype="multipart/form-data"
 					modelAttribute="inquiryForm">
-					<form:hidden path="userNum" value="2" />
 
 					<label for="title" class="div">제목</label>
 					<form:input path="csTitle" id="title" cssClass="rectangle"
@@ -33,14 +32,14 @@
 					<label for="category" class="text-wrapper-2">카테고리</label>
 					<div class="overlap-group-wrapper">
 						<div class="overlap-group">
-							<form:select path="categoryId" id="category"
+							<form:select path="categoryName" id="categoryName"
 								cssClass="rectangle-2" required="required">
 								<form:option value="" label="문의 카테고리를 선택해주세요" disabled="true" />
-								<form:option value="1" label="회원정보" />
-								<form:option value="2" label="거래관련" />
-								<form:option value="3" label="신고처리" />
-								<form:option value="4" label="건의사항" />
-								<form:option value="5" label="기타" />
+								<form:option value="회원정보" label="회원정보" />
+								<form:option value="거래관련" label="거래관련" />
+								<form:option value="신고처리" label="신고처리" />
+								<form:option value="건의사항" label="건의사항" />
+								<form:option value="기타" label="기타" />
 							</form:select>
 						</div>
 					</div>

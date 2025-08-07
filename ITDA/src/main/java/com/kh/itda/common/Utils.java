@@ -21,7 +21,6 @@ public class Utils {
         if (serverFolderPath == null) {
             throw new IllegalStateException("서버 절대 경로를 찾을 수 없습니다.");
         }
-
         File folder = new File(serverFolderPath);
         if (!folder.exists()) {
             return folder.mkdirs();
