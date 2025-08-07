@@ -57,23 +57,35 @@
 		</div>
 		
 		<!-- 유저 인사 + 알림 -->
-		<div class="login_effect">
-			<sec:authorize access="isAuthenticated()">
-				<!-- 회원 이름 바뀌기-->
-				<div class="user">
-					<strong> <sec:authentication property="principal.nickName" />
-					</strong>님 반갑습니다!
-				</div>
-
-				<div id="icons">
-					<img
-						src="${pageContext.request.contextPath}/resources/images/message.png"
-						alt="message icon" id="message-icon" /> <img
-						src="${pageContext.request.contextPath}/resources/images/alam.png"
-						alt="alarm icon" id="alarm-icon" />
-				</div>
+		<sec:authorize access="isAuthenticated()">
+			  <div class="login_effect">
+			    <!-- 회원 이름 바뀌기 -->
+			    <div class="user">
+			      <strong>
+			        <sec:authentication property="principal.nickName"/>
+			      </strong>님 반갑습니다!
+			    </div>
+			
+			    <div id="icons">
+			      <img
+			        src="${pageContext.request.contextPath}/resources/images/message.png"
+			        alt="message icon" id="message-icon" />
+			
+			      <div class="alarm-wrapper"> 
+			        <img
+			          src="${pageContext.request.contextPath}/resources/images/alam.png"
+			          alt="alarm icon" id="alarm-icon" />
+			        <span id="alarm-dot" class="alarm-dot"></span>
+			        
+			        <div id="alarm-dropdown" class="alarm-dropdown">
+			          <ul id="alarm-list" class="alarm-list"></ul>
+			        </div>
+			      </div> 
+			    </div>
+			  </div>
 			</sec:authorize>
-		</div>
+			
+			</div>
 		
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
@@ -106,7 +118,7 @@
 					alt="search icon" id="search-btn" style="cursor: pointer;" />
 			</div>
 		</div>
-		</div>
+			
 		<script>
 	let stompClient = null;
 	const loginUserNum1 = "<sec:authentication property='principal.userNum' />";
