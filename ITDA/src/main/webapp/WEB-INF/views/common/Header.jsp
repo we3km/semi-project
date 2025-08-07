@@ -25,18 +25,12 @@
 </head>
 <body>
 	<input type="hidden" id="userRole" value="${sessionScope.role}" />
-	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 	<div class="container_header">
+		
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
-		<!-- 카테고리 -->
-		<div class="category-line">
-			<div class="category">대여</div>
-			<div class="category">경매</div>
-			<div class="category">나눔</div>
-			<div class="category">커뮤니티</div>
-		</div>
+		
 		<!-- 로그인 / 로그아웃 버튼 -->
 		<div class="top-buttons">
 			<sec:authorize access="isAnonymous()">
@@ -53,7 +47,34 @@
 				</div>
 			</sec:authorize>
 		</div>
+	
+		<!-- 카테고리 -->
+		<div class="category-line">
+			<div class="category">대여</div>
+			<div class="category">경매</div>
+			<div class="category">나눔</div>
+			<div class="category">커뮤니티</div>
+		</div>
+		
+		<!-- 유저 인사 + 알림 -->
+		<div class="login_effect">
+			<sec:authorize access="isAuthenticated()">
+				<!-- 회원 이름 바뀌기-->
+				<div class="user">
+					<strong> <sec:authentication property="principal.nickName" />
+					</strong>님 반갑습니다!
+				</div>
 
+				<div id="icons">
+					<img
+						src="${pageContext.request.contextPath}/resources/images/message.png"
+						alt="message icon" id="message-icon" /> <img
+						src="${pageContext.request.contextPath}/resources/images/alam.png"
+						alt="alarm icon" id="alarm-icon" />
+				</div>
+			</sec:authorize>
+		</div>
+		
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 		    <div class="filters">
@@ -78,7 +99,6 @@
 					</div>
 				</div>
 			</div>
-
 			<!-- 검색창 -->
 			<div class="search-bar">
 				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
@@ -86,35 +106,6 @@
 					alt="search icon" id="search-btn" style="cursor: pointer;" />
 			</div>
 		</div>
-
-
-			<sec:authorize access="isAuthenticated()">
-			  <div class="login_effect">
-			    <!-- 회원 이름 바뀌기 -->
-			    <div class="user">
-			      <strong>
-			        <sec:authentication property="principal.nickName"/>
-			      </strong>님 반갑습니다!
-			    </div>
-			
-			    <div id="icons">
-			      <img
-			        src="${pageContext.request.contextPath}/resources/images/message.png"
-			        alt="message icon" id="message-icon" />
-			
-			      <div class="alarm-wrapper"> 
-			        <img
-			          src="${pageContext.request.contextPath}/resources/images/alam.png"
-			          alt="alarm icon" id="alarm-icon" />
-			        <span id="alarm-dot" class="alarm-dot"></span>
-			        
-			        <div id="alarm-dropdown" class="alarm-dropdown">
-			          <ul id="alarm-list" class="alarm-list"></ul>
-			        </div>
-			      </div> 
-			    </div>
-			  </div>
-			</sec:authorize>
 		</div>
 		<script>
 	let stompClient = null;
@@ -313,6 +304,36 @@
 				const contextPath = "${pageContext.request.contextPath}";
 				// 로그인-로그아웃 버튼
 				// 로그인 상태 토글
+				const currentPath = window.location.pathname; // 현재 페이지의 URL 경로를 가져옴
+		
+				$('.category-line .category').each(function() {
+					const categoryName = $(this).text();
+					let isMatched = false;
+		
+					// URL 경로에 각 카테고리별 키워드가 포함되어 있는지 확인
+					if (categoryName === '대여' && currentPath.includes('/board/rental')) {
+						isMatched = true;
+					} else if (categoryName === '경매' && currentPath.includes('/board/auction')) {
+						isMatched = true;
+					} else if (categoryName === '나눔' && currentPath.includes('/board/share')) {
+						isMatched = true;
+					} else if (categoryName === '커뮤니티' && currentPath.includes('/community')) {
+						isMatched = true;
+		
+					// TODO: '교환' 게시판 URL이 확정되면 아래 주석을 풀어주세요.
+					/*
+					} else if (categoryName === '교환' && currentPath.includes('/board/exchange')) {
+						isMatched = true;
+					*/
+					}
+		
+					// 일치하는 카테고리에 'active' 클래스 추가
+					if (isMatched) {
+						$(this).addClass('active');
+					}
+				});
+				
+				
 				$('#loginBtn').click(function() {
 					$('.unlogin').hide();
 					$('.login').show();
