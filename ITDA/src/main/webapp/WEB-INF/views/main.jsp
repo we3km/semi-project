@@ -23,7 +23,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<input type="hidden" id="userRole" value="${sessionScope.role}" />
 	<div class="container">
 		<div class="top-buttons">
 			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
