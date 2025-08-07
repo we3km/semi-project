@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
 import com.kh.itda.board.model.vo.BiddingWinner;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuction;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
@@ -28,6 +29,7 @@ import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
 import com.kh.itda.common.model.vo.Tag;
+import com.kh.itda.user.model.vo.RentalItem;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -526,7 +528,10 @@ public class BoardDaoImpl implements BoardDao {
 		
 	}
 
-
+	public List<RentalItem> getRentalItemByUserNum(int userNum) {
+		return session.selectList("user.getRentalItemByUserNum", userNum);
+	}
+	
 	@Override
 	public void deleteBoard(int boardId) {
 		session.update("board.deleteBoard", boardId);
@@ -534,6 +539,10 @@ public class BoardDaoImpl implements BoardDao {
 
 
 	@Override
+	public List<BoardAllWrapper> selectMyBoard(int userNum) {
+		return session.selectList("board.selectMyBoard", userNum);
+	}
+
 	public Map<String, ProductCategories> getProductType() {
 		return session.selectMap("board.getProductType", "productCategoryNum");
 	}
@@ -543,9 +552,6 @@ public class BoardDaoImpl implements BoardDao {
 	public String getProfileImage(int writerUserNum) {
 		return session.selectOne("board.getProfileImage", writerUserNum);
 	}
-
-
-
 
 
 
