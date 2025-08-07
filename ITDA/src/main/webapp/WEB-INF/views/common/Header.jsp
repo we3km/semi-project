@@ -250,7 +250,6 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-
 					location.href = "${contextPath}/itda/chat/chatRoomList";
 				});
 				//알람버튼
