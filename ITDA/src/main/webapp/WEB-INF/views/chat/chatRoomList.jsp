@@ -970,28 +970,31 @@
             }); // addEventListener close
         }); // forEach close
         
-        console.log("🏷️ chatRooms count:", document.querySelectorAll(".list-chat").length);
-        document.querySelectorAll(".list-chat").forEach(el =>
-          console.log("  ▶️", el.getAttribute("data-chat-room-id"))
-        )
-        const pendingRaw = sessionStorage.getItem('pendingOpenRoomId');
-        const pending = pendingRaw ? pendingRaw.trim() : null;
-        console.log("🔍 pendingRaw:", JSON.stringify(pendingRaw), "→ pending:", JSON.stringify(pending));
-        if (pending) {
-          // chatRooms(NodeList)에서 직접 속성값 비교
-          const el = Array.from(chatRooms).find(el =>
-            el.getAttribute('data-chat-room-id') === pending
-          );
-          if (el) {
-            console.log("✅ 자동 열기 성공! roomId=", pending);
-            el.click();  // 클릭 핸들러가 구독까지 처리해 줍니다
-          } else {
-            console.warn("❌ 자동 열기 실패, 못 찾음:", pending);
-          }
-          sessionStorage.removeItem('pendingOpenRoomId');
-        }
+        (function() {
+        	  const params     = new URLSearchParams(window.location.search);
+        	  const rawParam   = params.get("chatRoomId") || params.get("roomId");
+        	  const fromParam  = rawParam && rawParam.trim().length>0 ? rawParam.trim() : null;
+        	  const rawSession = sessionStorage.getItem('pendingOpenRoomId');
+        	  const fromSession = rawSession && rawSession.trim().length>0 ? rawSession.trim() : null;
+        	  const roomToOpen = fromParam || fromSession;
+
+        	  console.log(`🔍 URL chatRoomId: ${params.get("chatRoomId")}, URL roomId: ${params.get("roomId")}, 세션: ${fromSession}`);
+        	  if (!roomToOpen) {
+        	    console.log("⁉️ 자동 열기 대상이 없습니다.");
+        	    sessionStorage.removeItem('pendingOpenRoomId');
+        	    return;
+        	  }
+
+        	  const el = Array.from(chatRooms).find(c => c.dataset.chatRoomId === roomToOpen);
+        	  if (el) {
+        	    console.log(`✅ 자동 열기 성공! roomId=${roomToOpen}`);
+        	    el.click();
+        	  } else {
+        	    console.warn(`❌ 자동 열기 실패, 못 찾음: ${roomToOpen}`);
+        	  }
+        	  sessionStorage.removeItem('pendingOpenRoomId');
+        	})();
       });
-    // 왼쪽 채팅방 오른쪽에 반영 끝ㅋ
 </script>
 
 	<!-- chat.js 참조 -->

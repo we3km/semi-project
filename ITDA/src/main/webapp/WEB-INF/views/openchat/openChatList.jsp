@@ -454,62 +454,80 @@ document.getElementById("editLocationBtn")
   });
 
   //  상세 모달 > 참여 버튼 클릭
-  document.querySelectorAll(".open-detail").forEach(btn => {
-    btn.addEventListener("click", function() {
-      const chatRoomID = this.dataset.roomId;
-      const image      = this.dataset.img
-                         || contextPath + "/resources/images/chat/openchat_default.jpg";
-      const name       = this.dataset.name;
-      const tags       = this.dataset.tags;
-      const count      = this.dataset.count;
-      const max        = this.dataset.max;
-      const explanation= this.dataset.des;
+ document.querySelectorAll('.open-detail').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const chatRoomID  = this.dataset.roomId;
+      const image       = this.dataset.img || contextPath + '/resources/images/chat/openchat_default.jpg';
+      const name        = this.dataset.name;
+      const tags        = this.dataset.tags;
+      const count       = this.dataset.count;
+      const max         = this.dataset.max;
+      const explanation = this.dataset.des;
+
       if (!chatRoomID || !name) return;
 
-      document.getElementById("detailImage").src = image;
-      document.getElementById("detailTitle").textContent = name;
-      const tagContainer = document.getElementById("detailTags");
+      document.getElementById('detailImage').src         = image;
+      document.getElementById('detailTitle').textContent = name;
 
+      // 태그 렌더링
+      const tagContainer = document.getElementById('detailTags');
       tagContainer.innerHTML = '';
-
       if (tags) {
-        // 1. 먼저 태그 문자열을 공백 또는 쉼표 또는 # 기준으로 분할
-        const rawTags = tags.split(/[\s,#]+/); // 공백, 쉼표, # 전부 분리 기준
-
-        rawTags.forEach(tag => {
-          tag = tag.trim();
-          if (tag.length > 0) {
-            const cleaned = '#' + tag.replace(/^#+/, ''); // # 여러 개 제거 하나만 붙임
-
+        tags.split(/[\s,#]+/).forEach(t => {
+          const tag = t.trim();
+          if (tag) {
             const span = document.createElement('span');
-            span.className = 'tag';
-            span.textContent = cleaned;
+            span.className   = 'tag';
+            span.textContent = '#' + tag.replace(/^#+/, '');
             tagContainer.appendChild(span);
           }
         });
       }
-      document.getElementById("detailMembers").textContent     = 
-        "참여 인원: " + count + " / " + max;
-      document.getElementById("detailExplanation").textContent = 
+
+      document.getElementById('detailMembers').textContent     =
+        `참여 인원: ${count} / ${max}`;
+      document.getElementById('detailExplanation').textContent =
         explanation || '설명이 없습니다.';
-      document.getElementById("enterForm").action = 
-        `${contextPath}/openchat/enter`;
-      document.getElementById("roomIdInput").value = chatRoomID;
+
+      // enterForm에 roomId 세팅
+      document.getElementById('roomIdInput').value = chatRoomID;
       showDetailModal();
     });
   });
-  
-  function validateForm(form) {
-	  if (!form.sido.value || !form.sigungu.value) {
-	    alert("위치 정보가 아직 설정되지 않았습니다.\n“새로고침” 또는 “주소검색” 버튼을 눌러주세요.");
-	    return false;
-	  }
-	  return true;
-	}
 
-  //  상세 모달 닫기
-  document.getElementById("closeDetailBtn")
-          .addEventListener("click", hideDetailModal);
+  // 2) “입장하기” 폼 submit 가로채기
+  const enterForm = document.getElementById('enterForm');
+  if (enterForm) {
+    enterForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const roomId = this.roomId.value;
+      if (!roomId) return;
+
+      // 나중에 채팅방 자동 오픈을 위해 세션에 저장
+      sessionStorage.setItem('pendingOpenRoomId', roomId);
+
+      // 실제 입장 로직 호출
+      try {
+        await fetch(`${contextPath}/openchat/enter?roomId=${roomId}`, {
+          method: 'GET'
+        });
+      } catch (err) {
+        console.error('❌ 참여 요청 실패', err);
+        return;
+      }
+
+      // 채팅 목록 페이지로 이동
+      window.location.href = `${contextPath}/chat/chatRoomList`;
+    });
+  }
+
+  // 3) 상세 모달 닫기
+  const closeBtn = document.getElementById('closeDetailBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', hideDetailModal);
+  }
+  
 
   const addImageBtn      = document.getElementById('addImageBtn');
   const imageFileInput   = document.getElementById('imageFile');

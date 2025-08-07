@@ -254,8 +254,7 @@
 	
 	            } else if (refId != null && refType) {
 	                // 커뮤니티 글로 이동
-	                location.href = "${pageContext.request.contextPath}/community/detail/" 
-	                             + refType + "/" + refId;
+	                location.href = "${pageContext.request.contextPath}/community/detail/" + refType + "/" + refId;
 	            }
 	        });
 
