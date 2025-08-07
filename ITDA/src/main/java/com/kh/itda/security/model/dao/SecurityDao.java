@@ -24,4 +24,8 @@ public interface SecurityDao {
 	List<String> findAuthoritiesByUserNum(int userNum); // 유저 권한 조회
 
 	void banUser(BanUser banUser);
+
+	char getIsBannedByUserNum(int userNum);
+
+	void updateBanUser(BanUser banUser);
 }
