@@ -1,7 +1,6 @@
 package com.kh.itda.support.model.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.support.model.vo.Inquiry;
-
 
 @Repository
 public class InquiryDao {
@@ -42,29 +40,30 @@ public class InquiryDao {
         return session.selectList("inquiry.selectAllInquiries");
     }
 
-    // 6. 첨부파일 목록 조회 (refNo: 문의글 번호)
+    // 6. 사용자 번호로 문의글 목록 조회
+    public List<Inquiry> selectInquiriesByUser(int userNum) {
+        return session.selectList("inquiry.selectInquiriesByUser", userNum);
+    }
+
+    // 7. 첨부파일 목록 조회 (refNo: 문의글 번호)
     public List<File> selectFilesByRef(int refNo) {
         return session.selectList("inquiry.selectFilesByRef", refNo);
     }
 
-    // 첨부파일 저장
+    // 8. 첨부파일 저장
     public int insertFile(File file) {
         return session.insert("inquiry.insertFile", file);
     }
 
-    // 경로로 PATH_NUM 조회
-    public Integer selectPathNumByPath(String path) {
-        return session.selectOne("inquiry.selectPathNumByPath", path);
+    // 9. CATEGORY_ID로 CATEGORY_PATH 조회
+    public String selectCategoryPathById(int categoryId) {
+        return session.selectOne("inquiry.selectCategoryPathById", categoryId);
     }
-
-    // 경로가 없으면 PATH 테이블에 새 경로 삽입
-    public int insertPath(String path) {
-        return session.insert("inquiry.insertPath", path);
-    }
-
-    public List<Inquiry> selectInquiriesByUserNum(int userNum) {
-        return session.selectList("inquiry.selectInquiriesByUser", userNum);
-    }
-
     
+    public String selectNickNameByUserNum(int userNum) {
+        return session.selectOne("inquiry.selectNickNameByUserNum", userNum);
+    }
+    
+    
+
 }

@@ -24,6 +24,7 @@
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
+	<input type="hidden" id="userRole" value="${sessionScope.role}" />
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 	<div class="container_header">
@@ -54,8 +55,6 @@
 			</sec:authorize>
 		</div>
 
-		<input type="hidden" id="userRole"
-			value="${sessionScope.loginUser.role}" />
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 			<div class="filters">
@@ -327,15 +326,14 @@
 					location.href = contextPath + '/user/join';
 				});
 				//마이페이지 이동
-				$('#myPage').click(function(){
-					 const userRole= $('#userRole').val();
-						if(userRole == 'admin'){
-							location.href = contextPath + '/admin/mypage';
-						}else{
-							location.href = contextPath + '/user/mypage';	
-						}					
-				});
-				
+	    $('#myPage').click(function() {
+	        const userRole = $('#userRole').val();
+	        if (userRole === 'ROLE_ADMIN') {
+	            location.href = contextPath + '/admin/mypage';
+	        } else {
+	            location.href = contextPath + '/user/mypage';
+	        }
+	    });
 				//고객센터이동
 				$('#customerService').click( function() {
 							location.href = contextPath
