@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.itda.board.model.service.BoardService;
-import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.vo.Report;
@@ -363,8 +361,6 @@ public class UserController {
 	    int itdaPoint = (rawScore != null) ? rawScore : 80;
 	    model.addAttribute("itdaPoint", itdaPoint);
 		model.addAttribute("report", new Report());
-		
-	    
 		
 		return "/user/mypageOthers";
 	}

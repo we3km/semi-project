@@ -67,8 +67,9 @@
 				<div class="profile-image">
 					<img id="preview"
 						src="${pageContext.request.contextPath}${imageUrl}" alt="프로필 이미지"
-						width="350" height="350" style="display: block;">
+						width="356" height="356" style="display: block;">
 				</div>
+				<div class="delete-user" id="delete">회원탈퇴</div>
 
 				<div id="modal-overlay" class="modal hidden">
 					<div class="modal-content">
@@ -439,7 +440,7 @@
 		.then(data => {
 			if (data.success) {
 			    alert("프로필 이미지가 변경되었습니다.");
-				document.getElementById("preview").src = data.newImageUrl + "?t=" + new Date().getTime();
+				document.getElementById("preview").src = contextPath + data.newImageUrl;
 			} else {
 			    alert("이미지 변경 실패: " + data.message);
 			}
