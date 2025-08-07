@@ -18,7 +18,7 @@
 	.container {
 	    min-height: 90%;
 	    min-width: 80%;
-	    max-width: 1800px;
+	    max-width: 2200px;
 	    margin: 0 auto;
 	    background-color: #ffffff;
 	    padding: 60px 40px;
@@ -268,148 +268,6 @@
 	    font-weight: 600;
 	}
 	
-/* .comment {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.comment.reply {
-    margin-left: 40px;
-    border-left: 2px solid #f0f0f0;
-    padding-left: 12px;
-}
-
-.comment-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-}
-
-왼쪽: 프로필
-.comment-left {
-    width: 40px;
-    flex-shrink: 0;
-}
-
-.comment-left .profile-icon {
-    width: 36px;
-    height: 36px;
-    background: #ccc;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.comment-left .profile-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-가운데: 작성자, 내용, 액션
-.comment-center {
-    flex-grow: 1;
-    padding: 0 10px;
-}
-
-.comment-center .author {
-    font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 2px;
-}
-
-.comment-center .text {
-    font-size: 14px;
-    color: #222;
-    margin-bottom: 6px;
-    white-space: pre-wrap;
-}
-
-.comment-center .actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: #888;
-    flex-wrap: wrap;
-}
-
-오른쪽: 옵션 버튼
-.comment-right {
-    width: 30px;
-    text-align: right;
-    position: relative;
-}
-
-.comment-right .options-btn {
-    font-size: 18px;
-    color: #aaa;
-    cursor: pointer;
-    padding: 4px;
-}
-
-.comment-right .options-popup {
-    position: absolute;
-    right: 0;
-    top: 25px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 100px;
-    display: none;
-    z-index: 100;
-    padding: 5px 0;
-}
-
-.comment-right .options-popup div {
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #444;
-    cursor: pointer;
-}
-
-.comment-right .options-popup div:hover {
-    background-color: #f5f5f5;
-}
-
-답글 입력창
-.reply-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 0 0 50px;
-    width: calc(100% - 50px);
-}
-
-.reply-box input {
-    height: 30px;
-    flex: 1;
-    padding: 6px 12px;
-    font-size: 14px;
-    border: none;
-    border-bottom: 2px solid #6a3ae4;
-    background-color: transparent;
-    color: #333;
-}
-
-.reply-box button {
-    background: none;
-    border: none;
-    color: #6a3ae4;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.replies {
-    margin-left: 50px;
-    margin-top: 10px;
-}
-	 */
-	
 	.comment {
 	    display: flex;
 	    gap: 12px;
@@ -424,9 +282,10 @@
 	    margin-left: 40px;
 	    border-left: 2px solid #f0f0f0;
 	    padding-left: 12px;
+	    width: calc(100% - 40px);
 	}
 	
-	.comment .profile-icon {
+	 .profile-icon {
 	    width: 28px;
 	    height: 28px;
 	    background: #ccc;
@@ -435,15 +294,17 @@
 	    flex-shrink: 0;
 	}
 	
-	.comment .profile-img {
+	 .profile-img {
 	    width: 100%;
 	    height: 100%;
 	    object-fit: cover;
 	}
 	
+	
 	.comment .content {
 	    display: flex;
 	    flex-direction: column;
+	    flex:1;
 	}
 	
 	.comment .author {
@@ -507,11 +368,14 @@
 	
 	.reply-box {
 	    display: none;
-	    width: 100%;
+	    width: calc(100% - 40px);
 	    margin-top: 8px;
 	    display: flex;
-	    gap: 10px;
+	    gap: 12px;
 	    align-items: center;
+	    margin-left: 40px;
+    	margin-top: 20px;
+    	padding-left: 12px;
 	}
 	
 	.reply-box input {

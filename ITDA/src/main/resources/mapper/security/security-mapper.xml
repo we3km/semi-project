@@ -4,7 +4,7 @@
 
 	<select id="loadUserByUsername" resultMap="userResultMap">
 		SELECT U.*,
-		P.IMAGE_URL,
+		P.IMAGE_URL
 		FROM USER_TB U
 		LEFT JOIN PROFILE P
 		ON U.USER_NUM = P.USER_NUM
@@ -51,7 +51,7 @@
 
 	<!-- 권한 조회 -->
 	<select id="findAuthoritiesByUserNum" parameterType="int"
-		resultType="String">
+		resultMap="authoritesMap">
 		SELECT AUTHORITY
 		FROM AUTHORITIES
 		WHERE USER_NUM = #{userNum}
@@ -60,7 +60,7 @@
 	<!-- 회원 정보 조회(프로필 제외) -->
 	<select id="findUserById" parameterType="string"
 		resultType="User">
-		SELECT * FROM USER_TB WHERE USER_ID = #{userId}
+		SELECT * FROM USER_TB  WHERE USER_ID = #{userId}
 	</select>
 
 	<!-- 아이디 중복 체크 -->
@@ -112,9 +112,14 @@
 		<result column="IMAGE_URL" property="imageUrl" />
 		<collection property="authorities" javaType="arraylist"
 			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
-
-			column="USER_NUM" select="findAuthoritiesByUserNum" />
+			column="USER_NUM" select="findAuthoritiesByUserNum" >
+		</collection>
 	</resultMap>
 
+	<resultMap type="org.springframework.security.core.authority.SimpleGrantedAuthority" id="authoritesMap">
+		<constructor >
+			<arg column="AUTHORITY" javaType="string" />
+		</constructor>
+	</resultMap>
 
 </mapper>
