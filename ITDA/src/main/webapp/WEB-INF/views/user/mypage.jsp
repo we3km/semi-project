@@ -87,37 +87,37 @@
 
 				<!-- 관심글 및 내가 쓴 글 등 반복 영역은 JSTL로 -->
 				<!-- 
-        <div class="group-20 element">
-		    <c:forEach var="board" items="${boardList}" varStatus="status">
-		        <c:if test="${status.index < 4}">
-		            <div class="group-box group-${24 + status.index}">
-		                <div class="red">
-		                    <img class="likes" src="resources/EmptyHeart.png" />
-		                </div>
-		                <div class="overlap-3">
-		                    <div class="board-title">${board.title}</div>
-		                </div>
-		                <div class="overlap-4">
-		                    <div class="board-terms">보증금 : ${board.deposit}원</div>
-		                </div>
-		                <div class="overlap-group-2">
-		                    <div class="board-period">${board.period}</div>
-		                </div>
-		            </div>
-		        </c:if>
-		    </c:forEach>
-		
-		    <div class="text-wrapper-22">내가 등록한 게시글</div>
-		    <div class="text-wrapper-23">거래 기록</div>
-		    <div class="text-wrapper-24">찜 목록</div>
-		-->
-				<!-- 더보기는 나중 구현 -->
-				<!--
-		    <div class="see-more1">더보기 &gt;</div>
-		    <div class="see-more2">더보기 &gt;</div>
-		    <div class="see-more3">더보기 &gt;</div>
-		</div>
-		-->
+		        <div class="group-20 element">
+				    <c:forEach var="board" items="${boardList}" varStatus="status">
+				        <c:if test="${status.index < 4}">
+				            <div class="group-box group-${24 + status.index}">
+				                <div class="red">
+				                    <img class="likes" src="resources/EmptyHeart.png" />
+				                </div>
+				                <div class="overlap-3">
+				                    <div class="board-title">${board.title}</div>
+				                </div>
+				                <div class="overlap-4">
+				                    <div class="board-terms">보증금 : ${board.deposit}원</div>
+				                </div>
+				                <div class="overlap-group-2">
+				                    <div class="board-period">${board.period}</div>
+				                </div>
+				            </div>
+				        </c:if>
+				    </c:forEach>
+				
+				    <div class="text-wrapper-22">내가 등록한 게시글</div>
+				    <div class="text-wrapper-23">거래 기록</div>
+				    <div class="text-wrapper-24">찜 목록</div>
+				-->
+						<!-- 더보기는 나중 구현 -->
+						<!--
+				    <div class="see-more1">더보기 &gt;</div>
+				    <div class="see-more2">더보기 &gt;</div>
+				    <div class="see-more3">더보기 &gt;</div>
+				</div>
+				-->
 				<div class="group-20 element">
 					<c:forEach var="board" items="${boardList}" varStatus="status">
 						<c:if test="${status.index < 4}">
@@ -466,11 +466,10 @@
 		document.getElementById("pwdForm").submit();
 		alert("비밀번호가 변경되었습니다.");
 	  	closeModal(); // 성공 후 닫기
-	} */
+	} */	
 	
-	
-	document.querySelector('.logo').addEventListener('click', function () {
-		window.location.href = contextPath + "/";
+	document.querySelector('.delete-user').addEventListener('click', function () {
+		window.location.href = contextPath + "/user/logout";
 	});
 	
 </script>

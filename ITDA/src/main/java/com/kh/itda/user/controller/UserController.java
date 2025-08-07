@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -371,5 +372,13 @@ public class UserController {
 		request.getSession().invalidate(); 
 		return "redirect:/"; // 로그아웃 후 메인 페이지로 이동
 	}
+	
+	// 회원탈퇴
+	@PostMapping("/user/delete")
+	public String deleteUser() {
+		
+		return "redirect:/";
+	}
+	
 }
 
