@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  line-height: 1.6;
 }
 
 .container {
@@ -24,21 +25,29 @@ h1 {
 }
 
 .inquiry-detail .detail-row {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
+  margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 15px;
+  align-items: start;
 }
 
 .detail-row .label {
-  width: 150px;
-  font-weight: bold;
+  font-weight: 600;
   color: #374151;
+  padding-top: 2px; /* 텍스트 정렬을 위한 미세 조정 */
+  white-space: nowrap;
 }
 
 .detail-row .value {
-  flex: 1;
   color: #111827;
-  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* 내용 영역은 전체 너비를 사용 */
+.content-row {
+  grid-template-columns: 150px 1fr;
 }
 
 .content-row .content {
@@ -46,9 +55,26 @@ h1 {
   padding: 15px;
   background: #f9fafb;
   border-radius: 6px;
-  max-height: 300px;
+  min-height: 80px;
   overflow-y: auto;
   color: #1e293b;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* 이미지가 있는 행은 별도 처리 */
+.detail-row.image-row {
+  grid-template-columns: 1fr;
+  margin-top: 20px;
+}
+
+.inquiry-detail img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  display: block;
 }
 
 a {
@@ -61,8 +87,18 @@ a:hover {
   color: #3730a3;
 }
 
+/* 폼 스타일 */
 form {
   margin-top: 30px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 30px;
+}
+
+form label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
 }
 
 textarea {
@@ -73,14 +109,9 @@ textarea {
   border-radius: 8px;
   resize: vertical;
   background-color: #f8fafc;
-}
-
-select {
-  padding: 10px 14px;
-  font-size: 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #f1f5f9;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 button {
@@ -100,10 +131,67 @@ button:hover {
   background-color: #3730a3;
 }
 
-.back-btn {
+button.back-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  margin-top: 20px;
   background-color: #6b7280;
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.back-btn:hover {
+button.back-btn:hover {
   background-color: #4b5563;
+}
+
+.status {
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.status.received {
+  background-color: #fef9c3; 
+  color: #92400e;
+}
+
+.status.complete {
+  background-color: #bbf7d0; 
+  color: #166534;
+}
+
+/* 답변 일시 스타일 */
+.reply-date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .inquiry-detail .detail-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .detail-row .label {
+    font-weight: 700;
+    color: #1e3a8a;
+    padding-bottom: 5px;
+  }
+  
+  .content-row {
+    grid-template-columns: 1fr;
+  }
 }
