@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.HtmlUtils;
 
 import com.kh.itda.alarm.model.service.AlarmService;
 import com.kh.itda.common.Utils;
@@ -41,6 +42,7 @@ import com.kh.itda.community.model.vo.CommunityExt;
 import com.kh.itda.community.model.vo.CommunityImg;
 import com.kh.itda.community.model.vo.CommunityReaction;
 import com.kh.itda.community.model.vo.CommunityType;
+import com.kh.itda.community.model.vo.communityTag;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.vo.User;
@@ -144,6 +146,15 @@ public class CommunityController {
 								/* Model model, */ RedirectAttributes ra,
 								@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles
 								) {
+		System.out.println();
+		System.out.println(c);
+		System.out.println();
+		c.setTagStr(HtmlUtils.htmlEscape(c.getTagStr()));
+//		c.setCommunityContent(HtmlUtils.htmlEscape(c.getCommunityContent()));
+//		c.setCommunityTitle(HtmlUtils.htmlEscape(c.getCommunityTitle()));
+		System.out.println(c);
+		System.out.println();
+		
 		if (upfiles != null && upfiles.size() > 5) {
 	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
 	        return "redirect:/community/insert"; // 글쓰기 폼으로 다시 돌려보냄
@@ -348,6 +359,18 @@ public class CommunityController {
 		community.setCommunityContent(Utils.newLineClear(community.getCommunityContent()));
 		
 		model.addAttribute("c",community);
+		System.out.println();
+		System.out.println(community);
+		System.out.println();
+		for (communityTag ct : community.getTags()) {
+			ct.setTagContent(HtmlUtils.htmlUnescape(ct.getTagContent()));
+		}
+		community.setCommunityContent(HtmlUtils.htmlUnescape(community.getCommunityContent()));
+		community.setCommunityTitle(HtmlUtils.htmlUnescape(community.getCommunityTitle()));
+		System.out.println(community);
+		System.out.println();
+		
+		
 		
 		return "community/communityWrite";
 	}
@@ -361,7 +384,9 @@ public class CommunityController {
 									RedirectAttributes ra
 								) {
 		
-		
+		c.setTagStr(HtmlUtils.htmlEscape(c.getTagStr()));
+//		c.setCommunityContent(HtmlUtils.htmlEscape(c.getCommunityContent()));
+//		c.setCommunityTitle(HtmlUtils.htmlEscape(c.getCommunityTitle()));
 		
 	    // 1. DB에서 현재 게시글의 이미지 정보를 가져옴
 	    CommunityExt originalCommunity = communityService.selectCommunity(c.getCommunityNo());
@@ -378,7 +403,6 @@ public class CommunityController {
 	        ra.addFlashAttribute("alertMsg", "이미지는 최대 5개까지 첨부할 수 있습니다.");
 	        return "redirect:/community/update/" + c.getCommunityNo(); // 수정 폼으로 다시 돌려보냄
 	    }
-	   
 
 	    System.out.println("### [디버깅] updateCommunity 메소드 시작. 전달받은 communityNo: " + c.getCommunityNo());
 	   

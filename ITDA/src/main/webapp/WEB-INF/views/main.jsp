@@ -74,10 +74,6 @@
 						</span>
 					</button>
 
-					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
-					</svg>
-					</span>
-					</button>
 					<!-- 목록 -->
 					<div class="dropdown-content">
 						<c:forEach var="entry" items="${mainCategoryType}">
@@ -99,11 +95,6 @@
 	                			<path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 	              			</svg>
 						</span>
-					</button>
-
-					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
-					</svg>
-					</span>
 					</button>
 					<div class="dropdown-content"></div>
 				</div>

@@ -38,6 +38,16 @@
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
 
+<<<<<<< Updated upstream
+=======
+		<!-- 카테고리 -->
+		<div class="category-line">
+			<div class="category">대여</div>
+			<div class="category">경매</div>
+			<div class="category">나눔</div>
+			<div class="category">커뮤니티</div>
+		</div>
+>>>>>>> Stashed changes
 		<!-- 로그인 / 로그아웃 버튼 -->
 		<div class="top-buttons">
 			<sec:authorize access="isAnonymous()">
