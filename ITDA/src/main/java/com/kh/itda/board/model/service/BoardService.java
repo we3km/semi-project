@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -17,7 +18,11 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+
+import com.kh.itda.user.model.vo.RentalItem;
+
 import com.kh.itda.community.model.vo.CommunityType;
+
 
 public interface BoardService {
 
@@ -88,7 +93,10 @@ public interface BoardService {
 	void updateBid(AuctionBidding bid);
 
 	void insertBiddingWinner(int boardId);
+	
+	List<RentalItem> getRentalItemByUserNum(int userNum);
 
+	List<BoardAllWrapper> selectMyBoard(int userNum);
 	void deleteBoard(int boardId);
 
 	Map<String, ProductCategories> getProductType();

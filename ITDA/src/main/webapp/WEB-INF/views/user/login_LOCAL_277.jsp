@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html;charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -25,7 +24,7 @@ body {
 
 h1 {
 	font-size: 48px;
-	color: #5A5CFF;
+	color: #5a5cff;
 	margin-bottom: 30px;
 }
 
@@ -65,8 +64,8 @@ input[type="text"], input[type="password"] {
 
 .login-btn {
 	width: 100%;
-	background-color: #5A5CFF;
-	color: white;
+	background-color: #5A5CFF; ======= . login-btn { width : 100%;
+	background-color: #5a5cff; >>>>>>> origin /Reports color : white;
 	padding: 12px;
 	font-size: 16px;
 	border: none;
@@ -109,26 +108,10 @@ input[type="text"], input[type="password"] {
 	font-size: 14px;
 	cursor: pointer;
 	background-color: white;
-	.
-	google
-	{
-	background-color
-	:
-	#FFFFFF;
-}
-
-.naver {
-	background-color: #E5F3E5;
 }
 </style>
 </head>
 <body>
-
-	<c:if test="${param.error == 'true'}">
-		<script>
-			alert(decodeURIComponent('${param.message}'));
-		</script>
-	</c:if>
 
 	<div class="login-container">
 		<h2>세상을</h2>
@@ -154,8 +137,8 @@ input[type="text"], input[type="password"] {
 
 		<div class="links">
 			<a href="${pageContext.request.contextPath}/user/join/terms">회원가입</a>
-			<a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a>
-			<a href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
+			<a href="${pageContext.request.contextPath}/user/findId">아이디 찾기</a> <a
+				href="${pageContext.request.contextPath}/user/findPwd">비밀번호 찾기</a>
 		</div>
 	</div>
 </body>

@@ -26,7 +26,20 @@
 		SELECT
 		USER_TB_SEQ.NEXTVAL FROM DUAL
 	</select>
-
+	
+	<!-- 프로필 URL 찾기 -->
+	<select id="getProfileImageUrl" resultType="String">
+		SELECT IMAGE_URL
+    	FROM PROFILE
+    	WHERE USER_NUM = #{userNum}
+	</select>
+	
+	<select id="findUserById" resultType="User">
+		SELECT U.*
+		FROM USER_TB U
+		WHERE USER_ID = #{userId}
+	</select>
+	
 	<!-- 회원 정보 주입 -->
 	<insert id="insertUser" parameterType="user">
 		INSERT INTO USER_TB (
@@ -67,57 +80,91 @@
 		SELECT AUTHORITY FROM AUTHORITIES WHERE USER_NUM = #{userNum}
 	</select>
 
-
 	<!-- 권한 부여 -->
 	<insert id="insertAuthority" parameterType="int">
 		INSERT INTO
 		AUTHORITIES (USER_NUM, AUTHORITY) VALUES (#{userNum}, 'ROLE_USER')
 	</insert>
+	
 	<!-- 비밀번호 변경 -->
 	<update id="updatePassword" parameterType="map">
 		UPDATE USER_TB
-		<set>
-			<if test="userPwd != null and userPwd != ''">
-				USER_PWD = #{encodedPwd}
-			</if>
-		</set>
+		SET USER_PWD = #{encodedPwd}
 		WHERE USER_ID = #{userId}
 	</update>
-
-	<!-- 회원정보 수정 -->
-	<update id="updateUser">
+	
+	<!-- 닉네임 변경 -->
+	<update id="updateNickname" parameterType="map">
 		UPDATE USER_TB
-		<set>
-			<if test="email != null">
-				EMAIL = #{email},
-			</if>
-			<if test="birth != null">
-				BIRTH = #{birth},
-			</if>
-			<if test="nickName != null">
-				NICK_NAME = #{nickName},
-			</if>
-			<if test="phone != null">
-				PHONE = #{phone},
-			</if>
-			<if test="address != null">
-				ADDRESS = #{address},
-			</if>
-			<if test="userPwd != null and userPwd != ''">
-				USER_PWD = #{userPwd}
-			</if>
-		</set>
+		SET NICK_NAME = #{newNickname}
 		WHERE USER_ID = #{userId}
 	</update>
+	
+	<!-- 휴대폰 번호 변경 -->
+	<update id="updatePhone" parameterType="map">
+		UPDATE USER_TB
+		SET PHONE = #{newPhone}
+		WHERE USER_ID = #{userId}
+	</update>
+	
+	<!-- 주소 변경 -->
+	<update id="updateAddress" parameterType="map">
+		UPDATE USER_TB
+		SET ADDRESS = #{newAddress}
+		WHERE USER_ID = #{userId}
+	</update>
+	
+	<!-- 프로필 변경 -->
+	<update id="updateProfile" parameterType="map">
+		UPDATE PROFILE
+		SET IMAGE_URL = #{imageUrl}
+		WHERE USER_NUM = #{userNum}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<!-- <update id="updateUser">
+		UPDATE USER_TB
+			<set>
+				<if test="email != null">
+					EMAIL = #{email},
+				</if>
+				<if test="nickName != null">
+					NICK_NAME = #{nickName},
+				</if>
+				<if test="phone != null">
+					PHONE = #{phone},
+				</if>
+				<if test="address != null">
+					ADDRESS = #{address},
+				</if>
+				<if test="encodedPwd != null and encodedPwd != ''">
+					USER_PWD = #{encodedPwd}
+				</if>
+			</set>
+		WHERE USER_ID = #{userId}
+	</update> -->
 
 	<select id="selectUserNickname" resultType="String">
 		SELECT NICK_NAME FROM
 		USER_TB WHERE USER_ID = #{userId}
 	</select>
+	
 	<select id="selectUserNum" resultType="String">
 		SELECT USER_NUM FROM
 		USER_TB WHERE USER_ID = #{userId}
 	</select>
 	
-	
+	<select id="getRentalItemByUserNum" parameterType="int" resultType="rentalItem">
+		SELECT 
+			BC.PRODUCT_NAME, 
+			F.FILE_NAME AS IMAGE_URL, 
+			BR.RENTAL_END_DATE,
+			TRUNC(BR.RENTAL_END_DATE - SYSDATE) AS LEFT_DAYS
+		FROM BOARD_COMMON BC
+		JOIN "FILE" F ON F.REF_NO = BC.BOARD_ID
+		JOIN BOARD_RENTAL BR ON BC.BOARD_ID = BR.BOARD_ID
+		JOIN TRANSACTION_END TE ON BC.BOARD_ID = TE.BOARD_ID
+		WHERE TE.TRADER_USER_NUM = #{userNum}
+	</select>
+
 </mapper>

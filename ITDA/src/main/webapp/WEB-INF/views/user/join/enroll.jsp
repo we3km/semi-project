@@ -39,12 +39,12 @@ String email = (String) session.getAttribute("verifiedEmail");
 	font-size: 12px;
 }
 
-#id {
+#id, #nick-name {
 	width: 340px;
 	height: 30px;
 }
 
-#id-check {
+#id-check, #nick-name-check {
 	background-color: #5A54FF;
 	width: 80px;
 	height: 30px;
@@ -54,7 +54,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 	cursor: pointer;
 }
 
-#nick-name, #pwd, #pwd-check, #email, #phone, #birth {
+#pwd, #pwd-check, #email, #phone, #birth {
 	width: 426px;
 	height: 30px;
 }
@@ -144,14 +144,16 @@ String email = (String) session.getAttribute("verifiedEmail");
 				<input type="text" id="id" name="userId" value="${user.userId}"
 					required pattern="\w{4,12}"> &nbsp;&nbsp;&nbsp; <input
 					type="button" id="id-check" value="중복확인"> <span
-					id="id-status"></span><br> 영문 또는 숫자로 4자~12자로 입력해 주세요<br>
+					id="id-status"></span><br> 영문 또는 숫자로 4자~12자로 입력해주세요<br>
 				<br>
 
 				<!-- 닉네임 -->
 				<input type="text" id="nick-name" name="nickName"
 					value="${user.nickName}" required
-					pattern="^(([가-힣]{2,8})|([a-zA-Z]{4,16})|([가-힣a-zA-Z]{2,10}))$"><br>
-				한글기준 2자~8자, 영문기준 4자~16자로 입력해주세요.<br> <br>
+					pattern="^([가-힣a-zA-Z0-9]{2,12})$"> &nbsp;&nbsp;&nbsp; <input
+					type="button" id="nick-name-check" value="중복확인"> <span
+					id="nick-name-status"></span><br>
+				한글, 영문 대소문자, 숫자로 2자~12자로 입력해주세요.<br><br>
 
 				<!-- 비밀번호 -->
 				<input type="password" id="pwd" name="userPwd"
@@ -172,8 +174,9 @@ String email = (String) session.getAttribute("verifiedEmail");
 				010-1234-5678 형식으로 입력해주세요.<br> <br>
 
 				<!-- 생일 -->
-				<input type="date" id="birth" name="birth" value="${user.birth}"
-					required><br> &nbsp;<br>
+				<input type="date" id="birth" name="birth" value="${user.birth}" 
+					required max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd")
+					.format(new java.util.Date()) %>"><br> &nbsp;<br>
 
 				<!-- 주소 -->
 				<div class="address">
@@ -215,11 +218,11 @@ String email = (String) session.getAttribute("verifiedEmail");
 		</div>
 	</form>
 
-	<script
-		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script>
     	const contextPath = "${pageContext.request.contextPath}";
     	let idValid = false;
+    	let nickNameValid = false;
     	let pwdMatched = false;
     	
     	document.getElementById('id-check').addEventListener('click', function() {
@@ -248,29 +251,90 @@ String email = (String) session.getAttribute("verifiedEmail");
                     idValid = true;
                     idStatus.textContent = '사용 가능한 아이디입니다.';
                     idStatus.style.color = 'green';
-                } else {
+                } else if (data === "1") { // 중복
                     idValid = false;
                     idStatus.textContent = '이미 사용 중인 아이디입니다.';
                     idStatus.style.color = 'red';
-                }
+                } else if (data === "-1") { // 사용 불가
+                    idValid = false;
+                    idStatus.textContent = '아이디 형식이 올바르지 않습니다.';
+                    idStatus.style.color = 'orange';
+                } else {
+                	idValid = false;
+                	idStatus.textContent = '오류가 발생했습니다.';
+                	idStatus.style.color = 'red';
+		        }
             })
             .catch(err => alert('오류 발생: ' + err));
         });
+    	
+    	// 닉네임 중복 체크
+    	document.getElementById('nick-name-check').addEventListener('click', function () {
+		    const nickName = document.getElementById('nick-name').value.trim();
+		    if (!nickName) {
+		        alert('닉네임을 입력해주세요.');
+		        return;
+		    } else if (nickName.length < 2 || nickName.length > 10) {
+		        alert('닉네임은 2자 이상 10자 이하로 입력해주세요.');
+		        return;
+		    }
+		
+		    const token = '${_csrf.token}';
+		
+		    fetch(contextPath + "/user/join/enroll/checkNickname?nickName=" + encodeURIComponent(nickName), {
+		        method: "GET"
+		    })
+		    .then(res => res.text())
+		    .then(data => {
+		        const nickNameStatus = document.getElementById('nick-name-status');
+		        console.log(data)
+		        if (data === "0") { // 사용 가능
+		            nickNameValid = true;
+		            nickNameStatus.textContent = '사용 가능한 닉네임입니다.';
+		            nickNameStatus.style.color = 'green';
+		        } else if (data === "1") { // 중복
+		            nickNameValid = false;
+		            nickNameStatus.textContent = '이미 사용 중인 닉네임입니다.';
+		            nickNameStatus.style.color = 'orange';
+		        } else if (data === "-1") { // 유효하지 않은 닉네임
+		            nickNameValid = false;
+		            nickNameStatus.textContent = '유효하지 않은 닉네임입니다.';
+		            nickNameStatus.style.color = 'orange';
+		        } else {
+		            nickNameValid = false;
+		            nickNameStatus.textContent = '오류가 발생했습니다.';
+		            nickNameStatus.style.color = 'red';
+		        }
+		    })
+		    .catch(err => alert('오류 발생: ' + err));
+		});
+    	
+    	// 비밀번호 유효성 검사용
+    	function isValidPassword(pwd) {
+            const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{8,15}$/;
+            return regex.test(pwd);
+        }
     	
     	document.getElementById('pwd-check').addEventListener('blur', function() {
     		const pwd = document.getElementById('pwd').value.trim();
     		const check = document.getElementById('pwd-check').value.trim();
     		const pwdStatus = document.getElementById('pwd-status')
     		
-    		if(pwd && check && pwd === check) {
-    			pwdMatched = true;
-    			pwdStatus.textContent = '비밀번호가 일치합니다.';
-    			pwdStatus.style.color = 'green';
-		    } else {
-		    	pwdMatched = false;
-		    	pwdStatus.textContent = '비밀번호가 불일치합니다.';
-		    	pwdStatus.style.color = 'red';
-		    }
+    		if(isValidPassword(pwd)){
+    			if(pwd && check && pwd === check) {
+        			pwdMatched = true;
+        			pwdStatus.textContent = '비밀번호가 일치합니다.';
+        			pwdStatus.style.color = 'green';
+    		    } else {
+    		    	pwdMatched = false;
+    		    	pwdStatus.textContent = '비밀번호가 불일치합니다.';
+    		    	pwdStatus.style.color = 'red';
+    		    }
+    		} else {
+                pwdMatched = false;
+                pwdStatus.textContent = '유효하지 않은 비밀번호입니다.';
+                pwdStatus.style.color = 'red';
+            }
     	});
     	
     	document.getElementById('pwd').addEventListener('blur', function () {
@@ -280,6 +344,51 @@ String email = (String) session.getAttribute("verifiedEmail");
     	        document.getElementById('pwd-check').dispatchEvent(new Event('blur'));
     	    }
     	});
+    	
+    	function isValidPhone() {
+			const testPhone = /^010-\d{4}-\d{4}$/;
+			const checkPhone = document.getElementById('phone').value.trim();
+			
+			if (!checkPhone) {
+		        alert("휴대폰 번호를 입력해주세요.");
+		        return false;
+		    }
+			
+			if (!testPhone.test(checkPhone)) {
+		        alert("휴대폰 번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+		        return false;
+		    }
+			
+			return true;
+		}
+    	
+    	function isValidBirth() {
+    	    const birthStr = document.getElementById('birth').value;
+    	    if (!birthStr) {
+    	        alert("생년월일을 입력해주세요.");
+    	        return false;
+    	    }
+
+    	    const birthDate = new Date(birthStr);
+    	    const today = new Date();
+
+    	    // 미래 날짜 입력 불가
+    	    if (birthDate > today) {
+    	        alert("생년월일은 미래 날짜로 입력할 수 없습니다.");
+    	        return false;
+    	    }
+
+    	    // 만 14세 이상 체크
+    	    const fourteenYearsAgo = new Date();
+    	    fourteenYearsAgo.setFullYear(today.getFullYear() - 14);
+
+    	    if (birthDate > fourteenYearsAgo) {
+    	        alert("만 14세 이상만 가입할 수 있습니다.");
+    	        return false;
+    	    }
+
+    	    return true;
+    	}
     	
     	function previewImage(event) {
             const file = event.target.files[0];
@@ -348,10 +457,26 @@ String email = (String) session.getAttribute("verifiedEmail");
     	        return;
     	    }
     	    
-    	    if (!setFullAddress()) {
+    	    if (!nickNameValid) {
+    	    	alert("닉네임 중복 확인을 완료해주세요.");
     	        return;
     	    }
-
+    	    
+    	    if (!setFullAddress()) {
+    	    	alert("주소를 정확히 입력해주세요.");
+    	        return;
+    	    }
+    	    
+    	    if(!isValidPhone()) {
+    	    	alert("휴대폰 번호를 입력해주세요.");
+    	        return;
+    	    }
+    	    
+    	    if (!isValidBirth()) {
+    	    	alert("생일을 입력해주세요.");
+    	        return;
+    	    }
+    	    
     	    // 모든 조건이 만족하고 가입완료 버튼 누를 시 가입성공
     	    document.getElementById("enrollForm").submit();
 		}

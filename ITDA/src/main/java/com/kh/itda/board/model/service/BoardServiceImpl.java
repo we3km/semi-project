@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.itda.board.model.vo.AuctionBidding;
+import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardAuctionWrapper;
 import com.kh.itda.board.model.vo.BoardExchangeWrapper;
@@ -21,6 +22,7 @@ import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.user.model.vo.RentalItem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -223,7 +225,6 @@ public class BoardServiceImpl implements BoardService{
 		return boardDao.selectEqualsCategoryShareList(smallCategory);
 	}
 
-
 	@Override
 	public int insertBoardAuction(BoardAuctionWrapper board, List<File> imgList) {
 		board.getBoardCommon().setProductComment(Utils.XSSHandling(board.getBoardCommon().getProductComment()));
@@ -297,16 +298,25 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public void insertBiddingWinner(int boardId) {
 		boardDao.insertBiddingWinner(boardId);
-		
+	}
+
+	// 마이페이지 > 대여 중인 물품
+	@Override
+	public List<RentalItem> getRentalItemByUserNum(int userNum) {
+		return boardDao.getRentalItemByUserNum(userNum);
+
 	}
 
 
 	@Override
+	public List<BoardAllWrapper> selectMyBoard(int userNum) {
+		return boardDao.selectMyBoard(userNum);
+	}
+
 	public void deleteBoard(int boardId) {
 		boardDao.deleteBoard(boardId);
 		
 	}
-
 
 	@Override
 	public Map<String, ProductCategories> getProductType() {
@@ -318,9 +328,6 @@ public class BoardServiceImpl implements BoardService{
 	public String getProfileImage(int writerUserNum) {
 		return boardDao.getProfileImage(writerUserNum);
 	}
-
-
-
 
 
 

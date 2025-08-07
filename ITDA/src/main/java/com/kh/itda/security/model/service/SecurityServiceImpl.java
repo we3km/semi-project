@@ -24,6 +24,7 @@ public class SecurityServiceImpl implements SecurityService {
 		if (userExt == null) {
 			throw new UsernameNotFoundException("존재하지 않는 사용자입니다.");
 		}
+
 		log.debug("{}",userExt);
 		return userExt;
 		
