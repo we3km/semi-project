@@ -59,8 +59,8 @@ public class CommunityDaoImpl implements CommunityDao{
 	}
 
 	@Override
-	public int insertCommunityImg(CommunityImg ci) {
-		return session.insert("community.insertCommunityImg", ci);
+	public int insertCommunityImgList(List<CommunityImg> imgList) {
+		return session.insert("community.insertCommunityImgList",imgList);
 	}
 
 	@Override
@@ -144,11 +144,8 @@ public class CommunityDaoImpl implements CommunityDao{
 	}
 
 	@Override
-	public List<BoardComment> selectCommentList(int communityNo, String sort) {
-		Map<String,Object> params = new HashMap<>();
-		params.put("communityNo", communityNo);
-		params.put("sort", sort);
-		return session.selectList("community.selectCommentList",params);
+	public List<BoardComment> selectCommentList(int communityNo) {
+		return session.selectList("community.selectCommentList",communityNo);
 	}
 
 	@Override
@@ -164,26 +161,6 @@ public class CommunityDaoImpl implements CommunityDao{
 	@Override
 	public int deleteComment(int commentNo) {
 		return session.update("community.deleteComment",commentNo);
-	}
-
-	@Override
-	public int updateCommunity(CommunityExt c) {
-		return session.update("community.updateCommunity",c);
-	}
-
-	@Override
-	public List<String> selectChangeNames(List<Integer> deleteImgNos) {
-		return session.selectList("community.selectChangeNamesByIds", deleteImgNos);
-	}
-
-	@Override
-	public int deleteCommunityImgs(List<Integer> deleteImgNos) {
-		return session.delete("community.deleteImgsByIds", deleteImgNos);
-	}
-
-	@Override
-	public int deleteCommunityTags(int communityNo) {
-		return session.delete("community.deleteCommunityTags",communityNo);
 	}
 
 	

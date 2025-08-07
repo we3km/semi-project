@@ -49,6 +49,37 @@
 		<div class="subtitle">세상을 바꾸는 거래와 소통의 플랫폼</div>
 
 
+		<%-- <div class="top-buttons">
+			<div class="unlogin">
+				<div class="btn" id="loginBtn">로그인</div>
+				<div class="btn" id="joinMembership">회원가입</div>
+			</div>
+			<div class="login">
+				<div class="btn" id="myPage">마이페이지</div>
+				<div class="btn" id="logoutBtn">로그아웃</div>
+			</div>
+		</div>
+		<c:choose>
+			<c:when test="${not empty sessionScope.loginUser}">
+				<script>
+					$('.unlogin').hide();
+					$('.login').show();
+				</script>
+			</c:when>
+			<c:otherwise>
+				<script>
+					$('.login').hide();
+					$('.unlogin').show();
+				</script>
+			</c:otherwise>
+		</c:choose> --%>
+		<!-- 채팅방 이동 -->
+		<!-- 		<script>
+		document.getElementById("myChatRoom").addEventListener("click", function() {
+		    location.href = "${contextpath}/itda/chat/chatRoomList";
+		});
+		</script> -->
+
 		<div class="search-filter-wrapper">
 			<div class="filters">
 				<!-- 거래유형 드롭다운 -->

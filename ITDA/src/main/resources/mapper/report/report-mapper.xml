@@ -7,12 +7,7 @@
 
 	<!-- 1. 신고 등록 -->
 	<insert id="insertReport"
-		parameterType="com.kh.itda.support.model.vo.Report"
-		useGeneratedKeys="true" keyProperty="reportNum" keyColumn="report_num">
-		<selectKey keyProperty="reportNum" resultType="int"
-			order="BEFORE">
-			SELECT REPORTS_SEQ.NEXTVAL FROM DUAL
-		</selectKey>
+		parameterType="com.kh.itda.support.model.vo.Report">
 		INSERT INTO reports (
 		report_num,
 		user_num,

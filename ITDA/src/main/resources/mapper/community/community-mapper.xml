@@ -117,6 +117,39 @@
 	
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+	<!-- <select id="selectList" parameterType="map" resultType="community">
+	    SELECT 
+	        C.COMMUNITY_BOARD_ID AS communityNo, 
+	        C.TITLE AS communityTitle,
+	        C.COMMUNITY_CD AS communityCd,
+	        U.NICK_NAME AS communityNickname,
+	        C.WRITE_DATE AS writeDate, 
+	        C.VIEWS AS views,
+	        (
+	            SELECT COUNT(*)
+	            FROM REACTION R
+	            WHERE R.TARGET_ID = C.COMMUNITY_BOARD_ID
+	            AND R.REACTION_TYPE = 'LIKE'
+	        ) AS recommendCount
+	    FROM BOARD_COMMUNITY C
+	    LEFT JOIN USER_TB U ON C.USER_NUM = U.USER_NUM
+	    <where>
+	        </where>
+	
+	    ORDER BY
+	    <choose>
+	        <when test="sort == 'views'">
+	            VIEWS DESC
+	        </when>
+	        <when test="sort == 'likes'">
+	            recommendCount DESC
+	        </when>
+	        <otherwise>
+	            COMMUNITY_BOARD_ID DESC </otherwise>
+	    </choose>
+	
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select> -->
 	
 	<!-- 태그기능 -->
 	<select id="selectTagByName" parameterType="string" resultType="CommunityTag">
@@ -179,21 +212,23 @@
 
 	<!-- 게시글 첨부 이미지 등록 --><!-- 순서 주의 필요 =============오류시 확인해보셈============ -->
 	<!-- 다중 인서트문 - mybatis의 fore -->
-	<insert id="insertCommunityImg" parameterType="communityImg">
+	<insert id="insertCommunityImgList" parameterType="communityImg">
 		 INSERT INTO COMMUNITY_IMG (
-	        COMMUNITY_IMG_NO,
-	        ORIGIN_NAME,
-	        CHANGE_NAME,
-	        REF_CNO,
+	        COMMUNITY_IMG_NO, 
+	        ORIGIN_NAME, 
+	        CHANGE_NAME, 
+	        REF_CNO, 
 	        IMG_LEVEL
 	    )
-	    VALUES (
-	        SEQ_IMG_NO.NEXTVAL,
-	        #{originName},
-	        #{changeName},
-	        #{refCno},
-	        #{imgLevel}
-	    )
+	    <foreach collection="list" item="ci" separator=" UNION ALL ">
+	        SELECT 
+	            SEQ_IMG_NO.NEXTVAL, 
+	            #{ci.originName}, 
+	            #{ci.changeName}, 
+	            #{ci.refCno},      -- communityNo가 아닌, ci 객체 안의 refCno를 사용
+	            #{ci.imgLevel}
+	        FROM DUAL
+	    </foreach>
 	</insert>
 
 	<!-- 특정 게시글 번호에 해당하는 게시글 정보를 조회할 때 사용 -->
@@ -204,9 +239,7 @@
 			C.CONTENT AS communityContent,
 			C.USER_NUM AS communityWriter,
 			U.NICK_NAME AS communityNickname,
-			P.IMAGE_URL AS imageUrl,
 			C.WRITE_DATE AS writeDate,
-			C.EDIT_DATE AS editDate,
 			T.COMMUNITY_NAME AS communityCdName,
 			C.COMMUNITY_CD AS communityCd,
 			C.VIEWS AS views,
@@ -231,65 +264,48 @@
 			
 		FROM BOARD_COMMUNITY c
 			LEFT JOIN USER_TB U ON C.USER_NUM=U.USER_NUM
-			LEFT JOIN PROFILE P ON U.USER_NUM = P.USER_NUM
 			LEFT JOIN COMMUNITY_TYPE T ON C.COMMUNITY_CD = T.COMMUNITY_CD
-			
 		WHERE COMMUNITY_BOARD_ID = #{communityNo}
 	</select> 
 
 	<!-- selectBoard 쿼리 결과를 매핑하기 위한 resultMap 정의BOARDWRITER을 USER_NUM으로 바꿈
 	게시글 정보와 함께 이미지 리스트(imgList)를 selectBoardImgList 쿼리로 가져와 매핑 -->
 	 <resultMap type="communityExt" id="communityExtResultMap">
-		  <id column="communityNo" property="communityNo" />
-		  <result column="communityTitle" property="communityTitle" />
-		  <result column="communityWriter" property="communityWriter" />
-		  <result column="communityContent" property="communityContent" />
-		  <result column="writeDate" property="writeDate" />
-		  <result column="communityNickname" property="communityNickname" />
-		  <collection property="imgList" javaType="java.util.List" ofType="communityImg"
-	        select="selectCommunityImgList" column="communityNo" />
+	  <id column="communityNo" property="communityNo" />
+	  <result column="communityTitle" property="communityTitle" />
+	  <result column="communityWriter" property="communityWriter" />
+	  <result column="communityContent" property="communityContent" />
+	  <result column="writeDate" property="writeDate" />
+	  <result column="communityNickname" property="communityNickname" />
+	  <collection property="imgList" javaType="java.util.List" ofType="communityImg"
+        select="selectCommunityImgList" column="communityNo" />
 	</resultMap>
-	
-	<resultMap id="communityImgResultMap" type="communityImg">
-	    <id property="communityImgNo" column="COMMUNITY_IMG_NO" />
-	    <result property="originName" column="ORIGIN_NAME" />
-	    <result property="changeName" column="CHANGE_NAME" />
-	    <result property="refCno" column="REF_CNO" />
-	    <result property="imgLevel" column="IMG_LEVEL" />
-	</resultMap>
+
 
 	<!-- 게시글 번호에 해당하는 첨부 이미지 리스트를 조회하는 쿼리 -->
 	<!-- 이미지 순서대로(IMG_LEVEL 기준) 정렬하여 가져옴 -->
 	<select id="selectCommunityImgList" resultType="communityImg">
-		 SELECT 
-	        COMMUNITY_IMG_NO AS communityImgNo,
-	        ORIGIN_NAME AS originName,
-	        CHANGE_NAME AS changeName,
-	        REF_CNO AS refCno,
-	        IMG_LEVEL AS imgLevel
-	    FROM COMMUNITY_IMG
-	    WHERE REF_CNO = #{communityNo}
-	    ORDER BY IMG_LEVEL
+		SELECT *
+		FROM COMMUNITY_IMG
+		WHERE REF_CNO = #{communityNo}
+		ORDER BY IMG_LEVEL
 	</select>
 
 	<!-- 게시글 조회수(Count)를 1 증가시키는 쿼리 -->
-	<update id="increaseCount" parameterType="community">
-		UPDATE BOARD_COMMUNITY
-		SET VIEWS = VIEWS + 1
+	<update id="increaseCount">
+		UPDATE BOARD_COMMUNITY 
+		SET	VIEWS = VIEWS + 1
 		WHERE COMMUNITY_BOARD_ID = #{communityNo}
 	</update>
 
-	<!-- 게시글 수정 -->
-	<update id="updateCommunity" parameterType="community">
-	    UPDATE BOARD_COMMUNITY
-	    <set>
-	        TITLE = #{communityTitle},
-	        CONTENT = #{communityContent}, COMMUNITY_CD = #{communityCd},
-	        EDIT_DATE = #{editDate}
-	    </set>
-	    WHERE COMMUNITY_BOARD_ID = #{communityNo}
+<!-- 아직안쓰는 부분 수정 쿼리-->
+	<!-- 게시글 제목과 내용을 수정할 때 사용하는 쿼리 -->
+	<update id="updateCommunity">
+		UPDATE COMMUNITY SET
+		TITLE = #{communityTitle},
+		CONTENT = #{communityContent}
+		WHERE COMMUNITY_BOARD_ID = #{communityNo}
 	</update>
-	
 	<!-- 첨부 이미지의 원본 이름과 변경 이름을 수정할 때 사용하는 쿼리 -->
 	<update id="updateCommunityImg">
 		UPDATE COMMUNITY_IMG SET
@@ -297,27 +313,10 @@
 		CHANGE_NAME = #{changeName}
 		WHERE COMMUNITY_IMG_NO = #{communityImgNo}
 	</update>
-	
-	<select id="selectChangeNamesByIds" parameterType="java.util.List" resultType="string">
-		SELECT CHANGE_NAME
-		FROM COMMUNITY_IMG
-		WHERE COMMUNITY_IMG_NO IN
-		<foreach collection="list" item="imgNo" open="(" separator="," close=")">
-			#{imgNo}
-		</foreach>
-	</select>
-	
-	<delete id="deleteImgsByIds" parameterType="java.util.List">
-		DELETE FROM COMMUNITY_IMG
-		WHERE COMMUNITY_IMG_NO IN
-		<foreach collection="list" item="imgNo" open="(" separator="," close=")">
-			#{imgNo}
-		</foreach>
-	</delete>
 
 	<!-- 게시글 첨부 이미지 한 건을 등록할 때 사용하는 INSERT 구문 -->
 	<!-- 단일 이미지 등록용 -->
-	<!-- <insert id="insertCommunityImg">
+	<insert id="insertCommunityImg">
 		INSERT INTO COMMUNITY_IMG
 		VALUES(
 		SEQ_IMG_NO.NEXTVAL,
@@ -326,7 +325,7 @@
 		#{refCno},
 		#{imgLevel}
 		)
-	</insert> -->
+	</insert>
 
 	<!-- 게시글 첨부 이미지 여러 건을 삭제할 때 사용하는 쿼리 -->	<!-- 전체삭젲의 위험 -->
 	<!-- deleteList 변수에 이미지 번호들을 넣어 삭제 처리 -->
@@ -425,43 +424,21 @@
 </delete>
 
 <!-- 댓글 -->
-<select id="selectCommentList" parameterType="map" resultType="boardComment">
+<select id="selectCommentList" parameterType="_int" resultType="boardComment">
     SELECT
         BC.BOARD_CMT_ID         AS boardCmtId,
         BC.BOARD_CMT_CONTENT    AS boardCmtContent,
         BC.CMT_WRITE_DATE       AS cmtWriteDate,
         BC.REF_NO               AS refNo,
         BC.CMT_WRITER_USER_NUM  AS cmtWriterUserNum,
-        U.NICK_NAME             AS nickName,
-        P.IMAGE_URL				AS imageUrl,        
-        BC.REF_COMMENT_ID       AS refCommentId,
-        (
-            SELECT COUNT(*)
-            FROM BOARD_COMMENT R
-            WHERE R.REF_COMMENT_ID = BC.BOARD_CMT_ID
-        ) AS replyCount
+        U.NICK_NAME             AS nickName,        
+        BC.REF_COMMENT_ID       AS refCommentId
     FROM BOARD_COMMENT BC
     JOIN USER_TB U ON BC.CMT_WRITER_USER_NUM = U.USER_NUM
-    LEFT JOIN PROFILE P ON U.USER_NUM = P.USER_NUM
     WHERE BC.REF_NO = #{communityNo}
       AND BC.BOARD_ASSORTMENT = 5
       AND STATUS = 'Y'
-      
-    START WITH REF_COMMENT_ID IS NULL 
-    CONNECT BY PRIOR BOARD_CMT_ID = REF_COMMENT_ID
-    
-    ORDER SIBLINGS BY 
-		<choose>
-			<when test="sort.equals('desc')">
-				CMT_WRITE_DATE DESC
-			</when>
-			<when test="sort.equals('reply')">
-				 replyCount DESC, CMT_WRITE_DATE ASC
-			</when>
-			<otherwise>
-				CMT_WRITE_DATE ASC
-			</otherwise>
-		</choose>
+    ORDER BY BC.CMT_WRITE_DATE ASC
 </select>
 
 <insert id="insertComment" parameterType="boardComment">
@@ -507,13 +484,5 @@
     SET STATUS = 'N'
     WHERE BOARD_CMT_ID = #{commentNo}
 </update>
-
-<!-- 태그 삭제  -->
-<delete id="deleteCommunityTags" parameterType="_int">
-    DELETE FROM BOARD_COMMUNITY_TAG
-    WHERE COMMUNITY_BOARD_ID = #{communityNo}
-</delete>
-
-
 
 </mapper>

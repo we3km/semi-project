@@ -5,8 +5,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,11 +51,7 @@
         <!-- 게시글 정보 -->
         <!--작성자, 작성일, 조회수, 추천수, 댓글수-->
         <div class="meta-row">
-            <div class="left">작성자 : ${community.communityNickname} | 작성일 : <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" />
-            	<c:if test="${not empty community.editDate}">
-		            <span class="edit-date">| 수정일: <fmt:formatDate value="${community.editDate}" pattern="yyyy-MM-dd HH:mm" /></span>
-		        </c:if>
-            </div>
+            <div class="left">작성자 ${community.communityNickname} · 작성일 <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" /></div>
             <div class="right">
                 <span>조회수 <span id="views">${community.views}</span> </span>
                 <span>추천 <span id="recommendCount"> ${community.recommendCount} </span></span>
@@ -79,18 +73,12 @@
                 <input type="text" id="shareUrl" readonly >
                 <button onclick="copyUrl()" id="copy">복사</button>
             </div>
-            
             <div id="deleteToggleArea" class="delete-menu hidden">
 				<form id="deleteForm" method="post" action="${pageContext.request.contextPath}/community/delete">
 			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
 			        <button type="submit" class="delete-btn">삭제하기</button>
 			    </form>
-			    <form id="editForm" method="get" action="${pageContext.request.contextPath}/community/update/${community.communityNo}">
-			        <input type="hidden" name="communityNo" value="${community.communityNo}" />
-			        <button type="submit" class="edit-btn">수정하기</button>
-			    </form>
 			</div>
-            	
         </div>
 
         <!-- 게시글 내용 -->
@@ -101,13 +89,13 @@
        	<!-- 게시글 이미지 -->
         <div class="post-img">
 	        <c:if test="${not empty community.imgList}">
-	        	<div class="img-area">
-		        	<c:forEach var="img" items="${community.imgList}">
-		            	<div class="img-item">
-			            	<img src="${pageContext.request.contextPath}/resources/images/community/${community.communityCd }/${img.changeName}" class="detail-img">
-		            	</div>
-		        	</c:forEach>
-		        </div>
+		        <c:forEach var="img" items="${community.imgList}">
+		            <%-- 
+		                Utils.saveFile에서 저장한 경로와 맞춰주어야 합니다.
+		                예시: /resources/uploads/커뮤니티코드/파일명
+		            --%>
+		            <img src="${pageContext.request.contextPath}/resources/images/community/${community.communityCd }/${img.changeName}">
+		        </c:forEach>
 		    </c:if>
         </div>
         
@@ -151,59 +139,20 @@
         <!-- 댓글 리스트 영역 추가-->
         <div id="commentList"></div> 
         
-         <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
-       
-        
+        <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
     </div>
     
     
 		<script>
 		const userReaction = "${userReaction}";
-		const communityNo = "${community.communityNo}";
-	    const communityCd = "${community.communityCd}";
-	    const loginUserNum = '<sec:authentication property="principal.userNum" />';
+	    const communityNo = "${community.communityNo}";
+	    const communityCd = "${communityCd}";
+	    const loginUserNum = "${loginUserNum}";
 		const communityWriter = "${community.communityWriter}";
-		const contextPath = '${pageContext.request.contextPath}';
-		
-		let currentSort = 'asc';
 		
 	    $(document).ready(function(){
 	    	//댓글목록 불러오기
 	    	selectCommentList();
-	    	
-	    	// 댓글 정렬
-	    	$('.tabs div').on('click',function(){
-				$('.tabs div').removeClass('active');
-				$(this).addClass('active');
-				
-				const sortType= $(this).text();
-				if(sortType === '최신순'){
-					currentSort = 'desc';
-				}else if(sortType === '답글순'){
-					currentSort = 'reply';
-				}else{
-					currentSort = 'asc';
-				}
-				
-				selectCommentList();
-			});
-	    	
-	    	console.log("loginUserNum:", loginUserNum);
-	    	console.log("communityWriter:", communityWriter);
-	    	 setTimeout(() => {
-	    	        if (!loginUserNum || parseInt(loginUserNum) !== parseInt(communityWriter)) {
-	    	            console.log("숨김 처리됨");
-	    	            $('.sub-btn').hide(); 
-	    	        } else {
-	    	            console.log("표시됨");
-	    	            $('.sub-btn').show(); 
-	    	        }
-	    	    }, 200);
-	    	/* // 수정 버튼 숨기기
-	    	if (!loginUserNum || parseInt(loginUserNum) !== communityWriter) {
-	            $('.sub-btn').hide(); 
-	        }
-	    	 */
 	    	
 	    	//이미지 초기설정
 	    	 if (userReaction === 'LIKE') {
@@ -248,33 +197,21 @@
 					$urlInput.prop('readonly', true); // 다시 readonly로 복구
 					alert('URL이 복사되었습니다!');
 				});
-				// sub-btn 클릭 → 삭제/수정 버튼 토글
+				// sub-btn 클릭 → 삭제 버튼 토글
 				$('.sub-btn').click(function () {
 					$('#deleteToggleArea').toggle();
 					$('#sharePopup').hide();   
 				});
-				
-				// 게시글 삭제
 				$('#deleteForm').on('submit',function(e){
-					if(!loginUserNum /* || loginUserNum !== communityWriter */){
+					if(!loginUserNum || loginUserNum !== communityWriter){
 						e.preventDefault();
 						alert('삭제 권한이 없습니다.');
-						console.log("로그인 유저 : "+ loginUserNum +", 게시글 작성자 : "+communityWriter);
 						return;
 					}
 					if(!confirm('정말로 이 게시글을 삭제하시겠습니까?')){
 						e.preventDefault();
 					}
 				});
-				
-				//게시글 수정
-				$('#editForm').on('submit',function(e){
-					
-					if(!confirm('정말로 이 게시글을 수정하시겠습니까?')){
-						e.preventDefault();
-					}
-				});
-				
 				$(document).click(function (event) {
 				    if (!$(event.target).closest('.share-btn, #sharePopup, .sub-btn, #deleteToggleArea').length) {
 				        $('#sharePopup').hide();
@@ -282,24 +219,18 @@
 				    }
 				});
 				
-				
 	    });
 			 
 	    
 			// 좋아요·싫어요 보내기
 		    function sendReaction(type) {
-		    	const dataToSend = {
-		    	        communityNo: communityNo, 
-		    	        communityCd: communityCd, 
-		    	        type: type
-		    	    };
 		        $.ajax({
 		            type: "POST",
 		            url: "${pageContext.request.contextPath}/community/react",
 		            contentType: "application/json",
 		            data: JSON.stringify({
-		            	communityNo: parseInt(communityNo), 
-		                communityCd: communityCd,
+		                communityNo: ${community.communityNo},
+		                communityCd: "${communityCd}",
 		                type: type
 		            }),
 		            success: function (res) {
@@ -328,18 +259,12 @@
 			
 			//댓글 목록 조회
 		    function selectCommentList() {
-				console.log("현재 정렬 타입"
-						+currentSort);
 		        $.ajax({
 		            url: "${pageContext.request.contextPath}/community/comments/" + communityNo,
 		            type: "GET",
 		            dataType: "json",
-		            data : {
-		            	sort : currentSort
-		            },
 		            success: function(commentTree) { // 서버로부터 계층형 댓글 목록(List<BoardCommentExt>)을 받음
 		            	
-		            	 console.log("'" + currentSort + "' 기준으로 서버로부터 받은 댓글:", commentTree);
 		            	
 		                const $commentListDiv = $('#commentList');
 		                $commentListDiv.empty(); // 기존 목록을 비움
@@ -360,6 +285,7 @@
 		                    });
 		                } else {
 		                    $('#commentCount, #commentCountDisplay').text(0);
+		                    $commentListDiv.append('<div class="comment-empty">작성된 댓글이 없습니다.</div>');
 		                }
 		            },
 		            error: function() { console.log("댓글 목록 조회에 실패했습니다."); }
@@ -395,11 +321,6 @@
 		    // 댓글 객체를 받아 HTML 문자열을 생성하는 함수
 		     function createCommentHtml(comment) {
 
-		 		const contextPath = '${pageContext.request.contextPath}';
-		 		
-		 		//유저 프로필 URL 수정필요
-		 		const profileUrl = contextPath + "/user/mypage/" + comment.cmtWriterUserNum;
-		 	
 		        let repliesHtml = '';
 		        if (comment.replies && comment.replies.length > 0) {
 		            $.each(comment.replies, function(index, reply) {
@@ -418,13 +339,13 @@
 		        if (repliesHtml) {
 		            repliesToggleHtml = '<div class="replies-toggle-btn" data-comment-no="'+ comment.boardCmtId +'">답글 접기</div>';
 		        }
-		       
+
 		        let commentHtml = '';
 		        commentHtml += '<div class="comment ' + (comment.refCommentId > 0 ? 'reply' : '') + '">';
-		        commentHtml += '  <div class="profile-icon"><a href="' + profileUrl + '"><img class="profile-img" src="' + contextPath + comment.imageUrl + '" alt="Profile Image"></a></div>';
+		        commentHtml += '  <div class="profile-icon"></div>';
 		        commentHtml += '  <div class="content">';
-		        commentHtml += '    <div class="author"><a href="' + profileUrl + '">' + comment.nickName + '</a></div>';
-		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>'; 
+		        commentHtml += '    <div class="author">' + comment.nickName + '</div>';
+		        commentHtml += '    <div class="text">' + comment.boardCmtContent + '</div>';
 		        commentHtml += '    <div class="actions">';
 		        commentHtml += '      <span>' + writeDate + '</span>';
 		        commentHtml +=        replyBtnHtml;
@@ -436,24 +357,17 @@
 		        commentHtml += '        <button class="reply-submit-btn" data-parent-no="' + comment.boardCmtId + '">등록</button>';
 		        commentHtml += '      </div>';
 		        commentHtml += '      <div class="replies-container" id="replies-container-' + comment.boardCmtId + '">';
-		        commentHtml += '        <div class="replies" >' + repliesHtml + '</div>';
+		        commentHtml += '        <div class="replies">' + repliesHtml + '</div>';
 		        commentHtml += '      </div>';
 		        commentHtml += '    </div>';
 		        commentHtml += '  </div>';
 		        commentHtml += '  <div class="options-btn">︙</div>';
 		        commentHtml += '  <div class="options-popup">';
 		        commentHtml += '      <div class="report-comment-btn" data-comment-no="'+ comment.boardCmtId +'">신고하기</div>';
-		        if(loginUserNum && parseInt(loginUserNum) === comment.cmtWriterUserNum) {
-			        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
-		        }
-		        
+		        commentHtml += '      <div class="delete-comment-btn" data-comment-no="'+ comment.boardCmtId +'">삭제하기</div>';
 		        commentHtml += '  </div>';
 		        commentHtml += '</div>';
 			    
-		        
-		        
-		        
-		        
 		        return commentHtml;
 		    }
 		    
@@ -519,7 +433,6 @@
 		 	// 	팝업 메뉴의 '삭제하기' 클릭 이벤트
 		    $('#commentList').on('click', '.delete-comment-btn', function() {
 		        const commentNo = $(this).data('comment-no');
-		        
 		        if (confirm(commentNo + '번 댓글을 정말 삭제하시겠습니까?')) {
 		        	$.ajax({
 		                url: "${pageContext.request.contextPath}/community/comments/delete",

@@ -21,6 +21,7 @@ public class Utils {
         if (serverFolderPath == null) {
             throw new IllegalStateException("서버 절대 경로를 찾을 수 없습니다.");
         }
+
         File folder = new File(serverFolderPath);
         if (!folder.exists()) {
             return folder.mkdirs();
@@ -99,32 +100,6 @@ public class Utils {
 	public static String newLineClear(String content) {
 		return content.replaceAll("<br>","\n");
 	}
-	
-	//파일삭제
-	public static void deleteFile(String changeName, ServletContext application, String folderName) {
-		if (changeName == null || changeName.isEmpty()) {
-			return; // 파일명이 없으면 아무것도 하지 않음
-		}
-
-		// 파일을 저장했던 실제 경로를 동일하게 구성합니다.
-		String realPath = application.getRealPath("/resources/images/" + folderName);
-
-		// 실제 경로와 파일명을 합쳐 전체 경로를 만듭니다.
-		File fileToDelete = new File(realPath, changeName);
-
-		// 파일이 실제로 존재하는지 확인 후 삭제합니다.
-		if (fileToDelete.exists()) {
-			if (fileToDelete.delete()) {
-				System.out.println("파일 삭제 성공: " + fileToDelete.getPath());
-			} else {
-				System.out.println("파일 삭제 실패: " + fileToDelete.getPath());
-			}
-		} else {
-			System.out.println("삭제할 파일이 존재하지 않음: " + fileToDelete.getPath());
-		}
-	}
-	
-	
 	
 }
 

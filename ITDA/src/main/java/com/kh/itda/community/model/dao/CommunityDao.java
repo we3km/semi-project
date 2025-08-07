@@ -22,7 +22,7 @@ public interface CommunityDao {
 
 	int insertCommunity(Community c);
 
-	int insertCommunityImg(CommunityImg ci);
+	int insertCommunityImgList(List<CommunityImg> imgList);
 
 	int increaseCount(int communityNo);
 
@@ -52,21 +52,13 @@ public interface CommunityDao {
 
 	int deleteCommunity(int communityNo);
 
-	List<BoardComment> selectCommentList(int communityNo, String sort);
+	List<BoardComment> selectCommentList(int communityNo);
 
 	int insertComment(BoardComment comment);
 
 	BoardComment selectComment(int commentNo);
 
 	int deleteComment(int commentNo);
-
-	int updateCommunity(CommunityExt c);
-
-	List<String> selectChangeNames(List<Integer> deleteImgNos);
-
-	int deleteCommunityImgs(List<Integer> deleteImgNos);
-
-	int deleteCommunityTags(int communityNo);
 
 	
 

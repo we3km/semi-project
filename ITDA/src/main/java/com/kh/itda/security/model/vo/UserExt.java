@@ -20,6 +20,15 @@ public class UserExt implements UserDetails {
 	// Spring Security 권한 목록
 	private Collection<? extends GrantedAuthority> authorities;
 
+	// 실제 DB에 저장되는 필드는 아님, 권한 목록 중 첫 번째 권한을 반환
+	public String getRole() {
+		if (authorities != null && !authorities.isEmpty()) {
+			// ROLE_ADMIN, ROLE_USER 형태로 들어있음
+			return authorities.iterator().next().getAuthority();
+		}
+		return null;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;

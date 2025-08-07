@@ -4,8 +4,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -24,6 +22,7 @@
 			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
 		</header>
 	</div>
+	_
 	<!-- 고객센터 본문 -->
 	<div class="center-wrapper">
 		<div class="cs-header">
@@ -61,7 +60,6 @@
 					<th>제목</th>
 					<th>문의 날짜</th>
 					<th>카테고리</th>
-					<th>처리 상태</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -75,7 +73,6 @@
 								<td><fmt:formatDate value="${inq.csDate}"
 										pattern="yyyy-MM-dd" /></td>
 								<td>${inq.categoryName}</td>
-								<td>${inq.status}</td>
 							</tr>
 						</c:forEach>
 					</c:when>
@@ -88,7 +85,7 @@
 				</c:choose>
 			</tbody>
 		</table>
-		
+
 		<!-- 자주 묻는 질문 -->
 		<div class="QNA">자주 묻는 질문</div>
 

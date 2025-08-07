@@ -11,6 +11,5 @@ public class CommunityExt extends Community{
 	private List<CommunityImg> imgList;
 	private String nickName;
 	private List<communityTag> tags;
-	private String writerProfile;
 
 }

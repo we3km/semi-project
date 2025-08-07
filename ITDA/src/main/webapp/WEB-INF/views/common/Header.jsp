@@ -22,9 +22,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<input type="hidden" id="userRole" value="${sessionScope.role}" />
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
-
 	<div class="container_header">
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
@@ -53,6 +51,24 @@
 			</sec:authorize>
 		</div>
 
+		<input type="hidden" id="userRole"
+			value="${sessionScope.loginUser.role}" />
+		<%-- <c:choose>
+			<c:when test="${not empty sessionScope.loginUser}">
+				<script>
+					$('.unlogin').hide();
+					$('.login').show();
+					$('.login_effect').show();
+				</script>
+			</c:when>
+			<c:otherwise>
+				<script>
+					$('.login').hide();
+					$('.unlogin').show();
+					$('.login_effect').hide();
+				</script>
+			</c:otherwise>
+		</c:choose> --%>
 		<!-- 검색 필터 + 검색창 -->
 		<div class="search-filter-wrapper">
 			<div class="filters">
@@ -119,6 +135,10 @@
 					$('.login').hide();
 					$('.unlogin').show();
 				});
+				// 초기화 - 무조건 로그인된 상태 숨기기
+			/* 	$('.login').hide(); // 로그인된 사용자용 버튼 숨김
+				$('.unlogin').show(); // 비로그인용 버튼 보이기
+				$('.login_effect').hide(); // 유저 인사+알림창 숨기기 */
 				// 로그인 클릭 시
 				$('#loginBtn').click(function() {
 					location.href = contextPath
@@ -135,14 +155,15 @@
 					location.href = contextPath + '/user/join';
 				});
 				//마이페이지 이동
-	    $('#myPage').click(function() {
-	        const userRole = $('#userRole').val();
-	        if (userRole === 'ROLE_ADMIN') {
-	            location.href = contextPath + '/admin/mypage';
-	        } else {
-	            location.href = contextPath + '/user/mypage';
-	        }
-	    });
+				$('#myPage').click(function(){
+					 const userRole= $('#userRole').val();
+						if(userRole == 'admin'){
+							location.href = contextPath + '/admin/mypage';
+						}else{
+							location.href = contextPath + '/user/mypage';	
+						}					
+				});
+				
 				//고객센터이동
 				$('#customerService').click( function() {
 							location.href = contextPath
@@ -252,7 +273,7 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-					location.href = "${contextpath}/itda/chat/chatRoomList";
+					alert(`채팅 페이지로 이동~`);
 				});
 				//알람버튼
 				$('#alarm-icon').click(function() {

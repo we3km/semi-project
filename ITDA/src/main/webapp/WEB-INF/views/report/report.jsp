@@ -22,7 +22,7 @@
 				action="/report/submit">
 
 				<!-- 신고 타입 및 대상 닉네임 -->
-				<form:hidden path="type" id="type" />
+				<form:hidden path="reportType" id="reportType" />
 				<form:hidden path="targetId" id="targetId" />
 
 				<!-- 신고 대상 작성자 userNum 추가 -->

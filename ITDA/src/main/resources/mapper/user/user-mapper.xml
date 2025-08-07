@@ -118,6 +118,4 @@
 		SELECT USER_NUM FROM
 		USER_TB WHERE USER_ID = #{userId}
 	</select>
-	
-	
 </mapper>
