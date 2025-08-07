@@ -24,6 +24,7 @@
 		F.FILE_NAME AS fileName
 
 		FROM OPEN_CHAT OC
+		LEFT JOIN CHAT_ROOM CR ON OC.CHATROOM_ID = CR.CHATROOM_ID
 		LEFT JOIN CHAT_PARTICIPANT CP ON OC.CHATROOM_ID =
 		CP.CHATROOM_ID
 		LEFT JOIN OPENCHATROOM_TAG OT ON OC.CHATROOM_ID =
@@ -42,6 +43,8 @@
 		AND CATEGORY_ID = 11
 		)
 		<where>
+		 		CR.STATUS = 'Y'
+		
 			<if test="sido !=null and sido !=''">
 				AND L.SIDO = #{sido}
 			</if>
