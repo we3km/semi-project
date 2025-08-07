@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.itda.board.model.service.BoardService;
+import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.vo.Report;
@@ -41,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
 	private final UserService uService;
-	private final BoardService bService;
+	private final BoardService boardService;
 	private final BCryptPasswordEncoder passwordEncoder;
 	  
 //	@GetMapping("/user/mypage") public String myPage(@AuthenticationPrincipal UserExt loginUser, Model model) { 
@@ -75,7 +77,10 @@ public class UserController {
 	    model.addAttribute("itdaPoint", itdaPoint);
 		
 	    // 사용자가 작성한 게시물 리스트
-	    
+		// 사용자가 올린 대여 개시글
+		List<BoardRentalFileWrapper> userRentalWrapperList = boardService.selectWriterRentalList(userNum);
+		model.addAttribute("userRentalWrapperList", userRentalWrapperList);
+		System.out.println("사용자의 대여 상품 : " + userRentalWrapperList);
 	    
 	    //사용자가 찜해둔 게시물 리스트
 	    

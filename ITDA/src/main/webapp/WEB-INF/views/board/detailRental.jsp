@@ -262,7 +262,7 @@
 								value="${writerRentalWrapper.boardRental.rentalStartDate }"
 								pattern="yyyy/MM/dd" />
 						~
-							<fmt:formatDate value="${board.boardRental.rentalEndDate }"
+							<fmt:formatDate value="${writerRentalWrapper.boardRental.rentalEndDate }"
 								pattern="yyyy/MM/dd" />
 						</p>
 					</div>

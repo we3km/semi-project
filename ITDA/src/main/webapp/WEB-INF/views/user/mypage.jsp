@@ -84,10 +84,51 @@
 						</form>
 					</div>
 				</div>
-				<div class="text-wrapper-22">내가 등록한 게시글</div>
-				<div class="text-wrapper-23">거래 기록</div>
-				<div class="text-wrapper-24">찜 목록</div>
 			</div>
+		</div>
+		<div class="user-board-list">
+			<div class="related-products">
+				<h2>회원님이 게시한 대여 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="userRentalWrapper"
+						items="${userRentalWrapperList }">
+						<div class="card"
+							onclick="moveDetail(${userRentalWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${userRentalWrapper.filePath.categoryPath}/${userRentalWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${userRentalWrapper.boardCommon.productName }</p>
+							<p id="rental-fee">대여료:${userRentalWrapper.boardRental.rentalFee }원</p>
+							<p class="date">
+								<fmt:formatDate
+									value="${userRentalWrapper.boardRental.rentalStartDate }"
+									pattern="yyyy/MM/dd" />
+								~
+								<fmt:formatDate value="${userRentalWrapper.boardRental.rentalEndDate }"
+									pattern="yyyy/MM/dd" />
+							</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+								  	function moveDetail(bid){
+								  		location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+								  	}
+								 </script>
+
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+			<div class="text-wrapper-23">거래 기록</div>
+			<div class="text-wrapper-24">찜 목록</div>
 		</div>
 	</div>
 
