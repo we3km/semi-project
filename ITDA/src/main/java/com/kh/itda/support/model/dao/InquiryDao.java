@@ -1,6 +1,8 @@
 package com.kh.itda.support.model.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +48,13 @@ public class InquiryDao {
     }
 
     // 7. 첨부파일 목록 조회 (refNo: 문의글 번호)
-    public List<File> selectFilesByRef(int refNo) {
-        return session.selectList("inquiry.selectFilesByRef", refNo);
-    }
+    public List<File> selectFilesByRefAndCategory(int refNo, int categoryId) {
+    	  Map<String, Object> param = new HashMap<>();
+    	    param.put("refNo", refNo);
+    	    param.put("categoryId", categoryId);
+    	    
+    	    return session.selectList("inquiry.selectFilesByRefAndCategory", param);
+    	}
 
     // 8. 첨부파일 저장
     public int insertFile(File file) {

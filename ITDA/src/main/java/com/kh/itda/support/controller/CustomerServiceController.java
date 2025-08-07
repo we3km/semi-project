@@ -130,7 +130,7 @@ public class CustomerServiceController {
 		model.addAttribute("inquiry", inquiry);
 
 		// 첨부파일 리스트 가져오기
-		List<File> files = inquiryService.selectFilesByRef(csNum);
+		List<File> files = inquiry.getFileList();
 
 		// 파일과 경로를 Map에 묶어서 리스트로 저장
 		List<Map<String, Object>> fileWithPathList = new ArrayList<>();
