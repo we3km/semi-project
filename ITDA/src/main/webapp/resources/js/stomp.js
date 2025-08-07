@@ -26,8 +26,15 @@ function sendModalMessage(modalMessage) {
 
 // 텍스트에서 작성되는 메세지 보내기
 function sendMessage() {
+
     const input = document.querySelector('.chat-input');
     const message = input.value;
+   
+    if (!window.chatRoomId) {
+        alert("채팅방을 먼저 선택해주세요!");
+        input.value = ""; 
+        return; // 함수 중단
+    }
 
     // 회원된 로그인 번호
     console.log("회원 로그인 번호 : ", loginUserNum);
@@ -89,7 +96,7 @@ const showMessage = msg => {
     else {
         const newMessage = document.createElement('div');
         console.log("메세지 보낸 사람의 userNum:", userNum);
-        
+
         // 내가 보낸 메세지인지 확인
         const isSender = userNum === loginUserNum;
         newMessage.className = isSender ? "chat-message-sent" : "chat-message-received";
