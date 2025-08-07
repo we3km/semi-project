@@ -119,92 +119,185 @@
 			</sec:authorize>
 		</div>
 		<script>
-		let stompClient = null;
-		const loginUserNum1 = "<sec:authentication property='principal.userNum' />"; 
-		
-		function connectAlarmWebSocket(loginUserNum1) {
-			const socket = new SockJS("${pageContext.request.contextPath}/stomp");
-			stompClient = Stomp.over(socket);
+	let stompClient = null;
+	const loginUserNum1 = "<sec:authentication property='principal.userNum' />";
 
-			stompClient.connect({}, function () {
-				stompClient.subscribe("/topic/alarm/" + loginUserNum1, function (message) {
-					const content = message.body; 
-					showAlarm(content); 
-				});
+	let alarmList = [];
+	let unread = false;
+
+	// 1. 웹소켓 연결
+	function connectAlarmWebSocket(loginUserNum1) {
+		const socket = new SockJS("${pageContext.request.contextPath}/stomp");
+		stompClient = Stomp.over(socket);
+
+		stompClient.connect({}, function () {
+			stompClient.subscribe("/topic/alarm/" + loginUserNum1, function (message) {
+				const alarm = JSON.parse(message.body); // 실시간 알림 파싱
+				showAlarm(alarm);
 			});
+		});
+	}
+
+	// 2. 실시간 알림 표시
+	function showAlarm(alarm) {
+		if (!alarm || !alarm.content) {
+			console.warn("❗ 실시간 알림 파싱 실패:", alarm);
+			return;
 		}
 
+		const text = alarm.content.trim();
+		const time = formatTimestamp(alarm.createdAt);
+		const alarmId = alarm.alarmId || null;
+		const chatRoomId = alarm.chatRoomId || null;
+
+		alarmList.unshift({ text, time, alarmId, chatRoomId }); // ← chatRoomId 포함
+		console.log("📥 실시간 알림 추가:", text,"chatRoomId:", alarm.chatRoomId);
+
+		document.getElementById('alarm-dot').style.display = 'block';
+		unread = true;
+
+		renderAlarmList();
+	}
+
+	// 3. 페이지 로드시 DB에서 알림 불러오기
+	window.addEventListener("DOMContentLoaded", function () {
 		connectAlarmWebSocket(loginUserNum1);
-		let alarmList = [];
-		let unread = false;
 
-		function showAlarm(text) {
-		    const trimmedText = text ? text.trim() : "";
-		    if (!trimmedText) {
-		        console.warn("❗ 알림 내용이 비어 있음:", text);
-		        return;
-		    }
+		fetch('${pageContext.request.contextPath}/alarm/list')
+			.then(res => res.json())
+			.then(data => {
+				if (!Array.isArray(data)) return;
 
-		    const time = new Date().toLocaleTimeString();
+				alarmList = data.map(item => ({
+					alarmId: item.alarmId,
+					text: item.content,
+					time: formatTimestamp(item.createdAt),
+					chatRoomId: item.chatRoomId || null // ← DB에 있다면 포함
+				}));
 
-		    alarmList.unshift({ text: trimmedText, time });
+				if (alarmList.length > 0) {
+					document.getElementById('alarm-dot').style.display = 'block';
+					unread = true;
+				}
 
-		    console.log("📥 알림 추가됨:", trimmedText);
+				renderAlarmList();
+			})
+			.catch(err => {
+				console.error("🚨 알림 불러오기 실패:", err);
+			});
+	});
 
-		    // 알림 뱃지 표시
-		    document.getElementById('alarm-dot').style.display = 'block';
-		    unread = true;
+	// 4. 알림 목록 렌더링
+	function renderAlarmList() {
+		const ul = document.getElementById('alarm-list');
+		if (!ul) return;
 
-		    renderAlarmList();
+		ul.innerHTML = "";
+
+		alarmList.forEach(({ text, time, alarmId, chatRoomId }) => {
+			const li = document.createElement("li");
+
+			const container = document.createElement("div");
+			container.style.display = "flex";
+			container.style.justifyContent = "space-between";
+			container.style.alignItems = "center";
+			container.style.padding = "8px";
+			container.style.borderBottom = "1px solid #eee";
+			container.style.cursor = "pointer";
+
+			// 왼쪽 텍스트
+			const textBox = document.createElement("div");
+			const strong = document.createElement("strong");
+			strong.innerHTML = text;
+
+			const small = document.createElement("small");
+			small.textContent = time;
+			small.style.color = "#888";
+			small.style.display = "block";
+			small.style.marginTop = "4px";
+
+			textBox.appendChild(strong);
+			textBox.appendChild(small);
+
+			// 삭제 버튼
+			const deleteBtn = document.createElement("button");
+			deleteBtn.textContent = "🗑️";
+			deleteBtn.style.border = "none";
+			deleteBtn.style.background = "transparent";
+			deleteBtn.style.cursor = "pointer";
+			deleteBtn.title = "삭제";
+			deleteBtn.style.marginLeft = "3px";
+
+			deleteBtn.addEventListener("click", function (e) {
+				e.stopPropagation();
+				deleteAlarm(alarmId);
+			});
+
+			container.appendChild(textBox);
+			container.appendChild(deleteBtn);
+
+			li.appendChild(container);
+
+			// 클릭 시 처리
+			li.addEventListener("click", function () {
+				if (alarmId !== null) {
+					markAlarmAsRead(alarmId);
+				}
+				if (chatRoomId !== null) {
+					location.href = "${pageContext.request.contextPath}/chat/room/" + chatRoomId;
+				}
+			});
+
+			ul.appendChild(li);
+		});
+	}
+
+	// 5. 알림 읽음 처리
+	function markAlarmAsRead(alarmId) {
+		fetch('${pageContext.request.contextPath}/alarm/read?alarmId=' + alarmId, {
+			method: 'POST'
+		}).then(res => {
+			if (res.ok) {
+				console.log("✅ 읽음 처리 완료 - ID:", alarmId);
+			}
+		});
+	}
+
+	// 6. 알림 삭제 처리
+	function deleteAlarm(alarmId) {
+		fetch('${pageContext.request.contextPath}/alarm/delete?alarmId=' + alarmId, {
+			method: 'POST'
+		}).then(res => {
+			if (res.ok) {
+				console.log("🗑️ 삭제 완료 - ID:", alarmId);
+				alarmList = alarmList.filter(a => a.alarmId !== alarmId);
+				renderAlarmList();
+			} else {
+				alert("❌ 알림 삭제 실패");
+			}
+		});
+	}
+
+	// 7. 시간 포맷
+	function formatTimestamp(timestamp) {
+		if (!timestamp) return "";
+		const date = new Date(timestamp);
+		return date.toLocaleTimeString();
+	}
+
+	// 8. 드롭다운 열고 닫기
+	document.getElementById('alarm-icon').addEventListener('click', function () {
+		const box = document.getElementById('alarm-dropdown');
+		box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+
+		if (unread) {
+			document.getElementById('alarm-dot').style.display = 'none';
+			unread = false;
 		}
-
-		function renderAlarmList() {
-		    const ul = document.getElementById('alarm-list');
-
-		    if (!ul) {
-		        console.error("❌ #alarm-list 요소를 찾을 수 없습니다.");
-		        return;
-		    }
-
-		    // 기존 목록 초기화
-		    ul.innerHTML = "";
-
-		    // 알림 목록 다시 그림
-		    alarmList.forEach(({ text, time }) => {
-		        const li = document.createElement("li");
-
-		        const container = document.createElement("div");
-		        container.style.padding = "8px";
-		        container.style.borderBottom = "1px solid #eee";
-
-		        const strong = document.createElement("strong");
-		        strong.innerHTML = text;
-
-		        const small = document.createElement("small");
-		        small.textContent = time;
-		        small.style.color = "#888";
-		        small.style.display = "block";
-		        small.style.marginTop = "4px";
-
-		        container.appendChild(strong);
-		        container.appendChild(small);
-		        li.appendChild(container);
-		        ul.appendChild(li);
-		    });
-		}
-		
-
-// 알림 아이콘 클릭 시 드롭다운 토글
-document.getElementById('alarm-icon').addEventListener('click', function () {
-    const box = document.getElementById('alarm-dropdown');
-    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
-
-    if (unread) {
-        document.getElementById('alarm-dot').style.display = 'none';
-        unread = false;
-    }
-});
+	});
 </script>
+
+
 		<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";

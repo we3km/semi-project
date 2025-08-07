@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="alarm">
+
+<insert id="insertAlarm" parameterType="com.kh.itda.alarm.model.vo.Alarm">
+  
+  <selectKey keyProperty="alarmId" resultType="int" order="BEFORE">
+    SELECT ALARM_SEQ.NEXTVAL FROM DUAL
+  </selectKey>
+
+  INSERT INTO ALARM (
+    ALARM_ID,
+    RECEIVER_ID,
+    CONTENT,
+    ALARM_TYPE,
+    REF_ID,
+    IS_READ,
+    CREATED_AT
+  ) VALUES (
+    #{alarmId},
+    #{receiverId},
+    #{content},
+    #{alarmType},
+    #{refId},
+    #{isRead},
+    SYSTIMESTAMP
+  )
+</insert>
+
+    <select id="selectAlarmsByUser" parameterType="int" resultType="com.kh.itda.alarm.model.vo.Alarm">
+    SELECT *
+    FROM ALARM
+    WHERE RECEIVER_ID = #{userNum}
+    ORDER BY CREATED_AT DESC
+	</select>
+	<update id="markAlarmAsRead" parameterType="int">
+    UPDATE ALARM
+    SET IS_READ = 'Y'
+    WHERE ALARM_ID = #{alarmId}
+</update>
+
+<delete id="deleteAlarm" parameterType="int">
+    DELETE FROM ALARM
+    WHERE ALARM_ID = #{alarmId}
+</delete>
+    
+</mapper>

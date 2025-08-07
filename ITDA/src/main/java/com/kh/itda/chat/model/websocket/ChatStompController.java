@@ -59,7 +59,8 @@ public class ChatStompController {
 					chatContent,
 					nickNameStr,
 					userNums,
-					loginUser
+					loginUser,
+					chatRoomId
 					);
 			
 			messagingTemplate.convertAndSend("/topic/room/" + chatRoomId, chatMessage);
