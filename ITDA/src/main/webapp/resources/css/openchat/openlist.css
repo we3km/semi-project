@@ -23,7 +23,7 @@
   justify-content: flex-start;   /* 왼쪽 정렬 */
   align-items: stretch;
   width: 100%;
-  max-width: 1440px;
+  max-width: 2200px;
   gap: 0px;
   box-sizing: border-box;
   background-color: #ffffff;
