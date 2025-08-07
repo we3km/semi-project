@@ -1,6 +1,7 @@
 package com.kh.itda.chat.model.websocket;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -8,10 +9,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import com.kh.itda.alarm.model.service.AlarmService;
 import com.kh.itda.chat.model.service.ChatService;
 import com.kh.itda.chat.model.vo.ChatMessage;
 import com.kh.itda.security.model.vo.UserExt;
-import com.kh.itda.user.model.vo.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatStompController {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ChatService service;
+	private final AlarmService alarmService;
 
 	@MessageMapping("/chat/sendMessage")
 	public void sendMessage(@Payload HashMap<String, Object> messageMap, Authentication authentication) {
@@ -50,6 +52,17 @@ public class ChatStompController {
 		int result = service.sendMessage(chatMessage);
 		
 		if (result > 0) {
+			
+			List<Integer> userNums = service.findParticipantsByChatRoomId(chatRoomId);
+			
+			alarmService.sendChatAlarm(
+					chatContent,
+					nickNameStr,
+					userNums,
+					loginUser,
+					chatRoomId
+					);
+			
 			messagingTemplate.convertAndSend("/topic/room/" + chatRoomId, chatMessage);
 		} else {
 			log.info("채팅 보내기 실패");

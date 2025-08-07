@@ -88,6 +88,9 @@ public class ChatDao {
 	
 	}
 
+	public List<Integer> findParticipantsByChatRoomId(int chatRoomId) {
+		return session.selectList("chat.findParticipantsByChatRoomId",chatRoomId);
+	}
 	public BidWinner getBiddingWinner(int boardId) {
 		return session.selectOne("chat.getBiddingWinner", boardId);
 	}

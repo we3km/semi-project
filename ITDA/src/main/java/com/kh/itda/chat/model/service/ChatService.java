@@ -34,5 +34,9 @@ public interface ChatService {
 	
 	ChatRoom selectOpponentProfile( Map<String, Object> opps);
 
+
+	List<Integer> findParticipantsByChatRoomId(int chatRoomId);
+
 	BidWinner getBiddingWinner(int boardId);
+
 }
