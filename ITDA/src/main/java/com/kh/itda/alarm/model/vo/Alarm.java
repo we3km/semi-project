@@ -13,4 +13,5 @@ public class Alarm {
     private Integer refId;      // 예: 게시글 번호
     private String isRead;      // 'N' (기본값)
     private Timestamp createdAt; // 생성일시
+    private String  refType;
 }

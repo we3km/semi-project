@@ -52,13 +52,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<websocket:message-broker application-destination-prefix="/app">
-		<websocket:stomp-endpoint path="/stomp">
-			<websocket:sockjs />
-		</websocket:stomp-endpoint>
-		<websocket:simple-broker prefix="/topic"/>
-	</websocket:message-broker>
-	
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="defaultEncoding" value="UTF-8" />

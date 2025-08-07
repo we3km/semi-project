@@ -7,7 +7,7 @@ import com.kh.itda.security.model.vo.UserExt;
 
 public interface AlarmService {
 
-	void sendBoardCommentAlarm(int userNum, int boardId, String boardTitle);
+	void sendBoardCommentAlarm(int userNum, int boardId, String boardTitle, String communityCd, String NickName);
 
 	void sendChatAlarm(String chatContent, String nickNameStr, List<Integer> userNums, UserExt loginUser,
 			int chatRoomId);

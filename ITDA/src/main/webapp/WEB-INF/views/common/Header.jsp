@@ -148,8 +148,10 @@
 		const time = formatTimestamp(alarm.createdAt);
 		const alarmId = alarm.alarmId || null;
 		const chatRoomId = alarm.chatRoomId || null;
+		const refId = alarm.refId || null;
+		const refType = alarm.refType || null;
 
-		alarmList.unshift({ text, time, alarmId, chatRoomId }); // ← chatRoomId 포함
+		alarmList.unshift({ text, time, alarmId, refId, refType, chatRoomId });
 		console.log("📥 실시간 알림 추가:", text,"chatRoomId:", alarm.chatRoomId);
 
 		document.getElementById('alarm-dot').style.display = 'block';
@@ -171,7 +173,10 @@
 					alarmId: item.alarmId,
 					text: item.content,
 					time: formatTimestamp(item.createdAt),
-					chatRoomId: item.chatRoomId || null // ← DB에 있다면 포함
+					refId:      item.refId       || null, 
+			        refType:    item.refType     || null, 
+					chatRoomId: item.chatRoomId || null 
+					
 				}));
 
 				if (alarmList.length > 0) {
@@ -193,7 +198,7 @@
 
 		ul.innerHTML = "";
 
-		alarmList.forEach(({ text, time, alarmId, chatRoomId }) => {
+		alarmList.forEach(({ text, time, alarmId, refId, refType, chatRoomId }) => {
 			const li = document.createElement("li");
 
 			const container = document.createElement("div");
@@ -239,13 +244,21 @@
 
 			// 클릭 시 처리
 			li.addEventListener("click", function () {
-				if (alarmId !== null) {
-					markAlarmAsRead(alarmId);
-				}
-				if (chatRoomId !== null) {
-					location.href = "${pageContext.request.contextPath}/chat/room/" + chatRoomId;
-				}
-			});
+	            if (alarmId != null) {
+	               markAlarmAsRead(alarmId);
+	            }
+	
+	            if (chatRoomId != null) {
+	                // 채팅방으로 이동
+	                sessionStorage.setItem('pendingOpenRoomId', chatRoomId);
+	                location.href = "${pageContext.request.contextPath}/chat/chatRoomList";
+	
+	            } else if (refId != null && refType) {
+	                // 커뮤니티 글로 이동
+	                location.href = "${pageContext.request.contextPath}/community/detail/" 
+	                             + refType + "/" + refId;
+	            }
+	        });
 
 			ul.appendChild(li);
 		});
@@ -441,17 +454,11 @@
 				//로그인 상태창
 				//채팅버튼
 				$('#message-icon').click(function() {
-<<<<<<< HEAD
+
 					location.href = contextPath + `/chat/chatRoomList`;
-=======
 					location.href = "${contextPath}/itda/chat/chatRoomList";
 				});
-				//알람버튼
-				$('#alarm-icon').click(function() {
-					alert(`채팅 페이지로 이동~`);
->>>>>>> main
 				});
-			});
 		</script>
 		<sec:authorize access="isAuthenticated()">
 </sec:authorize>

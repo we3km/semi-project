@@ -17,6 +17,7 @@
     CONTENT,
     ALARM_TYPE,
     REF_ID,
+    REF_TYPE,
     IS_READ,
     CREATED_AT
   ) VALUES (
@@ -25,6 +26,7 @@
     #{content},
     #{alarmType},
     #{refId},
+    #{refType},
     #{isRead},
     SYSTIMESTAMP
   )

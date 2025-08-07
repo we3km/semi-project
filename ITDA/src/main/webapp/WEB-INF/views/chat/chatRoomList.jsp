@@ -9,7 +9,7 @@
 <head>
 <%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <!-- 헤더 연결은 나중에 하자 -->
-<%@ include file="/WEB-INF/views/common/Header.jsp"%>
+<%-- <%@ include file="/WEB-INF/views/common/Header.jsp"%> --%>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ChattingRoomList</title>
@@ -969,7 +969,28 @@
                 
             }); // addEventListener close
         }); // forEach close
-    });
+        
+        console.log("🏷️ chatRooms count:", document.querySelectorAll(".list-chat").length);
+        document.querySelectorAll(".list-chat").forEach(el =>
+          console.log("  ▶️", el.getAttribute("data-chat-room-id"))
+        )
+        const pendingRaw = sessionStorage.getItem('pendingOpenRoomId');
+        const pending = pendingRaw ? pendingRaw.trim() : null;
+        console.log("🔍 pendingRaw:", JSON.stringify(pendingRaw), "→ pending:", JSON.stringify(pending));
+        if (pending) {
+          // chatRooms(NodeList)에서 직접 속성값 비교
+          const el = Array.from(chatRooms).find(el =>
+            el.getAttribute('data-chat-room-id') === pending
+          );
+          if (el) {
+            console.log("✅ 자동 열기 성공! roomId=", pending);
+            el.click();  // 클릭 핸들러가 구독까지 처리해 줍니다
+          } else {
+            console.warn("❌ 자동 열기 실패, 못 찾음:", pending);
+          }
+          sessionStorage.removeItem('pendingOpenRoomId');
+        }
+      });
     // 왼쪽 채팅방 오른쪽에 반영 끝ㅋ
 </script>
 

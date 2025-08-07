@@ -27,8 +27,17 @@ public class AlarmServiceImpl implements AlarmService {
 	private final AlarmDao dao;
 
 	@Override
-	public void sendBoardCommentAlarm(int receiverId, int boardId, String boardTitle) {
-		String content = boardTitle + " 게시글에 댓글이 달렸습니다.";
+	public void sendBoardCommentAlarm(int receiverId, int boardId, String boardTitle, String communityCd, String NickName) {
+		
+		String nicknameStyled = "<span style=\"color:#7f8cff; font-weight:bold;\">"
+                + NickName
+                + "</span>";
+		
+		String boardTitleStyled = "<span style=\"color:#90cbfb; font-weight:bold;\">"
+                + boardTitle
+                + "</span>";
+		
+		String content = nicknameStyled +" "+"님이"+" "+boardTitleStyled+ " 게시글에 댓글을 달았습니다.";
 		String destination = "/topic/alarm/" + receiverId;
 
 		// 알림 객체 생성 및 DB 저장
@@ -37,7 +46,9 @@ public class AlarmServiceImpl implements AlarmService {
 		alarm.setContent(content);
 		alarm.setAlarmType("COMMENT");
 		alarm.setRefId(boardId);
+		alarm.setRefType(communityCd);
 		alarm.setIsRead("N");
+		
 
 		int result = dao.insertAlarm(alarm); 
 
@@ -48,13 +59,20 @@ public class AlarmServiceImpl implements AlarmService {
 		Map<String, Object> alarmPayload = new HashMap<>();
 		alarmPayload.put("alarmId", alarm.getAlarmId());
 		alarmPayload.put("content", alarm.getContent());
-		alarmPayload.put("createdAt", alarm.getCreatedAt()); 
+		alarmPayload.put("createdAt", alarm.getCreatedAt());
+		alarmPayload.put("refId",alarm.getRefId());
 
 		// 웹소켓 전송 (1번만)
 		messagingTemplate.convertAndSend(destination, alarmPayload);
 	}
 	public void sendChatAlarm(String chatContent, String nickNameStr, List<Integer> userNums, UserExt loginUser, int chatRoomId) {
-		String content = "<span style='color:#7f8cff;'>채팅</span><br>" + nickNameStr + " : " + chatContent;
+		
+		String nicknameStyled = "<span style=\"color:#7f8cff; font-weight:bold;\">"
+                + nickNameStr
+                + "</span>";
+		
+		
+		String content = "<span style='color:#90cbfb;'>채팅</span><br>" + nicknameStyled + " : " + chatContent;
 
 		for (Integer userId : userNums) {
 			if (userId.equals(loginUser.getUserNum()))

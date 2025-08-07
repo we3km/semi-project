@@ -443,7 +443,9 @@ public class CommunityController {
 		            alarmService.sendBoardCommentAlarm(
 		                c.getCommunityWriter(),
 		                c.getCommunityNo(),
-		                c.getCommunityTitle()
+		                c.getCommunityTitle(),
+		                c.getCommunityCd(),
+		                loginUser.getNickName()
 		            );
 		        }
 		      
