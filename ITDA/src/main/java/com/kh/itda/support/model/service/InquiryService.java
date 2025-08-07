@@ -16,6 +16,6 @@ public interface InquiryService {
 	int insertFile(File file);
 	int saveFile(MultipartFile file, int csNum, int string);
 	List<Inquiry> selectInquiriesByUser(int userNum);
-	List<File> selectFilesByRef(int refNo);
+	List<File> selectFilesByRefAndCategory(int refNo, int categoryId);
 	String selectCategoryPathByCategoryId(int categoryId);
 }

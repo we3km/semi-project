@@ -29,16 +29,30 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     public Inquiry selectInquiryById(int csNum) {
-        Inquiry inquiry = inquiryDao.selectInquiryById(csNum);
-        if (inquiry != null) {
-            List<File> fileList = inquiryDao.selectFilesByRef(csNum);
-            inquiry.setFileList(fileList);
+    	Inquiry inquiry = inquiryDao.selectInquiryById(csNum);
 
-            // 닉네임 조회 후 세팅
-            String nickName = inquiryDao.selectNickNameByUserNum(inquiry.getUserNum());
-            inquiry.setNickName(nickName);
-        }
-        return inquiry;
+    	if (inquiry != null) {
+    		// categoryName → categoryId 매핑
+    		int categoryId = 0; // 기본값: 기타
+    		switch (inquiry.getCategoryName()) {
+    			case "회원정보": categoryId = 1; break;
+    			case "거래관련": categoryId = 2; break;
+    			case "신고처리": categoryId = 3; break;
+    			case "건의사항": categoryId = 4; break;
+    			case "기타":
+    			default: categoryId = 5; break;
+    		}
+
+    		// categoryId 기반 파일 조회
+    		List<File> fileList = inquiryDao.selectFilesByRefAndCategory(csNum, categoryId);
+    		inquiry.setFileList(fileList);
+
+    		// 닉네임 세팅
+    		String nickName = inquiryDao.selectNickNameByUserNum(inquiry.getUserNum());
+    		inquiry.setNickName(nickName);
+    	}
+
+    	return inquiry;
     }
 
     @Override
@@ -100,8 +114,8 @@ public class InquiryServiceImpl implements InquiryService {
     }
     
     @Override
-    public List<File> selectFilesByRef(int refNo) {
-        return inquiryDao.selectFilesByRef(refNo);
+    public List<File> selectFilesByRefAndCategory(int refNo, int categoryId) {
+        return inquiryDao.selectFilesByRefAndCategory(refNo, categoryId);
     }
 	
     @Override
