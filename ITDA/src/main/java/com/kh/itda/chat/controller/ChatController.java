@@ -56,7 +56,6 @@ public class ChatController {
 
 		List<ChatRoom> chatRoomList = chatService.selectChatRoomList(userNum);
 		model.addAttribute("chatRoomList", chatRoomList);
-		model.addAttribute("loginUser", loginUser);
 		// 신고 속성 model에 넣어줌
 		model.addAttribute("report", new Report());
 		
