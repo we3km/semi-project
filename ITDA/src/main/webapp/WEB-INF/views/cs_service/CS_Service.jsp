@@ -2,6 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+	<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,9 +18,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<!-- 헤더 -->
-	<div id="header"></div>
-
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<!-- 고객센터 본문 -->
 	<div class="center-wrapper">
 		<div class="cs-header">
@@ -32,24 +37,21 @@
 
 		<div class="header-mq">
 			<div class="my-question">
-				<c:choose>
-					<c:when test="${isAdmin}">
-                        전체 문의 내역
-                    </c:when>
-					<c:otherwise>
-                        내 문의 내역
-                    </c:otherwise>
-				</c:choose>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
+					<div class="my-question">전체 문의 내역</div>
+				</sec:authorize>
+				<sec:authorize access="hasRole('ROLE_USER')">
+					<div class="my-question">내 문의 내역</div>
+				</sec:authorize>
 			</div>
 
 			<!-- 일반 사용자만 1:1문의 버튼 보이기 -->
-			<c:if test="${!isAdmin}">
+			<sec:authorize access="hasRole('ROLE_USER')">
 				<form:form method="get"
-					action="${pageContext.request.contextPath}/cs/inquiry"
-					cssClass="inline-form">
+					action="${pageContext.request.contextPath}/cs/inquiry">
 					<button class="inquiry-btn" type="submit">1:1문의</button>
 				</form:form>
-			</c:if>
+			</sec:authorize>
 		</div>
 
 		<table class="inquiry-table">
@@ -58,6 +60,7 @@
 					<th>제목</th>
 					<th>문의 날짜</th>
 					<th>카테고리</th>
+					<th>처리 상태</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -71,6 +74,7 @@
 								<td><fmt:formatDate value="${inq.csDate}"
 										pattern="yyyy-MM-dd" /></td>
 								<td>${inq.categoryName}</td>
+								<td>${inq.status}</td>
 							</tr>
 						</c:forEach>
 					</c:when>
@@ -83,7 +87,7 @@
 				</c:choose>
 			</tbody>
 		</table>
-
+		
 		<!-- 자주 묻는 질문 -->
 		<div class="QNA">자주 묻는 질문</div>
 

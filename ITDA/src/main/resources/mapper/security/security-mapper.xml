@@ -4,7 +4,7 @@
 
 	<select id="loadUserByUsername" resultMap="userResultMap">
 		SELECT U.*,
-		P.IMAGE_URL
+		P.IMAGE_URL,
 		FROM USER_TB U
 		LEFT JOIN PROFILE P
 		ON U.USER_NUM = P.USER_NUM
