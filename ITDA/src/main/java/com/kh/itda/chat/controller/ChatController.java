@@ -33,7 +33,6 @@ import com.kh.itda.security.model.vo.UserExt;
 
 import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.vo.User;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -49,6 +48,7 @@ public class ChatController {
 	// 로그인 한 회원이 접속중인 채팅방 보여줌
 	@GetMapping("/chatRoomList")
 	public String selectChatRoomList(Model model, Authentication authentication) {
+
 
         UserExt loginUser = (UserExt) authentication.getPrincipal();
 		int userNum = loginUser.getUserNum();

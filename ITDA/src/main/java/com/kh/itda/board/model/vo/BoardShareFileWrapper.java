@@ -11,4 +11,6 @@ public class BoardShareFileWrapper {
 	private BoardCommon boardCommon;
 	private BoardSharing boardSharing;
 	private FilePath filePath;
+	
+	private String tagContent;
 }

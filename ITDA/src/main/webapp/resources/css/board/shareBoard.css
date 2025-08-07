@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 
@@ -22,17 +23,11 @@
       border-right: 1px solid #ddd;
     }
 
-
     .filter-section {
       margin-bottom: 25px;
     }
 
     .filter-section label {
-      display: block;
-      margin-bottom: 5px;
-      
-    }
-    .category-area label {
       display: block;
       margin-bottom: 5px;
       
@@ -43,8 +38,6 @@
     	margin: 0; 
     	padding: 0;
     	align-items: center;
-    	margin-bottom:10px;
-    	
     }
 
     .main {
@@ -96,8 +89,9 @@
     }
     
     .sortDrop{
-   	width:100%;
+    width:100%;
     background-color: white;
+    margin-top: 10px;
     margin-bottom: 25px;
     border: 1px solid #ccc;
     padding: 5px;
@@ -106,9 +100,7 @@
     display: flex;
     align-items: center;
     border-radius: 4px;
-    margin-top: 10px;
 }
-
 
 .maxRentalFee, .minRentalFee{
 	width:100%;
@@ -129,7 +121,7 @@
 		background-color: white;
 		padding: 15px;
 		width: 250px;
-		height: 300px;
+		height: 280px;
 		border-radius: 12px;
 		text-align: center;
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -140,7 +132,6 @@
       width: 100%;
       /* max-width: 180px; */
       height: 60%;
-      object-fit: cover;
     }
 
     .card .heart {
@@ -161,7 +152,7 @@
 		font-size: 20px;
 	}
 	
-    #rental-fee {
+    #sharing-count {
       font-weight: bold;
     }
 	.date{
@@ -179,7 +170,7 @@
     }
     
     
-.category-large,
+   .category-large,
 .category-middle,
 .category-small {
   flex: 1;
@@ -211,11 +202,12 @@
 }
 
 .category-wrapper {
+    
     gap: 1rem;
     margin-top: 10px;
   }
 
-.category-column {
+  .category-column {
     min-height: 100px;
     padding: 10px;
     border: 1px solid #ddd;

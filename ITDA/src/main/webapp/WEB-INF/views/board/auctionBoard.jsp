@@ -1,8 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -14,7 +10,7 @@ pageEncoding="UTF-8"%>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link
-	href="${pageContext.request.contextPath}/resources/css/board/rentalBoard.css"
+	href="${pageContext.request.contextPath}/resources/css/board/auctionBoard.css"
 	rel="stylesheet">
 <meta charset="UTF-8">
 <title>경매 게시판</title>
@@ -31,34 +27,26 @@ pageEncoding="UTF-8"%>
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/auction/list">
-			<div class="filter-section">
-				<h3>정렬 조건</h3>
+			<div class="filter-section top-section">
+				<h2>정렬 조건</h2>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 				<option value="highestBid">최고입찰가 순</option>
 				<!-- <option value="price">가격 순</option> -->
 			</select>
-
-<!-- 			<div class="filter-section">
-				<h4>지역</h4>
-				<label><input type="checkbox"> 강남</label> <label><input
-					type="checkbox"> 강서</label> <label><input type="checkbox">
-					강동</label> <label><input type="checkbox"> 강북</label>
-			</div> -->
-
 			<div class="filter-section">
 			  <div class="category-area">
-			    <label>상품 카테고리</label>
+			    <h4>상품 카테고리</h4>
 			
 			    <div class="category-wrapper">
 			      <!-- 대분류 -->
 			      <div class="category-column">
 			        <h5>대분류</h5>
-			        <div class="category-list-large">
+			        <div class="category-list-large"  id="large">
 			          <c:forEach items="${categoryList}" var="productCategory">
 			            <c:if test="${productCategory.parentNum == 0}">
 			              <div class="category-large" data-id="${productCategory.productCategoryNum}">
@@ -189,14 +177,14 @@ pageEncoding="UTF-8"%>
 			  });
 			</script>
 
-<!-- 			<div class="filter-section">
+ 			<div class="filter-section">
 			  <h4>가격</h4>
-			  <label>최소 가격:</label>
-			  <input type="number" name="minRentalFee" min="0">
+			  <label>최소 입찰금:</label>
+			  <input class="minRentalFee" type="number" name="minBid" min="0">
 			
-			  <label>최대 가격:</label>
-			  <input type="number" name="maxRentalFee" min="0">
-			</div> -->
+			  <label>최대 입찰금:</label>
+			  <input class="maxRentalFee" type="number" name="maxBid" min="0">
+			</div>
 			
 			<div class="filter-section">
 				<h4>경매 기간</h4>
@@ -209,8 +197,6 @@ pageEncoding="UTF-8"%>
 		<div class="top">
 			<div>
 				<h2>경매 게시판</h2>
-				<span class="location">서울특별시 강남구 📍</span>
-				<!-- 로그인한 회원의 주소 -->
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
 			<button id="write-btn">거래 글 쓰기</button>
@@ -223,22 +209,14 @@ pageEncoding="UTF-8"%>
 		<div class="grid">
 			<!-- 카드 반복 -->
 			<c:forEach var="board" items="${list }">
-
+				
 				<div class="card"
 					onclick="moveDetail(${board.boardCommon.boardId});">
 					<c:set var="boardId" value="${board.boardCommon.boardId}" />
-					<c:if test="${fn:contains(likedBoardIds, boardId)}">
-						<div class="heart liked"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
-					</c:if>
-					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
-						<div class="heart"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
-					</c:if>
 
 					<img
 						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
-						alt="이미지" style="width: 90%; height: auto;" />
+						/>
 					<p id="product-name">${board.boardCommon.productName }</p>
 
 					<p id="auction-fee">경매시작금 : ${board.boardAuction.auctionStartingFee }</p>
@@ -257,7 +235,16 @@ pageEncoding="UTF-8"%>
 						<fmt:formatDate value="${board.boardAuction.auctionEndDate }"
 							pattern="yyyy/MM/dd" />
 					</p>
+					<c:if test="${fn:contains(likedBoardIds, boardId)}">
+						<div class="heart liked"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
+					</c:if>
+					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
+						<div class="heart"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
+					</c:if>
 				</div>
+				
 			</c:forEach>
 			<script>
 	  	function moveDetail(bid){

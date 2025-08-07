@@ -6,205 +6,146 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>${product.title}</title>
+<title>잇다 - 나눔게시판 > ${board.boardCommon.productName}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<style>
-body {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 20px;
-	background: #f9f9f9;
-}
-
-.container {
-	max-width: 1200px;
-	margin: auto;
-	background: #fff;
-	padding: 20px;
-}
-
-.top-section {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-}
-
-.image-preview, .info {
-	flex: 1 1 300px;
-}
-
-.image-preview img {
-	width: 100%;
-	border-radius: 12px;
-}
-
-.info h1 {
-	font-size: 24px;
-	margin-bottom: 10px;
-}
-
-.price, .date-range, .location {
-	margin: 5px 0;
-	font-size: 16px;
-}
-
-.keywords span {
-	background: #eef;
-	padding: 5px 10px;
-	border-radius: 12px;
-	margin-right: 5px;
-	font-size: 13px;
-	display: inline-block;
-}
-
-.seller-info {
-	margin: 20px 0;
-	display: flex;
-	align-items: center;
-}
-
-.buttons button {
-	margin-right: 10px;
-	padding: 8px 14px;
-	background: #4a4aff;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-.related-products {
-	margin-top: 30px;
-}
-
-.product-list {
-	display: flex;
-	overflow-x: auto;
-	gap: 10px;
-}
-
-.related-img {
-	margin-top: 30px;
-}
-
-.img-list {
-	display: flex;
-	overflow-x: auto;
-	gap: 10px;
-	width: 500px;
-}
-
-.product-item {
-	flex: 0 0 auto;
-	width: 150px;
-	background: #fdfdfd;
-	border: 1px solid #ddd;
-	padding: 10px;
-	border-radius: 8px;
-	text-align: center;
-}
-
-.product-item img {
-	width: 100%;
-	border-radius: 6px;
-}
-
-.description {
-	margin-top: 30px;
-}
-
-.description pre {
-	white-space: pre-wrap;
-	background: #f1f1f1;
-	padding: 16px;
-	border-radius: 8px;
-}
-
-@media screen and (max-width: 768px) {
-	.top-section {
-		flex-direction: column;
-	}
-}
-
-#dibsBtn.liked {
-	background-color: red;
-	color: white; /* 좋아요 상태일 때 빨간색 하트 */
-}
-
-#dibsBtn.not-liked {
-	background-color: gray;
-	color: white; /* 찜 안한 상태일 때 회색 하트 */
-}
-</style>
-
+	
+<link href="${pageContext.request.contextPath}/resources/css/report/reports.css" rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/resources/css/board/detailShare.css"
+	rel="stylesheet">
 </head>
 <body>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 	<div class="container">
+		<div class="product-catrgory">
+			${board.boardCommon.productCategoryL}
+			&gt;
+			${board.boardCommon.productCategoryM}
+			&gt;
+			${board.boardCommon.productCategoryS}
+		</div>
 		<div class="top-section">
 			<!-- 게시물에 저장된 사진 -->
 			<div class="related-img">
-				<div class="img-list">
+				<div class="img-list" id="slider">
 					<c:forEach var="img" items="${imgList}">
 						<img
 							src="${pageContext.request.contextPath}/${img.categoryPath}/${img.fileName}"
-							alt="이미지"
-							style="width: 90%; height: auto; border: 2px solid black;" />
+							alt="이미지"/>
 					</c:forEach>
 				</div>
+				<button class="slider-btn prev-btn" onclick="moveSlide(-1)">‹</button>
+  				<button class="slider-btn next-btn" onclick="moveSlide(1)">›</button>
 			</div>
+			
+			<script>
+			const slider = document.getElementById('slider');
+			const images = slider.querySelectorAll('img');
+			let currentIndex = 0;
+
+			function updateSlide() {
+			  const parentWidth = slider.parentElement.clientWidth;
+			  slider.style.width = `\${parentWidth * images.length}px`;
+
+			  images.forEach(img => {
+			    img.style.width = `\${parentWidth - 10}px`;
+			  });
+
+			  slider.style.transform = `translateX(\${-currentIndex * parentWidth}px)`;
+			}
+
+			function moveSlide(direction) {
+			  currentIndex += direction;
+			  if (currentIndex < 0) currentIndex = images.length - 1;
+			  if (currentIndex >= images.length) currentIndex = 0;
+			  updateSlide();
+			}
+
+			window.addEventListener('load', updateSlide);
+			window.addEventListener('resize', updateSlide);
+			</script>
+			
 			<!-- 입력한 게시물 정보 -->
 			<div class="info">
-				<h1>${board.boardCommon.productName}</h1>
-				<div class="views">조회수:${board.boardCommon.views}</div>
-				<div class="dibs">
-					찜 수:
-					<p id="dibCount">${dibsCount}</p>
+				<div class="title">
+					${board.boardCommon.productName}
 				</div>
-				<div class="product-catrgory">
-					<div class="product-category-large">${board.boardCommon.productCategoryL}</div>
-					>
-					<div class="product-category-middle">${board.boardCommon.productCategoryM}</div>
-					>
-					<div class="product-category-small">${board.boardCommon.productCategoryS}</div>
-				</div>
-				<div class="create-date">
-					게시날짜:
-					<fmt:formatDate value="${board.boardCommon.createDate }"
-						pattern="yyyy/MM/dd" />
-				</div>
+				<div class="detail">
+				<ul>
+					<li>
+						<div class="views">조회수:${board.boardCommon.views}</div>
+					</li>
+					<li>
+						<div class="dibs">
+							찜 수: ${dibsCount}
+						</div>
+					</li>
+					<li>
+					<div class="create-date">
+						게시날짜:
+						<fmt:formatDate value="${board.boardCommon.createDate }"
+							pattern="yyyy/MM/dd" />
+					</div>
+					</li>
+				</ul>
 
 				<div class="price">나눔수량 : ${board.boardSharing.sharingCount}개</div>
 
-			</div>
-			<div class="location">지역 :
-				${board.boardCommon.transactionAddress}</div>
-			<div class="keywords">
-				<c:forEach var="tag" items="${tags}">
-					<span>#${tag}</span>
-				</c:forEach>
-			</div>
+			
+				<div class="keywords">
+					<c:forEach var="tag" items="${tags}">
+						<span>#${tag}</span>
+					</c:forEach>
+				</div>
+			
 
 			<!-- 게시자의 매너 정보 -->
 			<div class="seller-info">
-				<strong>${writer} </strong>
-				<p>매너점수 : ${mannerScore }</p>
+				<div class="profile">
+						<div class="profile-icon">
+							<img class="profile-img"
+								src="${pageContext.request.contextPath}${profileImage}"
+								alt="프로필" />
+						</div>
+						<strong>${writer} </strong>
+					</div>
+					<c:choose>
+					    <c:when test="${mannerScore lt 40}">
+					        <c:set var="barColor" value="#ff4d4f" /> <!-- 빨강 -->
+					    </c:when>
+					    <c:when test="${mannerScore lt 70}">
+					        <c:set var="barColor" value="#faad14" /> <!-- 노랑 -->
+					    </c:when>
+					    <c:otherwise>
+					        <c:set var="barColor" value="#52c41a" /> <!-- 초록 -->
+					    </c:otherwise>
+					</c:choose>
+					
+					<div class="manner-score-box">
+					    <span class="manner-label">매너점수: ${mannerScore}</span>
+					    <div class="manner-bar">
+					        <div class="manner-fill" style="width: ${mannerScore}%; background-color: ${barColor};"></div>
+					    </div>
+					</div>
 			</div>
-			<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->
-			<div class="buttons">
-				<!-- 연결해야함 -->
 
-				<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-					<i class="fa fa-heart"></i> 찜하기
-				</button>
-				<!-- 연결해야함 -->
-
-							
-				<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
+				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
+				<div class="buttons">
+					<!-- 연결해야함 -->
+					<c:if test="${userNum ne board.boardCommon.userNum}">
+						<button id="sendMessage" onclick="createTransactionChatRoom()">메시지
 					보내기</button>
-				
-				<!-- 채팅방 리스트 이동  -->
+						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
+  							<i class="fa fa-heart"></i> 찜하기
+						</button>
+					</c:if>
+					<!-- 채팅방 리스트 이동  -->
 				<script>
 					     function createTransactionChatRoom() {
 					        const contextPath = '${contextPath}';
@@ -236,43 +177,21 @@ body {
 					        .catch(err => console.error("오류 발생:", err));
 					    } 
 					</script>
-	
-				</div>
-				<div class="location">지역 :
-					${board.boardCommon.transactionAddress}</div>
-				<div class="keywords">
-					<c:forEach var="tag" items="${tags}">
-						<span>#${tag}</span>
-					</c:forEach>
-				</div>
-				
-				<!-- 게시자의 매너 정보 -->
-				<div class="seller-info">
-					<strong>${writer} </strong>
-					<p>매너점수 : ${mannerScore }</p>
-				</div>
-				<!-- 채팅방 열기와 찜하기, 신고하기 버튼 -->				
-				<div class="buttons">
-					<!-- 연결해야함 -->
-					<c:if test="${userNum ne board.boardCommon.userNum}">
-						<button>메시지 보내기</button>
-						<button id="dibsBtn" class="${isDibs ? 'liked' : 'not-liked'}">
-  							<i class="fa fa-heart"></i> 찜하기
-						</button>
-					</c:if>
 					
 					<!-- 게시자가 상세보기에 들어왔을 때 -->
 					<c:if test="${userNum eq board.boardCommon.userNum}">
-						<button>수정</button>
-						<button>삭제</button>
+						<form action="${pageContext.request.contextPath}/board/delete/share/${board.boardCommon.boardId}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+						    <button type="submit">삭제</button>
+						</form>
 					</c:if>
 					
 					<!-- 연결해야함 -->
-					<button>신고하기</button>
+					<button  onclick="openReportModal('BOARD', '${board.boardCommon.boardId}', '${board.boardCommon.userNum}')">신고하기</button>
+					</div>
 				</div>
-			</div>
+				</div>
 		</div>
-	</div>
+	
 	<!-- 찜하기 버튼 스크립트 -->
 	<script>
     	$('#dibsBtn').on('click', function () {
@@ -325,10 +244,9 @@ body {
 					onclick="moveDetail(${writerShareWrapper.boardCommon.boardId});">
 					<img
 						src="${pageContext.request.contextPath}/${writerShareWrapper.filePath.categoryPath}/${writerShareWrapper.filePath.fileName}"
-						alt="이미지"
-						style="width: 90%; height: auto; border: 2px solid black;" />
-					<p>${writerShareWrapper.boardCommon.productName }</p>
-					<p class="price">나눔수량:${writerShareWrapper.boardSharing.sharingCount }개</p>
+						alt="이미지" />
+					<p id="product-name">${writerShareWrapper.boardCommon.productName }</p>
+					<p class="count">나눔수량:${writerShareWrapper.boardSharing.sharingCount }개</p>
 				</div>
 			</c:forEach>
 			<!-- 클릭시 상세보기로 이동 -->
@@ -357,10 +275,9 @@ body {
 					onclick="moveDetail(${equalsCategoryboard.boardCommon.boardId});">
 					<img
 						src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
-						alt="이미지"
-						style="width: 90%; height: auto; border: 2px solid black;" />
-					<p>${equalsCategoryboard.boardCommon.productName }</p>
-					<p class="price">${equalsCategoryboard.boardSharing.sharingCount }</p>
+						alt="이미지" />
+					<p id="product-name">${equalsCategoryboard.boardCommon.productName }</p>
+					<p class="count">${equalsCategoryboard.boardSharing.sharingCount }</p>
 
 				</div>
 			</c:forEach>
@@ -371,11 +288,10 @@ body {
 				  	}
 				 </script>
 		</div>
-<<<<<<< HEAD
+
 	</div>
 	</div>
-=======
-	
->>>>>>> main
+	<jsp:include page="/WEB-INF/views/report/report.jsp" />
+	<script src="${pageContext.request.contextPath}/resources/js/report/reports.js"></script>
 </body>
 </html>

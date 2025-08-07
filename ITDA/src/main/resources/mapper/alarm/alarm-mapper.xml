@@ -36,6 +36,7 @@
     SELECT *
     FROM ALARM
     WHERE RECEIVER_ID = #{userNum}
+     AND IS_READ = 'N'
     ORDER BY CREATED_AT DESC
 	</select>
 	<update id="markAlarmAsRead" parameterType="int">

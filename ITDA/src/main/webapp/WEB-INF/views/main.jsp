@@ -59,10 +59,11 @@
 				<!-- 거래유형 드롭다운 -->
 				<div class="dropdown" id="deal-type-dropdown">
 					<button class="dropbtn">
-						<span class="dropbtn_content">거래유형</span> <span
-							class="dropbtn_click" aria-hidden="true"> <svg
-								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-								width="16" height="16" viewBox="0 0 24 24">
+				        <span class="dropbtn_content">게시판유형</span>
+				        <span class="dropbtn_click" aria-hidden="true">
+				            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+				                 width="16" height="16" viewBox="0 0 24 24">
+
 				                  <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 				            </svg>
 						</span>
@@ -85,6 +86,7 @@
 				<!-- 상품유형 드롭다운 -->
 				<div class="dropdown" id="product-type-dropdown">
 					<button class="dropbtn">
+
 						<span class="dropbtn_content">상품유형</span> <span
 							class="dropbtn_click" aria-hidden="true"> <svg
 								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
@@ -117,10 +119,6 @@
 				<div class="card-link">게시판 바로가기 &gt;</div>
 			</div>
 			<div class="card">
-				<div class="card-title">교환</div>
-				<div class="card-link">게시판 바로가기 &gt;</div>
-			</div>
-			<div class="card">
 				<div class="card-title">나눔</div>
 				<div class="card-link">게시판 바로가기 &gt;</div>
 			</div>
@@ -142,10 +140,10 @@
 	   
 	    // controller에서 받은 데이터 변환
 	    const subCategoryData={
-	    		//board 카테고리목록
+	    		//board 카테고리목록 메인 컨트롤러에서 준다,
 	    		board : [
 	    			<c:forEach var="entry" items="${productCategories}">
-	                	{ id: "${entry.categoryId}", name: "${entry.value.category}" },
+	                	{ id: "${entry.key}", name: "${entry.value.categoryName}" },
 	            	</c:forEach>
 	    		],
 	    		//community 카테고리 목록
@@ -186,12 +184,12 @@
 	        const $productDropdown = $('#product-type-dropdown .dropdown-content');
 	        const $productBtnText = $('#product-type-dropdown .dropbtn_content');
 	        $productDropdown.empty(); // 기존 목록 비우기
-	        $productBtnText.text('상품유형'); // 버튼 텍스트 초기화
+	        $productBtnText.text('카테고리'); // 버튼 텍스트 초기화
 	        selectedProductTypeId = null; // 이전에 선택했던 상품유형 값 초기화
 	        let dataToPopulate = [];
 	        const id = Number(selectedCategoryId);
 	        if (id >= 6 && id <= 9) { // 대여, 교환 등
-	            dataToPopulate = subCategoryData.board;
+	            dataToPopulate = subCategoryData.board; // 메인 컨트롤러에서 준 상품 카테고리
 	        } else if (id === 10) { // 커뮤니티
 	            dataToPopulate = subCategoryData.community;
 	        }
@@ -208,14 +206,15 @@
 	    //  '상품유형' 드롭다운 클릭 이벤트 (동적으로 생성되므로 이벤트 위임 방식 사용)
 	    $('#product-type-dropdown').on('click', '.category', function() {
 	        selectedProductTypeId = $(this).data('id'); // 선택한 상품유형 ID 저장
-	        const name = $(this).data('name');
-	        $(this).closest('.dropdown').find('.dropbtn_content').text(name).css('color', '#252525');
+	        productCategoryName = $(this).data('name');
+	        $(this).closest('.dropdown').find('.dropbtn_content').text(productCategoryName).css('color', '#252525');
 	        $(this).closest('.dropdown').find('.dropdown-content').removeClass('show');
 	    });
+
 	    //  검색 버튼 클릭 시 상품유형 파라미터 추가
 	    $('#search-btn').on('click', function () {
 	        if (!selectedCategoryId) {
-	            alert("거래유형을 선택해주세요.");
+	            alert("게시판유형을 선택해주세요.");
 	            return;
 	        }
 	       
@@ -224,9 +223,12 @@
 	        if(keyword) {
 	            params.append('keyword', keyword);
 	        }
-	        // 선택된 상품유형 ID가 있으면 'category' 파라미터로 추가
-	        if(selectedProductTypeId) {
+	        // 선택된 카테고리 ID가 있으면 'category' 파라미터로 추가
+	        if(selectedProductTypeId && selectedCategoryId === 10) {
 	            params.append('category', selectedProductTypeId);
+	        } else if(selectedProductTypeId && selectedCategoryId >= 6 && selectedCategoryId <= 9){
+	            params.append('searchProductCategoryL', productCategoryName);
+	 
 	        }
 	        let url = "";
 	        const id = Number(selectedCategoryId);
@@ -270,7 +272,6 @@
 	        let targetUrl = '';
 	        switch(title) {
 	            case '대여': targetUrl = contextPath + '/board/rental/list'; break;
-	            case '교환': targetUrl = contextPath + '/board/exchange/list'; break;
 	            case '나눔': targetUrl = contextPath + '/board/share/list'; break;
 	            case '경매': targetUrl = contextPath + '/board/auction/list'; break;
 	            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;
