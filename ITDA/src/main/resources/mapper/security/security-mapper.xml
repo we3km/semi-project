@@ -53,7 +53,6 @@
 		ORDER BY REPORT_NUM DESC
 	</select>
 
-
 	<!-- 권한 조회 -->
 	<select id="findAuthoritiesByUserNum" parameterType="int"
 		resultMap="authoritesMap">
@@ -62,10 +61,18 @@
 		WHERE USER_NUM = #{userNum}
 	</select>
 
-	<!-- 회원 정보 조회(프로필 제외) -->
+	<!-- 회원 정보 조회 -->
 	<select id="findUserById" parameterType="string"
 		resultType="User">
 		SELECT * FROM USER_TB  WHERE USER_ID = #{userId}
+	</select>
+	
+	<!-- 회원 정보 userNum으로 조회 -->
+	<select id="findUserByUserNum" parameterType="int" 
+		resultType="User">
+		SELECT U.*
+		FROM USER_TB U
+		WHERE USER_NUM = #{userNum}
 	</select>
 
 	<!-- 아이디 중복 체크 -->
@@ -73,7 +80,19 @@
 		SELECT
 		COUNT(*) FROM USER_TB WHERE USER_ID = #{userId}
 	</select>
-
+	
+	<!-- 닉네임 중복 체크 -->
+	<select id="checkNickname" resultType="int" parameterType="String">
+		SELECT
+		COUNT(*) FROM USER_TB WHERE NICK_NAME = #{nickName}
+	</select>
+	
+	<!-- 폰번호 중복 체크 -->
+	<select id="checkPhone" resultType="int" parameterType="String">
+		SELECT
+		COUNT(*) FROM USER_TB WHERE PHONE = #{phone}
+	</select>
+	
 	<insert id="insertToken">
 		INSERT
 		INTO PERSISTENT_LOGINS(SERIES, USERNAME, TOKEN,
@@ -117,8 +136,8 @@
 		<result column="IMAGE_URL" property="imageUrl" />
 		<collection property="authorities" javaType="arraylist"
 			ofType="org.springframework.security.core.authority.SimpleGrantedAuthority"
-			column="USER_NUM" select="findAuthoritiesByUserNum" >
-		</collection>
+
+			column="USER_NUM" select="findAuthoritiesByUserNum" />
 	</resultMap>
 
 	<resultMap type="org.springframework.security.core.authority.SimpleGrantedAuthority" id="authoritesMap">

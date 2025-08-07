@@ -35,12 +35,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int updateUser(User user) { // 회원정보 수정
-
-		return 0;
-	}
-
-	@Override
 	public Optional<String> findIdByNameAndEmail(String nickName, String email) {
 		log.debug(" findIdByNameAndEmail {},{}", nickName, email);
 		String userId = sqlSession.selectOne("user.findId", Map.of("nickName", nickName, "email", email));
@@ -57,10 +51,40 @@ public class UserServiceImpl implements UserService {
 	public int idCheck(String userId) {
 		return userDao.idCheck(userId);
 	}
+	
+	@Override
+	public int checkNickname(String nickName) {
+		return userDao.checkNickname(nickName);
+	}
+	
+	@Override
+	public int checkPhone(String newPhone) {
+		return userDao.checkPhone(newPhone);
+	}
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
 		userDao.updatePassword(userId, encodedPwd);
+	}
+		
+	@Override
+	public void updateNickname(String userId, String newNickname) {
+		userDao.updateNickname(userId, newNickname);		
+	}
+	
+	@Override
+	public void updatePhone(String userId, String newPhone) {
+		userDao.updatePhone(userId, newPhone);
+	}
+	
+	@Override
+	public void updateAddress(String userId, String newAddress) {
+		userDao.updateAddress(userId, newAddress);
+	}
+	
+	@Override
+	public void updateProfileImage(int userNum, String imageUrl) {
+		userDao.updateProfileImage(userNum, imageUrl);
 	}
 
 	@Override
@@ -78,4 +102,25 @@ public class UserServiceImpl implements UserService {
 		return userDao.selectUserNum(userId);
 	}
 
+	@Override
+	public User findUserById(String userId) {
+		return userDao.findUserById(userId);
+	}
+	
+	@Override
+	public User findUserByUserNum(int userNum) {
+		return userDao.findUserByUserNum(userNum);
+	}
+	
+	@Override
+	public String getProfileImageUrl(int userNum) {
+		return userDao.getProfileImageUrl(userNum);
+	}
+
+	@Override
+	public int getScore(int userNum) {
+		return userDao.getScore(userNum);
+	}
+
 }
+

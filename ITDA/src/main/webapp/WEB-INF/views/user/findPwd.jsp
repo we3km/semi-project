@@ -95,7 +95,7 @@
             fetch('${pageContext.request.contextPath}/user/findPwd/sendCode', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken },
-                body: new URLSearchParams({ userId: userId, email: email })
+                body: new URLSearchParams({ userId, email })
             })
             .then(res => res.json())
             .then(data => {
