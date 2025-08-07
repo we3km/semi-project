@@ -1,5 +1,6 @@
 package com.kh.itda.admin.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -53,6 +54,14 @@ public class AdminServiceImpl implements AdminService {
 	public void banUser(BanUser banUser) {
 		securityDao.banUser(banUser);
 	}
+
+	@Override
+	public void updateBanUser(BanUser banUser) {
+		securityDao.updateBanUser(banUser);
+	}
 	
+	public void updateReportProcessedAtAndValidity(int reportNum, Date processedAt, Date validityPeriod) {
+	    reportDao.updateReportProcessedAtAndValidity(reportNum, processedAt, validityPeriod);
+	}
 
 }

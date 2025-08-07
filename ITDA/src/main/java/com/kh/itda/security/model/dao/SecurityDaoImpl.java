@@ -52,10 +52,14 @@ public class SecurityDaoImpl implements SecurityDao {
 		session.insert("banned.banUser", banUser);
 	}
 
-	@Override
 	public char getIsBannedByUserNum(int userNum) {
 	    Character isBanned = session.selectOne("banned.getIsBannedByUserNum", userNum);
 	    return isBanned != null ? isBanned : 'N';
+	}
+
+	@Override
+	public void updateBanUser(BanUser banUser) {
+		session.update("banned.updateBanUser");
 	}
 
 

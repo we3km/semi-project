@@ -37,16 +37,29 @@
 				<strong>신고 대상 유저번호:</strong> ${report.userNum}
 			</p>
 			<p>
-				<strong>신고 대상 닉네임:</strong> ${report.targetId}
+				<strong>신고 대상 닉네임:</strong> ${report.nickName}
 			</p>
 			<p>
-				<strong>상태:</strong>
-				<c:choose>
-					<c:when test="${report.status == '접수'}">접수</c:when>
-					<c:when test="${report.status == '처리중'}">처리중</c:when>
-					<c:otherwise>완료</c:otherwise>
-				</c:choose>
+			  <strong>상태:</strong>
+			  <c:choose>
+			    <c:when test="${report.status == '접수'}">
+			      접수
+			    </c:when>
+			    <c:when test="${report.status == '완료'}">
+			      완료
+			      <br />
+			      <strong>제재 처리 시간:</strong>
+			      <fmt:formatDate value="${report.processedAt}" pattern="yyyy-MM-dd HH:mm:ss" />
+			      <br />
+			      <strong>제재 종료일:</strong>
+			      <fmt:formatDate value="${report.userInfValidityPeriod}" pattern="yyyy-MM-dd" />
+			    </c:when>
+			    <c:otherwise>
+			      ${report.status}
+			    </c:otherwise>
+			  </c:choose>
 			</p>
+
 		</div>
 
 		<button type="button" class="ban-button" onclick="openBanModal()">제재

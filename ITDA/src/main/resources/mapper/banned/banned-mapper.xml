@@ -34,6 +34,9 @@
 		WHERE ut.user_id =
 		#{userId}
 		AND bu.is_banned = 'Y'
+		ORDER BY bu.penalty_date DESC
+		FETCH
+		FIRST 1 ROWS ONLY
 	</select>
 
 	<select id="getIsBannedByUserNum" parameterType="int"
@@ -41,8 +44,26 @@
 		SELECT is_banned
 		FROM banned_user
 		WHERE user_num = #{userNum}
+		AND
+		is_banned = 'Y'
+		AND release_date > SYSDATE
 		ORDER BY penalty_date DESC
 		FETCH FIRST 1 ROWS ONLY
 	</select>
+
+	<update id="updateBanUser"
+		parameterType="com.kh.itda.user.model.vo.BanUser">
+		UPDATE banned_user
+		SET reason = #{reason},
+		penalty_date =
+		#{penaltyDate},
+		release_date = #{releaseDate},
+		admin_user_name =
+		#{adminUserName}
+		WHERE user_num = #{userNum}
+		AND is_banned = 'Y'
+		AND
+		release_date > SYSDATE
+	</update>
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.kh.itda.admin.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kh.itda.admin.service.AdminService;
 import com.kh.itda.common.model.vo.PageInfo;
 import com.kh.itda.common.model.vo.template.Pagination;
+import com.kh.itda.security.model.dao.SecurityDao;
+import com.kh.itda.support.model.service.ReportService;
 import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.vo.BanUser;
 import com.kh.itda.user.model.vo.User;
@@ -28,7 +31,10 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
-
+	
+	@Autowired
+	private SecurityDao securityDao;
+	
 	/**
 	 * 관리자 마이페이지 ROLE_ADMIN 권한 필요
 	 */
@@ -112,18 +118,39 @@ public class AdminController {
 
 	@PostMapping("/banUser")
 	public String banUser(BanUser banUser, @RequestParam("reportNum") int reportNum,
-			RedirectAttributes redirectAttributes) {
-		try {
-			adminService.banUser(banUser); // 제재 저장
-			adminService.updateReportStatus(reportNum, "완료"); // 상태 "완료"로 갱신
+	                      RedirectAttributes redirectAttributes) {
+	    try {
+	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	        String adminUserName = auth.getName();
+	        banUser.setAdminUserName(adminUserName);
 
-			redirectAttributes.addFlashAttribute("msg", "제재가 정상 처리되었습니다.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("msg", "제재 처리 중 오류가 발생했습니다.");
-		}
-		return "redirect:/admin/reports";
+	        // 이미 정지 중인지 확인
+	        char isBanned = securityDao.getIsBannedByUserNum(banUser.getUserNum());
+	        
+	        if (isBanned == 'Y') {
+	            adminService.updateBanUser(banUser);
+	        } else {
+	            adminService.banUser(banUser);
+	        }
+	        
+
+	        // 현재 시간(제재 처리 일자)
+	        Date now = new Date();
+	        // banUser 객체에 제재 종료일이 있다고 가정
+	        Date validityPeriod = banUser.getGetValidityPeriod();
+
+	        // reports 테이블에 processed_at, user_inf_validity_period 업데이트
+	        adminService.updateReportProcessedAtAndValidity(reportNum, now, validityPeriod);
+
+	        adminService.updateReportStatus(reportNum, "완료");
+	        redirectAttributes.addFlashAttribute("msg", "제재가 정상 처리되었습니다.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("msg", "제재 처리 중 오류가 발생했습니다.");
+	    }
+	    return "redirect:/admin/reports";
 	}
+
 	
 //	@GetMapping("/inquiry")
 }

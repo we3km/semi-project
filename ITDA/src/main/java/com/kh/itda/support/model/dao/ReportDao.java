@@ -1,5 +1,6 @@
 package com.kh.itda.support.model.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,9 @@ public class ReportDao {
             "pageSize", pageSize
         );
         return session.selectList("report.selectReportsByPage", param);
-    }	
-    
+    }
+
+	public void updateReportProcessedAtAndValidity(int reportNum, Date processedAt, Date validityPeriod) {
+		session.update("report.updateReportProcessedAtAndValidity");
+	}
 }

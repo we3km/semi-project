@@ -6,49 +6,64 @@
 <mapper namespace="report">
 
 	<!-- 1. 신고 등록 -->
-	<insert id="insertReport" parameterType="com.kh.itda.support.model.vo.Report">
+	<insert id="insertReport"
+		parameterType="com.kh.itda.support.model.vo.Report">
 		INSERT INTO REPORTS (
-			REPORT_NUM,
-			USER_NUM,
-			TYPE,
-			TARGET_ID,
-			TARGET_USER_NUM,
-			REASON,
-			DETAIL_REASON,
-			STATUS,
-			CREATED_AT
+		REPORT_NUM,
+		USER_NUM,
+		TYPE,
+		TARGET_ID,
+		TARGET_USER_NUM,
+		REASON,
+		DETAIL_REASON,
+		STATUS,
+		CREATED_AT
 		) VALUES (
-		    REPORTS_SEQ.NEXTVAL, 
-		    #{userNum},
-		    #{type},
-		    #{targetId},
-		    #{targetUserNum},
-		    #{reason},
-		    #{detailReason},
-		    '접수',
-		    SYSDATE
+		REPORTS_SEQ.NEXTVAL,
+		#{userNum},
+		#{type},
+		#{targetId},
+		#{targetUserNum},
+		#{reason},
+		#{detailReason},
+		'접수',
+		SYSDATE
 		)
 	</insert>
 
 	<!-- 2. 신고 상세 조회 -->
-	<select id="selectReportById" parameterType="int" resultType="com.kh.itda.support.model.vo.Report">
+	<select id="selectReportById" parameterType="int"
+		resultType="com.kh.itda.support.model.vo.Report">
 		SELECT
-		    report_num,
-		    user_num,
-		    reason,
-		    detail_reason,
-		    type,
-		    target_id,
-		    status,
-		    created_at
+		report_num,
+		user_num,
+		reason,
+		detail_reason,
+		nick_name,
+		type,
+		target_id,
+		status,
+		created_at
 		FROM reports
-		WHERE report_num = #{reportNum}
+		LEFT JOIN USER_TB using (user_num)
+		WHERE report_num =
+		#{reportNum}
 	</select>
 
 	<!-- 3. 신고 상태 업데이트 -->
-	<update id="updateReportStatus" parameterType="com.kh.itda.support.model.vo.Report">
+	<update id="updateReportStatus"
+		parameterType="com.kh.itda.support.model.vo.Report">
 		UPDATE reports
 		SET status = #{status}
+		WHERE report_num =
+		#{reportNum}
+	</update>
+
+	<update id="updateReportProcessedAtAndValidity"
+		parameterType="map">
+		UPDATE reports
+		SET processed_at = #{processedAt},
+		user_inf_validity_period = #{validityPeriod}
 		WHERE report_num = #{reportNum}
 	</update>
 </mapper>

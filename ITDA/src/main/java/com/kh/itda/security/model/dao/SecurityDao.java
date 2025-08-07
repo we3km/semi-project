@@ -26,4 +26,6 @@ public interface SecurityDao {
 	void banUser(BanUser banUser);
 
 	char getIsBannedByUserNum(int userNum);
+
+	void updateBanUser(BanUser banUser);
 }
