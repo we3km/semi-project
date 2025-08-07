@@ -297,6 +297,11 @@
 		)
 	</insert>
 	
+	<select id="findParticipantsByChatRoomId" resultType="int">
+    SELECT USER_NUM
+    FROM CHAT_PARTICIPANT
+    WHERE CHATROOM_ID = #{chatRoomId}
+</select>
 	
 	<!-- 경매 우승자 회원 정보 가져오기 -->
 	<select id="getBiddingWinner" resultType="BidWinner" parameterType="int">
