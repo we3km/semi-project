@@ -376,6 +376,13 @@ public class UserController {
 	// 회원탈퇴
 	@PostMapping("/user/delete")
 	public String deleteUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		String userId = authentication.getName();
+		User user = uService.findUserById(userId);
+		int userNum = user.getUserNum();
+		
+		uService.deleteUserByUserNum(userNum);
 		
 		return "redirect:/";
 	}

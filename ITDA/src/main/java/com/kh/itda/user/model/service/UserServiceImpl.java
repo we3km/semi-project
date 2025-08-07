@@ -122,5 +122,10 @@ public class UserServiceImpl implements UserService {
 		return userDao.getScore(userNum);
 	}
 
+	@Override
+	public void deleteUserByUserNum(int userNum) {
+		userDao.deleteUserByUserNum(userNum);
+	}
+
 }
 

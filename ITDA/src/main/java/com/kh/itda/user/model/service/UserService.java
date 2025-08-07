@@ -42,4 +42,6 @@ public interface UserService {
 
 	User findUserByUserNum(int userNum);
 
+	void deleteUserByUserNum(int userNum);
+
 }

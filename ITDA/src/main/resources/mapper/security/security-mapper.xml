@@ -145,5 +145,9 @@
 			<arg column="AUTHORITY" javaType="string" />
 		</constructor>
 	</resultMap>
+	
+	<delete id="deleteUserByUserNum" parameterType="Map">
+		
+	</delete>
 
 </mapper>
