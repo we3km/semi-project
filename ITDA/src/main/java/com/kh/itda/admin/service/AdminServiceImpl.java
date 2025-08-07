@@ -60,8 +60,8 @@ public class AdminServiceImpl implements AdminService {
 		securityDao.updateBanUser(banUser);
 	}
 	
-	public void updateReportProcessedAtAndValidity(int reportNum, Date processedAt, Date validityPeriod) {
-	    reportDao.updateReportProcessedAtAndValidity(reportNum, processedAt, validityPeriod);
+	public void updateReportProcessedAtAndreleasedate(int reportNum, Date releaseDate) {
+	    reportDao.updateReportProcessedAtAndreleasedate(reportNum, releaseDate);
 	}
 
 }

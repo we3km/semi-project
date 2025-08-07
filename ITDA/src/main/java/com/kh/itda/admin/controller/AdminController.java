@@ -132,15 +132,12 @@ public class AdminController {
 	        } else {
 	            adminService.banUser(banUser);
 	        }
-	        
 
-	        // 현재 시간(제재 처리 일자)
 	        Date now = new Date();
-	        // banUser 객체에 제재 종료일이 있다고 가정
-	        Date validityPeriod = banUser.getGetValidityPeriod();
+	        Date releaseDate = banUser.getReleaseDate();
 
 	        // reports 테이블에 processed_at, user_inf_validity_period 업데이트
-	        adminService.updateReportProcessedAtAndValidity(reportNum, now, validityPeriod);
+	        adminService.updateReportProcessedAtAndreleasedate(reportNum, releaseDate);
 
 	        adminService.updateReportStatus(reportNum, "완료");
 	        redirectAttributes.addFlashAttribute("msg", "제재가 정상 처리되었습니다.");

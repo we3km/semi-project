@@ -45,7 +45,11 @@ public class ReportDao {
         return session.selectList("report.selectReportsByPage", param);
     }
 
-	public void updateReportProcessedAtAndValidity(int reportNum, Date processedAt, Date validityPeriod) {
-		session.update("report.updateReportProcessedAtAndValidity");
-	}
+    public void updateReportProcessedAtAndreleasedate(int reportNum, Date releaseDate) {
+        Map<String, Object> param = Map.of(
+            "reportNum", reportNum,
+            "releaseDate", releaseDate
+        );
+        session.update("report.updateReportProcessedAtAndreleasedate", param);
+    }
 }

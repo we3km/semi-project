@@ -19,6 +19,6 @@ public class Report {
 	    private String status;
 	    private Date createdAt;
 	    private Date processedAt;
-	    private Date userInfValidityPeriod;
+	    private Date releaseDate;
 
 }

@@ -18,7 +18,8 @@
 		DETAIL_REASON,
 		STATUS,
 		CREATED_AT
-		) VALUES (
+		)
+		VALUES (
 		REPORTS_SEQ.NEXTVAL,
 		#{userNum},
 		#{type},
@@ -35,19 +36,21 @@
 	<select id="selectReportById" parameterType="int"
 		resultType="com.kh.itda.support.model.vo.Report">
 		SELECT
-		report_num,
-		user_num,
-		reason,
-		detail_reason,
-		nick_name,
-		type,
-		target_id,
-		status,
-		created_at
-		FROM reports
-		LEFT JOIN USER_TB using (user_num)
-		WHERE report_num =
-		#{reportNum}
+		r.report_num,
+		r.user_num,
+		r.reason,
+		r.detail_reason,
+		u.nick_name,
+		r.type,
+		r.target_id,
+		r.status,
+		r.created_at,
+		r.processed_at,
+		b.release_date
+		FROM reports r
+		LEFT JOIN USER_TB u ON r.user_num = u.user_num
+		LEFT JOIN BANNED_USER b ON r.user_num = b.user_num
+		WHERE r.report_num = #{reportNum}
 	</select>
 
 	<!-- 3. 신고 상태 업데이트 -->
@@ -59,11 +62,12 @@
 		#{reportNum}
 	</update>
 
-	<update id="updateReportProcessedAtAndValidity"
+	<update id="updateReportProcessedAtAndreleasedate"
 		parameterType="map">
 		UPDATE reports
-		SET processed_at = #{processedAt},
-		user_inf_validity_period = #{validityPeriod}
-		WHERE report_num = #{reportNum}
+		SET processed_at = SYSDATE,
+		release_date = #{releaseDate}
+		WHERE report_num =
+		#{reportNum}
 	</update>
 </mapper>

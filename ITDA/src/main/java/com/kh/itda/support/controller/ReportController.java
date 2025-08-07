@@ -48,8 +48,8 @@ public class ReportController {
     
     @GetMapping("/view")
     public String viewReportPage(Model model) {
-        model.addAttribute("report", new Report()); // form:form에 바인딩 객체
-        return "report/report"; // 실제 경로: /WEB-INF/views/report/report.jsp
+        model.addAttribute("report", new Report()); 
+        return "report/report"; 
     }
     
 }

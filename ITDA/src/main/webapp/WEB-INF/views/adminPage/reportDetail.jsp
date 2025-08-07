@@ -52,7 +52,7 @@
 			      <fmt:formatDate value="${report.processedAt}" pattern="yyyy-MM-dd HH:mm:ss" />
 			      <br />
 			      <strong>제재 종료일:</strong>
-			      <fmt:formatDate value="${report.userInfValidityPeriod}" pattern="yyyy-MM-dd" />
+			      <fmt:formatDate value="${report.releaseDate}" pattern="yyyy-MM-dd" />
 			    </c:when>
 			    <c:otherwise>
 			      ${report.status}
