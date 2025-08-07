@@ -48,9 +48,11 @@
 		r.processed_at,
 		b.release_date
 		FROM reports r
-		LEFT JOIN USER_TB u ON r.user_num = u.user_num
+		LEFT JOIN USER_TB u ON r.user_num =
+		u.user_num
 		LEFT JOIN BANNED_USER b ON r.user_num = b.user_num
-		WHERE r.report_num = #{reportNum}
+		WHERE
+		r.report_num = #{reportNum}
 	</select>
 
 	<!-- 3. 신고 상태 업데이트 -->
@@ -62,12 +64,10 @@
 		#{reportNum}
 	</update>
 
-	<update id="updateReportProcessedAtAndreleasedate"
-		parameterType="map">
+	<update id="updateReportProcessedAt" parameterType="int">
 		UPDATE reports
-		SET processed_at = SYSDATE,
-		release_date = #{releaseDate}
-		WHERE report_num =
-		#{reportNum}
+		SET processed_at = SYSDATE
+		WHERE report_num = #{reportNum}
 	</update>
+
 </mapper>

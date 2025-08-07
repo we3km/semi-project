@@ -137,7 +137,7 @@ public class AdminController {
 	        Date releaseDate = banUser.getReleaseDate();
 
 	        // reports 테이블에 processed_at, user_inf_validity_period 업데이트
-	        adminService.updateReportProcessedAtAndreleasedate(reportNum, releaseDate);
+	        adminService.updateReportProcessedAndBanUser(reportNum, banUser);
 
 	        adminService.updateReportStatus(reportNum, "완료");
 	        redirectAttributes.addFlashAttribute("msg", "제재가 정상 처리되었습니다.");

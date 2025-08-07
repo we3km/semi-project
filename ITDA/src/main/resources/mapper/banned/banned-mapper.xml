@@ -66,4 +66,10 @@
 		release_date > SYSDATE
 	</update>
 
+	<update id="updateBannedUserReleaseDate" parameterType="map">
+		UPDATE banned_user
+		SET release_date = #{releaseDate}
+		WHERE user_num = #{userNum}
+	</update>
+
 </mapper>

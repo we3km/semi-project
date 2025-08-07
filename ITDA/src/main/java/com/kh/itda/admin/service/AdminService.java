@@ -15,5 +15,5 @@ public interface AdminService {
 	User findUserById(String userId);
 	void banUser(BanUser banUser);
 	void updateBanUser(BanUser banUser);
-	void updateReportProcessedAtAndreleasedate(int reportNum, Date validityPeriod);
+	void updateReportProcessedAndBanUser(int reportNum, BanUser banUser);
 }
