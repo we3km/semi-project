@@ -147,7 +147,11 @@
 
         <!-- 댓글 입력 부분 변경-->
         <div class="comment-input">
-            <div class="profile-icon"></div>
+        	<sec:authorize access="isAuthenticated()">
+            <div class="profile-icon">
+		        <img class="profile-img" src= "${pageContext.request.contextPath}<sec:authentication property='principal.imageUrl' />" alt="내 프로필">
+		    </div>
+		    </sec:authorize>
             <input id="commentText" type="text" placeholder="댓글 추가..." />
             <button id="addComment">등록</button>
         </div> 
@@ -169,6 +173,13 @@
 	    const loginUserNum = '<sec:authentication property="principal.userNum" />';
 		const communityWriter = "${community.communityWriter}";
 		const contextPath = '${pageContext.request.contextPath}';
+		
+		const loginUserImage = '<sec:authentication property="principal.imageUrl" />';
+		console.log("로그인 이미지",loginUserImage);
+		console.log("로그인 이미지",loginUserNum);
+		
+		
+	   
 		
 		let currentSort = 'asc';
 		
@@ -204,11 +215,6 @@
 	    	            $('.sub-btn').show(); 
 	    	        }
 	    	    }, 200);
-	    	/* // 수정 버튼 숨기기
-	    	if (!loginUserNum || parseInt(loginUserNum) !== communityWriter) {
-	            $('.sub-btn').hide(); 
-	        }
-	    	 */
 	    	
 	    	//이미지 초기설정
 	    	 if (userReaction === 'LIKE') {
@@ -236,12 +242,7 @@
 			    	$('#deleteToggleArea').hide();
 		            $('#sharePopup').toggle();         
 		        });
-			  //신고하기
-			   /* $('.report-btn').click(function(){
-				   const id = $(this).data('id');
-				    const title = $(this).data('title');
-				    openReportModal('community', id, title);
-				}); */
+			  
 			 // 복사 버튼 클릭
 			 	$('#shareUrl').val(window.location.href);
 			 
@@ -401,9 +402,10 @@
 		     function createCommentHtml(comment) {
 
 		 		const contextPath = '${pageContext.request.contextPath}';
-		 		
-		 		//유저 프로필 URL 수정필요
 		 		const profileUrl = contextPath + "/user/mypage/" + comment.cmtWriterUserNum;
+		        const writeDate = formatCommentDate(comment.cmtWriteDateTimestamp);
+		        const loginUserImage = '<sec:authentication property="principal.imageUrl" />';
+		        
 		 	
 		        let repliesHtml = '';
 		        if (comment.replies && comment.replies.length > 0) {
@@ -412,7 +414,6 @@
 		            });
 		        }
 		        
-		        const writeDate = formatCommentDate(comment.cmtWriteDateTimestamp);
 		        
 		        let replyBtnHtml = '';
 		        if (comment.refCommentId=== 0) {
@@ -437,6 +438,11 @@
 		        commentHtml += '    </div>';
 		        commentHtml += '    <div class="reply-section">';
 		        commentHtml += '      <div class="reply-box" id="reply-box-' + comment.boardCmtId + '" style="display:none;">';
+		        
+		        commentHtml += '        <div class="profile-icon">';
+		        commentHtml += '            <img class="profile-img" src="' + contextPath + loginUserImage + '" alt="내 프로필">';
+		        commentHtml += '        </div>';
+		        
 		        commentHtml += '        <input type="text" class="reply-input" placeholder="답글 추가...">';
 		        commentHtml += '        <button class="reply-submit-btn" data-parent-no="' + comment.boardCmtId + '">등록</button>';
 		        commentHtml += '      </div>';
@@ -453,11 +459,8 @@
 		        }
 		        
 		        commentHtml += '  </div>';
-		        commentHtml += '</div>';
-			    
-		        
-		        
-		        
+		        commentHtml += '</div>'; 
+		  
 		        
 		        return commentHtml;
 		    }
