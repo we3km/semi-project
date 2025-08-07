@@ -204,9 +204,9 @@
 			}
 			
      		// 프로필 이미지 누르면 그 사람 소개페이지로 이동 (태형이 마이페이지)
-			function goToUserPage(userId) {
-				// 예: /mypage/user123 으로 이동
-				window.location.href = `/mypage/${userId}`;
+			function goToUserPage() {
+     			console.log("회원 마이 페이지 이동 :", "itda/user/mypageOthers/" + window.opponentUserNum);
+				window.location.href = "/itda/user/mypageOthers/" + window.opponentUserNum;
 			}
 			</script>
 
@@ -217,7 +217,8 @@
 						<!-- 채팅 리스트 -->
 						<div class="chat-content1">
 							<!-- 각각의 채팅방 속성 -->
-							<div class="list-chat" data-chat-room-id="${chatRoom.chatRoomId}"
+							<div class="list-chat" 
+								data-chat-room-id="${chatRoom.chatRoomId}"
 								data-chat-userNum="${chatRoom.userNum}"
 								data-board-id="${chatRoom.boardId}"
 								data-chat-type="${chatRoom.refName}"
@@ -230,19 +231,16 @@
 
 								<script>
 									/* 마지막 메세지 가져오는 거 호출 !!이자리 일단 픽스 해놓자!! */
-									console.log("")
 									bringLastMessage("${chatRoom.chatRoomId}");
 									
 									if("${chatRoom.refName}"==="오픈채팅방") console.log("오픈 프로필", "${chatRoom.fileName}");										
-									else console.log("${chatRoom.refName}", "프로필", "${chatRoom.imageUrl}");
-									
-									// 거래 채팅방 기준 상대방 프로필 가져오기
+									else console.log("${chatRoom.refName}", "프로필", "${chatRoom.imageUrl}");									
 								</script>
 
 								<!-- 오픈 채팅일 경우, 오픈 채팅방 프로필-->
 								<!-- 거래 채팅방일 경우, 상대방 프로필 이미지 & 마이페이지 -->
 								<script>								
-									console.log("오픈 프로필 사진 경로 : ", "${contextPath}/resources/images/chat/openchat/"+"${chatRoom.fileName}");
+									console.log("오픈 프로필 사진 경로 : ", "${contextPath}/resources/images/chat/openchat/"+"${chatRoom.fileName}");							
 								</script>
 								<c:choose>
 									<c:when test="${chatRoom.refName == '오픈채팅방'}">
@@ -254,7 +252,7 @@
 
 									<c:otherwise>
 										<button class="profile-button"
-											onclick="goToUserPage('user123')">
+											onclick="goToUserPage()">
 											<!-- 프로필 이미지 및 오픈채팅방 대표 이미지 경로 할당 필요 -->
 											<!-- 오픈 채팅방 대표 이미지 경로 직접 할당 -->
 											<img id="profileImage-${chatRoom.chatRoomId}"
@@ -270,7 +268,6 @@
 												})
 													.then(response => {
 														if (!response.ok) throw new Error("상대방 프로필 불러오기 실패ㅠㅠ");
-														console.log("${chatRoom.chatRoomId}");
 														return response.json();
 													})
 													.then(data => {
@@ -293,12 +290,13 @@
 														} else {
 															console.log("상대방 닉네임 없음!!");
 														}
-														
+														// 상대방 회원 번호 전역변수로 쓰자
+														window.opponentUserNum = data.opponentUserNum;
+														console.log("상대방 회원 번호 :", window.opponentUserNum);														
 													}).catch(error => {
 														console.error("에러 발생:", error);
 													})
 											}
-											/* ===================================== 프로필 나타내기 ===================================== */
 										</script>
 									</c:otherwise>
 								</c:choose>
@@ -388,6 +386,8 @@
 			</div>
 
 			<script>
+			
+			
 				// 배송지 정보 입력, 배송 정상 수령 등 버튼 누르면 해당하는 alert창 및 채팅방 생성
 				  function moveToTransOptionByType(type) {
 				    switch (type) {
@@ -692,6 +692,30 @@
 
 				<!-- =========================우측 채팅방 기능========================= -->
 				<script>
+                const transMenu = document.getElementById("transMenu");
+                const transMenuIcon = document.getElementById('transMenuIcon');
+                
+				// 메뉴 토글
+				transMenuIcon.addEventListener("click", function (event) {
+					event.stopPropagation(); // 문서 클릭 이벤트 방지
+			
+					transMenu.classList.toggle("show");
+				});
+
+				// 메뉴 내부 클릭 시 닫힘 방지
+				transMenu.addEventListener("click", function(event) {
+				  event.stopPropagation();
+				});
+
+				// 문서 클릭 시 메뉴 닫기
+				document.addEventListener("click", function (event) {
+				  if (!transMenu.classList.contains("show")) return; // 메뉴가 닫혀있으면 무시
+
+				  if (!transMenu.contains(event.target) && !transMenuIcon.contains(event.target)) {
+				    transMenu.classList.remove("show");
+				  }
+				});
+                
 				function handleKeyDown(event) {
 					if (event.key === "Enter") {
 						event.preventDefault(); // 폼 제출 막기 (폼이 있을 경우)
@@ -702,8 +726,7 @@
                 // 오른쪽 채팅창 헤더 +버튼 눌렀을 때 
                 // 주소요청, 운송장 입력 등 거래 유형에 맞게 보여줌                
                 function transactionService() {
-                    const menu = document.getElementById("transMenu");
-                    menu.classList.toggle("hidden");
+                    transMenu.classList.toggle("hidden");
                 }
                 
                 // 오른쪽 채팅창 왼쪽 하단 이미지 첨부
