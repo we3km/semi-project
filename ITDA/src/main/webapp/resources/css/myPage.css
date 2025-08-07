@@ -859,3 +859,73 @@
 	text-align: center;
 	font-size: 24px;
 }
+
+.related-products {
+	margin-top: 30px;
+}
+
+.product-list {
+	display: flex;
+  overflow-x: auto; /* 가로 스크롤 */
+  white-space: nowrap; /* 줄바꿈 방지 */
+  gap: 16px; /* 카드 간 간격 (원하는 값으로 조절) */
+  padding: 10px;
+  scrollbar-width: thin; /* Firefox */
+}
+
+
+    .card {
+    	flex: 0 0 auto; 
+		 min-width: 0; /* 셀 너비를 넘지 않게 */
+		overflow: hidden; /* 넘칠 경우 숨김 처리 */
+		word-wrap: break-word; /* 긴 단어 줄바꿈 */
+		box-sizing: border-box;
+		background-color: white;
+		padding: 15px;
+		width: 250px;
+		height: 300px;
+		border-radius: 12px;
+		text-align: center;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+		position: relative;
+	}
+
+    .card img {
+	width: 100%;
+      /* max-width: 180px; */
+      height: 60%;
+      object-fit: cover;
+    }
+    
+    .card p {
+      margin: 5px 0;
+    }
+	
+	#product-name{
+		font-size: 20px;
+	}
+	
+    #rental-fee {
+      font-weight: bold;
+    }
+    
+    #sharing-count {
+      font-weight: bold;
+    }
+    
+    #auction-fee, #highest-bid {
+      font-weight: bold;
+    }
+	.date{
+		font-size: 10px;
+	}
+	
+	
+
+
+/* ✅ 활성화된 버튼 스타일 */
+button.active {
+  background-color: #333;
+  color: white;
+  font-weight: bold;
+}

@@ -1,38 +1,39 @@
 package com.kh.itda.user.controller;
 
 
-import javax.servlet.http.HttpServletRequest;
-
-import javax.servlet.http.HttpSession;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.kh.itda.board.model.service.BoardService;
+import com.kh.itda.board.model.vo.BoardAuctionFileWrapper;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
+import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
 import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.User;
 import com.kh.itda.validator.UserValidator;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,12 +78,37 @@ public class UserController {
 	    model.addAttribute("itdaPoint", itdaPoint);
 		
 	    // 사용자가 작성한 게시물 리스트
-		// 사용자가 올린 대여 개시글
+		// 사용자가 올린 대여 게시글
 		List<BoardRentalFileWrapper> userRentalWrapperList = boardService.selectWriterRentalList(userNum);
 		model.addAttribute("userRentalWrapperList", userRentalWrapperList);
 		System.out.println("사용자의 대여 상품 : " + userRentalWrapperList);
+		
+		// 사용자가 올린 나눔 게시글
+		List<BoardShareFileWrapper> userShareWrapperList = boardService.selectWriterShareList(userNum);
+		model.addAttribute("userShareWrapperList", userShareWrapperList);
+		System.out.println("사용자의 나눔 상품 : " + userShareWrapperList);
+
+		// 사용자가 올린 경매 게시글
+		List<BoardAuctionFileWrapper> userAuctionWrapperList = boardService.selectWriterAuctionList(userNum);
+		model.addAttribute("userAuctionWrapperList", userAuctionWrapperList);
+		System.out.println("사용자의 경매 상품 : " + userAuctionWrapperList);
 	    
 	    //사용자가 찜해둔 게시물 리스트
+		// 사용자가 찜한 대여 게시글
+		List<BoardRentalFileWrapper> likedRentalWrapperList = boardService.selectLikedRentalList(userNum);
+		model.addAttribute("likedRentalWrapperList", likedRentalWrapperList);
+		System.out.println("사용자의 대여 상품 : " + likedRentalWrapperList);
+		
+		// 사용자가 찜한 나눔 게시글
+		List<BoardShareFileWrapper> likedShareWrapperList = boardService.selectLikedShareList(userNum);
+		model.addAttribute("likedShareWrapperList", likedShareWrapperList);
+		System.out.println("사용자의 나눔 상품 : " + likedShareWrapperList);
+		
+		// 사용자가 찜한 경매 게시글
+		List<BoardAuctionFileWrapper> likedAuctionWrapperList = boardService.selectLikedAuctionList(userNum);
+		model.addAttribute("likedAuctionWrapperList", likedAuctionWrapperList);
+		System.out.println("사용자의 경매 상품 : " + likedAuctionWrapperList);
+		
 	    
 	    
 		return "user/mypage";
@@ -350,8 +376,8 @@ public class UserController {
 //	 
 
 	// 타인 정보 페이지
-	@GetMapping("/user/mypageOthers/{userNum}")
-	public String mypageOthers(@PathVariable int userNum, Model model) {
+	@GetMapping("/user/mypageOthers")
+	public String mypageOthers(@RequestParam int userNum, Model model) {
 		User user = uService.findUserByUserNum(userNum);
 		model.addAttribute("user", user);
 		
@@ -367,6 +393,39 @@ public class UserController {
 	    int itdaPoint = (rawScore != null) ? rawScore : 80;
 	    model.addAttribute("itdaPoint", itdaPoint);
 		model.addAttribute("report", new Report());
+		
+		
+	    // 사용자가 작성한 게시물 리스트
+		// 사용자가 올린 대여 게시글
+		List<BoardRentalFileWrapper> userRentalWrapperList = boardService.selectWriterRentalList(userNum);
+		model.addAttribute("userRentalWrapperList", userRentalWrapperList);
+		System.out.println("사용자의 대여 상품 : " + userRentalWrapperList);
+		
+		// 사용자가 올린 나눔 게시글
+		List<BoardShareFileWrapper> userShareWrapperList = boardService.selectWriterShareList(userNum);
+		model.addAttribute("userShareWrapperList", userShareWrapperList);
+		System.out.println("사용자의 나눔 상품 : " + userShareWrapperList);
+
+		// 사용자가 올린 경매 게시글
+		List<BoardAuctionFileWrapper> userAuctionWrapperList = boardService.selectWriterAuctionList(userNum);
+		model.addAttribute("userAuctionWrapperList", userAuctionWrapperList);
+		System.out.println("사용자의 경매 상품 : " + userAuctionWrapperList);
+	    
+	    //사용자가 찜해둔 게시물 리스트
+		// 사용자가 찜한 대여 게시글
+		List<BoardRentalFileWrapper> likedRentalWrapperList = boardService.selectLikedRentalList(userNum);
+		model.addAttribute("likedRentalWrapperList", likedRentalWrapperList);
+		System.out.println("사용자의 대여 상품 : " + likedRentalWrapperList);
+		
+		// 사용자가 찜한 나눔 게시글
+		List<BoardShareFileWrapper> likedShareWrapperList = boardService.selectLikedShareList(userNum);
+		model.addAttribute("likedShareWrapperList", likedShareWrapperList);
+		System.out.println("사용자의 나눔 상품 : " + likedShareWrapperList);
+		
+		// 사용자가 찜한 경매 게시글
+		List<BoardAuctionFileWrapper> likedAuctionWrapperList = boardService.selectLikedAuctionList(userNum);
+		model.addAttribute("likedAuctionWrapperList", likedAuctionWrapperList);
+		System.out.println("사용자의 경매 상품 : " + likedAuctionWrapperList);
 		
 		return "/user/mypageOthers";
 	}

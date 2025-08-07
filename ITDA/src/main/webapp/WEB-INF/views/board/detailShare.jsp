@@ -113,7 +113,7 @@
 								src="${pageContext.request.contextPath}${profileImage}"
 								alt="프로필" />
 						</div>
-						<strong>${writer} </strong>
+						<div style="font-weight: bold;" onclick="location.href='${pageContext.request.contextPath}/user/mypageOthers?userNum=${board.boardCommon.userNum}'" style="cursor: pointer;">${writer} </div>
 					</div>
 					<c:choose>
 					    <c:when test="${mannerScore lt 40}">
