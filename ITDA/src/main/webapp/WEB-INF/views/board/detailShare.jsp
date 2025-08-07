@@ -277,7 +277,7 @@
 						src="${pageContext.request.contextPath}/${equalsCategoryboard.filePath.categoryPath}/${equalsCategoryboard.filePath.fileName}"
 						alt="이미지" />
 					<p id="product-name">${equalsCategoryboard.boardCommon.productName }</p>
-					<p class="count">${equalsCategoryboard.boardSharing.sharingCount }</p>
+					<p class="count">나눔수량:${equalsCategoryboard.boardSharing.sharingCount }개</p>
 
 				</div>
 			</c:forEach>

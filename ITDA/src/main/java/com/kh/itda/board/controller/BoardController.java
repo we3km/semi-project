@@ -304,7 +304,8 @@ public class BoardController {
 	public String boardRentalInsert(@ModelAttribute BoardRentalWrapper board,
 			// @PathVariable("boardCategory") String boardCategory,
 			Model model, RedirectAttributes ra,
-			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles) {
+			@RequestParam(value = "upfile", required = false) List<MultipartFile> upfiles
+			) {
 		/*
 		 * 업무로직 1. 첨부파일(이미지)이 존재하는지 확인 1) 존재하지 않는다면 게시글 등록 실패 2. 게시판 정보 등록 및 첨부파일 정보 등록을
 		 * 위한 서비스 호출 1) 게시글 정보 등록에 필요한 정보 바인딩 - 회원 정보에서 가져올 것(테스트에선 임의로 줄것) : 회원번호,
