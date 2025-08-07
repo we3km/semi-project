@@ -570,6 +570,7 @@ h2 {
   background: #fafaff;
   transition: border 0.2s;
   text-align: left;
+ font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
 }
 .details-textarea:focus {
   border-color: #5A54FF;
