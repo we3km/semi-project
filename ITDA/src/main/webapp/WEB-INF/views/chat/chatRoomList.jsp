@@ -9,7 +9,7 @@
 <head>
 <%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <!-- 헤더 연결은 나중에 하자 -->
-<%@ include file="/WEB-INF/views/common/Header.jsp"%>
+<%@ include file="/WEB-INF/views/common/chatHeader.jsp"%>
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
