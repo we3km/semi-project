@@ -51,7 +51,7 @@
 				<div class="info-box" style="top: 460px;">(비밀번호 비공개)</div>
 				<div class="info-box" style="top: 520px;">${user.nickName}</div>
 				<div class="info-box" style="top: 580px;">${user.email}</div>
-				<div class="info-box" style="top: 640px;">${user.birth}</div>
+				<div class="info-box" style="top: 640px;">${fn:substring(user.birth, 0, 10)}</div>
 				<div class="info-box" style="top: 700px;">${user.phone}</div>
 				<div class="info-box" style="top: 760px;">${user.address}</div>
 				<div class="text-wrapper-12" style="top: 400px;">아이디</div>
@@ -223,7 +223,7 @@
 			title.innerText = "비밀번호 변경";
 			body.innerHTML = 
 				`<input type="password" name="newPwd" id="newPwd" placeholder="새 비밀번호 입력"
-					pattern="^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,15}$" required>
+					pattern="^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,15}$" required><br>
 				<input type="password" name="confirmPwd" id="confirmPwd" placeholder="비밀번호 확인" required>`
 		}
 		
@@ -235,7 +235,7 @@
 			body.innerHTML = 
 				`<input type="text" name="newNickname" id="newNickname" placeholder="새 닉네임 입력"
 					pattern="^([가-힣a-zA-Z0-9]{2,12})$" required>
-				<input type="button" onclick="checkNickname()" value="중복 확인">`
+				<input type="button" id="checkNickname" onclick="checkNickname()" value="중복 확인">`
 		}
 		
 		// 폰 번호
@@ -246,7 +246,7 @@
 			body.innerHTML = 
 			    `<input type="text" name="newPhone" id="newPhone" placeholder="새 휴대폰 번호 입력"
 			    pattern="^010-\d{4}-\d{4}$" required>
-				<input type="button" onclick="checkPhone()" value="중복 확인">`
+				<input type="button" id="checkPhone" onclick="checkPhone()" value="중복 확인">`
 		}
 		
 		// 주소
@@ -255,8 +255,8 @@
 			form.method = "post";
 			title.innerText = "주소 변경";
 			body.innerHTML = 
-			      `<input type="button" onclick="execDaumPostcode()" value="주소검색">
-			      <input type="text" name="addr1" id="addr1" placeholder="기본주소" readonly>
+			      `<input type="text" name="addr1" id="addr1" placeholder="기본주소" readonly>
+			      <input type="button" id="searchAddr" onclick="execDaumPostcode()" value="주소검색">
 			      <input type="text" name="addr2" id="addr2" placeholder="상세주소">
 			      <input type="hidden" id="address" name="address" />`
 		}
@@ -469,7 +469,16 @@
 	} */	
 	
 	document.querySelector('.delete-user').addEventListener('click', function () {
-		window.location.href = contextPath + "/user/logout";
+		if(confirm("정말 탈퇴하시겠습니까?")){
+			fetch(contextPath + "/user/delete", {
+				method: "POST"
+			})
+			.then(res => res.text())
+		    .then(data => {
+		        alert("회원 탈퇴 처리 완료");
+		    })
+		    .catch(err => alert('오류 발생: ' + err));	
+		}
 	});
 	
 </script>

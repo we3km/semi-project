@@ -382,7 +382,7 @@ public class UserController {
 		User user = uService.findUserById(userId);
 		int userNum = user.getUserNum();
 		
-		uService.deleteUserByUserNum(userNum);
+		uService.unregister(userNum);
 		
 		return "redirect:/";
 	}

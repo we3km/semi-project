@@ -123,9 +123,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUserByUserNum(int userNum) {
-		userDao.deleteUserByUserNum(userNum);
+	public void unregister(int userNum) {
+		userDao.unregister(userNum);
 	}
+
+	
 
 }
 

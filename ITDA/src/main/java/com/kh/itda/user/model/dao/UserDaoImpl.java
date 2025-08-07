@@ -137,7 +137,9 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public void deleteUserByUserNum(int userNum) {
-		session.delete("security.deleteUserByUserNum", userNum);
+	public void unregister(int userNum) {
+		session.update("security.unregister", userNum);
 	}
+
+	
 }

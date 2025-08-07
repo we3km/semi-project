@@ -146,8 +146,10 @@
 		</constructor>
 	</resultMap>
 	
-	<delete id="deleteUserByUserNum" parameterType="Map">
-		
-	</delete>
+	<update id="unregister" parameterType="map">
+		UPDATE USER_TB
+		SET IS_QUIT = 'Y'
+		WHERE USER_NUM = #{userNum}
+	</update>
 
 </mapper>

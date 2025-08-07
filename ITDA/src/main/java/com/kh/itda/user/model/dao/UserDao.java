@@ -46,6 +46,8 @@ public interface UserDao {
 
 	User findUserByUserNum(int userNum);
 
-	void deleteUserByUserNum(int userNum);
+	void unregister(int userNum);
+
+	
 
 }
