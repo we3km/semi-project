@@ -56,6 +56,11 @@ function sendMessage() {
                 imageUrl: imageUrl
             }));
 
+            const lastMessageElement = document.getElementById("lastMessage-" + window.chatRoomId);
+            if (lastMessageElement) {
+                lastMessageElement.textContent = message;
+            }
+
             input.value = ""; // 입력란 비워줌
         }).catch(err => console.error("오류 발생: ", err));
 
@@ -83,18 +88,15 @@ const showMessage = msg => {
     }
     else {
         const newMessage = document.createElement('div');
-
-        // 내가 보낸 메세지인지 확인
-        console.log("dataset에서 받아온 loginUserNum:", loginUserNum);
         console.log("메세지 보낸 사람의 userNum:", userNum);
-
+        
+        // 내가 보낸 메세지인지 확인
         const isSender = userNum === loginUserNum;
         newMessage.className = isSender ? "chat-message-sent" : "chat-message-received";
 
         console.log("발신자 정보 : ", msg);
         // 시간 포맷 처리
         const sentAt = new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        console.log("보여지는 시간 ", msg.sentAt);
 
         if (!isSender) {
             // 상대방 프로필과 닉네임 추가
@@ -108,10 +110,19 @@ const showMessage = msg => {
             profileImg.src = contextPath + msg.imageUrl;
             profileImg.alt = msg.nickName + " 프로필";
 
-            // 클릭 시 마이페이지로 이동
+            // 클릭 시 해당 사람 마이페이지로 이동
             profileImg.style.cursor = 'pointer';
+            profileImg.style.transition = 'transform 0.2s ease-in-out';
+
+            profileImg.addEventListener('mouseenter', () => {
+                profileImg.style.transform = 'scale(1.1)';
+            });
+            profileImg.addEventListener('mouseleave', () => {
+                profileImg.style.transform = 'scale(1)';
+            });
+            // 마이 페이지 이동
             profileImg.addEventListener('click', () => {
-                window.location.href = contextPath + "/user/myPage?userNum=" + msg.userNum;
+                window.location.href = "/itda/user/mypageOthers/" + msg.userNum;
             });
 
             const nicknameSpan = document.createElement('span');
@@ -130,8 +141,7 @@ const showMessage = msg => {
 
         if (msg.chatImg) {
             const chatImg = document.createElement('img');
-
-            // GPT 이미지 실시간
+            // 이미지 실시간
             chatImg.src = contextPath + msg.chatImg + "?t=" + new Date().getTime();
             chatImg.alt = "채팅 이미지";
             chatImg.style.maxWidth = "200px";

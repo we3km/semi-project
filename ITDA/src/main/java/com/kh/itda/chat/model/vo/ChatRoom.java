@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ChatRoom {
 	private int chatRoomId; // 채팅방 고유 번호
-	private int userNum; // 채팅하는 회원 번호
+	private int userNum; // 채팅방 생성한 회원 번호
 	
 	// 거래채팅방용
 	private int boardId; // 게시판 번호
