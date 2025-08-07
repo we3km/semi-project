@@ -20,4 +20,5 @@ public class BanUser {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date releaseDate;
 	private String adminUserName;
+	private Date release_date;
 }
