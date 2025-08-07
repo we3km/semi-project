@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class UserExt implements UserDetails {
     private static final long serialVersionUID = 8050194209742105906L;
-
+    
 	private int userNum;
 	private String userId;
 	private String userPwd;
