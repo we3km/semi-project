@@ -13,11 +13,16 @@ import com.kh.itda.board.model.vo.BoardRentalWrapper;
 import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.Dibs;
+import com.kh.itda.board.model.vo.ProductCategories;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.board.model.vo.BoardRentalFileWrapper;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+
 import com.kh.itda.user.model.vo.RentalItem;
+
+import com.kh.itda.community.model.vo.CommunityType;
+
 
 public interface BoardService {
 
@@ -88,13 +93,16 @@ public interface BoardService {
 	void updateBid(AuctionBidding bid);
 
 	void insertBiddingWinner(int boardId);
-
-	
-	
 	
 	List<RentalItem> getRentalItemByUserNum(int userNum);
 
 	List<BoardAllWrapper> selectMyBoard(int userNum);
+	void deleteBoard(int boardId);
+
+	Map<String, ProductCategories> getProductType();
+
+	String getProfileImage(int writerUserNum);
+
 
 
 

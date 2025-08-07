@@ -27,6 +27,7 @@ public class CommunityDaoImpl implements CommunityDao{
 
 	@Override
 	public Map<String, CommunityType> getCommunityTypeMap() {
+		System.out.println(session.selectMap("community.getCommunityTypeMap", "communityCd"));
 		return session.selectMap("community.getCommunityTypeMap", "communityCd");
 	}
 

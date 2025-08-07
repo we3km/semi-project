@@ -23,6 +23,7 @@ import com.kh.itda.board.model.vo.BoardShareFileWrapper;
 import com.kh.itda.board.model.vo.BoardShareWrapper;
 import com.kh.itda.board.model.vo.BoardSharing;
 import com.kh.itda.board.model.vo.Dibs;
+import com.kh.itda.board.model.vo.ProductCategories;
 import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.model.vo.BoardTag;
 import com.kh.itda.common.model.vo.File;
@@ -527,9 +528,13 @@ public class BoardDaoImpl implements BoardDao {
 		
 	}
 
-
 	public List<RentalItem> getRentalItemByUserNum(int userNum) {
 		return session.selectList("user.getRentalItemByUserNum", userNum);
+	}
+	
+	@Override
+	public void deleteBoard(int boardId) {
+		session.update("board.deleteBoard", boardId);
 	}
 
 
@@ -538,6 +543,15 @@ public class BoardDaoImpl implements BoardDao {
 		return session.selectList("board.selectMyBoard", userNum);
 	}
 
+	public Map<String, ProductCategories> getProductType() {
+		return session.selectMap("board.getProductType", "productCategoryNum");
+	}
+
+
+	@Override
+	public String getProfileImage(int writerUserNum) {
+		return session.selectOne("board.getProfileImage", writerUserNum);
+	}
 
 
 
