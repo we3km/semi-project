@@ -281,12 +281,13 @@ String email = (String) session.getAttribute("verifiedEmail");
 		
 		    const token = '${_csrf.token}';
 		
-		    fetch(contextPath + "/user/join/enroll/checkNickname?nickname=" + encodeURIComponent(nickName), {
+		    fetch(contextPath + "/user/join/enroll/checkNickname?nickName=" + encodeURIComponent(nickName), {
 		        method: "GET"
 		    })
 		    .then(res => res.text())
 		    .then(data => {
 		        const nickNameStatus = document.getElementById('nick-name-status');
+		        console.log(data)
 		        if (data === "0") { // 사용 가능
 		            nickNameValid = true;
 		            nickNameStatus.textContent = '사용 가능한 닉네임입니다.';
@@ -294,7 +295,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 		        } else if (data === "1") { // 중복
 		            nickNameValid = false;
 		            nickNameStatus.textContent = '이미 사용 중인 닉네임입니다.';
-		            nickNameStatus.style.color = 'red';
+		            nickNameStatus.style.color = 'orange';
 		        } else if (data === "-1") { // 유효하지 않은 닉네임
 		            nickNameValid = false;
 		            nickNameStatus.textContent = '유효하지 않은 닉네임입니다.';

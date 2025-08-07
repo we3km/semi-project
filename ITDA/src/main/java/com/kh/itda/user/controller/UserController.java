@@ -28,6 +28,7 @@ import com.kh.itda.board.model.service.BoardService;
 import com.kh.itda.board.model.vo.BoardAllWrapper;
 import com.kh.itda.config.FileConfig;
 import com.kh.itda.security.model.vo.UserExt;
+import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.User;
 import com.kh.itda.validator.UserValidator;
@@ -75,8 +76,7 @@ public class UserController {
 	    model.addAttribute("itdaPoint", itdaPoint);
 		
 	    // 사용자가 작성한 게시물 리스트
-	    List<BoardAllWrapper> boardAllWrapper = bService.selectMyBoard(userNum);
-	    model.addAttribute("boardList" ,boardAllWrapper);
+	    
 	    
 	    //사용자가 찜해둔 게시물 리스트
 	    
@@ -348,6 +348,23 @@ public class UserController {
 	// 타인 정보 페이지
 	@GetMapping("/user/mypageOthers/{userNum}")
 	public String mypageOthers(@PathVariable int userNum, Model model) {
+		User user = uService.findUserByUserNum(userNum);
+		model.addAttribute("user", user);
+		
+		// 사용자 프로필 이미지 url 조회
+		String imageUrl = uService.getProfileImageUrl(userNum);
+	    if (imageUrl == null || imageUrl.isEmpty()) {
+	    	imageUrl = "/resources/profile/default.png";
+	    }
+	    model.addAttribute("imageUrl", imageUrl);
+	    
+	    // 사용자 매너점수 조회
+	    Integer rawScore = uService.getScore(userNum);
+	    int itdaPoint = (rawScore != null) ? rawScore : 80;
+	    model.addAttribute("itdaPoint", itdaPoint);
+		model.addAttribute("report", new Report());
+		
+	    
 		
 		return "/user/mypageOthers";
 	}

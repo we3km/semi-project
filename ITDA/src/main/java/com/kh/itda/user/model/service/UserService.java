@@ -40,4 +40,6 @@ public interface UserService {
 
 	int getScore(int userNum);
 
+	User findUserByUserNum(int userNum);
+
 }

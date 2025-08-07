@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
@@ -157,7 +158,7 @@ public class SignUpController { //회원가입
     // 회원정보 입력 페이지서 닉네임 중복체크 담당
     @ResponseBody
     @GetMapping("/enroll/checkNickname")
-    public String checkNickname(String nickName) {
+    public String checkNickname(String nickName, HttpServletRequest req) {
     	if(!UserValidator.isValidNickName(nickName)) {
     		return "-1";
     	}

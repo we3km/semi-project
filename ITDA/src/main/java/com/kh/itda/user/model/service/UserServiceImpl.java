@@ -108,6 +108,11 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	public User findUserByUserNum(int userNum) {
+		return userDao.findUserByUserNum(userNum);
+	}
+	
+	@Override
 	public String getProfileImageUrl(int userNum) {
 		return userDao.getProfileImageUrl(userNum);
 	}

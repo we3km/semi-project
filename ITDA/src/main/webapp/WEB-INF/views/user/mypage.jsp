@@ -1,129 +1,91 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/myPage.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8" />
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/myPage.css" />
+<%-- report css --%>
+<link
+	href="${pageContext.request.contextPath}/resources/css/report/reports.css"
+	rel="stylesheet">
+
+<%-- jQuery --%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<div class="element">
-    <div class="div">
-        <!-- 헤더 -->
-        <div class="overlap-15">
-            <div class="itda-point-text">${itdaPoint}℃</div>
-            <div class="degree">🔥</div>
-        </div>
-        <div class="itda-point">
-            <div class="gauge-fill" id="gauge-fill"></div>
-        </div>
-        <div class="view">
-            <div class="logo">logo</div>
-            <div class="view-2">
-                <div class="search">돋</div>
-                <input type="text" class="search-input" value="교환 게시판 검색">
-                <div class="view-3">
-                    <div class="overlap-group-3">
-                        <div class="group-32"><div class="category">카테고리</div></div>
-                        <div class="arrow-drop-down">▽</div>
-                    </div>
-                </div>
-            </div>
-            <div class="view-wrapper">
-                <div class="view-4">
-                    <div class="overlap-group-4">
-                        <div class="group-33">
-                            <div class="text-wrapper-30">
-                                ${user.nickName}님 반갑습니다!
-                            </div>
-                        </div>
-                        <div class="bell">벨</div>
-                        <div class="chat-bubble">말풍</div>
-                    </div>
-                </div>
-            </div>
-            <div class="navbar">
-                <div class="go-to-rental">대여</div>
-                <div class="go-to-auction">경매</div>
-                <div class="go-to-exchange">교환</div>
-                <div class="go-to-sharing">나눔</div>
-                <div class="go-to-community">커뮤니티</div>
-            </div>
-            <div class="logout">로그아웃</div>
-            <div class="mainPage">마이페이지</div>
-            <div class="customer-service">고객센터</div>
-        </div>
+	<div class="wrapper">
+		<header class="header">
+			<jsp:include page="/WEB-INF/views/common/Header.jsp" />
+		</header>
+	</div>
 
-        <!-- 대여 목록: 반복이 필요한 영역은 JSTL 사용 -->
-        <div class="overlap">
-            <div class="text-wrapper-3">대여 중인 물품</div>
+	<div class="container">
+		<div class="element">
+			<div class="div">
+				<!-- 헤더 -->
+				<div class="text-wrapper-9">나의 it 점수</div>
+				<div class="overlap-15">
+					<div class="itda-point-text">${itdaPoint}℃</div>
+					<div class="degree">🔥</div>
+				</div>
+				<div class="itda-point">
+					<div class="gauge-fill" id="gauge-fill"></div>
+				</div>
+				<!-- 정보 수정 -->
+				<div class="text-wrapper-8">내 정보</div>
+				<div class="update-pwd" onclick="openModal('password')">비밀번호
+					변경</div>
+				<div class="update-nick" onclick="openModal('nickName')">닉네임
+					변경</div>
+				<div class="update-phone" onclick="openModal('phone')">휴대폰 번호
+					변경</div>
+				<div class="update-address" onclick="openModal('address')">주소
+					변경</div>
 
-            <%-- 반복 예시 (JSTL 활용 가능) --%>
-            <c:forEach var="item" items="${rentalList}">
-                <div class="rental-group-1">
-                    <div class="group">
-                        <div class="rental-image">${item.image}</div>
-                        <div class="text-wrapper">${item.title}</div>
-                    </div>
-                    <div class="text-wrapper-4">기간 임박!!</div>
-                    <div class="extension-1">
-                        <div class="group-2">
-                            <div class="group-3">
-                                <div class="text-wrapper-2">대여 연장 요청</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </c:forEach>
-        </div>
+				<div class="info-box" style="top: 400px;">${user.userId}</div>
+				<div class="info-box" style="top: 460px;">(비밀번호 비공개)</div>
+				<div class="info-box" style="top: 520px;">${user.nickName}</div>
+				<div class="info-box" style="top: 580px;">${user.email}</div>
+				<div class="info-box" style="top: 640px;">${user.birth}</div>
+				<div class="info-box" style="top: 700px;">${user.phone}</div>
+				<div class="info-box" style="top: 760px;">${user.address}</div>
+				<div class="text-wrapper-12" style="top: 400px;">아이디</div>
+				<div class="text-wrapper-12" style="top: 460px;">비밀번호</div>
+				<div class="text-wrapper-12" style="top: 520px;">닉네임</div>
+				<div class="text-wrapper-12" style="top: 580px;">이메일</div>
+				<div class="text-wrapper-12" style="top: 640px;">생일</div>
+				<div class="text-wrapper-12" style="top: 700px;">휴대폰 번호</div>
+				<div class="text-wrapper-12" style="top: 760px;">주소</div>
+				<div class="profile-change" id="changeProfile">프로필 변경</div>
+				<input type="file" id="profileInput" accept="image/*"
+					style="display: none" />
+				<div class="profile-image">
+					<img id="preview"
+						src="${pageContext.request.contextPath}${imageUrl}" alt="프로필 이미지"
+						width="350" height="350" style="display: block;">
+				</div>
 
-        <!-- 정보 수정 -->
-        <div class="text-wrapper-8">내 정보</div>
-        <div class="text-wrapper-9">나의 it 점수</div>
-        <div class="update-pwd" onclick="openModal('password')">비밀번호 변경</div>
-        <div class="update-nick" onclick="openModal('nickName')">닉네임 변경</div>
-        <div class="update-phone" onclick="openModal('phone')">휴대폰 번호 변경</div>
-        <div class="update-address" onclick="openModal('address')">주소 변경</div>
+				<div id="modal-overlay" class="modal hidden">
+					<div class="modal-content">
+						<h3 id="modal-title"></h3>
+						<form id="modal-form" autocomplete="off">
+							<div id="modal-body">
+								<!-- 비밀번호, 닉네임, 폰번호, 주소 변경 -->
+							</div>
+							<input type="button" id="cancel" name="cancel" value="취소"
+								onclick="closeModal()"> <input type="button" id="change"
+								name="change" value="변경" onclick="submitModal()">
+						</form>
+					</div>
+				</div>
 
-        <div class="info-box" style="top: 460px;">${user.userId}</div>
-		<div class="info-box" style="top: 519px;">(비밀번호 비공개)</div>
-		<div class="info-box" style="top: 578px;">${user.nickName}</div>
-		<div class="info-box" style="top: 637px;">${user.email}</div>
-		<div class="info-box" style="top: 696px;">${user.birth}</div>
-		<div class="info-box" style="top: 755px;">${user.phone}</div>
-		<div class="info-box" style="top: 815px; height: 70px">${user.address}</div>
-		<div class="text-wrapper-12" style="top: 459px;">아이디</div>
-        <div class="text-wrapper-12" style="top: 518px;">비밀번호</div>
-        <div class="text-wrapper-12" style="top: 577px;">닉네임</div>
-        <div class="text-wrapper-12" style="top: 636px;">이메일</div>
-        <div class="text-wrapper-12" style="top: 695px;">생일</div>
-        <div class="text-wrapper-12" style="top: 754px;">휴대폰 번호</div>
-        <div class="text-wrapper-12" style="top: 814px;">주소</div>
-        <div class="profile-change" id="changeProfile">프로필 변경</div>
-        <input type="file" id="profileInput" accept="image/*" style="display:none" />
-        <div class="profile-image">
-            <img id="preview" src="${pageContext.request.contextPath}${imageUrl}"
-            	alt="프로필 이미지" width="300" height="300" style="display: block;">
-        </div>
-        
-        <div id="modal-overlay" class="modal hidden">
-        	<div class="modal-content">
-        		<h3 id="modal-title"></h3>
-        		<form id="modal-form" autocomplete="off">
-        			<div id="modal-body">
-        				<!-- 비밀번호, 닉네임, 폰번호, 주소 변경 -->
-        			</div>
-        			<input type="button" id="cancel" name="cancel" value="취소" onclick="closeModal()">
-        			<input type="button" id="change" name="change" value="변경" onclick="submitModal()">
-        		</form>
-        	</div>
-        </div>
-
-        <!-- 관심글 및 내가 쓴 글 등 반복 영역은 JSTL로 -->
-        <!-- 
+				<!-- 관심글 및 내가 쓴 글 등 반복 영역은 JSTL로 -->
+				<!-- 
         <div class="group-20 element">
 		    <c:forEach var="board" items="${boardList}" varStatus="status">
 		        <c:if test="${status.index < 4}">
@@ -148,83 +110,90 @@
 		    <div class="text-wrapper-23">거래 기록</div>
 		    <div class="text-wrapper-24">찜 목록</div>
 		-->
-		    <!-- 더보기는 나중 구현 -->
-		    <!--
+				<!-- 더보기는 나중 구현 -->
+				<!--
 		    <div class="see-more1">더보기 &gt;</div>
 		    <div class="see-more2">더보기 &gt;</div>
 		    <div class="see-more3">더보기 &gt;</div>
 		</div>
 		-->
-		<div class="group-20 element">
-			<c:forEach var="board" items="${boardList}" varStatus="status">
-				<c:if test="${status.index < 4}">
-					<div class="group-box group-${24 + status.index}" 
-						onclick="moveDetail(${board.boardCommon.boardId}, '${board.boardCommon.transactionCategory}')">
-		
-						<div class="red">
-							<img class="board-img" 
-							src="${pageContext.request.contextPath}${board.filePath.categoryPath}${board.filePath.fileName}" />
-						</div>
-						
-						<div class="overlap-3">
-							<div class="board-title">${board.boardCommon.productName}</div>
-						</div>
-		
-						<!-- 조건에 따른 표시 -->
-						<c:choose>
-							<c:when test="${board.boardRental != null}">
-								<div class="overlap-4">
-									<div class="board-terms">대여료 : ${board.boardRental.rentalFee}원</div>
-								</div>
-								<div class="overlap-group-2">
-									<div class="board-period">
-										<fmt:formatDate value="${board.boardRental.rentalStartDate}" pattern="yyyy/MM/dd" />
-										~
-										<fmt:formatDate value="${board.boardRental.rentalEndDate}" pattern="yyyy/MM/dd" />
-									</div>
-								</div>
-							</c:when>
-		
-							<c:when test="${board.boardAuction != null}">
-								<div class="overlap-4">
-									<div class="board-terms">시작가 : ${board.boardAuction.auctionStartingFee}원</div>
-								</div>
-								<div class="overlap-group-2">
-									<div class="board-period">
-										<fmt:formatDate value="${board.boardAuction.auctionStartDate}" pattern="yyyy/MM/dd" />
-										~
-										<fmt:formatDate value="${board.boardAuction.auctionEndDate}" pattern="yyyy/MM/dd" />
-									</div>
-								</div>
-							</c:when>
-		
-							<c:when test="${board.boardSharing != null}">
-								<div class="overlap-4">
-									<div class="board-terms">나눔 수량 : ${board.boardSharing.sharingCount}개</div>
-								</div>
-								<div class="overlap-group-2">
-									<div class="board-period">나눔 게시물</div>
-								</div>
-							</c:when>
-						</c:choose>
-					</div>
-				</c:if>
-			</c:forEach>
-		
-			<!-- 더보기 버튼 -->
-			<c:if test="${fn:length(boardList) > 4}">
-				<div class="see-more1" onclick="location.href='${pageContext.request.contextPath}/board/all'">더보기 &gt;</div>
-			</c:if>
-		
-			<div class="text-wrapper-22">내가 등록한 게시글</div>
-			<div class="text-wrapper-23">거래 기록</div>
-			<div class="text-wrapper-24">찜 목록</div>
-		</div>
-    </div>
-</div>
+				<div class="group-20 element">
+					<c:forEach var="board" items="${boardList}" varStatus="status">
+						<c:if test="${status.index < 4}">
+							<div class="group-box group-${24 + status.index}"
+								onclick="moveDetail(${board.boardCommon.boardId}, '${board.boardCommon.transactionCategory}')">
 
-<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script>
+								<div class="red">
+									<img class="board-img"
+										src="${pageContext.request.contextPath}${board.filePath.categoryPath}${board.filePath.fileName}" />
+								</div>
+
+								<div class="overlap-3">
+									<div class="board-title">${board.boardCommon.productName}</div>
+								</div>
+
+								<!-- 조건에 따른 표시 -->
+								<c:choose>
+									<c:when test="${board.boardRental != null}">
+										<div class="overlap-4">
+											<div class="board-terms">대여료 :
+												${board.boardRental.rentalFee}원</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+												~
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+											</div>
+										</div>
+									</c:when>
+
+									<c:when test="${board.boardAuction != null}">
+										<div class="overlap-4">
+											<div class="board-terms">시작가 :
+												${board.boardAuction.auctionStartingFee}원</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+												~
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+											</div>
+										</div>
+									</c:when>
+
+									<c:when test="${board.boardSharing != null}">
+										<div class="overlap-4">
+											<div class="board-terms">나눔 수량 :
+												${board.boardSharing.sharingCount}개</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">나눔 게시물</div>
+										</div>
+									</c:when>
+								</c:choose>
+							</div>
+						</c:if>
+					</c:forEach>
+
+					<!-- 더보기 버튼 -->
+					<c:if test="${fn:length(boardList) > 4}">
+						<div class="see-more1"
+							onclick="location.href='${pageContext.request.contextPath}/board/all'">더보기
+							&gt;</div>
+					</c:if>
+
+					<div class="text-wrapper-22">내가 등록한 게시글</div>
+					<div class="text-wrapper-23">거래 기록</div>
+					<div class="text-wrapper-24">찜 목록</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
 	const contextPath = "${pageContext.request.contextPath}";
 	let score = ${itdaPoint};
 	
@@ -470,7 +439,7 @@
 		.then(data => {
 			if (data.success) {
 			    alert("프로필 이미지가 변경되었습니다.");
-				document.getElementById("preview").src = data.newImageUrl;
+				document.getElementById("preview").src = data.newImageUrl + "?t=" + new Date().getTime();
 			} else {
 			    alert("이미지 변경 실패: " + data.message);
 			}

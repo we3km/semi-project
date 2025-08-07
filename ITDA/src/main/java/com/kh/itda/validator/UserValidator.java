@@ -14,7 +14,7 @@ public class UserValidator {
     }
 
     public static boolean isValidNickName(String nickName) {
-        return nickName != null && nickName.matches("^([가-힣a-zA-Z0-9]{2,12})$");
+        return nickName != null && nickName.matches("^[가-힣a-zA-Z0-9]{2,12}$");
     }
 
     public static boolean isValidPhone(String phone) {

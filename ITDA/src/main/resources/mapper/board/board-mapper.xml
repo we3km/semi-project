@@ -1280,7 +1280,7 @@ WHERE RN = 1 AND STATUS = 'Y'
 			JOIN "FILE" F ON F.REF_NO = B.BOARD_ID
 			WHERE B.USER_NUM = #{userNum}
 			
-			ORDER BY BOARD_ID DESC
+			ORDER BY B.BOARD_ID DESC
 		]]>
 	</select>
 	

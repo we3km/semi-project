@@ -44,4 +44,6 @@ public interface UserDao {
 
 	int getScore(int userNum);
 
+	User findUserByUserNum(int userNum);
+
 }
