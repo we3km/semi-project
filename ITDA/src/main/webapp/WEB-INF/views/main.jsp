@@ -23,6 +23,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	<sec:authorize access="hasRole('ROLE_ADMIN')">
+		<input type="hidden" id="userRole" value="ROLE_ADMIN" />
+	</sec:authorize>
+	<sec:authorize access="hasRole('ROLE_USER')">
+		<input type="hidden" id="userRole" value="ROLE_USER" />
+	</sec:authorize>
 	<div class="container">
 		<div class="top-buttons">
 			<%--Spring Security 태그를 사용하여 로그인하지 않았을 때만 이 div를 렌더링--%>
@@ -58,10 +64,10 @@
 				<!-- 거래유형 드롭다운 -->
 				<div class="dropdown" id="deal-type-dropdown">
 					<button class="dropbtn">
-				        <span class="dropbtn_content">게시판유형</span>
-				        <span class="dropbtn_click" aria-hidden="true">
-				            <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-				                 width="16" height="16" viewBox="0 0 24 24">
+						<span class="dropbtn_content">게시판유형</span> <span
+							class="dropbtn_click" aria-hidden="true"> <svg
+								class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+								width="16" height="16" viewBox="0 0 24 24">
 
 				                  <path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 				            </svg>

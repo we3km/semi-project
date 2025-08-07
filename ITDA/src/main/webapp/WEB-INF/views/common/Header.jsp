@@ -20,17 +20,24 @@
 	rel="stylesheet">
 <%-- jQuery --%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
-	<input type="hidden" id="userRole" value="${sessionScope.role}" />
+	<sec:authorize access="hasRole('ROLE_ADMIN')">
+		<input type="hidden" id="userRole" value="ROLE_ADMIN" />
+	</sec:authorize>
+	<sec:authorize access="hasRole('ROLE_USER')">
+		<input type="hidden" id="userRole" value="ROLE_USER" />
+	</sec:authorize>
 
 	<div class="container_header">
-		
+
 		<!-- 좌측 로고 -->
 		<div class="logo" style="cursor: pointer">IT다</div>
-		
+
 		<!-- 로그인 / 로그아웃 버튼 -->
 		<div class="top-buttons">
 			<sec:authorize access="isAnonymous()">
@@ -47,7 +54,7 @@
 				</div>
 			</sec:authorize>
 		</div>
-	
+
 		<!-- 카테고리 -->
 		<div class="category-line">
 			<div class="category">대여</div>
@@ -55,71 +62,70 @@
 			<div class="category">나눔</div>
 			<div class="category">커뮤니티</div>
 		</div>
-		
+
 		<!-- 유저 인사 + 알림 -->
 		<sec:authorize access="isAuthenticated()">
-			  <div class="login_effect">
-			    <!-- 회원 이름 바뀌기 -->
-			    <div class="user">
-			      <strong>
-			        <sec:authentication property="principal.nickName"/>
-			      </strong>님 반갑습니다!
-			    </div>
-			
-			    <div id="icons">
-			      <img
-			        src="${pageContext.request.contextPath}/resources/images/message.png"
-			        alt="message icon" id="message-icon" />
-			
-			      <div class="alarm-wrapper"> 
-			        <img
-			          src="${pageContext.request.contextPath}/resources/images/alam.png"
-			          alt="alarm icon" id="alarm-icon" />
-			        <span id="alarm-dot" class="alarm-dot"></span>
-			        
-			        <div id="alarm-dropdown" class="alarm-dropdown">
-			          <ul id="alarm-list" class="alarm-list"></ul>
-			        </div>
-			      </div> 
-			    </div>
-			  </div>
-			</sec:authorize>
-			
-			</div>
-		
-		<!-- 검색 필터 + 검색창 -->
-		<div class="search-filter-wrapper">
-		    <div class="filters">
-		        <!-- 드롭다운 -->
-		        <div class="dropdown" id="deal-type-dropdown">
-		            <button class="dropbtn">
-		                <span class="dropbtn_content">게시판</span>
-		                <span class="dropbtn_click" aria-hidden="true">
-		                    <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
-		                         width="16" height="16" viewBox="0 0 24 24">
-		                        <path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
-		                    </svg>
-						</span>
-					</button>
-					<div class="dropdown-content">
-						<c:forEach var="entry" items="${CategoryType}">
-							<div class="category" data-id="${entry.value.categoryId}"
-								data-gubun="${entry.value.categoryGubun}"
-								data-name="${entry.value.category}">
-								${entry.value.category}</div>
-						</c:forEach>
+			<div class="login_effect">
+				<!-- 회원 이름 바뀌기 -->
+				<div class="user">
+					<strong> <sec:authentication property="principal.nickName" />
+					</strong>님 반갑습니다!
+				</div>
+
+				<div id="icons">
+					<img
+						src="${pageContext.request.contextPath}/resources/images/message.png"
+						alt="message icon" id="message-icon" />
+
+					<div class="alarm-wrapper">
+						<img
+							src="${pageContext.request.contextPath}/resources/images/alam.png"
+							alt="alarm icon" id="alarm-icon" /> <span id="alarm-dot"
+							class="alarm-dot"></span>
+
+						<div id="alarm-dropdown" class="alarm-dropdown">
+							<ul id="alarm-list" class="alarm-list"></ul>
+						</div>
 					</div>
 				</div>
 			</div>
-			<!-- 검색창 -->
-			<div class="search-bar">
-				<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
-					src="${pageContext.request.contextPath}/resources/images/search.png"
-					alt="search icon" id="search-btn" style="cursor: pointer;" />
+		</sec:authorize>
+
+	</div>
+
+	<!-- 검색 필터 + 검색창 -->
+	<div class="search-filter-wrapper">
+		<div class="filters">
+			<!-- 드롭다운 -->
+			<div class="dropdown" id="deal-type-dropdown">
+				<button class="dropbtn">
+					<span class="dropbtn_content">게시판</span> <span
+						class="dropbtn_click" aria-hidden="true"> <svg
+							class="dropdown-icon" xmlns="http://www.w3.org/2000/svg"
+							width="16" height="16" viewBox="0 0 24 24">
+		                        <path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
+		                    </svg>
+					</span>
+				</button>
+				<div class="dropdown-content">
+					<c:forEach var="entry" items="${CategoryType}">
+						<div class="category" data-id="${entry.value.categoryId}"
+							data-gubun="${entry.value.categoryGubun}"
+							data-name="${entry.value.category}">
+							${entry.value.category}</div>
+					</c:forEach>
+				</div>
 			</div>
 		</div>
-			
-		<script>
+		<!-- 검색창 -->
+		<div class="search-bar">
+			<input type="text" placeholder="무엇을 찾으시나요?" id="search-input" /> <img
+				src="${pageContext.request.contextPath}/resources/images/search.png"
+				alt="search icon" id="search-btn" style="cursor: pointer;" />
+		</div>
+	</div>
+
+	<script>
 	let stompClient = null;
 	const loginUserNum1 = "<sec:authentication property='principal.userNum' />";
 
@@ -311,7 +317,7 @@
 </script>
 
 
-		<script>
+	<script>
 			$(document).ready(function() {
 				const contextPath = "${pageContext.request.contextPath}";
 				// 로그인-로그아웃 버튼
@@ -491,7 +497,7 @@
 				});
 				});
 		</script>
-		<sec:authorize access="isAuthenticated()">
-</sec:authorize>
+	<sec:authorize access="isAuthenticated()">
+	</sec:authorize>
 </body>
 </html>
