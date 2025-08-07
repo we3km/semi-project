@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.itda.config.FileConfig;
 import com.kh.itda.user.model.service.EmailService;
 import com.kh.itda.user.model.service.UserService;
 import com.kh.itda.user.model.vo.User;
+import com.kh.itda.validator.UserValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -145,7 +148,21 @@ public class SignUpController { //회원가입
     @ResponseBody
     @GetMapping("/enroll/checkId")
     public String idCheck(String userId) {
+    	if (!UserValidator.isValidId(userId)) {
+            return "-1"; // 유효하지 않은 형식
+        }
     	int result = uService.idCheck(userId);
+    	return result+"";
+    }
+    
+    // 회원정보 입력 페이지서 닉네임 중복체크 담당
+    @ResponseBody
+    @GetMapping("/enroll/checkNickname")
+    public String checkNickname(String nickName, HttpServletRequest req) {
+    	if(!UserValidator.isValidNickName(nickName)) {
+    		return "-1";
+    	}
+    	int result = uService.checkNickname(nickName);
     	return result+"";
     }
     
@@ -210,7 +227,7 @@ public class SignUpController { //회원가입
         if (profileImage != null && !profileImage.isEmpty()) {
             try {
                 // 실제 저장 경로
-                String saveDirectory = session.getServletContext().getRealPath("/resources/profile/");
+                String saveDirectory = session.getServletContext().getRealPath(FileConfig.PROFILE_IMAGE_WEB_PATH);
                 File dir = new File(saveDirectory);
                 if (!dir.exists()) {
                     dir.mkdirs(); // 디렉토리가 없으면 생성
@@ -223,7 +240,7 @@ public class SignUpController { //회원가입
                 profileImage.transferTo(destFile);
 
                 // 이미지 파일 URL 설정 (브라우저에서 접근 가능 경로)
-                user.setImageUrl("/resources/profile/" + newFilename);
+                user.setImageUrl(FileConfig.PROFILE_IMAGE_WEB_PATH + newFilename);
 
             } catch (IOException e) {
                 e.printStackTrace();

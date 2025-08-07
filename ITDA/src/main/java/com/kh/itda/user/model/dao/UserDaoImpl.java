@@ -32,6 +32,16 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
+	public int checkNickname(String nickName) {
+		return session.selectOne("security.checkNickname", nickName);
+	}
+	
+	@Override
+	public int checkPhone(String newPhone) {
+		return session.selectOne("security.checkPhone", newPhone);
+	}
+	
+	@Override
 	public void insertProfile(int userNum, String imageUrl) {
 		Map<String, Object> param = new HashMap<>();
 		param.put("userNum", userNum);
@@ -46,10 +56,49 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public void updatePassword(String userId, String encodedPwd) {
+		// System.out.println("비밀번호 변경 시도: " + userId); // 디버그용
 		Map<String, Object> param = new HashMap<>();
-		param.put("userId", userId);
-		param.put("encodedPwd", encodedPwd);
-		session.update("user.updatePassword", param);
+	    param.put("userId", userId);
+	    param.put("encodedPwd", encodedPwd);
+	    
+	    session.update("user.updatePassword", param);
+	    // System.out.println("업데이트 결과: " + result + "행");
+	}
+
+	@Override
+	public void updateNickname(String userId, String newNickname) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newNickname", newNickname);
+	    
+	    session.update("user.updateNickname", param);
+	}
+	
+	@Override
+	public void updatePhone(String userId, String newPhone) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newPhone", newPhone);
+	    
+	    session.update("user.updatePhone", param);
+	}
+	
+	@Override
+	public void updateAddress(String userId, String newAddress) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("newAddress", newAddress);
+	    
+	    session.update("user.updateAddress", param);
+	}
+	
+	@Override
+	public void updateProfileImage(int userNum, String imageUrl) {
+		Map<String, Object> param = new HashMap<>();
+	    param.put("userNum", userNum);
+	    param.put("imageUrl", imageUrl);
+	    
+	    session.update("user.updateProfile", param);
 	}
 
 	@Override
@@ -67,4 +116,23 @@ public class UserDaoImpl implements UserDao {
 		return session.selectList("user.findAuthoritiesByUserNum", userNum);
 	}
 
+	public String getProfileImageUrl(int userNum) {
+		return session.selectOne("user.getProfileImageUrl", userNum);
+	}
+
+	@Override
+	public User findUserById(String userId) {
+		return session.selectOne("security.findUserById", userId);
+	}
+	
+	@Override
+	public User findUserByUserNum(int userNum) {
+		return session.selectOne("security.findUserByUserNum", userNum);
+	}
+
+	@Override
+	public int getScore(int userNum) {
+		Integer score = session.selectOne("board.selectMannerScore", userNum);
+	    return (score != null) ? score : 80;
+	}
 }

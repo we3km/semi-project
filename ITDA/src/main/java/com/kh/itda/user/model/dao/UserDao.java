@@ -9,22 +9,41 @@ public interface UserDao {
 	int insertUser(User user);
 
 	void insertProfile(int userNum, String imageUrl);
-
+	
 	void insertAuthority(User user);
-
+	
 	int idCheck(String userId);
+	
+	int checkNickname(String nickName);
+	
+	int checkPhone(String newPhone);
+	
+	User findUserById(String userId);	// 로그인 시 유저 조회
+	
+    User findUserByNum(int userNum);	// 로그인 외 다른 곳에서 조회
+    
+    void updatePassword(String userId, String encodedPwd);
+
+    void updateNickname(String userId, String newNickname);
 
 	String selectUserNickname(String userId);
 
 	String selectUserNum(String userId);
 
+	void updatePhone(String userId, String newPhone);
+
 	//void insertUserAndAuthority(User user);
 	
 	List<String> findAuthoritiesByUserNum(int userNum);
 
-	User findUserByNum(int userNum); // 로그인 외 다른 곳에서 조회
+	void updateAddress(String userId, String newAddress);
 
-	void updatePassword(String userId, String encodedPwd);
+	void updateProfileImage(int userNum, String imageUrl);
 
-	// void insertUserAndAuthority(User user);
+	String getProfileImageUrl(int userNum);
+
+	int getScore(int userNum);
+
+	User findUserByUserNum(int userNum);
+
 }

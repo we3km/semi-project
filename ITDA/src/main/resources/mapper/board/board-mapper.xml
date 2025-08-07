@@ -1197,6 +1197,93 @@ WHERE RN = 1 AND STATUS = 'Y'
 	        VALUES (#{boardId}, #{userNum}, #{bid})
 	</insert>
 	
+	
+	
+	
+	<!-- boardAllWrapper resultMap 정의 -->
+	<resultMap id="boardAllWrapper" type="BoardAllWrapper">
+	    <!-- BoardCommon 필드 매핑 -->
+	    <association property="boardCommon" javaType="BoardCommon">
+	        <id property="boardId" column="BOARD_ID" />
+			<result property="userNum" column="USER_NUM" />
+			<result property="productName" column="PRODUCT_NAME" />
+			<result property="productComment" column="PRODUCT_COMMENT" />
+			<result property="transactionAddress"
+				column="TRANSACTION_ADDRESS" />
+			<result property="transactionCategory"
+				column="TRANSACTION_CATEGORY" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="views" column="VIEWS" />
+			<result property="transactionStatus"
+				column="TRANSACTION_STATUS" />
+			<result property="productCategoryL"
+				column="PRODUCT_CATEGORY_L" />
+			<result property="productCategoryM"
+				column="PRODUCT_CATEGORY_M" />
+			<result property="productCategoryS"
+				column="PRODUCT_CATEGORY_S" />
+	    </association>
+	    
+	    <!-- BoardRental 필드 매핑 -->
+	    <association property="boardRental" javaType="BoardRental">
+	        <id property="boardId" column="BOARD_ID" />
+			<result property="rentalFee" column="RENTAL_FEE" />
+			<result property="deposit" column="DEPOSIT" />
+			<result property="rentalStartDate" column="RENTAL_START_DATE" />
+			<result property="rentalEndDate" column="RENTAL_END_DATE" />
+	    </association>
+	    
+	    <!-- BoardAuction 필드 매핑 -->
+	    <association property="boardAuction" javaType="BoardAuction">
+	        <id property="boardId" column="BOARD_ID" />
+			<result property="auctionStartingFee" column="AUCTION_STARTING_FEE" />
+			<result property="bidUnit" column="BID_UNIT" />
+			<result property="auctionStartDate" column="AUCTION_START_DATE" />
+			<result property="auctionEndDate" column="AUCTION_END_DATE" />
+	    </association>
+	    
+	    <!-- BoardSharing 필드 매핑 -->
+	    <association property="boardSharing" javaType="BoardSharing">
+	        <id property="boardId" column="BOARD_ID" />
+			<result property="sharingCount" column="SHARING_COUNT" />
+	    </association>
+	    
+	    <!-- FilePath 필드 매핑 -->
+	    <association property="filePath" javaType="FilePath">
+	        <result property="categoryPath" column="CATEGORY_PATH" />
+			<result property="fileName" column="FILE_NAME" />
+	    </association>
+	</resultMap>
+	
+	
+	<select id="selectMyBoard" parameterType="int" resultMap="boardAllWrapper">
+		<![CDATA[
+			SELECT 'rental' AS TRANSACTION_CATEGORY, B.*, R.*, F.FILE_NAME
+			FROM BOARD_COMMON B
+			JOIN BOARD_RENTAL R ON B.BOARD_ID = R.BOARD_ID
+			JOIN "FILE" F ON F.REF_NO = B.BOARD_ID
+			WHERE B.USER_NUM = #{userNum}
+			
+			UNION ALL
+			
+			SELECT 'auction' AS TRANSACTION_CATEGORY, B.*, A.*, F.FILE_NAME
+			FROM BOARD_COMMON B
+			JOIN BOARD_AUCTION A ON B.BOARD_ID = A.BOARD_ID
+			JOIN "FILE" F ON F.REF_NO = B.BOARD_ID
+			WHERE B.USER_NUM = #{userNum}
+			
+			UNION ALL
+			
+			SELECT 'share' AS TRANSACTION_CATEGORY, B.*, S.*, F.FILE_NAME
+			FROM BOARD_COMMON B
+			JOIN BOARD_SHARING S ON B.BOARD_ID = S.BOARD_ID
+			JOIN "FILE" F ON F.REF_NO = B.BOARD_ID
+			WHERE B.USER_NUM = #{userNum}
+			
+			ORDER BY B.BOARD_ID DESC
+		]]>
+	</select>
+	
 	<update id="deleteBoard" parameterType="int">
 		UPDATE BOARD_COMMON
 		SET STATUS = 'N'
