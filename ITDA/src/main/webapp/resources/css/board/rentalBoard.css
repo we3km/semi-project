@@ -146,6 +146,11 @@
     .card .heart {
       font-size: 20px;
       cursor: pointer;
+      width: fit-content;
+  	  height: fit-content;
+  	  position: absolute;
+  	  right:0;
+  	  margin-right: 5px;
     }
 
     .card p {

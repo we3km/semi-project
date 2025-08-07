@@ -229,6 +229,7 @@
 						<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 							pattern="yyyy/MM/dd" />
 					</p>
+					
 					<c:if test="${fn:contains(likedBoardIds, boardId)}">
 						<div class="heart liked"
 							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>

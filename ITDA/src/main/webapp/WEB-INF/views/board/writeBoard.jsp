@@ -18,9 +18,9 @@ body {
 }
 
 .container {
-	max-width: 1000px;
-	margin: 30px auto;
-	padding: 20px;
+	display:flex;
+    margin: 0;
+      background-color: white;
 }
 
 header {
