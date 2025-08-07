@@ -13,4 +13,6 @@ public class BoardRentalFileWrapper {
 	private BoardCommon boardCommon;
 	private BoardRental boardRental;
 	private FilePath filePath;
+	
+	private String tagContent;
 }

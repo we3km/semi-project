@@ -28,31 +28,25 @@
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/rental/list">
-			<div class="filter-section">
-				<h3>정렬 조건</h3>
+			<div class="filter-section top-section">
+				<h2>정렬 조건</h2>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 				<option value="price">가격 순</option>
 			</select>
 
-<!-- 			<div class="filter-section">
-				<h4>지역</h4>
-				<label><input type="checkbox"> 강남</label> <label><input
-					type="checkbox"> 강서</label> <label><input type="checkbox">
-					강동</label> <label><input type="checkbox"> 강북</label>
-			</div> -->
 
 			<div class="filter-section">
 			  <div class="category-area">
-			    <label>상품 카테고리</label>
+			    <h4>상품 카테고리</h4>
 			
 			    <div class="category-wrapper">
 			      <!-- 대분류 -->
-			      <div class="category-column">
+			      <div class="category-column" id="large">
 			        <h5>대분류</h5>
 			        <div class="category-list-large">
 			          <c:forEach items="${categoryList}" var="productCategory">
@@ -188,10 +182,10 @@
 			<div class="filter-section">
 			  <h4>가격</h4>
 			  <label>최소 가격:</label>
-			  <input type="number" name="minRentalFee" min="0">
+			  <input class="minRentalFee" type="number" name="minRentalFee" min="0">
 			
 			  <label>최대 가격:</label>
-			  <input type="number" name="maxRentalFee" min="0">
+			  <input class="maxRentalFee" type="number" name="maxRentalFee" min="0">
 			</div>
 			
 			<div class="filter-section">
@@ -205,8 +199,6 @@
 		<div class="top">
 			<div>
 				<h2>대여 게시판</h2>
-				<span class="location">서울특별시 강남구 📍</span>
-				<!-- 로그인한 회원의 주소 -->
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
 			<button id="write-btn">거래 글 쓰기</button>
@@ -223,18 +215,10 @@
 				<div class="card"
 					onclick="moveDetail(${board.boardCommon.boardId});">
 					<c:set var="boardId" value="${board.boardCommon.boardId}" />
-					<c:if test="${fn:contains(likedBoardIds, boardId)}">
-						<div class="heart liked"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
-					</c:if>
-					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
-						<div class="heart"
-							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
-					</c:if>
-
+					
 					<img
 						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
-						alt="이미지" style="width: 90%; height: auto;" />
+						alt="이미지" />
 					<p id="product-name">${board.boardCommon.productName }</p>
 
 					<p id="rental-fee">대여료 : ${board.boardRental.rentalFee }</p>
@@ -245,7 +229,16 @@
 						<fmt:formatDate value="${board.boardRental.rentalEndDate }"
 							pattern="yyyy/MM/dd" />
 					</p>
-				</div>
+					
+					<c:if test="${fn:contains(likedBoardIds, boardId)}">
+						<div class="heart liked"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
+					</c:if>
+					<c:if test="${!fn:contains(likedBoardIds, boardId)}">
+						<div class="heart"
+							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
+					</c:if>
+			</div>
 			</c:forEach>
 			<script>
 	  	function moveDetail(bid){

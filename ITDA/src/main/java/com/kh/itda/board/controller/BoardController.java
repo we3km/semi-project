@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -59,6 +58,7 @@ import com.kh.itda.board.model.vo.ProductCategory;
 import com.kh.itda.common.Utils;
 import com.kh.itda.common.model.vo.File;
 import com.kh.itda.common.model.vo.FilePath;
+import com.kh.itda.support.model.vo.Report;
 import com.kh.itda.user.model.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -90,6 +90,8 @@ public class BoardController {
 			@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 			@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
 			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+			@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+			@RequestParam(value = "keyword", required = false) String keyword,			
 			@RequestParam(required = false) Integer minRentalFee, @RequestParam(required = false) Integer maxRentalFee,
 			@RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
 		Map<String, Object> filterMap = new HashMap<>();
@@ -97,11 +99,15 @@ public class BoardController {
 		filterMap.put("productCategoryL", productCategoryL);
 		filterMap.put("productCategoryM", productCategoryM);
 		filterMap.put("productCategoryS", productCategoryS);
+		filterMap.put("searchProductCategoryL", searchProductCategoryL);
+		filterMap.put("keyword", keyword);
 		filterMap.put("minRentalFee", minRentalFee);
 		filterMap.put("maxRentalFee", maxRentalFee);
 		filterMap.put("startDate", startDate);
 		filterMap.put("endDate", endDate);
-		
+		System.out.println("searchProductCategoryL파라미터 잘 받아왔나?"+searchProductCategoryL);
+		System.out.println("keyword키워드 잘 받아왔나?"+keyword);
+		System.out.println("filterMapㅍ필터맵?"+filterMap);
 		// 로그인한 유저 정보
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = auth.getPrincipal();
@@ -122,7 +128,6 @@ public class BoardController {
 		List<ProductCategory> categoryList = boardService.selectCategoryList();
 
 		model.addAttribute("categoryList", categoryList);
-		System.out.println("필터링:" + categoryList);
 
 		return "board/rentalBoard";
 	}
@@ -133,13 +138,17 @@ public class BoardController {
 			Model model, @RequestParam(defaultValue = "date") String sort,
 			@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 			@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
-			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS
+			@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+			@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+			@RequestParam(value = "keyword", required = false) String keyword		
 			) {
 				Map<String, Object> filterMap = new HashMap<>();
 				filterMap.put("sort", sort);
 				filterMap.put("productCategoryL", productCategoryL);
 				filterMap.put("productCategoryM", productCategoryM);
 				filterMap.put("productCategoryS", productCategoryS);
+				filterMap.put("searchProductCategoryL", searchProductCategoryL);
+				filterMap.put("keyword", keyword);
 				
 				// 로그인한 유저 정보
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -167,25 +176,27 @@ public class BoardController {
 		return "board/shareBoard";
 	}
 
-	// 교환게시판 매핑
-	@GetMapping("/exchange/list")
-	public String exchangeBoard() {
-		return "board/exchangeBoard";
-	}
 
 	// 경매게시판 매핑
 	// 리스트를 정렬할 조건들을 선택해서 정렬버튼을 눌렀을 시 파라미터를 받아와서 해시맵에 저장
-		@GetMapping("/auction/list")
-		public String auctionBoard(Model model, @RequestParam(defaultValue = "date") String sort,
+	@GetMapping("/auction/list")
+	public String auctionBoard(Model model, @RequestParam(defaultValue = "date") String sort,
 				@RequestParam(value = "boardCommon.productCategoryL", required = false) String productCategoryL,
 				@RequestParam(value = "boardCommon.productCategoryM", required = false) String productCategoryM,
 				@RequestParam(value = "boardCommon.productCategoryS", required = false) String productCategoryS,
+				@RequestParam(value = "searchProductCategoryL", required = false) String searchProductCategoryL,			
+				@RequestParam(value = "keyword", required = false) String keyword,		
+				@RequestParam(required = false) Integer minBid, @RequestParam(required = false) Integer maxBid,
 				@RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
 			Map<String, Object> filterMap = new HashMap<>();
 			filterMap.put("sort", sort);
 			filterMap.put("productCategoryL", productCategoryL);
 			filterMap.put("productCategoryM", productCategoryM);
 			filterMap.put("productCategoryS", productCategoryS);
+			filterMap.put("searchProductCategoryL", searchProductCategoryL);
+			filterMap.put("keyword", keyword);
+			filterMap.put("minBid", minBid);
+			filterMap.put("maxBid", maxBid);
 			filterMap.put("startDate", startDate);
 			filterMap.put("endDate", endDate);
 			
@@ -508,7 +519,7 @@ public class BoardController {
 		String userId = ((UserDetails) principal).getUsername();
 		int userNum = Integer.parseInt(userService.selectUserNum(userId));
 		model.addAttribute("userNum", userNum);
-		
+		model.addAttribute("report", new Report());
 		// 대여 게시글 정보 추출
 		BoardRentalWrapper board = boardService.selectBoardRental(boardId);
 		model.addAttribute("board", board);
@@ -588,6 +599,7 @@ public class BoardController {
 		// 접속한 회원아이디
 		dibs.setLikesUserId(userNum);
 		
+		
 		boolean exists = boardService.isLiked(dibs);
 		System.out.println();
 		if (exists) {
@@ -597,6 +609,9 @@ public class BoardController {
 			model.addAttribute("isDibs", exists);
 		}
 
+		// 게시자의 프로필 이미지
+		String profileImage = boardService.getProfileImage(writerUserNum);
+		model.addAttribute("profileImage", profileImage);
 
 		return "board/detailRental";
 	}
@@ -614,7 +629,7 @@ public class BoardController {
 				String userId = ((UserDetails) principal).getUsername();
 				int userNum = Integer.parseInt(userService.selectUserNum(userId));
 				model.addAttribute("userNum", userNum);
-				
+				model.addAttribute("report", new Report());
 				// 대여 게시글 정보 추출
 				BoardShareWrapper board = boardService.selectBoardShare(boardId);
 				model.addAttribute("board", board);
@@ -708,6 +723,9 @@ public class BoardController {
 					model.addAttribute("isDibs", exists);
 				}
 
+				// 게시자의 프로필 이미지
+				String profileImage = boardService.getProfileImage(writerUserNum);
+				model.addAttribute("profileImage", profileImage);
 				return "board/detailShare";
 			}
 
@@ -723,6 +741,7 @@ public class BoardController {
 					String userId = ((UserDetails) principal).getUsername();
 					String userNickname = userService.selectUserNickname(userId);
 					String userNum = userService.selectUserNum(userId);
+					model.addAttribute("report", new Report());
 					
 					System.out.println("회원번호"+userNum);
 					model.addAttribute("userNickname", userNickname);
@@ -847,6 +866,10 @@ public class BoardController {
 					} else {
 						model.addAttribute("isDibs", exists);
 					}
+					
+					// 게시자의 프로필 이미지
+					String profileImage = boardService.getProfileImage(writerUserNum);
+					model.addAttribute("profileImage", profileImage);
 
 					return "board/detailAuction";
 				}
@@ -948,6 +971,22 @@ public class BoardController {
 	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
 	    }
+	}
+	
+	
+	@PostMapping("delete/{boardCategory}/{boardId}")
+	public String deleteBoard(
+			@PathVariable int boardId,
+			@PathVariable String boardCategory,
+			RedirectAttributes redirectAttributes
+			) {
+	    try {
+	        boardService.deleteBoard(boardId);
+	        redirectAttributes.addFlashAttribute("message", "게시물이 삭제되었습니다.");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("message", "삭제 중 오류가 발생했습니다.");
+	    }
+	    return "redirect:/board/"+boardCategory+"/list";
 	}
 	
 }

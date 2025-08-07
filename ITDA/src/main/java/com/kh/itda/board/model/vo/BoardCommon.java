@@ -21,7 +21,7 @@ public class BoardCommon {
 	private String productCategoryL;
 	private String productCategoryM;
 	private String productCategoryS;
-	
+	private char status;
 	
 	private List<String> tagList; // db는 따로
 }

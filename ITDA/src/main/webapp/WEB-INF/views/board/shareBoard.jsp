@@ -10,208 +10,13 @@
 <head>
 <meta charset="UTF-8">
 <title>나눔 게시판</title>
-<style>
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
-
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction:column;      
-      background-color: white;
-    }
-    
-    .container{
-    	margin: 0;
-      display: flex;
-      background-color: white;
-    }
-
-    .sidebar {
-      width: 300px;
-      background-color: white;
-      padding: 20px;
-      border-right: 1px solid #ddd;
-    }
-
-    .sidebar h3 {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .filter-section {
-      margin-bottom: 25px;
-    }
-
-    .filter-section label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .main {
-      flex: 1;
-      padding: 30px 100px;
-      position: relative;
-    }
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .top h2 {
-      font-size: 28px;
-      margin: 0;
-    }
-
-    .top .location {
-      color: #9d83ff;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-
-    #write-btn {
-      background-color: #6657ff;
-      color: white;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .card {
-      background-color: white;
-      padding: 15px;
-     	width:250px;
-     	height:280px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      position: relative;
-    }
-
-    .card img {
-      width: 100%;
-      /* max-width: 180px; */
-      height: auto;
-    }
-
-    .card .heart {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .card p {
-      margin: 5px 0;
-    }
-	
-	#product-name{
-		font-size: 20px;
-	}
-	
-    #rental-fee {
-      font-weight: bold;
-    }
-	.date{
-		font-size: 10px;
-	}
-
-    input[type="range"] {
-      width: 100%;
-    }
-
-    input[type="date"] {
-      width: 100%;
-      margin-top: 5px;
-      margin-bottom: 5px;
-    }
-    
-    
-   .category-large,
-.category-middle,
-.category-small {
-	    flex: 1;
-  padding: 8px 12px;
-  margin: 5px 5px 0 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  transition: all 0.2s;
-}
-
-
-.category-large.selected,
-.category-middle.selected,
-.category-small.selected {
-  background-color: #007bff;
-  color: white;
-}
-
-/* 선택된 상태일 때 색상 강조 */
-.category-large.active,
-.category-middle.active,
-.category-small.active {
-  background-color: #007bff;
-  color: #6657ff;
-  border-color: #007bff;
-}
-
-.category-wrapper {
-    
-    gap: 1rem;
-    margin-top: 10px;
-  }
-
-  .category-column {
-  display: flex;
-   
-    min-height: 100px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-
-  .category-column h5 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #555;
-  }
-
-  .category-column div {
-    margin-bottom: 6px;
-    cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-
-
-  .category-column .active {
-    background-color: #007bff;
-    color: white;
-  }
-
-</style>
 
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	
+<link
+	href="${pageContext.request.contextPath}/resources/css/board/shareBoard.css"
+	rel="stylesheet">
 </head>
 <body>
 
@@ -225,32 +30,25 @@
 	<div class="sidebar">
 		<form id="filterForm" method="get"
 			action="${pageContext.request.contextPath}/board/share/list">
-			<div class="filter-section">
-				<h3>정렬 조건</h3>
+			<div class="filter-section top-section">
+				<h2>정렬 조건</h2>
 				<button type="submit" id="filter-btn">정렬</button>
 			</div>
 
-			<select name="sort">
+			<select class="sortDrop" name="sort">
 				<option value="date">게시일 순</option>
 				<option value="views">조회수 순</option>
 			</select>
 
-<!-- 			<div class="filter-section">
-				<h4>지역</h4>
-				<label><input type="checkbox"> 강남</label> <label><input
-					type="checkbox"> 강서</label> <label><input type="checkbox">
-					강동</label> <label><input type="checkbox"> 강북</label>
-			</div> -->
-
 			<div class="filter-section">
 			  <div class="category-area">
-			    <label>상품 카테고리</label>
+			    <h4>상품 카테고리</h4>
 			
 			    <div class="category-wrapper">
 			      <!-- 대분류 -->
 			      <div class="category-column">
 			        <h5>대분류</h5>
-			        <div class="category-list-large">
+			        <div class="category-list-large" id="large"> 
 			          <c:forEach items="${categoryList}" var="productCategory">
 			            <c:if test="${productCategory.parentNum == 0}">
 			              <div class="category-large" data-id="${productCategory.productCategoryNum}">
@@ -388,8 +186,6 @@
 		<div class="top">
 			<div>
 				<h2>나눔 게시판</h2>
-				<span class="location">서울특별시 강남구 📍</span>
-				<!-- 로그인한 회원의 주소 -->
 			</div>
 			<!-- 글쓰기를 클릭했을 때의 url에 컨트롤러에서 사용할 boardCategory를 지정해준다 -->
 			<button id="write-btn">거래 글 쓰기</button>
@@ -406,6 +202,14 @@
 				<div class="card"
 					onclick="moveDetail(${board.boardCommon.boardId});">
 					<c:set var="boardId" value="${board.boardCommon.boardId}" />
+
+					<img
+						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
+						 />
+					<p id="product-name">${board.boardCommon.productName }</p>
+
+					<p id="sharing-count">나눔 수량 : ${board.boardSharing.sharingCount }</p>
+				
 					<c:if test="${fn:contains(likedBoardIds, boardId)}">
 						<div class="heart liked"
 							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♥</div>
@@ -414,15 +218,6 @@
 						<div class="heart"
 							onclick="event.stopPropagation(); toggleLike(this, ${boardId});">♡</div>
 					</c:if>
-
-					<img
-						src="${pageContext.request.contextPath}/${board.filePath.categoryPath}/${board.filePath.fileName}"
-						alt="이미지" style="width: 90%; height: auto;" />
-					<p id="product-name">${board.boardCommon.productName }</p>
-
-					<p id="sharing-count">나눔 수량 : ${board.boardSharing.sharingCount }</p>
-				
-					
 				</div>
 			</c:forEach>
 			<script>
