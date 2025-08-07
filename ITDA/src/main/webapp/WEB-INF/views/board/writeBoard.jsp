@@ -9,246 +9,7 @@
 <meta charset="UTF-8">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <title>거래 글쓰기</title>
-<style>
-    body {
-	  margin: 0;
-	  padding: 30px;
-	  font-family: 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
-	  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
-	  min-height: 100vh;
-	
-    }
-
-.container {
-	display:flex;
-    margin: 0;
-      background-color: white;
-}
-
-h1 {
-	font-size: 28px;
-}
-
-.highlight {
-	color: #6B63FF;
-}
-
-.region {
-	font-size: 16px;
-	color: #666;
-}
-
-.region-name {
-	color: #6B63FF;
-	font-weight: bold;
-}
-
-.buttons button {
-	margin-left: 10px;
-	padding: 8px 16px;
-	border: none;
-	border-radius: 20px;
-	font-size: 14px;
-	cursor: pointer;
-}
-
-.cancel {
-	background-color: #eee;
-}
-
-.submit {
-	background-color: #6B63FF;
-	color: white;
-}
-
-main {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-	margin-top: 30px;
-}
-
-.image-upload {
-	flex: 1;
-	min-width: 280px;
-}
-
-.image-upload .main-image img {
-	width: 100%;
-	max-width: 200px;
-	border-radius: 12px;
-}
-
-.thumbnail-list {
-	display: flex;
-	gap: 10px;
-	margin-top: 10px;
-}
-
-.thumbnail-list img {
-	width: 50px;
-	height: 50px;
-	border-radius: 8px;
-	object-fit: cover;
-}
-
-.add-thumbnail {
-	width: 50px;
-	height: 50px;
-	border: 2px dashed #ccc;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 24px;
-	border-radius: 8px;
-	cursor: pointer;
-}
-
-.info-input {
-	flex: 2;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-}
-
-.title-input {
-	font-size: 18px;
-	padding: 10px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-}
-
-.tag-input {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-}
-
-.tag-input input {
-	flex: 1;
-	padding: 8px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-}
-
-.tag {
-	background-color: #6B63FF;
-	color: white;
-	padding: 5px 10px;
-	border-radius: 20px;
-	font-size: 14px;
-}
-
-.description {
-	height: 150px;
-	padding: 10px;
-	font-size: 14px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-	resize: none;
-}
-
-.price-date-category, .counting-category {
-	width: 100%;
-	display: flex;
-	gap: 20px;
-	margin-top: 20px;
-}
-
-.price-area, .date-area, .category-area, .counting-area {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-}
-
-.price-area input, .date-area input, .counting-area input {
-	padding: 8px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-}
-
-
-
-#board-category {
-	width: 100px;
-	background: #ADAAF8;
-	border-radius: 20px;
-	font-size: 14px;
-	cursor: pointer;
-}
-
-img {
-	width: 100px;
-}
-
-  .category-large,
-.category-middle,
-.category-small {
-	    flex: 1;
-  padding: 8px 12px;
-  margin: 5px 5px 0 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  transition: all 0.2s;
-}
-
-
-.category-large.selected,
-.category-middle.selected,
-.category-small.selected {
-  background-color: #007bff;
-  color: white;
-}
-
-/* 선택된 상태일 때 색상 강조 */
-.category-large.active,
-.category-middle.active,
-.category-small.active {
-  background-color: #007bff;
-  color: #6657ff;
-  border-color: #007bff;
-}
-
-.category-wrapper {
-    
-    gap: 1rem;
-    margin-top: 10px;
-  }
-
-  .category-column {
-  display: flex;
-   
-    min-height: 100px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-
-  .category-column h5 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #555;
-  }
-
-  .category-column div {
-    margin-bottom: 6px;
-    cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-
-
-  .category-column .active {
-    background-color: #007bff;
-    color: white;
-  }
-
-</style>
+<link href="${pageContext.request.contextPath}/resources/css/board/writeBoard.css" rel="stylesheet">
 
 </head>
 
@@ -264,7 +25,7 @@ img {
 		<form:form modelAttribute="board"
 			action="${pageContext.request.contextPath}/board/write/${boardCategory}"
 			method="post" enctype="multipart/form-data">
-			<header>
+			<div class="top-title">
 				<!-- 무슨 거래 유형인지 -->
 				<c:choose>
 					<c:when test="${boardCategory eq 'rental'}">
@@ -304,7 +65,7 @@ img {
 					<button id="cancel-btn" type="button" class="cancel"
 						onclick="history.back()">작성 취소</button>
 
-					<button id="submit-btn" type="submit">작성 완료</button>
+					<button id="submit-btn" type="submit" class="submit">작성 완료</button>
 				</div>
 				<!-- 입력이 누락된 항목이 있을 시 나오는 알럿창 -->
 				<script>
@@ -350,7 +111,7 @@ img {
 					});
 				</script>
 
-			</header>
+			</div>
 
 			<main>
 			<!-- 이미지 최대 10개 저장 -->
