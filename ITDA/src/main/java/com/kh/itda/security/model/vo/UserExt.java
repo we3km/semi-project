@@ -1,8 +1,11 @@
 package com.kh.itda.security.model.vo;
 
 import java.util.Collection;
-import org.springframework.security.core.GrantedAuthority;
+import java.util.Date;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import lombok.Data;
 
 @Data
@@ -19,12 +22,13 @@ public class UserExt implements UserDetails {
 	private String address;
 	private String imageUrl;
 	private char isBanned;
-
+	private String validPeriod = "";
+    private Date createDate;
 	// Spring Security 권한 목록
-	private Collection<? extends GrantedAuthority> authorities;
+	private Collection<? extends SimpleGrantedAuthority> authorities;
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<? extends SimpleGrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
