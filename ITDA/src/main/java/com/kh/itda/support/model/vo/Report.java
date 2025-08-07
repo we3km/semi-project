@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Report {
 	    private int reportNum;
 	    private int userNum;		//신고한 userNum
-	    private String type;		//신고유형(게시물, 댓글)
+	    private String type;		//신고유형(게시물, 댓글, 채팅)
 	    private int targetId;		//신고대상ID(게시글/댓글 번호)
 	    private int targetUserNum;	//신고 당한 사람 userNum
 	    private String reason;

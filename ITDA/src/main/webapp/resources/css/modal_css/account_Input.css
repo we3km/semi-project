@@ -1,101 +1,108 @@
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+	background-color: #f5f8fd;
+	box-sizing: border-box;
+	margin: 0;
+}
+
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.4);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
 }
 
 /* 모달 박스 스타일 */
 .modal-box {
-  background-color: #fff;
-  width: 400px;
-  padding: 40px 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: fadeIn 0.3s ease;
+	background-color: #fff;
+	width: 400px;
+	padding: 40px 30px;
+	border-radius: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	animation: fadeIn 0.3s ease;
 }
 
 /* 닫기 버튼 (우측 상단 X) */
 .close-button {
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  font-size: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #999;
+	position: absolute;
+	top: 18px;
+	right: 20px;
+	font-size: 20px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #999;
 }
 
 /* 상단 설명 텍스트 */
 .modal-header {
-  font-size: 14px;
-  color: #999;
-  margin-bottom: 4px;
+	font-size: 14px;
+	color: #999;
+	margin-bottom: 4px;
 }
 
 /* 타이틀 */
 .modal-title {
-  font-size: 22px;
-  font-weight: bold;
-  margin: 0 0 8px;
-  color: #333;
+	font-size: 22px;
+	font-weight: bold;
+	margin: 0 0 8px;
+	color: #333;
 }
 
 /* 상품 설명 */
 .item-desc {
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 16px;
-  line-height: 1.4;
+	font-size: 14px;
+	color: #777;
+	margin-bottom: 16px;
+	line-height: 1.4;
 }
 
 /* input, select 공통 스타일 */
 .input-box {
-  width: 100%;
-  padding: 13px 14px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
-  box-sizing: border-box;
+	width: 100%;
+	padding: 13px 14px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	font-size: 14px;
+	box-sizing: border-box;
 }
 
 /* 제출 버튼 */
 .submit-button {
-  width: 100%;
-  padding: 14px;
-  background-color: #796eff;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+	width: 100%;
+	padding: 14px;
+	background-color: #796eff;
+	color: white;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
 }
 
 .submit-button:hover {
-  background-color: #685be6;
+	background-color: #685be6;
 }
 
 /* 모달 부드럽게 등장 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@
+keyframes fadeIn {from { opacity:0;
+	transform: translateY(-10px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
 }

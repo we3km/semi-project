@@ -94,13 +94,16 @@ function submitAccountInfo() {
 
 
 // 모달 열고 닫기
-function closeModal(id) {
-    document.getElementById(id).style.display = "none";
+function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove("hidden");
+    modal.classList.add("active");
 }
 
-function openModal(id) {
-    const modal = document.getElementById(id); // ← 이 줄 추가해야 함
-    modal.style.display = "flex"; // 중앙 정렬 위해 flex
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove("active");
+    modal.classList.add("hidden");
 }
 
 // ============================ 모달 끝 ============================

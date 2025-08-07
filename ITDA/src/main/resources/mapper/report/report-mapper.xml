@@ -51,6 +51,4 @@
 		SET status = #{status}
 		WHERE report_num = #{reportNum}
 	</update>
-
-
 </mapper>
