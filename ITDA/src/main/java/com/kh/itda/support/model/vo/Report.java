@@ -13,10 +13,12 @@ public class Report {
 	    private String type;		//신고유형(게시물, 댓글, 채팅)
 	    private int targetId;		//신고대상ID(게시글/댓글 번호)
 	    private int targetUserNum;	//신고 당한 사람 userNum
+	    private String nickName;
 	    private String reason;
 	    private String detailReason;
 	    private String status;
 	    private Date createdAt;
 	    private Date processedAt;
+	    private Date releaseDate;
 
 }
