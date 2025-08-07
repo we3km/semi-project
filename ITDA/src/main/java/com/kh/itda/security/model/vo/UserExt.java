@@ -21,6 +21,7 @@ public class UserExt implements UserDetails {
 	private String phone;
 	private String address;
 	private String imageUrl;
+	private char isBanned;
 	private String validPeriod = "";
     private Date createDate;
 	// Spring Security 권한 목록
@@ -58,6 +59,8 @@ public class UserExt implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+	    boolean enabled = isBanned != 'Y' && isBanned != 'y';
+	    System.out.println(">>> isEnabled() 호출됨. isBanned: " + isBanned + ", 결과: " + enabled);
+	    return enabled;
 	}
 }
