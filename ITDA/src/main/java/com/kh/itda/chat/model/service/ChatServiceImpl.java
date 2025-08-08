@@ -51,26 +51,6 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public List<ChatMessage> joinChatRoom(ChatRoomJoin join) {
-		// 현재 회원이 해당 채팅방에 참여하고 있는지 확인
-		List<ChatMessage> list = null;
-
-		int result = dao.joinCheck(join); // 참여하고 있다면 1, 없다면 0
-
-		if (result == 0) {
-			result = dao.joinChatRoom(join);
-		}
-
-		if (result > 0) {
-			list = dao.getMessagesByChatRoomId(join.getChatRoomId());
-		}
-		// 참여자 정보를 Chat_room_join에 Insert
-		// Insert성공시, list를 반환, 실패시 null반환
-
-		return list;
-	}
-
-	@Override
 	public int sendMessage(ChatMessage chatMessage) {
 		return dao.insertMessage(chatMessage);
 	}
@@ -114,5 +94,15 @@ public class ChatServiceImpl implements ChatService {
 	public BidWinner getBiddingWinner(int boardId) {
 		return dao.getBiddingWinner(boardId);
 
+	}
+
+	@Override
+	public int joinCheck(int userNum, int boardOwnerNum, int boardId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("userNum", userNum); // 현재 로그인한 회원정보
+		map.put("boardOwnerNum", boardOwnerNum); // 게시물 주인
+		map.put("boardId", boardId);
+		
+		return dao.joinCheck(map);
 	}
 }

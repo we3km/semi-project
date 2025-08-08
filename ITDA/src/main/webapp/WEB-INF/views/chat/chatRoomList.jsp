@@ -9,7 +9,7 @@
 <head>
 <%-- <%@ include file="/WEB-INF/views/common/Header.jsp" %> --%>
 <!-- 헤더 연결은 나중에 하자 -->
-<%@ include file="/WEB-INF/views/common/Header.jsp"%>
+<%@ include file="/WEB-INF/views/common/chatHeader.jsp"%>
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -130,7 +130,6 @@
 		              chatList.forEach(chat => {
 		                const chatType = chat.getAttribute("data-chat-type");
 		                // 교환인지, 나눔인지, 경매인지 얻어옴
-		
 		                // '전체 채팅방'일 때는 모두 보이게
 		                if (type === "전체 채팅방" || chatType === type) {
 		                  chat.style.display = "flex";
@@ -138,11 +137,9 @@
 		                  chat.style.display = "none";
 		                }
 		              });
-		
 		              // 상단 라벨 변경
 		              const label = document.getElementById("chatTypeLabel");
 		              if (label) label.textContent = type;
-		
 		              // 메뉴 닫기
 		              const menu = document.getElementById("chatMenu");
 		              if (menu) menu.classList.add("hidden");
@@ -195,7 +192,8 @@
 						<!-- 채팅 리스트 -->
 						<div class="chat-content1">
 							<!-- 각각의 채팅방 속성 -->
-							<div class="list-chat" data-chat-room-id="${chatRoom.chatRoomId}"
+							<div class="list-chat" 
+								data-chat-room-id="${chatRoom.chatRoomId}"
 								data-chat-userNum="${chatRoom.userNum}"
 								data-board-id="${chatRoom.boardId}"
 								data-chat-type="${chatRoom.refName}"
@@ -243,7 +241,8 @@
 								<c:choose>
 									<c:when test="${chatRoom.refName == '오픈채팅방'}">
 										<img
-											src="/itda/resources/images/chat/openchat/2025080412442662255.png"
+											id = "openChatImage-${chatRoom.chatRoomId}"
+											src="/itda/resources/images/chat/openchat/${chatRoom.fileName}"
 											alt="오픈채팅방 프로필" width="50" height="50"
 											style="border-radius: 20%;" />
 									</c:when>
@@ -862,7 +861,7 @@
                             // 오른쪽 채팅방 제목 할당                            
                             document.getElementById("product-name").textContent = "상품명 : " + data.productName;
                             document.getElementById("transaction-type").textContent = "거래 유형 : " + chatRoomType;
-                            document.getElementById("board-id").textContent = "게시물 아이디 : " + chatBoardId;                             
+                            console.log("게시물 아이디 :", chatBoardId);                   
                             
                             const extraInfo = document.getElementById("extra-info");
                             extraInfo.innerHTML = ""; // 초기화 먼저 하자
@@ -897,8 +896,8 @@
                     			const imgSrc = "${contextPath}/resources/images/board/auction/" + data.fileName;
                     			document.getElementById("product-img").src = imgSrc;
                     			
-                    		} else if(chatRoomType === "교환"){
-                    			const imgSrc = "${contextPath}/resources/images/board/exchange/" + data.fileName;
+                    		} else if(chatRoomType === "나눔"){
+                    			const imgSrc = "${contextPath}/resources/images/board/share/" + data.fileName;
                     			document.getElementById("product-img").src = imgSrc;
                     		}                            
                             // 이제 메세지 가져오자
@@ -931,7 +930,7 @@
                 	itemBoard.style.display = "none";
                 	// 오픈 채팅방인 경우 게시물 정보, 거래 버튼 (거래완료 등) 안 보여줌
 
-                	console.log("오픈 채팅방 대표 이미지 경로 : ", openImg);
+                	console.log("오픈 채팅방 대표 이미지 경로 openImg: ", openImg);
 
                 	fetch("${contextPath}/chat/messages/" + window.chatRoomId)
                 		.then(res => {
