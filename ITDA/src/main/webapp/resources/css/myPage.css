@@ -944,7 +944,7 @@ button.active {
   background-color: #333;
   color: white;
   font-weight: bold;
-
+}
 /* 마이페이지 정보 수정 모달용 */
 #newPwd, #confirmPwd, #newNickname, #newPhone, #addr1, #addr2{
 	width: 200px;
@@ -953,7 +953,7 @@ button.active {
 }
 
 #checkNickname, #checkPhone, #searchAddr{
-	top: 4px
+	top: 4px;
 	width: 100px;
 	height: 30px;
 	font-size: 16px;
