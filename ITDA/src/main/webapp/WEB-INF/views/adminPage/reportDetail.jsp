@@ -40,6 +40,9 @@
 				<strong>신고 대상 닉네임:</strong> ${report.nickName}
 			</p>
 			<p>
+				<strong>상세 사유:</strong> ${report.detailReason}
+			</p>
+			<p>
 			  <strong>상태:</strong>
 			  <c:choose>
 			    <c:when test="${report.status == '접수'}">

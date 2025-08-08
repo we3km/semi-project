@@ -330,6 +330,24 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 
+	@Override
+	public List<BoardRentalFileWrapper> selectLikedRentalList(int userNum) {
+		return boardDao.selectLikedRentalList(userNum);
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectLikedShareList(int userNum) {
+		return boardDao.selectLikedShareList(userNum);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectLikedAuctionList(int userNum) {
+		return boardDao.selectLikedAuctionList(userNum);
+	}
+
+
 
 
 

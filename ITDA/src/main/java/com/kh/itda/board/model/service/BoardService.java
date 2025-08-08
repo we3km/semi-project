@@ -103,6 +103,12 @@ public interface BoardService {
 
 	String getProfileImage(int writerUserNum);
 
+	List<BoardRentalFileWrapper> selectLikedRentalList(int userNum);
+
+	List<BoardShareFileWrapper> selectLikedShareList(int userNum);
+
+	List<BoardAuctionFileWrapper> selectLikedAuctionList(int userNum);
+
 
 
 
