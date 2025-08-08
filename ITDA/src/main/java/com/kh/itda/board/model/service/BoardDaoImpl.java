@@ -554,6 +554,24 @@ public class BoardDaoImpl implements BoardDao {
 	}
 
 
+	@Override
+	public List<BoardRentalFileWrapper> selectLikedRentalList(int userNum) {
+		return session.selectList("board.selectLikedRentalList", userNum);
+	}
+
+
+	@Override
+	public List<BoardShareFileWrapper> selectLikedShareList(int userNum) {
+		return session.selectList("board.selectLikedShareList", userNum);
+	}
+
+
+	@Override
+	public List<BoardAuctionFileWrapper> selectLikedAuctionList(int userNum) {
+		return session.selectList("board.selectLikedAuctionList", userNum);
+	}
+
+
 
 
 

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
@@ -84,79 +84,241 @@
 						</form>
 					</div>
 				</div>
-
-				<div class="group-20 element">
-					<c:forEach var="board" items="${boardList}" varStatus="status">
-						<c:if test="${status.index < 4}">
-							<div class="group-box group-${24 + status.index}"
-								onclick="moveDetail(${board.boardCommon.boardId}, '${board.boardCommon.transactionCategory}')">
-
-								<div class="red">
-									<img class="board-img"
-										src="${pageContext.request.contextPath}${board.filePath.categoryPath}${board.filePath.fileName}" />
-								</div>
-
-								<div class="overlap-3">
-									<div class="board-title">${board.boardCommon.productName}</div>
-								</div>
-
-								<!-- 조건에 따른 표시 -->
-								<c:choose>
-									<c:when test="${board.boardRental != null}">
-										<div class="overlap-4">
-											<div class="board-terms">대여료 :
-												${board.boardRental.rentalFee}원</div>
-										</div>
-										<div class="overlap-group-2">
-											<div class="board-period">
-												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
-												~
-												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
-											</div>
-										</div>
-									</c:when>
-
-									<c:when test="${board.boardAuction != null}">
-										<div class="overlap-4">
-											<div class="board-terms">시작가 :
-												${board.boardAuction.auctionStartingFee}원</div>
-										</div>
-										<div class="overlap-group-2">
-											<div class="board-period">
-												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
-												~
-												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
-											</div>
-										</div>
-									</c:when>
-
-									<c:when test="${board.boardSharing != null}">
-										<div class="overlap-4">
-											<div class="board-terms">나눔 수량 :
-												${board.boardSharing.sharingCount}개</div>
-										</div>
-										<div class="overlap-group-2">
-											<div class="board-period">나눔 게시물</div>
-										</div>
-									</c:when>
-								</c:choose>
-							</div>
-						</c:if>
+			</div>
+		</div>
+		
+	<button id="writeBtn" class="active" onclick="showWriteList()">작성 게시글 보기</button>
+	<button id="likedBtn" onclick="showLikedList()">찜한 게시글 보기</button>
+	<div class="user-board-list">	
+		<div class="user-write-list">
+			<div class="related-products">
+				<h2>회원님이 게시한 대여 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="userRentalWrapper"
+						items="${userRentalWrapperList }">
+						<div class="card"
+							onclick="moveRentalDetail(${userRentalWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${userRentalWrapper.filePath.categoryPath}/${userRentalWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${userRentalWrapper.boardCommon.productName }</p>
+							<p id="rental-fee">대여료:${userRentalWrapper.boardRental.rentalFee }원</p>
+							<p class="date">
+								<fmt:formatDate
+									value="${userRentalWrapper.boardRental.rentalStartDate }"
+									pattern="yyyy/MM/dd" />
+								~
+								<fmt:formatDate value="${userRentalWrapper.boardRental.rentalEndDate }"
+									pattern="yyyy/MM/dd" />
+							</p>
+						</div>
 					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveRentalDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+						}
+					</script>
 
-					<!-- 더보기 버튼 -->
-					<c:if test="${fn:length(boardList) > 4}">
-						<div class="see-more1"
-							onclick="location.href='${pageContext.request.contextPath}/board/all'">더보기
-							&gt;</div>
-					</c:if>
+				</div>
+			</div>
+			<div class="related-products">
+				<h2>회원님이 게시한 나눔 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="userShareWrapper"
+						items="${userShareWrapperList }">
+						<div class="card"
+							onclick="moveShareDetail(${userShareWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${userShareWrapper.filePath.categoryPath}/${userShareWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${userShareWrapper.boardCommon.productName }</p>
+							<p class="count">나눔수량:${userShareWrapper.boardSharing.sharingCount }개</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveShareDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
+						}
+					</script>
 
-					<div class="text-wrapper-22">내가 등록한 게시글</div>
-					<div class="text-wrapper-23">거래 기록</div>
-					<div class="text-wrapper-24">찜 목록</div>
+				</div>
+			</div>
+			
+			<div class="related-products">
+				<h2>회원님이 게시한 경매 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="userAuctionWrapper"
+						items="${userAuctionWrapperList }">
+						<div class="card"
+							onclick="moveAuctionDetail(${userAuctionWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${userAuctionWrapper.filePath.categoryPath}/${userAuctionWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${userAuctionWrapper.boardCommon.productName }</p>
+													<p id="auction-fee">경매시작금:${userAuctionWrapper.boardAuction.auctionStartingFee }</p>
+							<c:if test="${userAuctionWrapper.highestBid ne 0}">
+								<p id="highest-bid">최고입찰가 :
+									${userAuctionWrapper.highestBid}</p>
+							</c:if>
+	
+							<c:if test="${userAuctionWrapper.highestBid eq 0}">
+								<p id="highest-bid">최고입찰가 :
+									${userAuctionWrapper.boardAuction.auctionStartingFee}</p>
+							</c:if>
+							<p class="date">
+								<fmt:formatDate
+									value="${userAuctionWrapper.boardAuction.auctionStartDate }"
+									pattern="yyyy/MM/dd" />
+								~						
+								<fmt:formatDate
+									value="${userAuctionWrapper.boardAuction.auctionEndDate }"
+									pattern="yyyy/MM/dd" />
+							</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveAuctionDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/auction/"+bid;
+						}
+					</script>
+
 				</div>
 			</div>
 		</div>
+		<div class="user-liked-list" style="display: none;">
+			<div class="related-products">
+				<h2>회원님이 찜한 대여 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="likedRentalWrapper"
+						items="${likedRentalWrapperList }">
+						<div class="card"
+							onclick="moveRentalDetail(${likedRentalWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${likedRentalWrapper.filePath.categoryPath}/${likedRentalWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${likedRentalWrapper.boardCommon.productName }</p>
+							<p id="rental-fee">대여료:${likedRentalWrapper.boardRental.rentalFee }원</p>
+							<p class="date">
+								<fmt:formatDate
+									value="${likedRentalWrapper.boardRental.rentalStartDate }"
+									pattern="yyyy/MM/dd" />
+								~
+								<fmt:formatDate value="${likedRentalWrapper.boardRental.rentalEndDate }"
+									pattern="yyyy/MM/dd" />
+							</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveRentalDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/rental/"+bid;
+						}
+					</script>
+
+				</div>
+			</div>
+			
+			<div class="related-products">
+				<h2>회원님이 찜한 나눔 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="likedShareWrapper"
+						items="${likedShareWrapperList }">
+						<div class="card"
+							onclick="moveShareDetail(${likedShareWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${likedShareWrapper.filePath.categoryPath}/${likedShareWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${likedShareWrapper.boardCommon.productName }</p>
+							<p class="count">나눔수량:${likedShareWrapper.boardSharing.sharingCount }개</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveShareDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/share/"+bid;
+						}
+					</script>
+
+				</div>
+			</div>
+			
+			
+			<div class="related-products">
+				<h2>회원님이 찜한 경매 게시글</h2>
+				<div class="product-list">
+					<!-- 카드 반복 -->
+					<c:forEach var="likedAuctionWrapper"
+						items="${likedAuctionWrapperList }">
+						<div class="card"
+							onclick="moveAuctionDetail(${likedAuctionWrapper.boardCommon.boardId});">
+							<img
+								src="${pageContext.request.contextPath}/${likedAuctionWrapper.filePath.categoryPath}/${likedAuctionWrapper.filePath.fileName}"
+								alt="이미지" />
+							<p id="product-name">${likedAuctionWrapper.boardCommon.productName }</p>
+													<p id="auction-fee">경매시작금:${likedAuctionWrapper.boardAuction.auctionStartingFee }</p>
+							<c:if test="${likedAuctionWrapper.highestBid ne 0}">
+								<p id="highest-bid">최고입찰가 :
+									${likedAuctionWrapper.highestBid}</p>
+							</c:if>
+	
+							<c:if test="${likedAuctionWrapper.highestBid eq 0}">
+								<p id="highest-bid">최고입찰가 :
+									${likedAuctionWrapper.boardAuction.auctionStartingFee}</p>
+							</c:if>
+							<p class="date">
+								<fmt:formatDate
+									value="${likedAuctionWrapper.boardAuction.auctionStartDate }"
+									pattern="yyyy/MM/dd" />
+								~						
+								<fmt:formatDate
+									value="${likedAuctionWrapper.boardAuction.auctionEndDate }"
+									pattern="yyyy/MM/dd" />
+							</p>
+						</div>
+					</c:forEach>
+					<!-- 클릭시 상세보기로 이동 -->
+					<script>
+						function moveAuctionDetail(bid){
+							location.href = "${pageContext.request.contextPath}/board/detail/auction/"+bid;
+						}
+					</script>
+
+				</div>
+			</div>
+		</div>
+	</div>
+			
+	<script>
+	 const writeBtn = document.getElementById('writeBtn');
+	  const likedBtn = document.getElementById('likedBtn');
+	  const writeList = document.querySelector('.user-write-list');
+	  const likedList = document.querySelector('.user-liked-list');
+
+	  function showWriteList() {
+		document.querySelector('.user-write-list').style.display = 'block';
+		document.querySelector('.user-liked-list').style.display = 'none';
+
+	    writeBtn.classList.add('active');
+	    likedBtn.classList.remove('active');
+	  }
+
+	  function showLikedList() {
+		document.querySelector('.user-write-list').style.display = 'none';
+		document.querySelector('.user-liked-list').style.display = 'block';
+
+	    likedBtn.classList.add('active');
+	    writeBtn.classList.remove('active');
+	  }
+	</script>		
+			
 	</div>
 
 	<script
