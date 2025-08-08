@@ -182,7 +182,7 @@ String email = (String) session.getAttribute("verifiedEmail");
 				<div class="address">
 					<br> <input type="text" id="address1"
 						autocomplete="address-line1" required>&nbsp;&nbsp;&nbsp; <input
-						type="button" class="zip-btn" value="우편번호 검색"
+						type="button" class="zip-btn" value="주소 검색"
 						onclick="execDaumPostcode()">
 				</div>
 				<br>

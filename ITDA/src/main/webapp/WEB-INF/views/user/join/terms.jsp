@@ -6,6 +6,10 @@
     <meta charset="UTF-8">
     <title>이용약관 동의</title>
     <style>
+    	.all{
+    		top: 80px;
+    		position: relative;
+    	}
         #top{
             margin-top: 10px;
             margin-bottom: 20px;
@@ -104,51 +108,120 @@
 <body>
     <form action="${pageContext.request.contextPath}/user/join/terms" method="post" onsubmit="return validateForm()">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-        <div id="top">다음 내용에 동의해주세요<br></div>
-
-        <div class="top">
-            <input type="checkbox" id="selectAll" onclick="selectAll()">
-            모두 동의
-        </div>
-
-        <div class="middle">
-            <input type="checkbox" name="agreeTerms" class="tos">
-            IT다 이용약관에 동의 (필수)
-            <input type="button" id="first" value=">" onclick="openModal1()"><br><hr>
-            
-            <div id="modal1" class="modal">
-            	<div class="terms-content">
-            		<p>이용약관 내용 주절주절</p>
-            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal1()">
-            	</div>
-            </div>
-
-            <input type="checkbox" name="agreePrivacy" class="tos">
-            개인정보 처리 방침에 동의 (필수)
-            <input type="button" id="second" value=">" onclick="openModal2()"><br><hr>
-            
-            <div id="modal2" class="modal">
-            	<div class="terms-content">
-            		<p>개인정보 처리방침이 어쩌구 저쩌구</p>
-            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal2()">
-            	</div>
-            </div>
-
-            <input type="checkbox" name="agreePolicy" class="tos">
-            커뮤니티 운영정책 및 신고/제재 규정에 동의 (필수)
-            <input type="button" id="third" value=">" onclick="openModal3()"><br><hr>
-            
-            <div id="modal3" class="modal">
-            	<div class="terms-content">
-            		<p>커뮤 운영정책 및 신고/제재 규정 머시기</p>
-            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal3()">
-            	</div>
-            </div>
-        </div>
-
-        <div class="bottom">
-            <input type="submit" id="next" value="다음으로">
-            <input type="button" id="exit" value="취소" onclick="location.href='${pageContext.request.contextPath}/'">
+    	<div class="all">
+	        <div id="top">다음 내용에 동의해주세요<br></div>
+	
+	        <div class="top">
+	            <input type="checkbox" id="selectAll" onclick="selectAll()">
+	            모두 동의
+	        </div>
+	
+	        <div class="middle">
+	            <input type="checkbox" name="agreeTerms" class="tos">
+	            IT다 이용약관에 동의 (필수)
+	            <input type="button" id="first" value=">" onclick="openModal1()"><br><hr>
+	            
+	            <div id="modal1" class="modal">
+	            	<div class="terms-content">
+	            		<h3>이용 약관</h3>
+	            		<p>
+	            			제1조 (목적)<br>
+							이 약관은 이용자(이하 “회원”)가 본 서비스(이하 “서비스”)를 이용함에 있어 필요한 권리, 의무 및 책임사항을 규정하는 것을 목적으로 합니다.
+							<br><br>
+							제2조 (서비스의 내용)<br>
+							본 서비스는 회원 간 대여, 경매, 나눔을 포함한 거래 기능과 커뮤니티를 통한 정보 공유 및 소통 기능을 제공합니다.
+							<br><br>
+							제3조 (회원가입)<br>
+							회원은 본 약관에 동의하고 필요한 정보를 입력함으로써 가입할 수 있습니다.
+							<br>
+							허위 정보 제공 시 서비스 이용이 제한될 수 있습니다.
+							<br><br>
+							제4조 (서비스 이용)<br>
+							회원은 타인의 권리를 침해하지 않는 범위 내에서 자유롭게 서비스를 이용할 수 있습니다.
+							<br>
+							불법 물품의 거래, 허위 게시글, 사기 행위 등은 엄격히 금지됩니다.
+							<br><br>
+							제5조 (책임의 한계)<br>
+							서비스는 회원 간 거래의 중개자 또는 보증자가 아니며, 거래 과정에서 발생하는 분쟁에 대해 법적 책임을 지지 않습니다.
+	            		</p>
+	            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal1()">
+	            	</div>
+	            </div>
+	
+	            <input type="checkbox" name="agreePrivacy" class="tos">
+	            개인정보 처리 방침에 동의 (필수)
+	            <input type="button" id="second" value=">" onclick="openModal2()"><br><hr>
+	            
+	            <div id="modal2" class="modal">
+	            	<div class="terms-content">
+	            		<h3>개인정보 처리 방침</h3>
+	            		<p>
+	            			제1조 (수집 항목)<br>
+							서비스 이용을 위해 다음과 같은 정보를 수집할 수 있습니다:
+							<br>
+							필수: 이름, 이메일, 연락처, 비밀번호
+							<br>
+							선택: 프로필 사진, 주소 등 거래에 필요한 추가 정보
+							<br><br>
+							제2조 (이용 목적)<br>
+							수집한 개인정보는 다음의 목적을 위해 사용됩니다:
+							<br>
+							회원가입 및 본인확인
+							<br>
+							서비스 제공 및 사용자 간 거래 지원
+							<br>
+							커뮤니티 활동 관리
+							<br>
+							고객 문의 대응 및 서비스 개선
+							<br><br>
+							제3조 (보관 기간)<br>
+							회원 탈퇴 시 개인정보는 관련 법령에 따라 일정 기간 보관 후 즉시 파기됩니다.
+							<br><br>
+							제4조 (제3자 제공)<br>
+							원칙적으로 회원의 동의 없이 개인정보를 제3자에게 제공하지 않습니다. 단, 법령에 의한 경우 예외로 합니다.
+	            		</p>
+	            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal2()">
+	            	</div>
+	            </div>
+	
+	            <input type="checkbox" name="agreePolicy" class="tos">
+	            커뮤니티 운영정책 및 신고/제재 규정에 동의 (필수)
+	            <input type="button" id="third" value=">" onclick="openModal3()"><br><hr>
+	            
+	            <div id="modal3" class="modal">
+	            	<div class="terms-content">
+	            		<h3>커뮤니티 운영정책 및 신고/제재 규정</h3>
+	            		<p>
+	            			제1조 (운영 원칙)<br>
+							커뮤니티는 자유로운 소통을 위한 공간으로, 회원은 타인을 존중하고 예의를 지켜야 합니다.
+							<br>
+							다음과 같은 게시글은 금지되며 사전 통보 없이 삭제될 수 있습니다:
+							<br>
+							욕설, 비방, 혐오 표현
+							<br>
+							불법 행위 조장
+							<br>
+							광고 및 홍보 목적의 글
+							<br>
+							거래 사기 관련 글
+							<br><br>
+							제2조 (신고 및 제재)<br>
+							회원은 부적절한 게시글이나 행동을 신고할 수 있으며, 운영자는 해당 내용을 검토 후 조치합니다.
+							<br>
+							제재는 경고, 일정 기간 이용 제한, 영구 이용 정지 등의 수위로 나뉘며, 사안에 따라 즉시 적용될 수 있습니다.
+							<br>
+							제3조 (이의제기)<br>
+							회원은 제재에 대해 이의신청을 할 수 있으며, 운영자는 신속히 재검토 후 결과를 통보합니다.
+	            		</p>
+	            		<input type="button" class="close" value="확인하였습니다" onclick="closeModal3()">
+	            	</div>
+	            </div>
+	        </div>
+	
+	        <div class="bottom">
+	            <input type="submit" id="next" value="다음으로">
+	            <input type="button" id="exit" value="취소" onclick="location.href='${pageContext.request.contextPath}/'">
+	        </div>
         </div>
     </form>
 

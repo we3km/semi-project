@@ -145,5 +145,11 @@
 			<arg column="AUTHORITY" javaType="string" />
 		</constructor>
 	</resultMap>
+	
+	<update id="unregister" parameterType="map">
+		UPDATE USER_TB
+		SET IS_QUIT = 'Y'
+		WHERE USER_NUM = #{userNum}
+	</update>
 
 </mapper>

@@ -6,6 +6,8 @@ import java.util.Date;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.kh.itda.user.model.vo.User;
+
 import lombok.Data;
 
 @Data
@@ -21,6 +23,7 @@ public class UserExt implements UserDetails {
 	private String phone;
 	private String address;
 	private String imageUrl;
+	private String isQuit;
 	private char isBanned;
 	private String validPeriod = "";
     private Date createDate;

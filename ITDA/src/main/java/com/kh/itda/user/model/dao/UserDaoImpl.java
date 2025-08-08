@@ -135,4 +135,11 @@ public class UserDaoImpl implements UserDao {
 		Integer score = session.selectOne("board.selectMannerScore", userNum);
 	    return (score != null) ? score : 80;
 	}
+
+	@Override
+	public void unregister(int userNum) {
+		session.update("security.unregister", userNum);
+	}
+
+	
 }

@@ -245,7 +245,7 @@ public class UserController {
 	        }
 
 	        String originalFilename = profileImage.getOriginalFilename();
-	        String fileName = userNum + "_" + System.currentTimeMillis() + "_" + originalFilename;
+	        String fileName = System.currentTimeMillis() + "_" + originalFilename;
 
 	        File destFile = new File(saveDirectory + File.separator + fileName);
 
@@ -440,6 +440,13 @@ public class UserController {
 	// 회원탈퇴
 	@PostMapping("/user/delete")
 	public String deleteUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		String userId = authentication.getName();
+		User user = uService.findUserById(userId);
+		int userNum = user.getUserNum();
+		
+		uService.unregister(userNum);
 		
 		return "redirect:/";
 	}
