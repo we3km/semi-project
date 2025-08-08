@@ -41,10 +41,6 @@ public class ChatDao {
 		return session.selectOne("chat.joinCheck", join);
 	}
 
-	public int joinChatRoom(ChatRoomJoin join) {
-		return session.insert("chat.joinChatRoom", join);
-	}
-
 	public List<ChatMessage> getMessagesByChatRoomId(int chatRoomId) {
 		return session.selectList("chat.getMessagesByChatRoomId", chatRoomId);
 	}
@@ -93,5 +89,9 @@ public class ChatDao {
 	}
 	public BidWinner getBiddingWinner(int boardId) {
 		return session.selectOne("chat.getBiddingWinner", boardId);
+	}
+
+	public int joinCheck(Map<String, Object> map) {
+		return session.selectOne("chat.joinCheck", map);
 	}
 }

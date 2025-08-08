@@ -16,8 +16,6 @@ public interface ChatService {
 
 	int openChatRoom(int userNum, int boardOwnerNum, int refNum, int boardId);
 
-	List<ChatMessage> joinChatRoom(ChatRoomJoin join);
-
 	int sendMessage(ChatMessage chatMessage);
 
 	int exitChatRoom(Map<String, Object> exit);
@@ -34,9 +32,9 @@ public interface ChatService {
 	
 	ChatRoom selectOpponentProfile( Map<String, Object> opps);
 
-
 	List<Integer> findParticipantsByChatRoomId(int chatRoomId);
 
 	BidWinner getBiddingWinner(int boardId);
 
+	int joinCheck(int userNum, int boardOwnerNum, int boardId);
 }
