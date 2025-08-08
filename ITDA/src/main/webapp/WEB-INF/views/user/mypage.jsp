@@ -319,9 +319,6 @@
 	  }
 	</script>		
 			
-			
-			
-		
 	</div>
 
 	<script
