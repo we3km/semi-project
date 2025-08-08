@@ -2,6 +2,7 @@
 	min-height: 90%;
 	min-width: 80%;
 	max-width: 1800px;
+	max-height: 2500px
 	margin: 0 auto;
 	background-color: #FFFFFF;
 	padding: 60px 40px;
@@ -401,9 +402,23 @@
 	left: 720px;
 }
 
+.element .board-big-list{
+	height: 30px;
+	top: 1200px;
+	left: 1px;
+	font-family: "Titillium Web-Black", Helvetica;
+	font-weight: 900;
+	color: #000000;
+	font-size: 20px;
+	text-align: center;
+	position: absolute;
+	letter-spacing: 0;
+	line-height: normal;
+}
+
 .element .text-wrapper-22 {
 	height: 30px;
-	top: 0px;
+	top: 1200px;
 	left: 1px;
 	font-family: "Titillium Web-Black", Helvetica;
 	font-weight: 900;
@@ -417,7 +432,7 @@
 
 .element .text-wrapper-23 {
 	height: 30px;
-	top: 348px;
+	top: 1500px;
 	left: 1px;
 	font-family: "Titillium Web-Black", Helvetica;
 	font-weight: 900;
@@ -431,7 +446,7 @@
 
 .element .text-wrapper-24 {
 	height: 30px;
-	top: 693px;
+	top: 1800px;
 	left: 1px;
 	font-family: "Titillium Web-Black", Helvetica;
 	font-weight: 900;

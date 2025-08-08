@@ -583,23 +583,6 @@
 		});
 	});
 	
-	/* function submitPassword() {
-		const newPwd = document.getElementById("newPwd").value;
-		const confirmPwd = document.getElementById("confirmPwd").value;
-	
-		if (!newPwd || !confirmPwd) {
-		    alert("비밀번호를 입력해주세요.");
-		    return;
-		}
-		if (newPwd !== confirmPwd) {
-	    	alert("비밀번호가 일치하지 않습니다.");
-	    	return;
-		}
-		document.getElementById("pwdForm").submit();
-		alert("비밀번호가 변경되었습니다.");
-	  	closeModal(); // 성공 후 닫기
-	} */	
-	
 	document.querySelector('.delete-user').addEventListener('click', function () {
 		if(confirm("정말 탈퇴하시겠습니까?")){
 			fetch(contextPath + "/user/delete", {
