@@ -32,7 +32,6 @@
 	<sec:authorize access="hasRole('ROLE_USER')">
 		<input type="hidden" id="userRole" value="ROLE_USER" />
 	</sec:authorize>
-
 	<div class="container_header">
 
 		<!-- 좌측 로고 -->

@@ -49,7 +49,7 @@ public class SelectBoardInfo {
 	// 경매
 	private int auctionStartingFee = 0; // 경매 입찰 시작금
 	private String auctionEndDate = ""; // 경매 종료 날짜
-	private int bid = 0; // 경매 낙찰금
+	private int bid; // 경매 낙찰금
 	
 	// 나눔
 	private int sharingCount = 0; // 나눔 갯수
