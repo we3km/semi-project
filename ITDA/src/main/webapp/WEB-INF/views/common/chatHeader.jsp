@@ -31,7 +31,6 @@
 		<div class="category-line">
 			<div class="category">대여</div>
 			<div class="category">경매</div>
-			<div class="category">교환</div>
 			<div class="category">나눔</div>
 			<div class="category">커뮤니티</div>
 		</div>
@@ -161,7 +160,6 @@
 							let targetUrl = '';
 					        switch(category) {
 					            case '대여': targetUrl = contextPath + '/board/rental/list'; break;
-					            case '교환': targetUrl = contextPath + '/board/exchange/list'; break;
 					            case '나눔': targetUrl = contextPath + '/board/share/list'; break;
 					            case '경매': targetUrl = contextPath + '/board/auction/list'; break;
 					            case '커뮤니티': targetUrl = contextPath + '/community/list/all'; break;

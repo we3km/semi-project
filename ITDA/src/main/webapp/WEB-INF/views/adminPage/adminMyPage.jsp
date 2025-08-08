@@ -242,7 +242,10 @@ section {
 	            html += `<li>
 	                <strong>회원 번호:</strong> \${user.userNum} <br/>
 	                <strong>아이디:</strong> \${user.userId} <br/>
-	                <strong>닉네임:</strong> \${user.nickName} <br/>
+	                <strong>닉네임:</strong><span style="cursor:pointer; color:blue; text-decoration:underline;"
+	                    onclick="location.href='${pageContext.request.contextPath}/user/mypageOthers/\${user.userNum}'">
+	                  \${user.nickName}
+	              	</span> <br/>
 	                <strong>이메일:</strong> \${user.email} <br/>
 	                <strong>가입일:</strong> \${formatDate(user.createDate)}
 	            </li>`;
