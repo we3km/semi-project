@@ -237,6 +237,7 @@ public class UserController {
 	        UserExt loginUser = (UserExt) auth.getPrincipal();
 	        int userNum = loginUser.getUserNum();
 
+	        // 저장 경로
 	        String saveDirectory = session.getServletContext().getRealPath(FileConfig.PROFILE_IMAGE_WEB_PATH);
 	        System.out.println("Profile 저장 경로: " + saveDirectory); // 경로 확인용
 	        File dir = new File(saveDirectory);
@@ -244,6 +245,7 @@ public class UserController {
 	            dir.mkdirs();
 	        }
 
+	        // 변경할 프로필 이미지 url 생성
 	        String originalFilename = profileImage.getOriginalFilename();
 	        String fileName = System.currentTimeMillis() + "_" + originalFilename;
 
@@ -259,7 +261,7 @@ public class UserController {
 	            }
 	        }
 	        
-	        // 실제 파일 저장
+	        // 프로필 이미지 저장
 	        profileImage.transferTo(destFile);
 
 	        // DB에 저장할 이미지 URL (웹에서 접근 가능한 경로)
