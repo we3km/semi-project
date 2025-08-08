@@ -2,6 +2,8 @@ package com.kh.itda.security.model.service;
 import java.util.List;
 
 import java.util.stream.Collectors;
+
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +25,11 @@ public class SecurityServiceImpl implements SecurityService {
 		UserDetails userExt = securityDao.loadUserByUsername(userId); // 객체를 통해 호출
 		if (userExt == null) {
 			throw new UsernameNotFoundException("존재하지 않는 사용자입니다.");
+		}
+		
+		User user = securityDao.findUserById(userId);
+		if ("Y".equals(user.getIsQuit())) {
+			throw new DisabledException("탈퇴한 계정입니다.");
 		}
 
 		log.debug("{}",userExt);

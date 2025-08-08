@@ -1,106 +1,122 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <title>본인확인</title>
-    <style>
-        .top {
-            background-color: #ecebff;
-            width: 500px;
-            height: 180px;
-            font-size: 12px;
-            text-align: center;
-            margin: auto;
-            padding: 10px;
-        }
-        .blue {
-            color: #5a54ff;
-        }
-        .middle {
-            background-color: #ecebff;
-            width: 500px;
-            height: 420px;
-            font-size: 20px;
-            text-align: center;
-            margin: auto;
-            padding: 10px;
-        }
-        #email {
-            width: 320px;
-            height: 30px;
-            margin-bottom: 20px;
-        }
-        #confilm-text {
-            width: 300px;
-            height: 30px;
-        }
-        #send, #confilm {
-            background-color: #5a54ff;
-            width: 60px;
-            height: 30px;
-            border: 1px solid #5a54ff;
-            color: #fff;
-            border-radius: 14px;
-            cursor: pointer;
-        }
-        .bottom {
-            background-color: #ecebff;
-            width: 500px;
-            height: 100px;
-            font-size: 12px;
-            margin: auto;
-            padding: 10px;
-        }
-        #next, #exit {
-            width: 160px;
-            height: 40px;
-            font-size: 20px;
-            color: #fff;
-            border: 1px solid;
-            cursor: pointer;
-            position: relative;
-        }
-        #next {
-            background-color: #5a54ff;
-            border-color: #5a54ff;
-            left: 12%;
-        }
-        #exit {
-            background-color: #aeabff;
-            border-color: #aeabff;
-            color: #000;
-            left: 22%;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>본인확인</title>
+<style>
+.all{
+	top: 50px;
+	position: relative;
+}
+.top {
+	background-color: #ecebff;
+	width: 500px;
+	height: 180px;
+	font-size: 12px;
+	text-align: center;
+	margin: auto;
+	padding: 10px;
+}
+
+.blue {
+	color: #5a54ff;
+}
+
+.middle {
+	background-color: #ecebff;
+	width: 500px;
+	height: 420px;
+	font-size: 20px;
+	text-align: center;
+	margin: auto;
+	padding: 10px;
+}
+
+#email {
+	width: 320px;
+	height: 30px;
+	margin-bottom: 20px;
+}
+
+#confilm-text {
+	width: 300px;
+	height: 30px;
+}
+
+#send, #confilm {
+	background-color: #5a54ff;
+	width: 60px;
+	height: 30px;
+	border: 1px solid #5a54ff;
+	color: #fff;
+	border-radius: 14px;
+	cursor: pointer;
+}
+
+.bottom {
+	background-color: #ecebff;
+	width: 500px;
+	height: 100px;
+	font-size: 12px;
+	margin: auto;
+	padding: 10px;
+}
+
+#next, #exit {
+	width: 160px;
+	height: 40px;
+	font-size: 20px;
+	color: #fff;
+	border: 1px solid;
+	cursor: pointer;
+	position: relative;
+}
+
+#next {
+	background-color: #5a54ff;
+	border-color: #5a54ff;
+	left: 12%;
+}
+
+#exit {
+	background-color: #aeabff;
+	border-color: #aeabff;
+	color: #000;
+	left: 22%;
+}
+</style>
 </head>
 <body>
-    <!-- form action, method 수정 필요 -->
-    <form id="emailAuth">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-        <div class="top">
-            <h1>본인확인</h1>
-            <h2>고객님의 <span class="blue">본인확인</span>을 진행해주세요</h2>
-            <br>
-            IT다의 다양한 서비스 이용을 위해 본인확인이 필요합니다.<br>
-            청소년 고객님은 보호자동의가 필요하니 보호자와 함께 진행해주세요
-        </div>
-        <div class="middle">
-            이메일 
-            <input type="email" id="email" name="email" placeholder="이메일" required>
-            <input type="button" id="send" value="전송"><br>
+	<!-- form action, method 수정 필요 -->
+	<form id="emailAuth">
+		<input type="hidden" name="${_csrf.parameterName}"
+			value="${_csrf.token}" />
+		<div class="all">
+			<div class="top">
+				<h1>본인확인</h1>
+				<h2>
+					고객님의 <span class="blue">본인확인</span>을 진행해주세요
+				</h2>
+				<br> IT다의 다양한 서비스 이용을 위해 본인확인이 필요합니다.<br> 청소년 고객님은 보호자동의가
+				필요하니 보호자와 함께 진행해주세요
+			</div>
+			<div class="middle">
+				이메일 <input type="email" id="email" name="email" placeholder="이메일"
+					required> <input type="button" id="send" value="전송"><br>
 
-            인증번호 
-            <input type="text" id="confilm-text" name="verificationCode" placeholder="인증번호">
-            <input type="button" id="confilm" value="확인" onclick="verifyCode()">
-        </div>
-        <div class="bottom">
-            <input type="button" id="next" value="다음으로" onclick="goNext()">
-            <input type="button" id="exit" value="이전" onclick="history.back()">
-        </div>
-    </form>
+				인증번호 <input type="text" id="confilm-text" name="verificationCode"
+					placeholder="인증번호"> <input type="button" id="confilm"
+					value="확인" onclick="verifyCode()">
+			</div>
+			<div class="bottom">
+				<input type="button" id="next" value="다음으로" onclick="goNext()">
+				<input type="button" id="exit" value="이전" onclick="history.back()">
+			</div>
+		</div>
+	</form>
 
-    <script>
+	<script>
     	let emailVerified = false;
     
     	document.getElementById("send").addEventListener("click", function(e) {

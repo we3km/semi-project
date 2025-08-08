@@ -42,4 +42,8 @@ public interface UserService {
 
 	User findUserByUserNum(int userNum);
 
+	void unregister(int userNum);
+
+	
+
 }

@@ -17,6 +17,7 @@ public class User {
     private String phone;
     private String address;
     private String imageUrl;
+    private String isQuit;
     private String validPeriod = "";
     private Date createDate;
 }
