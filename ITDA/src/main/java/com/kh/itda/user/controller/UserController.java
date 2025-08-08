@@ -214,7 +214,7 @@ public class UserController {
 	        }
 
 	        String originalFilename = profileImage.getOriginalFilename();
-	        String fileName = userNum + "_" + System.currentTimeMillis() + "_" + originalFilename;
+	        String fileName = System.currentTimeMillis() + "_" + originalFilename;
 
 	        File destFile = new File(saveDirectory + File.separator + fileName);
 
