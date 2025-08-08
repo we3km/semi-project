@@ -84,9 +84,77 @@
 						</form>
 					</div>
 				</div>
-				<div class="text-wrapper-22">내가 등록한 게시글</div>
-				<div class="text-wrapper-23">거래 기록</div>
-				<div class="text-wrapper-24">찜 목록</div>
+
+				<div class="group-20 element">
+					<c:forEach var="board" items="${boardList}" varStatus="status">
+						<c:if test="${status.index < 4}">
+							<div class="group-box group-${24 + status.index}"
+								onclick="moveDetail(${board.boardCommon.boardId}, '${board.boardCommon.transactionCategory}')">
+
+								<div class="red">
+									<img class="board-img"
+										src="${pageContext.request.contextPath}${board.filePath.categoryPath}${board.filePath.fileName}" />
+								</div>
+
+								<div class="overlap-3">
+									<div class="board-title">${board.boardCommon.productName}</div>
+								</div>
+
+								<!-- 조건에 따른 표시 -->
+								<c:choose>
+									<c:when test="${board.boardRental != null}">
+										<div class="overlap-4">
+											<div class="board-terms">대여료 :
+												${board.boardRental.rentalFee}원</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+												~
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+											</div>
+										</div>
+									</c:when>
+
+									<c:when test="${board.boardAuction != null}">
+										<div class="overlap-4">
+											<div class="board-terms">시작가 :
+												${board.boardAuction.auctionStartingFee}원</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+												~
+												<fmt:formatDate value="" pattern="yyyy/MM/dd" />
+											</div>
+										</div>
+									</c:when>
+
+									<c:when test="${board.boardSharing != null}">
+										<div class="overlap-4">
+											<div class="board-terms">나눔 수량 :
+												${board.boardSharing.sharingCount}개</div>
+										</div>
+										<div class="overlap-group-2">
+											<div class="board-period">나눔 게시물</div>
+										</div>
+									</c:when>
+								</c:choose>
+							</div>
+						</c:if>
+					</c:forEach>
+
+					<!-- 더보기 버튼 -->
+					<c:if test="${fn:length(boardList) > 4}">
+						<div class="see-more1"
+							onclick="location.href='${pageContext.request.contextPath}/board/all'">더보기
+							&gt;</div>
+					</c:if>
+
+					<div class="text-wrapper-22">내가 등록한 게시글</div>
+					<div class="text-wrapper-23">거래 기록</div>
+					<div class="text-wrapper-24">찜 목록</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -349,23 +417,6 @@
 			alert("서버 오류");
 		});
 	});
-	
-	/* function submitPassword() {
-		const newPwd = document.getElementById("newPwd").value;
-		const confirmPwd = document.getElementById("confirmPwd").value;
-	
-		if (!newPwd || !confirmPwd) {
-		    alert("비밀번호를 입력해주세요.");
-		    return;
-		}
-		if (newPwd !== confirmPwd) {
-	    	alert("비밀번호가 일치하지 않습니다.");
-	    	return;
-		}
-		document.getElementById("pwdForm").submit();
-		alert("비밀번호가 변경되었습니다.");
-	  	closeModal(); // 성공 후 닫기
-	} */	
 	
 	document.querySelector('.delete-user').addEventListener('click', function () {
 		if(confirm("정말 탈퇴하시겠습니까?")){
