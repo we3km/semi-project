@@ -74,10 +74,6 @@
 						</span>
 					</button>
 
-					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
-					</svg>
-					</span>
-					</button>
 					<!-- 목록 -->
 					<div class="dropdown-content">
 						<c:forEach var="entry" items="${mainCategoryType}">
@@ -99,11 +95,6 @@
 	                			<path fill="#5a5a5a" d="M7 10l5 5 5-5z" />
 	              			</svg>
 						</span>
-					</button>
-
-					<path fill="#5A5A5A" d="M7 10l5 5 5-5z" />
-					</svg>
-					</span>
 					</button>
 					<div class="dropdown-content"></div>
 				</div>
@@ -182,9 +173,11 @@
 	        // 선택된 거래유형의 ID와 Gubun 저장
 	        selectedCategoryId = $(this).data('id');
 	        selectedCategoryGubun = $(this).data('gubun');
+	        
 	        // 거래유형 버튼의 제목을 선택한 항목으로 변경
 	        dropdown.find('.dropbtn_content').text(name).css('color', '#252525');
 	        dropdown.find('.dropdown-content').removeClass('show');
+	        
 	        // --- 상품유형 드롭다운을 동적으로 변경하는 로직 ---
 	        const $productDropdown = $('#product-type-dropdown .dropdown-content');
 	        const $productBtnText = $('#product-type-dropdown .dropbtn_content');
@@ -193,11 +186,13 @@
 	        selectedProductTypeId = null; // 이전에 선택했던 상품유형 값 초기화
 	        let dataToPopulate = [];
 	        const id = Number(selectedCategoryId);
+	        
 	        if (id >= 6 && id <= 9) { // 대여, 교환 등
 	            dataToPopulate = subCategoryData.board; // 메인 컨트롤러에서 준 상품 카테고리
 	        } else if (id === 10) { // 커뮤니티
 	            dataToPopulate = subCategoryData.community;
 	        }
+	        
 	        // 새 목록 생성 및 추가
 	        dataToPopulate.forEach(item => {
 	            const categoryDiv = $('<div></div>')

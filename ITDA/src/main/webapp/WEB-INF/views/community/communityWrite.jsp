@@ -155,8 +155,10 @@
 	    if (isUpdate) {
 	    	<c:forEach var="tag" items="${c.tags}">
 		        (function() {
-		            tags.push("${fn:escapeXml(tag.tagContent)}");
-		            const tagName = "${fn:escapeXml(tag.tagContent)}";
+		            //tags.push("${fn:escapeXml(tag.tagContent)}");
+		            tags.push("${tag.tagContent}");
+		            //const tagName = "${fn:escapeXml(tag.tagContent)}";
+		            const tagName = "${tag.tagContent}";
 		            const $removeBtn = $('<span class="remove-tag">&times;</span>').attr('data-tag', tagName);
 		            const $tag = $('<span class="tag"></span>').text('#' + tagName).append($removeBtn);
 		            $tagList.append($tag);

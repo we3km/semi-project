@@ -160,6 +160,7 @@
         <div id="commentList"></div> 
         
          <c:set var="loginUserNum" value="${sessionScope.loginUser.userNum}" />
+         
        
         
     </div>
@@ -208,10 +209,8 @@
 	    	console.log("communityWriter:", communityWriter);
 	    	 setTimeout(() => {
 	    	        if (!loginUserNum || parseInt(loginUserNum) !== parseInt(communityWriter)) {
-	    	            console.log("숨김 처리됨");
 	    	            $('.sub-btn').hide(); 
 	    	        } else {
-	    	            console.log("표시됨");
 	    	            $('.sub-btn').show(); 
 	    	        }
 	    	    }, 200);
