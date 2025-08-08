@@ -376,8 +376,8 @@ public class UserController {
 //	 
 
 	// 타인 정보 페이지
-	@GetMapping("/user/mypageOthers")
-	public String mypageOthers(@RequestParam int userNum, Model model) {
+	@GetMapping("/user/mypageOthers/{userNum}")
+	public String mypageOthers(@PathVariable int userNum, Model model) {
 		User user = uService.findUserByUserNum(userNum);
 		model.addAttribute("user", user);
 		

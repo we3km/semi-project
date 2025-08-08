@@ -57,7 +57,7 @@
         <!-- 게시글 정보 -->
         <!--작성자, 작성일, 조회수, 추천수, 댓글수-->
         <div class="meta-row">
-            <div class="left">작성자 : ${community.communityNickname} | 작성일 : <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" />
+            <div class="left" ><span onclick="location.href='${pageContext.request.contextPath}/user/mypageOthers/${community.communityWriter}'" style="cursor: pointer;">작성자 : ${community.communityNickname}</span> | 작성일 : <fmt:formatDate value="${community.writeDate }" pattern="yyyy-MM-dd HH:mm" />
             	<c:if test="${not empty community.editDate}">
 		            <span class="edit-date">| 수정일: <fmt:formatDate value="${community.editDate}" pattern="yyyy-MM-dd HH:mm" /></span>
 		        </c:if>
@@ -402,7 +402,7 @@
 		     function createCommentHtml(comment) {
 
 		 		const contextPath = '${pageContext.request.contextPath}';
-		 		const profileUrl = contextPath + "/user/mypage/" + comment.cmtWriterUserNum;
+		 		const profileUrl = contextPath + "/user/mypageOthers/" + comment.cmtWriterUserNum;
 		        const writeDate = formatCommentDate(comment.cmtWriteDateTimestamp);
 		        const loginUserImage = '<sec:authentication property="principal.imageUrl" />';
 		        
