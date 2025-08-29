@@ -233,8 +233,6 @@ public class BoardController {
 	// boardCategory => 각 게시판에서 글쓰기를 누를 시에 저장되는 게시판 유형 값
 	@GetMapping("/write/{boardCategory}")
 	public String boardWrite(@PathVariable("boardCategory") String boardCategory, Model model) {
-		// model.addAttribute("boardCategory", boardCategory); // JSP로 전달
-
 		// 글쓰기 버틀을 클릭했을시 주소에 담겨지는 게시판 카테고리별로 다른 정보를 담을수 있도록
 		switch (boardCategory) {
 		case "rental":

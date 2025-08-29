@@ -257,30 +257,20 @@
 	              	  boardCategory: 'rental'
 	             	 },
 	             	 success: function (res) {
-	             		 console.log(res);
 	    	       		  const liked = heartEl.classList.contains('liked');
-	    	      		
 	    	    		  if (liked) {
 	    	    		    // 찜 취소
 	    	    		    heartEl.textContent = '♡';
 	    	    		    heartEl.classList.remove('liked');
-	    	    		
-	    	    		    // TODO: 서버로 찜 취소 요청 (Ajax)
-	    	    		    console.log(`찜 취소: ${boardId}`);
 	    	    		  } else {
 	    	    		    // 찜 등록
 	    	    		    heartEl.textContent = '♥';
 	    	    		    heartEl.classList.add('liked');
-	    	    		
-	    	    		    // TODO: 서버로 찜 등록 요청 (Ajax)
-	    	    		    console.log(`찜 등록: ${boardId}`);
 	    	    		  }
 	             	 },
 	             	 error: function (err) {   
 	             	    console.error(err);
-	             	}
-	               
-	             	 
+	             	}           	 
 	             });
 			}
 		
